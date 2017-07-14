@@ -1,0 +1,37 @@
+{
+  "name": "firesphere/bootstrapmfa",
+  "description": "Enable authentication with fallback codes",
+  "type": "silverstripe-module",
+  "license": "BSD-3-Clause",
+  "keywords": [
+    "silverstripe",
+    "2-factor",
+    "authentication",
+    "module",
+    "security"
+  ],
+  "authors": [
+    {
+      "name": "Simon `Firesphere` Erkelens",
+      "email": "simonerkelens@silverstripe.com"
+    }
+  ],
+  "require": {
+    "silverstripe/framework": "4.0.x-dev",
+    "enygma/yubikey": "^3.2"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^5.7"
+  },
+  "extra": {
+    "installer-name": "bootstrapmfa",
+    "branch-alias": {
+      "dev-master": "1.0.x-dev"
+    }
+  },
+  "support": {
+    "issues": "https://github.com/firesphere/silverstripe-bootstrapmfa/issues",
+    "source": "https://github.com/firesphere/silverstripe-bootstrapmfa"
+  },
+  "target-dir": "bootstrapmfa"
+}
