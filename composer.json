@@ -17,8 +17,7 @@
     }
   ],
   "require": {
-    "silverstripe/framework": "4.0.x-dev",
-    "enygma/yubikey": "^3.2"
+    "silverstripe/framework": "4.0.x-dev"
   },
   "require-dev": {
     "phpunit/phpunit": "^5.7"
@@ -32,6 +31,9 @@
   "support": {
     "issues": "https://github.com/firesphere/silverstripe-bootstrapmfa/issues",
     "source": "https://github.com/firesphere/silverstripe-bootstrapmfa"
+  },
+  "suggest": {
+    "firesphere/yubiauth": "Authentication via Yubikey 2FA"
   },
   "target-dir": "bootstrapmfa"
 }

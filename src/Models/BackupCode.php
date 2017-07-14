@@ -3,11 +3,11 @@
 namespace Firesphere\BootstrapMFA;
 
 
+use SilverStripe\Control\Controller;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
-use SilverStripe\ORM\DB;
 use SilverStripe\Security\Member;
 
 /**
@@ -98,6 +98,9 @@ class BackupCode extends DataObject
 
     public static function generateTokensForMember($member)
     {
+        $message = '<p>Here are your tokens, please store them securily. ' .
+            'They are stored encrypted and can not be recovered, only reset.</p><p>';
+        $session = Controller::curr()->getRequest()->getSession();
         $limit = static::config()->get('token_limit');
         for ($i = 0; $i < $limit; ++$i) {
             $code = static::create();
@@ -105,9 +108,10 @@ class BackupCode extends DataObject
             $token = $code->Code;
             $code->write();
             $code->destroy();
-            // @todo get the tokens to the user
-            DB::alteration_message(sprintf('Backup code for user %d: %s', $member->ID, $token));
+            $message .= sprintf('%s<br />', $token);
         }
+        $message .= '</p>';
+        $session->set('tokens', $message);
     }
 
     public function onBeforeWrite()
