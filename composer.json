@@ -1,7 +1,7 @@
 {
   "name": "firesphere/bootstrapmfa",
   "description": "Enable authentication with fallback codes",
-  "type": "silverstripe-module",
+  "type": "silverstripe-vendormodule",
   "license": "BSD-3-Clause",
   "keywords": [
     "silverstripe",
