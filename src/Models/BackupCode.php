@@ -2,7 +2,6 @@
 
 namespace Firesphere\BootstrapMFA;
 
-
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
@@ -21,7 +20,6 @@ use SilverStripe\Security\Member;
  */
 class BackupCode extends DataObject
 {
-
     private static $table_name = 'BackupCode';
 
     private static $db = [
@@ -36,7 +34,7 @@ class BackupCode extends DataObject
     private static $indexes = [
         'Code' => [
             'type'    => 'unique',
-            'columns' => ["MemberID","Code"],
+            'columns' => ['MemberID', 'Code'],
         ],
     ];
 
@@ -137,5 +135,4 @@ class BackupCode extends DataObject
     {
         return false;
     }
-
 }
