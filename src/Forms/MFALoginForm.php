@@ -8,13 +8,11 @@
 
 namespace Firesphere\BootstrapMFA;
 
-
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Security\MemberAuthenticator\MemberLoginForm;
 
 class MFALoginForm extends MemberLoginForm
 {
-
     public function getFormFields()
     {
         $fields = parent::getFormFields();

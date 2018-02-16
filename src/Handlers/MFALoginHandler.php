@@ -11,7 +11,6 @@ use SilverStripe\Security\MemberAuthenticator\MemberLoginForm;
 
 abstract class MFALoginHandler extends LoginHandler
 {
-
     private static $url_handlers = [
         'verify' => 'secondFactor'
     ];

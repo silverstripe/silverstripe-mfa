@@ -2,7 +2,6 @@
 
 namespace Firesphere\BootstrapMFA;
 
-
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\MemberAuthenticator\MemberAuthenticator;
@@ -18,7 +17,7 @@ class BootstrapMFAAuthenticator extends MemberAuthenticator
      */
     public function validateBackupCode($member, $token, &$result = null)
     {
-        if(!$result) {
+        if (!$result) {
             $result = new ValidationResult();
         }
         $token = $member->encryptWithUserSettings($token);
@@ -36,6 +35,5 @@ class BootstrapMFAAuthenticator extends MemberAuthenticator
         $result->addError('Invalid token');
 
         return false;
-
     }
 }

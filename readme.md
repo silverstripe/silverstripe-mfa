@@ -19,7 +19,7 @@ In the validation method, if the intended MFA method fails, you can fall back on
 
 This is the Bootstrap Authenticator, that will let people login with one-time text-tokens.
 
-Your second-factor form needs to extend the `MFALoginForm`, to enable creation of new tokens on request.
+Your second-factor form needs to be it's own form, but has to have a field named `token`, which can fall back via the Bootstrapper..
 
 This can be done on creation of the Member, via `BootstrapMFAProvider::updateTokens($member)`
 

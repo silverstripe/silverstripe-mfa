@@ -10,7 +10,6 @@ use SilverStripe\Security\Security;
 
 class BootstrapMFAProvider implements MFAProvider
 {
-
     protected $member;
 
     public function setMember($member)
@@ -43,7 +42,7 @@ class BootstrapMFAProvider implements MFAProvider
 
     public function updateTokens()
     {
-        if($member = Security::getCurrentUser()) {
+        if ($member = Security::getCurrentUser()) {
             /** @var DataList|BackupCode[] $expiredCodes */
             $expiredCodes = BackupCode::get()->filter(['MemberID' => $member->ID]);
             $expiredCodes->removeAll();

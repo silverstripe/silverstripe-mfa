@@ -18,7 +18,6 @@ use SilverStripe\ORM\DataExtension;
  */
 class MemberExtension extends DataExtension
 {
-
     private static $has_many = [
         'Backupcodes' => BackupCode::class
     ];

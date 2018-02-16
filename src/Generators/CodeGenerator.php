@@ -4,8 +4,8 @@ namespace Firesphere\BootstrapMFA;
 
 use SilverStripe\Core\Config\Configurable;
 
-class CodeGenerator {
-
+class CodeGenerator
+{
     use Configurable;
 
     const CHARS_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -36,7 +36,8 @@ class CodeGenerator {
 
     protected static $global_inst;
 
-    public static function global_inst() {
+    public static function global_inst()
+    {
         if (!static::$global_inst) {
             static::$global_inst = (new static())
                 ->alphanumeric()
@@ -46,65 +47,76 @@ class CodeGenerator {
         return static::$global_inst;
     }
 
-    public static function inst() {
+    public static function inst()
+    {
         return singleton(static::class);
     }
 
-    public function uppercase() {
+    public function uppercase()
+    {
         $this->case = self::CASE_UPPER;
         return $this;
     }
 
-    public function lowercase() {
+    public function lowercase()
+    {
         $this->case = self::CASE_LOWER;
         return $this;
-
     }
 
-    public function mixedcase() {
+    public function mixedcase()
+    {
         $this->case = self::CASE_MIXED;
         return $this;
     }
 
-    public function numbersonly() {
+    public function numbersonly()
+    {
         $this->type = self::TYPE_NUMERIC;
         return $this;
     }
 
-    public function charactersonly() {
+    public function charactersonly()
+    {
         $this->type = self::TYPE_ALPHA;
         return $this;
-
     }
 
-    public function alphanumeric() {
+    public function alphanumeric()
+    {
         $this->type = self::TYPE_ALNUM;
         return $this;
     }
 
-    public function setChars($chars) {
+    public function setChars($chars)
+    {
         $this->validChars = $chars;
         return $this;
     }
 
-    public function setLength($length) {
+    public function setLength($length)
+    {
         $this->length = $length;
         return $this;
     }
 
-    public function getLength() {
+    public function getLength()
+    {
         return $this->length ?: static::global_inst()->getLength();
     }
 
-    public function getType() {
+    public function getType()
+    {
         return $this->type ?: static::global_inst()->getType();
     }
 
-    public function getCase() {
+    public function getCase()
+    {
         return $this->case ?: static::global_inst()->getCase();
     }
 
-    private function validChars() {
+    private function validChars()
+    {
         if ($this->validChars) {
             return $this->validChars;
         }
@@ -123,10 +135,10 @@ class CodeGenerator {
             }
         }
         return implode('', $chars);
-
     }
 
-    public function generate() {
+    public function generate()
+    {
         $chars = $this->validChars();
         $numChars = strlen($chars) - 1;
         $length = $this->getLength();
@@ -137,8 +149,8 @@ class CodeGenerator {
         return implode('', $code);
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return $this->generate();
     }
-
 }
