@@ -34,6 +34,5 @@
   },
   "suggest": {
     "firesphere/yubiauth": "Authentication via Yubikey 2FA"
-  },
-  "target-dir": "bootstrapmfa"
+  }
 }
