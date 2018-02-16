@@ -35,8 +35,8 @@ class BackupCode extends DataObject
 
     private static $indexes = [
         'Code' => [
-            'type'  => 'unique',
-            'value' => '"MemberID","Code"',
+            'type'    => 'unique',
+            'columns' => ["MemberID","Code"],
         ],
     ];
 
@@ -106,6 +106,7 @@ class BackupCode extends DataObject
             $code = static::create();
             $code->MemberID = $member->ID;
             $token = $code->Code;
+            $code->Code = $member->encryptWithUserSettings($code->Code);
             $code->write();
             $code->destroy();
             $message .= sprintf('%s<br />', $token);
