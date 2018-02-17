@@ -59,6 +59,7 @@ class BackupCode extends DataObject
                 Security::config()->get('lost_password_url')
             )
         ));
+        $mail->send();
     }
 
     /**
