@@ -1,7 +1,9 @@
 <?php
 
-namespace Firesphere\BootstrapMFA;
+namespace Firesphere\BootstrapMFA\Providers;
 
+use Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator;
+use Firesphere\BootstrapMFA\Models\BackupCode;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\ValidationResult;
@@ -12,14 +14,20 @@ class BootstrapMFAProvider implements MFAProvider
 {
     protected $member;
 
+    /**
+     * @param Member $member
+     */
     public function setMember($member)
     {
         $this->member = $member;
     }
 
+    /**
+     * @return Member|null
+     */
     public function getMember()
     {
-        return $this->member ?: Member::create();
+        return $this->member;
     }
 
     /**
@@ -39,15 +47,18 @@ class BootstrapMFAProvider implements MFAProvider
         return $authenticator->validateBackupCode($member, $token, $result);
     }
 
-
+    /**
+     * @throws \SilverStripe\ORM\ValidationException
+     */
     public function updateTokens()
     {
-        if ($member = Security::getCurrentUser()) {
+        if ($member = $this->getMember()) {
             /** @var DataList|BackupCode[] $expiredCodes */
             $expiredCodes = BackupCode::get()->filter(['MemberID' => $member->ID]);
             $expiredCodes->removeAll();
 
             BackupCode::generateTokensForMember($member);
         }
+        // Fail silently
     }
 }

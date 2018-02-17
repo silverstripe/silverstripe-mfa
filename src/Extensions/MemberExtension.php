@@ -1,7 +1,9 @@
 <?php
 
-namespace Firesphere\BootstrapMFA;
+namespace Firesphere\BootstrapMFA\Extensions;
 
+use Firesphere\BootstrapMFA\Models\BackupCode;
+use Firesphere\BootstrapMFA\Providers\BootstrapMFAProvider;
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\CheckboxField;
@@ -12,9 +14,10 @@ use SilverStripe\ORM\DataExtension;
 
 /**
  * Class MemberExtension
- * @package Firesphere\BootstrapMFA
  *
- * @property string $Backupcodes
+ * @package Firesphere\BootstrapMFA
+ * @property \SilverStripe\Security\Member|\Firesphere\BootstrapMFA\MemberExtension $owner
+ * @method \SilverStripe\ORM\DataList|\Firesphere\BootstrapMFA\BackupCode[] Backupcodes()
  */
 class MemberExtension extends DataExtension
 {

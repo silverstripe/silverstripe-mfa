@@ -1,7 +1,8 @@
 <?php
 
-namespace Firesphere\BootstrapMFA;
+namespace Firesphere\BootstrapMFA\Handlers;
 
+use Firesphere\BootstrapMFA\Providers\BootstrapMFAProvider;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Security\LoginForm;

@@ -1,0 +1,5 @@
+SilverStripe\Security\Member:
+  member1:
+    Email: test@test.com
+    FirstName: Lancelot
+    Surname: du Lac

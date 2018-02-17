@@ -3,10 +3,10 @@ name: MFAAuthenticator
 ---
 SilverStripe\Security\Member:
   extensions:
-    - Firesphere\BootstrapMFA\MemberExtension
-Firesphere\BootstrapMFA\BackupCode:
+    - Firesphere\BootstrapMFA\Extensions\MemberExtension
+Firesphere\BootstrapMFA\Models\BackupCode:
   token_limit: 15
-Firesphere\BootstrapMFA\CodeGenerator:
+Firesphere\BootstrapMFA\Generators\CodeGenerator:
   length: 6
   type: numeric
   case: mixed

@@ -1,6 +1,6 @@
 <?php
 
-namespace Firesphere\BootstrapMFA;
+namespace Firesphere\BootstrapMFA\Generators;
 
 use SilverStripe\Core\Config\Configurable;
 

@@ -1,12 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: simon
- * Date: 14-Jul-17
- * Time: 22:34
- */
 
-namespace Firesphere\BootstrapMFA;
+namespace Firesphere\BootstrapMFA\Forms;
 
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Security\MemberAuthenticator\MemberLoginForm;

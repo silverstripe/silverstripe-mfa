@@ -1,22 +1,24 @@
 <?php
 
-namespace Firesphere\BootstrapMFA;
+namespace Firesphere\BootstrapMFA\Models;
 
+use Firesphere\BootstrapMFA\Generators\CodeGenerator;
 use SilverStripe\Control\Controller;
+use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
+use SilverStripe\Security\Security;
 
 /**
  * Class BackupCode
  *
  * @property string $Code
- * @property string $Salt
- * @property bool $Used
+ * @property boolean $Used
  * @property int $MemberID
- * @method Member Member()
+ * @method \SilverStripe\Security\Member Member()
  */
 class BackupCode extends DataObject
 {
@@ -38,6 +40,42 @@ class BackupCode extends DataObject
         ],
     ];
 
+    /**
+     * @param $member
+     */
+    protected static function sendWarningEmail($member)
+    {
+        /** @var Email $mail */
+        $mail = Email::create();
+        $mail->setTo($member->Email);
+        $mail->setFrom(Config::inst()->get(Email::class, 'admin_email'));
+        $mail->setSubject(_t(static::class . '.REGENERATIONMAIL', 'Your backup tokens need to be regenerated'));
+        $mail->setBody(_t(static::class . '.REGENERATIONREQUIRED',
+            sprintf('<p>Your backup codes for multi factor authentication have been requested to regenerate by someone that is not you. 
+                    Please visit the <a href="%s/%s">website to regenerate your backupcodes</p>',
+                Director::absoluteURL(), Security::config()->get('lost_password_url'))));
+    }
+
+    /**
+     * @param $member
+     * @return string
+     * @throws \SilverStripe\ORM\ValidationException
+     */
+    private static function createCode($member)
+    {
+        $code = static::create();
+        $code->MemberID = $member->ID;
+        $token = $code->Code;
+        $code->write();
+        $code->destroy();
+
+        return $token;
+    }
+
+    /**
+     * @return mixed
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
     protected function generateToken()
     {
         $config = Config::inst()->get(CodeGenerator::class);
@@ -73,6 +111,10 @@ class BackupCode extends DataObject
         return $generator->generate();
     }
 
+    /**
+     * @return DataObject
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
     public function populateDefaults()
     {
         $this->Code = $this->generateToken();
@@ -94,24 +136,32 @@ class BackupCode extends DataObject
         );
     }
 
+    /**
+     * @param Member $member
+     * @throws \SilverStripe\ORM\ValidationException
+     */
     public static function generateTokensForMember($member)
     {
-        $message = '<p>Here are your tokens, please store them securily. ' .
-            'They are stored encrypted and can not be recovered, only reset.</p><p>';
-        $session = Controller::curr()->getRequest()->getSession();
-        $limit = static::config()->get('token_limit');
-        for ($i = 0; $i < $limit; ++$i) {
-            $code = static::create();
-            $code->MemberID = $member->ID;
-            $token = $code->Code;
-            $code->write();
-            $code->destroy();
-            $message .= sprintf('%s<br />', $token);
+        if (Security::getCurrentUser() && (int)Security::getCurrentUser()->ID !== $member->ID) {
+            self::sendWarningEmail($member);
+        } else {
+            $message = _t(static::class . 'SESSIONMESSAGE_START',
+                '<p>Here are your tokens, please store them securily. ' .
+                'They are stored encrypted and can not be recovered, only reset.</p><p>');
+            $session = Controller::curr()->getRequest()->getSession();
+            $limit = static::config()->get('token_limit');
+            for ($i = 0; $i < $limit; ++$i) {
+                $token = self::createCode($member);
+                $message .= sprintf('%s<br />', $token);
+            }
+            $message .= '</p>';
+            $session->set('tokens', $message);
         }
-        $message .= '</p>';
-        $session->set('tokens', $message);
     }
 
+    /**
+     * @throws \SilverStripe\Security\PasswordEncryptor_NotFoundException
+     */
     public function onBeforeWrite()
     {
         parent::onBeforeWrite();
@@ -122,6 +172,10 @@ class BackupCode extends DataObject
         }
     }
 
+    /**
+     * @return $this
+     * @throws \SilverStripe\ORM\ValidationException
+     */
     public function expire()
     {
         $this->Used = true;
@@ -130,6 +184,10 @@ class BackupCode extends DataObject
         return $this;
     }
 
+    /**
+     * @param null $member
+     * @return bool
+     */
     public function canEdit($member = null)
     {
         return false;

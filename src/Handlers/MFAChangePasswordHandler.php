@@ -1,14 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: simon
- * Date: 14-Jul-17
- * Time: 21:24
- */
 
-namespace mfacodes\src\Handlers;
+namespace Firesphere\BootstrapMFA\Handlers;
 
-use Firesphere\BootstrapMFA\BootstrapMFAProvider;
+use Firesphere\BootstrapMFA\Providers\BootstrapMFAProvider;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Security\MemberAuthenticator\ChangePasswordHandler;
 

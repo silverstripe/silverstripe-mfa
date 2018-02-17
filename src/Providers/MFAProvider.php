@@ -1,6 +1,6 @@
 <?php
 
-namespace Firesphere\BootstrapMFA;
+namespace Firesphere\BootstrapMFA\Providers;
 
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\Member;

@@ -25,7 +25,8 @@ This can be done on creation of the Member, via `BootstrapMFAProvider::updateTok
 
 # Configuration
 
-```
+```yaml
+
 ---
 name: MFAAuthenticator
 ---
