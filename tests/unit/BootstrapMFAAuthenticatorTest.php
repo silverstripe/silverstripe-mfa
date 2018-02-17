@@ -57,9 +57,10 @@ class BootstrapMFAAuthenticatorTest extends SapphireTest
             $code = str_replace('</p>', '', $code);
             // The last item in the array is the </p>, which we don't want to test
             if ($code !== '') {
-                $this->authenticator->validateBackupCode($member, $code, $result);
+                $result = $this->authenticator->validateBackupCode($member, $code, $result);
                 // All codes should be valid
                 $this->assertTrue($result->isValid());
+                $this->assertInstanceOf(Member::class, $result);
 
                 $encryptedCode = $member->encryptWithUserSettings($code);
 
