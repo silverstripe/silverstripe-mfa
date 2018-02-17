@@ -35,7 +35,6 @@ jobs:
             php -r "unlink('composer-setup.php');"
 
       - run: composer create-project firesphere/bootstrapmfa:dev-master ~/var/www -n
-      - run: cp ~/var/www/_config/config.yml.example ~/var/www/_config/config.yml
       - run: vendor/bin/sake dev/build
 
       # run tests!
