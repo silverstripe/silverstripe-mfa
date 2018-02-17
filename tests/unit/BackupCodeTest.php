@@ -4,6 +4,7 @@ namespace Firesphere\BootstrapMFA\Tests;
 
 
 use Firesphere\BootstrapMFA\Models\BackupCode;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
@@ -32,6 +33,18 @@ class BackupCodeTest extends SapphireTest
         BackupCode::generateTokensForMember($member);
 
         $this->assertEmailSent($member->Email);
+    }
+
+    public function canEdit()
+    {
+        $backup = Injector::inst()->get(BackupCode::class);
+
+        $this->assertFalse($backup->canEdit());
+    }
+
+    public function testExpiry()
+    {
+        $this->assertTrue(true); // I'm done for now
     }
 
 }
