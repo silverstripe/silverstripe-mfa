@@ -4,6 +4,13 @@ namespace Firesphere\BootstrapMFA\Generators;
 
 use SilverStripe\Core\Config\Configurable;
 
+/**
+ * Class CodeGenerator This class is untested.
+ * The reason for now, is that it's not written by me
+ * and I don't feel it's that bad
+ *
+ * @package Firesphere\BootstrapMFA\Generators
+ */
 class CodeGenerator
 {
     use Configurable;
@@ -44,6 +51,7 @@ class CodeGenerator
                 ->mixedcase()
                 ->setLength(6);
         }
+
         return static::$global_inst;
     }
 
@@ -55,48 +63,56 @@ class CodeGenerator
     public function uppercase()
     {
         $this->case = self::CASE_UPPER;
+
         return $this;
     }
 
     public function lowercase()
     {
         $this->case = self::CASE_LOWER;
+
         return $this;
     }
 
     public function mixedcase()
     {
         $this->case = self::CASE_MIXED;
+
         return $this;
     }
 
     public function numbersonly()
     {
         $this->type = self::TYPE_NUMERIC;
+
         return $this;
     }
 
     public function charactersonly()
     {
         $this->type = self::TYPE_ALPHA;
+
         return $this;
     }
 
     public function alphanumeric()
     {
         $this->type = self::TYPE_ALNUM;
+
         return $this;
     }
 
     public function setChars($chars)
     {
         $this->validChars = $chars;
+
         return $this;
     }
 
     public function setLength($length)
     {
         $this->length = $length;
+
         return $this;
     }
 
@@ -134,6 +150,7 @@ class CodeGenerator
                 $chars[] = self::CHARS_UPPER;
             }
         }
+
         return implode('', $chars);
     }
 
@@ -146,6 +163,7 @@ class CodeGenerator
         for ($i = 0; $i < $length; ++$i) {
             $code[] = $chars[mt_rand(0, $numChars)];
         }
+
         return implode('', $code);
     }
 
