@@ -50,10 +50,15 @@ class BackupCode extends DataObject
         $mail->setTo($member->Email);
         $mail->setFrom(Config::inst()->get(Email::class, 'admin_email'));
         $mail->setSubject(_t(static::class . '.REGENERATIONMAIL', 'Your backup tokens need to be regenerated'));
-        $mail->setBody(_t(static::class . '.REGENERATIONREQUIRED',
-            sprintf('<p>Your backup codes for multi factor authentication have been requested to regenerate by someone that is not you. 
+        $mail->setBody(_t(
+            static::class . '.REGENERATIONREQUIRED',
+            sprintf(
+                '<p>Your backup codes for multi factor authentication have been requested to regenerate by someone that is not you. 
                     Please visit the <a href="%s/%s">website to regenerate your backupcodes</p>',
-                Director::absoluteURL(), Security::config()->get('lost_password_url'))));
+                Director::absoluteURL(),
+                Security::config()->get('lost_password_url')
+            )
+        ));
     }
 
     /**
@@ -145,9 +150,11 @@ class BackupCode extends DataObject
         if (Security::getCurrentUser() && (int)Security::getCurrentUser()->ID !== $member->ID) {
             self::sendWarningEmail($member);
         } else {
-            $message = _t(static::class . 'SESSIONMESSAGE_START',
+            $message = _t(
+                static::class . 'SESSIONMESSAGE_START',
                 '<p>Here are your tokens, please store them securily. ' .
-                'They are stored encrypted and can not be recovered, only reset.</p><p>');
+                'They are stored encrypted and can not be recovered, only reset.</p><p>'
+            );
             $session = Controller::curr()->getRequest()->getSession();
             $limit = static::config()->get('token_limit');
             for ($i = 0; $i < $limit; ++$i) {

@@ -17,7 +17,7 @@ class MemberExtensionTest extends SapphireTest
 
         $member->updateMFA = true;
         $member->write();
-        
+
         /** @var DataList|BackupCode $codes */
         $codes = $member->BackupCodes();
 
@@ -31,4 +31,24 @@ class MemberExtensionTest extends SapphireTest
         }
     }
 
+    public function testMemberCodesNotExpired()
+    {
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, 'member1');
+
+        $member->updateMFA = true;
+        $member->write();
+
+        /** @var DataList|BackupCode $codes */
+        $codes = $member->BackupCodes();
+
+        $member->write();
+
+        foreach ($codes as $code) {
+            /** @var BackupCode $backup */
+            $backup = BackupCode::get()->byID($code->ID);
+            $this->assertNotNull($backup);
+        }
+
+    }
 }
