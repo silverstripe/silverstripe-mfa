@@ -5,13 +5,13 @@ namespace Firesphere\BootstrapMFA\Models;
 use Firesphere\BootstrapMFA\Generators\CodeGenerator;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
+use SilverStripe\Control\Email\Email;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
-
 /**
  * Class BackupCode
  *
@@ -43,7 +43,7 @@ class BackupCode extends DataObject
     /**
      * @param $member
      */
-    protected static function sendWarningEmail($member)
+    public static function sendWarningEmail($member)
     {
         /** @var Email $mail */
         $mail = Email::create();
@@ -55,7 +55,7 @@ class BackupCode extends DataObject
             sprintf(
                 '<p>Your backup codes for multi factor authentication have been requested to regenerate by someone that is not you. 
                     Please visit the <a href="%s/%s">website to regenerate your backupcodes</p>',
-                Director::absoluteURL(),
+                Director::absoluteBaseURL(),
                 Security::config()->get('lost_password_url')
             )
         ));

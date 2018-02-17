@@ -3,3 +3,7 @@ SilverStripe\Security\Member:
     Email: test@test.com
     FirstName: Lancelot
     Surname: du Lac
+    Password: 'password1'
+  member2:
+    Email: admin
+    Password: password
