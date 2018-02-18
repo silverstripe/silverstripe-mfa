@@ -115,6 +115,7 @@ class BootstrapMFAAuthenticatorTest extends SapphireTest
     public function testBackupCodeConfigAlpha()
     {
         Config::modify()->set(CodeGenerator::class, 'type', 'characters');
+        Config::modify()->set(CodeGenerator::class, 'case', 'mixed');
 
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'member1');
