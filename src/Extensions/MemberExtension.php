@@ -46,7 +46,9 @@ class MemberExtension extends DataExtension
     {
         parent::onAfterWrite();
         if ($this->owner->updateMFA) {
-            Injector::inst()->get(BootstrapMFAProvider::class)->updateTokens();
+            $provider = Injector::inst()->get(BootstrapMFAProvider::class);
+            $provider->setMember($this->owner);
+            $provider->updateTokens();
         }
     }
 }

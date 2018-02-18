@@ -4,6 +4,7 @@ namespace Firesphere\BootstrapMFA\Tests;
 
 use Firesphere\BootstrapMFA\Extensions\MemberExtension;
 use Firesphere\BootstrapMFA\Models\BackupCode;
+use Firesphere\BootstrapMFA\Tests\Helpers\CodeHelper;
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\Debug;
@@ -12,6 +13,7 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\Tab;
 use SilverStripe\Forms\TabSet;
 use SilverStripe\Security\Member;
+use SilverStripe\Security\Security;
 
 class MemberExtensionTest extends SapphireTest
 {
@@ -81,5 +83,23 @@ class MemberExtensionTest extends SapphireTest
         $extension->updateCMSFields($fields);
 
         $this->assertFalse($fields->hasField('BackupTokens'));
+    }
+
+    public function testOnAfterWrite()
+    {
+        /** @var MemberExtension $extension */
+        $extension = Injector::inst()->get(MemberExtension::class);
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, 'member1');
+        $member->updateMFA = true;
+
+        Security::setCurrentUser($member);
+        $extension->setOwner($member);
+
+        $extension->onAfterWrite();
+
+        $session = Controller::curr()->getRequest()->getSession();
+
+        $this->assertEquals(15, count(CodeHelper::getCodesFromSession()));
     }
 }
