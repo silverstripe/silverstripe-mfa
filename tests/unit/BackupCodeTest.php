@@ -194,4 +194,25 @@ class BackupCodeTest extends SapphireTest
             $this->assertTrue(ctype_lower($code));
         }
     }
+
+    public function testBackupCodeConfigDefault()
+    {
+        Config::modify()->set(BackupCode::class, 'token_limit', 3);
+        Config::modify()->set(CodeGenerator::class, 'type', 'bla');
+        Config::modify()->set(CodeGenerator::class, 'case', 'bla');
+
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, 'member1');
+        Injector::inst()->get(IdentityStore::class)->logIn($member);
+        BackupCode::generateTokensForMember($member);
+
+        $codes = CodeHelper::getCodesFromSession();
+
+        // Actual testing
+        foreach ($codes as $code) {
+            $this->assertTrue(is_numeric($code));
+            $this->assertEquals('mixed', CodeGenerator::inst()->getCase());
+            $this->assertEquals('numeric', CodeGenerator::inst()->getType());
+        }
+    }
 }
