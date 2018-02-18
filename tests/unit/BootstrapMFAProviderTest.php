@@ -11,7 +11,6 @@ use SilverStripe\Security\Security;
 
 class BootstrapMFAProviderTest extends SapphireTest
 {
-
     protected static $fixture_file = '../fixtures/member.yml';
 
     public function testUpdateTokens()

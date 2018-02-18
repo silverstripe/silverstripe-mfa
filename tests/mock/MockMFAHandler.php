@@ -10,7 +10,6 @@ use SilverStripe\Dev\TestOnly;
 
 class MockMFAHandler extends MFALoginHandler implements TestOnly
 {
-
     public function MFAForm()
     {
         return MFALoginForm::create(Controller::curr(), BootstrapMFAAuthenticator::class, __FUNCTION__);

@@ -6,6 +6,7 @@ use Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator;
 use Firesphere\BootstrapMFA\Handlers\MFAChangePasswordHandler;
 use Firesphere\BootstrapMFA\Tests\Helpers\CodeHelper;
 use SilverStripe\Control\Controller;
+use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\Session;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\Debug;
@@ -50,7 +51,6 @@ class MFAChangePasswordHandlerTest extends SapphireTest
 
         $this->handler = Injector::inst()->createWithArgs(MFAChangePasswordHandler::class, ['changepassword', $this->authenticator]);
         $this->handler->setRequest($request);
-
     }
 
     public function testDoChangePassword()
@@ -66,6 +66,7 @@ class MFAChangePasswordHandlerTest extends SapphireTest
 
         $response = $this->handler->doChangePassword($data, $this->form);
 
+        $this->assertInstanceOf(HTTPResponse::class, $response);
         $codes = CodeHelper::getCodesFromSession();
         $this->assertEquals(15, count($codes));
     }

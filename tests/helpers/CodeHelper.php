@@ -23,6 +23,4 @@ class CodeHelper
 
         return $codes;
     }
-
-
 }

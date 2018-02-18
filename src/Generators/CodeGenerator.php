@@ -5,9 +5,7 @@ namespace Firesphere\BootstrapMFA\Generators;
 use SilverStripe\Core\Config\Configurable;
 
 /**
- * Class CodeGenerator This class is untested.
- * The reason for now, is that it's not written by me
- * and I don't feel it's that bad
+ * Class CodeGenerator
  *
  * @package Firesphere\BootstrapMFA\Generators
  */

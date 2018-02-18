@@ -47,8 +47,10 @@ class MFALoginHandlerTest extends SapphireTest
         $session->set('MFALogin.MemberID', $this->member->ID);
 
         $this->authenticator = Injector::inst()->create(BootstrapMFAAuthenticator::class);
-        $this->form = Injector::inst()->createWithArgs(MFALoginForm::class,
-            [Controller::curr(), $this->authenticator, 'test']);
+        $this->form = Injector::inst()->createWithArgs(
+            MFALoginForm::class,
+            [Controller::curr(), $this->authenticator, 'test']
+        );
         $this->handler = Injector::inst()->createWithArgs(MockMFAHandler::class, ['login', $this->authenticator]);
     }
 

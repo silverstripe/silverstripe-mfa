@@ -1,5 +1,6 @@
 <?php
 namespace Firesphere\BootstrapMFA\Extensions;
+
 use Firesphere\BootstrapMFA\Models\BackupCode;
 use Firesphere\BootstrapMFA\Providers\BootstrapMFAProvider;
 use SilverStripe\Control\Controller;
@@ -9,6 +10,7 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\Tab;
 use SilverStripe\ORM\DataExtension;
+
 /**
  * Class MemberExtension
  *

@@ -13,7 +13,6 @@ use SilverStripe\Dev\Debug;
 
 class MFALoginFormTest extends SapphireTest
 {
-
     public function testGetFormFieldsWithTokens()
     {
         $controller = Controller::curr();

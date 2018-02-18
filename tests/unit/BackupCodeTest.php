@@ -2,7 +2,6 @@
 
 namespace Firesphere\BootstrapMFA\Tests;
 
-
 use Firesphere\BootstrapMFA\Models\BackupCode;
 use Firesphere\BootstrapMFA\Generators\CodeGenerator;
 use Firesphere\BootstrapMFA\Tests\Helpers\CodeHelper;
@@ -18,7 +17,6 @@ use SilverStripe\Security\Security;
 
 class BackupCodeTest extends SapphireTest
 {
-
     protected static $fixture_file = '../fixtures/member.yml';
 
     protected function setUp()
@@ -54,7 +52,6 @@ class BackupCodeTest extends SapphireTest
 
     public function testCodesGenerated()
     {
-
         $member = $this->objFromFixture(Member::class, 'member1');
         Security::setCurrentUser($member);
 
@@ -69,7 +66,6 @@ class BackupCodeTest extends SapphireTest
         $codesFromValid = BackupCode::getValidTokensForMember($member);
 
         $this->assertEquals($codes->count(), $codesFromValid->count());
-
     }
 
     public function testCanEdit()
@@ -198,5 +194,4 @@ class BackupCodeTest extends SapphireTest
             $this->assertTrue(ctype_lower($code));
         }
     }
-
 }

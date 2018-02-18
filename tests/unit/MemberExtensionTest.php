@@ -49,6 +49,5 @@ class MemberExtensionTest extends SapphireTest
             $backup = BackupCode::get()->byID($code->ID);
             $this->assertNotNull($backup);
         }
-
     }
 }
