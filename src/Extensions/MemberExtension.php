@@ -1,7 +1,5 @@
 <?php
-
 namespace Firesphere\BootstrapMFA\Extensions;
-
 use Firesphere\BootstrapMFA\Models\BackupCode;
 use Firesphere\BootstrapMFA\Providers\BootstrapMFAProvider;
 use SilverStripe\Control\Controller;
@@ -11,20 +9,18 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\Tab;
 use SilverStripe\ORM\DataExtension;
-
 /**
  * Class MemberExtension
  *
  * @package Firesphere\BootstrapMFA
- * @property \SilverStripe\Security\Member|\Firesphere\BootstrapMFA\MemberExtension $owner
- * @method \SilverStripe\ORM\DataList|\Firesphere\BootstrapMFA\BackupCode[] Backupcodes()
+ * @property \SilverStripe\Security\Member|\Firesphere\BootstrapMFA\Extensions\MemberExtension $owner
+ * @method \SilverStripe\ORM\DataList|\Firesphere\BootstrapMFA\Models\BackupCode[] Backupcodes()
  */
 class MemberExtension extends DataExtension
 {
     private static $has_many = [
         'Backupcodes' => BackupCode::class
     ];
-
     public function updateCMSFields(FieldList $fields)
     {
         $fields->addFieldToTab('Root.Main', CheckboxField::create('updateMFA', 'Reset MFA codes'));
@@ -44,7 +40,6 @@ class MemberExtension extends DataExtension
             $session->clear('tokens');
         }
     }
-
     public function onAfterWrite()
     {
         parent::onAfterWrite();

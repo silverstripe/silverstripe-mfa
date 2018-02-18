@@ -8,5 +8,5 @@ Firesphere\BootstrapMFA\Models\BackupCode:
   token_limit: 15
 Firesphere\BootstrapMFA\Generators\CodeGenerator:
   length: 6
-  type: numeric
+  type: mixed
   case: mixed

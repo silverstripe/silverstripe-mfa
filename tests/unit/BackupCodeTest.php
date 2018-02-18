@@ -35,6 +35,26 @@ class BackupCodeTest extends SapphireTest
         $this->assertEmailSent($member->Email);
     }
 
+    public function testCodesGenerated()
+    {
+
+        $member = $this->objFromFixture(Member::class, 'member1');
+        Security::setCurrentUser($member);
+
+        BackupCode::get()->removeAll();
+
+        BackupCode::generateTokensForMember($member);
+
+        $codes = BackupCode::get()->filter(['MemberID' => $member->ID]);
+
+        $this->assertGreaterThan(0, $codes->count());
+
+        $codesFromValid = BackupCode::getValidTokensForMember($member);
+
+        $this->assertEquals($codes->count(), $codesFromValid->count());
+
+    }
+
     public function canEdit()
     {
         $backup = Injector::inst()->get(BackupCode::class);
@@ -44,7 +64,20 @@ class BackupCodeTest extends SapphireTest
 
     public function testExpiry()
     {
-        $this->assertTrue(true); // I'm done for now
+        $member = $this->objFromFixture(Member::class, 'member1');
+        Security::setCurrentUser($member);
+
+        BackupCode::generateTokensForMember($member);
+        /** @var BackupCode $code */
+        $code = BackupCode::get()->filter(['MemberID' => $member->ID])->first();
+
+        $code = $code->expire();
+
+        $this->assertTrue((bool)$code->Used);
+
+        $code = BackupCode::get()->byID($code->ID);
+
+        $this->assertTrue((bool)$code->Used);
     }
 
 }
