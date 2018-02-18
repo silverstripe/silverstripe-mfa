@@ -55,7 +55,7 @@ class BackupCodeTest extends SapphireTest
 
     }
 
-    public function canEdit()
+    public function testCanEdit()
     {
         $backup = Injector::inst()->get(BackupCode::class);
 

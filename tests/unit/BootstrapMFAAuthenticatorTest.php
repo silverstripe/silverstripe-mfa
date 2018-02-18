@@ -83,7 +83,7 @@ class BootstrapMFAAuthenticatorTest extends SapphireTest
         }
     }
 
-    public function testBackupCodeConfig()
+    public function testBackupCodeConfigNumeric()
     {
         Config::modify()->set(CodeGenerator::class, 'length', 10);
         Config::modify()->set(CodeGenerator::class, 'type', 'numeric');
@@ -110,7 +110,96 @@ class BootstrapMFAAuthenticatorTest extends SapphireTest
             $code = BackupCode::get()->filter(['Code' => $encryptedCode])->first();
             $this->assertTrue((bool)$code->Used);
         }
+    }
 
+    public function testBackupCodeConfigAlpha()
+    {
+        Config::modify()->set(CodeGenerator::class, 'type', 'characters');
+
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, 'member1');
+        Injector::inst()->get(IdentityStore::class)->logIn($member);
+        BackupCode::generateTokensForMember($member);
+
+        $codes = $this->getCodesFromSession();
+
+        // Actual testing
+        foreach ($codes as $code) {
+            $this->assertTrue(ctype_alpha($code));
+            $this->assertFalse(is_numeric($code));
+            $this->assertFalse(ctype_upper($code));
+            $this->assertFalse(ctype_lower($code));
+            $member = $this->authenticator->validateBackupCode($member, $code, $result);
+            // All codes should be valid
+            $this->assertTrue($result->isValid());
+            $this->assertInstanceOf(Member::class, $member);
+
+            $encryptedCode = $member->encryptWithUserSettings($code);
+
+            /** @var BackupCode $code */
+            $code = BackupCode::get()->filter(['Code' => $encryptedCode])->first();
+            $this->assertTrue((bool)$code->Used);
+        }
+    }
+
+    public function testBackupCodeConfigAlphaUpper()
+    {
+        Config::modify()->set(CodeGenerator::class, 'type', 'characters');
+        Config::modify()->set(CodeGenerator::class, 'case', 'upper');
+
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, 'member1');
+        Injector::inst()->get(IdentityStore::class)->logIn($member);
+        BackupCode::generateTokensForMember($member);
+
+        $codes = $this->getCodesFromSession();
+
+        // Actual testing
+        foreach ($codes as $code) {
+            $this->assertFalse(is_numeric($code));
+            $this->assertTrue(ctype_alpha($code));
+            $this->assertTrue(ctype_upper($code));
+            $member = $this->authenticator->validateBackupCode($member, $code, $result);
+            // All codes should be valid
+            $this->assertTrue($result->isValid());
+            $this->assertInstanceOf(Member::class, $member);
+
+            $encryptedCode = $member->encryptWithUserSettings($code);
+
+            /** @var BackupCode $code */
+            $code = BackupCode::get()->filter(['Code' => $encryptedCode])->first();
+            $this->assertTrue((bool)$code->Used);
+        }
+    }
+
+    public function testBackupCodeConfigAlphaLower()
+    {
+        Config::modify()->set(CodeGenerator::class, 'type', 'characters');
+        Config::modify()->set(CodeGenerator::class, 'case', 'lower');
+
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, 'member1');
+        Injector::inst()->get(IdentityStore::class)->logIn($member);
+        BackupCode::generateTokensForMember($member);
+
+        $codes = $this->getCodesFromSession();
+
+        // Actual testing
+        foreach ($codes as $code) {
+            $this->assertFalse(is_numeric($code));
+            $this->assertTrue(ctype_alpha($code));
+            $this->assertTrue(ctype_lower($code));
+            $member = $this->authenticator->validateBackupCode($member, $code, $result);
+            // All codes should be valid
+            $this->assertTrue($result->isValid());
+            $this->assertInstanceOf(Member::class, $member);
+
+            $encryptedCode = $member->encryptWithUserSettings($code);
+
+            /** @var BackupCode $code */
+            $code = BackupCode::get()->filter(['Code' => $encryptedCode])->first();
+            $this->assertTrue((bool)$code->Used);
+        }
     }
 
     public function testValidateBackupCodeWrong()
