@@ -4,6 +4,7 @@ namespace Firesphere\BootstrapMFA\Providers;
 
 use Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator;
 use Firesphere\BootstrapMFA\Models\BackupCode;
+use SilverStripe\Control\Controller;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\ValidationResult;
@@ -52,6 +53,9 @@ class BootstrapMFAProvider implements MFAProvider
      */
     public function updateTokens()
     {
+        // Clear any possible tokens in the session, just to be sure
+        Controller::curr()->getRequest()->getSession()->clear('tokens');
+
         if ($member = $this->getMember()) {
             /** @var DataList|BackupCode[] $expiredCodes */
             $expiredCodes = BackupCode::get()->filter(['MemberID' => $member->ID]);

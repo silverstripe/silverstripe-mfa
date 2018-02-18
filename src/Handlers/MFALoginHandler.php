@@ -54,7 +54,7 @@ abstract class MFALoginHandler extends LoginHandler
     {
         $session = $request->getSession();
         $member = $this->checkLogin($data, $request, $message);
-        if ($member && $message->isValid()) {
+        if ($message->isValid()) {
             $session->set('MFALogin.MemberID', $member->ID);
             $session->set('MFALogin.Data', $data);
             if (!empty($data['BackURL'])) {
