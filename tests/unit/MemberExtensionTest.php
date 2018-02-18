@@ -97,9 +97,7 @@ class MemberExtensionTest extends SapphireTest
         $extension->setOwner($member);
 
         $extension->onAfterWrite();
-
-        $session = Controller::curr()->getRequest()->getSession();
-
+        
         $this->assertEquals(15, count(CodeHelper::getCodesFromSession()));
     }
 }
