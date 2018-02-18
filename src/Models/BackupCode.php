@@ -194,7 +194,7 @@ class BackupCode extends DataObject
     }
 
     /**
-     * @param null $member
+     * @param null|Member $member
      * @return bool
      */
     public function canEdit($member = null)

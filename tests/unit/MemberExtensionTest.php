@@ -2,8 +2,15 @@
 
 namespace Firesphere\BootstrapMFA\Tests;
 
+use Firesphere\BootstrapMFA\Extensions\MemberExtension;
 use Firesphere\BootstrapMFA\Models\BackupCode;
+use SilverStripe\Control\Controller;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Dev\Debug;
 use SilverStripe\Dev\SapphireTest;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\Tab;
+use SilverStripe\Forms\TabSet;
 use SilverStripe\Security\Member;
 
 class MemberExtensionTest extends SapphireTest
@@ -49,5 +56,30 @@ class MemberExtensionTest extends SapphireTest
             $backup = BackupCode::get()->byID($code->ID);
             $this->assertNotNull($backup);
         }
+    }
+
+    public function testUpdateCMSFields()
+    {
+        $fields = FieldList::create([TabSet::create('Root')]);
+
+        /** @var MemberExtension $extension */
+        $extension = Injector::inst()->get(MemberExtension::class);
+
+        // Something something in session
+        Controller::curr()->getRequest()->getSession()->set('tokens', '123456');
+        $extension->updateCMSFields($fields);
+
+        $this->assertNull(Controller::curr()->getRequest()->getSession()->get('tokens'));
+    }
+
+    public function testUpdateCMSFieldsNoTokens()
+    {
+        $fields = FieldList::create([TabSet::create('Root')]);
+
+        $extension = Injector::inst()->get(MemberExtension::class);
+
+        $extension->updateCMSFields($fields);
+
+        $this->assertFalse($fields->hasField('BackupTokens'));
     }
 }
