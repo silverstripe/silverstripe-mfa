@@ -53,7 +53,8 @@ abstract class MFALoginHandler extends LoginHandler
     public function doLogin($data, MemberLoginForm $form, HTTPRequest $request)
     {
         $session = $request->getSession();
-        if ($member = $this->checkLogin($data, $request, $message)) {
+        $member = $this->checkLogin($data, $request, $message);
+        if ($member && $message->isValid()) {
             $session->set('MFALogin.MemberID', $member->ID);
             $session->set('MFALogin.Data', $data);
             if (!empty($data['BackURL'])) {
@@ -62,7 +63,7 @@ abstract class MFALoginHandler extends LoginHandler
 
             return $this->redirect($this->link('verify'));
         }
-        $this->redirectBack();
+        return $this->redirectBack();
     }
 
     public function secondFactor()
