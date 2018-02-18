@@ -7,10 +7,8 @@ use Firesphere\BootstrapMFA\Models\BackupCode;
 use Firesphere\BootstrapMFA\Tests\Helpers\CodeHelper;
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Dev\Debug;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\Forms\FieldList;
-use SilverStripe\Forms\Tab;
 use SilverStripe\Forms\TabSet;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
@@ -97,7 +95,7 @@ class MemberExtensionTest extends SapphireTest
         $extension->setOwner($member);
 
         $extension->onAfterWrite();
-        
+
         $this->assertEquals(15, count(CodeHelper::getCodesFromSession()));
     }
 }

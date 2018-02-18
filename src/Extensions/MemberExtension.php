@@ -1,4 +1,5 @@
 <?php
+
 namespace Firesphere\BootstrapMFA\Extensions;
 
 use Firesphere\BootstrapMFA\Models\BackupCode;
@@ -23,6 +24,9 @@ class MemberExtension extends DataExtension
     private static $has_many = [
         'Backupcodes' => BackupCode::class
     ];
+
+    protected $updateMFA = false;
+
     public function updateCMSFields(FieldList $fields)
     {
         $fields->addFieldToTab('Root.Main', CheckboxField::create('updateMFA', 'Reset MFA codes'));
@@ -42,6 +46,7 @@ class MemberExtension extends DataExtension
             $session->clear('tokens');
         }
     }
+
     public function onAfterWrite()
     {
         parent::onAfterWrite();

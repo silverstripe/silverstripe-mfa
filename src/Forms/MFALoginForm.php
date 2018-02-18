@@ -7,6 +7,9 @@ use SilverStripe\Security\MemberAuthenticator\MemberLoginForm;
 
 class MFALoginForm extends MemberLoginForm
 {
+    /**
+     * @return \SilverStripe\Forms\FieldList
+     */
     public function getFormFields()
     {
         $fields = parent::getFormFields();

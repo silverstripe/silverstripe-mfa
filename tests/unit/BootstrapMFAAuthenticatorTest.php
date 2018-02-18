@@ -6,8 +6,6 @@ use Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator;
 use Firesphere\BootstrapMFA\Generators\CodeGenerator;
 use Firesphere\BootstrapMFA\Models\BackupCode;
 use Firesphere\BootstrapMFA\Tests\Helpers\CodeHelper;
-use SilverStripe\Control\Controller;
-use SilverStripe\Control\Session;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
@@ -17,20 +15,12 @@ use SilverStripe\Security\Member;
 
 class BootstrapMFAAuthenticatorTest extends SapphireTest
 {
+    protected static $fixture_file = '../fixtures/member.yml';
+
     /**
      * @var BootstrapMFAAuthenticator
      */
     protected $authenticator;
-
-    protected static $fixture_file = '../fixtures/member.yml';
-
-    protected function setUp()
-    {
-        $this->authenticator = Injector::inst()->get(BootstrapMFAAuthenticator::class);
-        Config::modify()->set(BackupCode::class, 'token_limit', 3);
-
-        return parent::setUp();
-    }
 
     /**
      * Test if user codes are properly validated and expired
@@ -74,5 +64,13 @@ class BootstrapMFAAuthenticatorTest extends SapphireTest
 
         $this->assertInstanceOf(ValidationResult::class, $result);
         $this->assertFalse($result->isValid());
+    }
+
+    protected function setUp()
+    {
+        $this->authenticator = Injector::inst()->get(BootstrapMFAAuthenticator::class);
+        Config::modify()->set(BackupCode::class, 'token_limit', 3);
+
+        return parent::setUp();
     }
 }

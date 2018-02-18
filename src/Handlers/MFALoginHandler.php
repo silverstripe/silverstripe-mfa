@@ -41,6 +41,7 @@ abstract class MFALoginHandler extends LoginHandler
         if ($result->isValid()) {
             return $member;
         }
+
         return false;
     }
 
@@ -63,6 +64,7 @@ abstract class MFALoginHandler extends LoginHandler
 
             return $this->redirect($this->link('verify'));
         }
+
         return $this->redirectBack();
     }
 

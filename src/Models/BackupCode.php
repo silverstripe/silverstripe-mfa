@@ -42,6 +42,45 @@ class BackupCode extends DataObject
     ];
 
     /**
+     * @param Member $member
+     * @return DataList|static[]
+     */
+    public static function getValidTokensForMember($member)
+    {
+        return static::get()->filter(
+            [
+                'Used'     => false,
+                'MemberID' => $member->ID
+            ]
+        );
+    }
+
+    /**
+     * @param Member $member
+     * @throws \SilverStripe\ORM\ValidationException
+     */
+    public static function generateTokensForMember($member)
+    {
+        if (Security::getCurrentUser() && (int)Security::getCurrentUser()->ID !== $member->ID) {
+            self::sendWarningEmail($member);
+        } else {
+            $message = _t(
+                static::class . 'SESSIONMESSAGE_START',
+                '<p>Here are your tokens, please store them securily. ' .
+                'They are stored encrypted and can not be recovered, only reset.</p><p>'
+            );
+            $session = Controller::curr()->getRequest()->getSession();
+            $limit = static::config()->get('token_limit');
+            for ($i = 0; $i < $limit; ++$i) {
+                $token = self::createCode($member);
+                $message .= sprintf('%s<br />', $token);
+            }
+            $message .= '</p>';
+            $session->set('tokens', $message);
+        }
+    }
+
+    /**
      * @param $member
      */
     public static function sendWarningEmail($member)
@@ -77,6 +116,17 @@ class BackupCode extends DataObject
         $code->destroy();
 
         return $token;
+    }
+
+    /**
+     * @return DataObject
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function populateDefaults()
+    {
+        $this->Code = $this->generateToken();
+
+        return parent::populateDefaults();
     }
 
     /**
@@ -116,56 +166,6 @@ class BackupCode extends DataObject
         }
 
         return $generator->generate();
-    }
-
-    /**
-     * @return DataObject
-     * @throws \Psr\Container\NotFoundExceptionInterface
-     */
-    public function populateDefaults()
-    {
-        $this->Code = $this->generateToken();
-
-        return parent::populateDefaults();
-    }
-
-    /**
-     * @param Member $member
-     * @return DataList|static[]
-     */
-    public static function getValidTokensForMember($member)
-    {
-        return static::get()->filter(
-            [
-                'Used'     => false,
-                'MemberID' => $member->ID
-            ]
-        );
-    }
-
-    /**
-     * @param Member $member
-     * @throws \SilverStripe\ORM\ValidationException
-     */
-    public static function generateTokensForMember($member)
-    {
-        if (Security::getCurrentUser() && (int)Security::getCurrentUser()->ID !== $member->ID) {
-            self::sendWarningEmail($member);
-        } else {
-            $message = _t(
-                static::class . 'SESSIONMESSAGE_START',
-                '<p>Here are your tokens, please store them securily. ' .
-                'They are stored encrypted and can not be recovered, only reset.</p><p>'
-            );
-            $session = Controller::curr()->getRequest()->getSession();
-            $limit = static::config()->get('token_limit');
-            for ($i = 0; $i < $limit; ++$i) {
-                $token = self::createCode($member);
-                $message .= sprintf('%s<br />', $token);
-            }
-            $message .= '</p>';
-            $session->set('tokens', $message);
-        }
     }
 
     /**

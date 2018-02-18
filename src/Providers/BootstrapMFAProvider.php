@@ -9,27 +9,10 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\Member;
-use SilverStripe\Security\Security;
 
 class BootstrapMFAProvider implements MFAProvider
 {
     protected $member;
-
-    /**
-     * @param Member $member
-     */
-    public function setMember($member)
-    {
-        $this->member = $member;
-    }
-
-    /**
-     * @return Member|null
-     */
-    public function getMember()
-    {
-        return $this->member;
-    }
 
     /**
      * @param string $token
@@ -46,6 +29,22 @@ class BootstrapMFAProvider implements MFAProvider
         $authenticator = Injector::inst()->get(BootstrapMFAAuthenticator::class);
 
         return $authenticator->validateBackupCode($member, $token, $result);
+    }
+
+    /**
+     * @return Member|null
+     */
+    public function getMember()
+    {
+        return $this->member;
+    }
+
+    /**
+     * @param Member $member
+     */
+    public function setMember($member)
+    {
+        $this->member = $member;
     }
 
     /**

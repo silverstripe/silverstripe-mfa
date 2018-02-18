@@ -15,6 +15,7 @@ class MFAChangePasswordHandler extends ChangePasswordHandler
         $provider = Injector::inst()->get(BootstrapMFAProvider::class);
         $provider->setMember(Security::getCurrentUser());
         $provider->updateTokens();
+
         return $return;
     }
 }

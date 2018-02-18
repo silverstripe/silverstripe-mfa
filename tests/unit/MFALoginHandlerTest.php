@@ -8,6 +8,7 @@ use Firesphere\BootstrapMFA\Models\BackupCode;
 use Firesphere\BootstrapMFA\Tests\Helpers\CodeHelper;
 use Firesphere\BootstrapMFA\Tests\Mock\MockMFAHandler;
 use SilverStripe\Control\Controller;
+use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
@@ -16,8 +17,16 @@ use SilverStripe\Security\Security;
 
 class MFALoginHandlerTest extends SapphireTest
 {
+    protected static $fixture_file = '../fixtures/member.yml';
+
+    /**
+     * @var HTTPRequest
+     */
     protected $request;
 
+    /**
+     * @var Member
+     */
     protected $member;
 
     /**
@@ -34,25 +43,6 @@ class MFALoginHandlerTest extends SapphireTest
      * @var MockMFAHandler
      */
     protected $handler;
-
-    protected static $fixture_file = '../fixtures/member.yml';
-
-    protected function setUp()
-    {
-        parent::setUp();
-        $this->request = Controller::curr()->getRequest();
-        $this->member = $this->objFromFixture(Member::class, 'member1');
-
-        $session = $this->request->getSession();
-        $session->set('MFALogin.MemberID', $this->member->ID);
-
-        $this->authenticator = Injector::inst()->create(BootstrapMFAAuthenticator::class);
-        $this->form = Injector::inst()->createWithArgs(
-            MFALoginForm::class,
-            [Controller::curr(), $this->authenticator, 'test']
-        );
-        $this->handler = Injector::inst()->createWithArgs(MockMFAHandler::class, ['login', $this->authenticator]);
-    }
 
     public function testSuccessValidate()
     {
@@ -145,5 +135,22 @@ class MFALoginHandlerTest extends SapphireTest
         $result = $this->handler->secondFactor();
 
         $this->assertArrayHasKey('Form', $result);
+    }
+
+    protected function setUp()
+    {
+        parent::setUp();
+        $this->request = Controller::curr()->getRequest();
+        $this->member = $this->objFromFixture(Member::class, 'member1');
+
+        $session = $this->request->getSession();
+        $session->set('MFALogin.MemberID', $this->member->ID);
+
+        $this->authenticator = Injector::inst()->create(BootstrapMFAAuthenticator::class);
+        $this->form = Injector::inst()->createWithArgs(
+            MFALoginForm::class,
+            [Controller::curr(), $this->authenticator, 'test']
+        );
+        $this->handler = Injector::inst()->createWithArgs(MockMFAHandler::class, ['login', $this->authenticator]);
     }
 }

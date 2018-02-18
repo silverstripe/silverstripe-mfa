@@ -31,6 +31,8 @@ class CodeGenerator
 
     const TYPE_ALNUM = 'alnum';
 
+    protected static $global_inst;
+
     private $case;
 
     private $type;
@@ -38,20 +40,6 @@ class CodeGenerator
     private $length;
 
     private $validChars;
-
-    protected static $global_inst;
-
-    public static function global_inst()
-    {
-        if (!static::$global_inst) {
-            static::$global_inst = (new static())
-                ->alphanumeric()
-                ->mixedcase()
-                ->setLength(6);
-        }
-
-        return static::$global_inst;
-    }
 
     public static function inst()
     {
@@ -72,13 +60,6 @@ class CodeGenerator
         return $this;
     }
 
-    public function mixedcase()
-    {
-        $this->case = self::CASE_MIXED;
-
-        return $this;
-    }
-
     public function numbersonly()
     {
         $this->type = self::TYPE_NUMERIC;
@@ -93,13 +74,6 @@ class CodeGenerator
         return $this;
     }
 
-    public function alphanumeric()
-    {
-        $this->type = self::TYPE_ALNUM;
-
-        return $this;
-    }
-
     public function setChars($chars)
     {
         $this->validChars = $chars;
@@ -107,26 +81,22 @@ class CodeGenerator
         return $this;
     }
 
-    public function setLength($length)
+    public function __toString()
     {
-        $this->length = $length;
-
-        return $this;
+        return $this->generate();
     }
 
-    public function getLength()
+    public function generate()
     {
-        return $this->length ?: static::global_inst()->getLength();
-    }
+        $chars = $this->validChars();
+        $numChars = strlen($chars) - 1;
+        $length = $this->getLength();
+        $code = array();
+        for ($i = 0; $i < $length; ++$i) {
+            $code[] = $chars[mt_rand(0, $numChars)];
+        }
 
-    public function getType()
-    {
-        return $this->type ?: static::global_inst()->getType();
-    }
-
-    public function getCase()
-    {
-        return $this->case ?: static::global_inst()->getCase();
+        return implode('', $code);
     }
 
     private function validChars()
@@ -152,21 +122,51 @@ class CodeGenerator
         return implode('', $chars);
     }
 
-    public function generate()
+    public function getType()
     {
-        $chars = $this->validChars();
-        $numChars = strlen($chars) - 1;
-        $length = $this->getLength();
-        $code = array();
-        for ($i = 0; $i < $length; ++$i) {
-            $code[] = $chars[mt_rand(0, $numChars)];
-        }
-
-        return implode('', $code);
+        return $this->type ?: static::global_inst()->getType();
     }
 
-    public function __toString()
+    public static function global_inst()
     {
-        return $this->generate();
+        if (!static::$global_inst) {
+            static::$global_inst = (new static())
+                ->alphanumeric()
+                ->mixedcase()
+                ->setLength(6);
+        }
+
+        return static::$global_inst;
+    }
+
+    public function mixedcase()
+    {
+        $this->case = self::CASE_MIXED;
+
+        return $this;
+    }
+
+    public function alphanumeric()
+    {
+        $this->type = self::TYPE_ALNUM;
+
+        return $this;
+    }
+
+    public function getCase()
+    {
+        return $this->case ?: static::global_inst()->getCase();
+    }
+
+    public function getLength()
+    {
+        return $this->length ?: static::global_inst()->getLength();
+    }
+
+    public function setLength($length)
+    {
+        $this->length = $length;
+
+        return $this;
     }
 }

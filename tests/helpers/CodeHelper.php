@@ -6,6 +6,11 @@ use SilverStripe\Control\Controller;
 
 class CodeHelper
 {
+    /**
+     * Get the codes from the session for testing reasons
+     *
+     * @return array
+     */
     public static function getCodesFromSession()
     {
         // Funky stuff, extract the codes from the session message
