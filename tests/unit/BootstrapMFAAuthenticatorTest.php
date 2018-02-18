@@ -5,6 +5,7 @@ namespace Firesphere\BootstrapMFA\Tests;
 use Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator;
 use Firesphere\BootstrapMFA\Generators\CodeGenerator;
 use Firesphere\BootstrapMFA\Models\BackupCode;
+use Firesphere\BootstrapMFA\Tests\Helpers\CodeHelper;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Session;
 use SilverStripe\Core\Config\Config;
@@ -31,24 +32,6 @@ class BootstrapMFAAuthenticatorTest extends SapphireTest
         return parent::setUp();
     }
 
-    protected function getCodesFromSession()
-    {
-        // Funky stuff, extract the codes from the session message
-        /** @var Session $session */
-        $session = Controller::curr()->getRequest()->getSession();
-
-        $message = $session->get('tokens');
-
-        $message = str_replace('<p>Here are your tokens, please store them securily. ' .
-            'They are stored encrypted and can not be recovered, only reset.</p><p>', '', $message);
-        $codes = explode('<br />', $message);
-
-        // Remove the <p> at the end
-        array_pop($codes);
-
-        return $codes;
-    }
-
     /**
      * Test if user codes are properly validated and expired
      *
@@ -63,7 +46,7 @@ class BootstrapMFAAuthenticatorTest extends SapphireTest
         Injector::inst()->get(IdentityStore::class)->logIn($member);
         BackupCode::generateTokensForMember($member);
 
-        $codes = $this->getCodesFromSession();
+        $codes = CodeHelper::getCodesFromSession();
         $length = Config::inst()->get(CodeGenerator::class, 'length');
 
         // Actual testing
