@@ -16,7 +16,7 @@ use SilverStripe\ORM\DataExtension;
  * Class MemberExtension
  *
  * @package Firesphere\BootstrapMFA
- * @property \SilverStripe\Security\Member|\Firesphere\BootstrapMFA\Extensions\MemberExtension $owner
+ * @property \Firesphere\BootstrapMFA\Extensions\MemberExtension $owner
  * @method \SilverStripe\ORM\DataList|\Firesphere\BootstrapMFA\Models\BackupCode[] Backupcodes()
  */
 class MemberExtension extends DataExtension
