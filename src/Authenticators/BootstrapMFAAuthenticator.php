@@ -27,12 +27,14 @@ class BootstrapMFAAuthenticator extends MemberAuthenticator
         $backupCode = BackupCode::getValidTokensForMember($member)
             ->filter(['Code' => $token])
             ->first();
+
         if ($backupCode && $backupCode->exists()) {
             $backupCode->expire();
 
             return $member;
         }
 
+        $member->registerFailedLogin();
         $result->addError('Invalid token');
 
         return false;
