@@ -14,7 +14,9 @@ class BootstrapMFAAuthenticator extends MemberAuthenticator
      * @param Member $member
      * @param string $token
      * @param ValidationResult|null $result
-     * @return bool|Member
+     * @return void|Member
+     * @throws \SilverStripe\ORM\ValidationException
+     * @throws \SilverStripe\Security\PasswordEncryptor_NotFoundException
      */
     public function validateBackupCode($member, $token, &$result = null)
     {
@@ -36,7 +38,5 @@ class BootstrapMFAAuthenticator extends MemberAuthenticator
 
         $member->registerFailedLogin();
         $result->addError('Invalid token');
-
-        return false;
     }
 }

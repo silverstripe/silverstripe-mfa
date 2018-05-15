@@ -18,6 +18,8 @@ class BootstrapMFAProvider implements MFAProvider
      * @param string $token
      * @param null|ValidationResult $result
      * @return Member|bool
+     * @throws \SilverStripe\ORM\ValidationException
+     * @throws \SilverStripe\Security\PasswordEncryptor_NotFoundException
      */
     public function verifyToken($token, &$result = null)
     {

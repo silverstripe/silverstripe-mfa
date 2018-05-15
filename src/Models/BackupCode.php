@@ -94,7 +94,7 @@ class BackupCode extends DataObject
             static::class . '.REGENERATIONREQUIRED',
             sprintf(
                 '<p>Your backup codes for multi factor authentication have been requested to regenerate by someone that is not you. 
-                    Please visit the <a href="%s/%s">website to regenerate your backupcodes</p>',
+                    Please visit the <a href="%s/%s">website to regenerate your backupcodes</a></p>',
                 Director::absoluteBaseURL(),
                 Security::config()->get('lost_password_url')
             )
