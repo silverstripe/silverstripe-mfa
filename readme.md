@@ -49,6 +49,17 @@ If a user resets its password, the login-screen will show the created new tokens
 
 Tokens are stored encrypted and can not be retrieved, only validated.
 
+# Extending
+
+This module is meant to be extended and not work on it's own. It only supplies fallback codes, like other MultiFactor authentication sites do.
+
+When building an MFA module on top of this, a few things are required:
+- Your MFALoginHandler extending BootstrapMFALoginHandler
+- Your MFAProvider implementing the MFAProvider
+- Your authenticator extending BootstrapMFAAuthenticator
+    - Must call the validateBackupCode method to validate the MFA backup codes
+-MFALoginHandler extending the BootstrapMFALoginHandler
+
 # License
   
 This module is published under BSD 3-clause license, although these are not in the actual classes, the license does apply:

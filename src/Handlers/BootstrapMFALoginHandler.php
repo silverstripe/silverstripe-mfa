@@ -2,6 +2,7 @@
 
 namespace Firesphere\BootstrapMFA\Handlers;
 
+use Firesphere\BootstrapMFA\Forms\BootstrapMFALoginForm;
 use Firesphere\BootstrapMFA\Providers\BootstrapMFAProvider;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
@@ -27,11 +28,23 @@ abstract class BootstrapMFALoginHandler extends LoginHandler
     ];
 
     /**
+     * Return the MemberLoginForm form
+     */
+    public function LoginForm()
+    {
+        return BootstrapMFALoginForm::create(
+            $this,
+            get_class($this->authenticator),
+            'LoginForm'
+        );
+    }
+
+    /**
      * @param array $data
      * @param LoginForm $form
      * @param HTTPRequest $request
      * @param $validationResult
-     * @return bool|Member
+     * @return ValidationResult|Member
      * @throws \SilverStripe\ORM\ValidationException
      * @throws \SilverStripe\Security\PasswordEncryptor_NotFoundException
      */
