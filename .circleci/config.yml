@@ -35,7 +35,6 @@ jobs:
             php -r "unlink('composer-setup.php');"
 
       - checkout
-      - run: cp ~/var/www/_config/config.yml.example ~/var/www/_config/config.yml
       # Composer Cache, Yarn and non-vendor modules
       - restore_cache:
           keys:
