@@ -40,9 +40,8 @@ class BootstrapMFAProviderTest extends SapphireTest
         $result = null;
         $member = $this->objFromFixture(Member::class, 'member1');
         $provider = Injector::inst()->get(BootstrapMFAProvider::class);
-
-        $provider->verifyToken('123345', $result);
         $provider->setMember($member);
+        $provider->verifyToken('123345', $result);
 
         $this->assertInstanceOf(ValidationResult::class, $result);
     }
