@@ -3,10 +3,10 @@
 namespace Firesphere\BootstrapMFA\Tests;
 
 use Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator;
-use Firesphere\BootstrapMFA\Forms\MFALoginForm;
+use Firesphere\BootstrapMFA\Forms\BootstrapMFALoginForm;
 use Firesphere\BootstrapMFA\Models\BackupCode;
 use Firesphere\BootstrapMFA\Tests\Helpers\CodeHelper;
-use Firesphere\BootstrapMFA\Tests\Mock\MockMFAHandler;
+use Firesphere\BootstrapMFA\Tests\Mock\MockBootstrapMFAHandler;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
@@ -35,12 +35,12 @@ class MFALoginHandlerTest extends SapphireTest
     protected $authenticator;
 
     /**
-     * @var MFALoginForm
+     * @var BootstrapMFALoginForm
      */
     protected $form;
 
     /**
-     * @var MockMFAHandler
+     * @var MockBootstrapMFAHandler
      */
     protected $handler;
 
@@ -50,7 +50,7 @@ class MFALoginHandlerTest extends SapphireTest
         BackupCode::generateTokensForMember($this->member);
         $tokens = CodeHelper::getCodesFromSession();
         $data = ['token' => $tokens[0]];
-        $response = $this->handler->validate($data, $this->form, $this->request);
+        $response = $this->handler->validate($data, $this->form, $this->request, $result);
 
         $this->assertInstanceOf(Member::class, $response);
     }
@@ -58,7 +58,7 @@ class MFALoginHandlerTest extends SapphireTest
     public function testErrorValidate()
     {
         $data = ['token' => 'wrongtokenforsure'];
-        $response = $this->handler->validate($data, $this->form, $this->request);
+        $response = $this->handler->validate($data, $this->form, $this->request, $result);
 
         $this->assertFalse($response);
     }
@@ -148,9 +148,9 @@ class MFALoginHandlerTest extends SapphireTest
 
         $this->authenticator = Injector::inst()->create(BootstrapMFAAuthenticator::class);
         $this->form = Injector::inst()->createWithArgs(
-            MFALoginForm::class,
+            BootstrapMFALoginForm::class,
             [Controller::curr(), $this->authenticator, 'test']
         );
-        $this->handler = Injector::inst()->createWithArgs(MockMFAHandler::class, ['login', $this->authenticator]);
+        $this->handler = Injector::inst()->createWithArgs(MockBootstrapMFAHandler::class, ['login', $this->authenticator]);
     }
 }
