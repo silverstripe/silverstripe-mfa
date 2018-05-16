@@ -43,7 +43,6 @@ jobs:
             - v2-cache-
       # update, because why not
       - run: composer update
-      - run: cp -r vendor/silverstripe/recipe-cms/mysite .
       # Save all dependencies to cache
       - save_cache:
           key: v2-cache-{{ checksum "composer.lock" }}-{{ checksum "readme.md" }}
@@ -56,5 +55,3 @@ jobs:
       # run tests!
       - run: vendor/bin/phpunit --coverage-clover=coverage.xml -d memory_limit=512M tests/unit
       - run: bash <(curl -s https://codecov.io/bash) -f coverage.xml
-      - run: wget https://scrutinizer-ci.com/ocular.phar
-      - run: php ocular.phar code-coverage:upload --access-token="5c25ea9106f1b0fb619192dfa699f833124a0e18a0263519eb2208b5d7f64116" --format=php-clover coverage.xml
