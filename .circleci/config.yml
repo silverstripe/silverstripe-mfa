@@ -38,7 +38,7 @@ jobs:
       # Composer Cache, Yarn and non-vendor modules
       - restore_cache:
           keys:
-            - v2-cache-{{ checksum "composer.lock" }}-{{ readme.md }}
+            - v2-cache-{{ checksum "composer.lock" }}-{{ checksum "readme.md" }}
             # fallback to using the latest cache if no exact match is found
             - v2-cache-
       # update, because why not
@@ -46,7 +46,7 @@ jobs:
       - run: cp -r vendor/silverstripe/recipe-cms/mysite .
       # Save all dependencies to cache
       - save_cache:
-          key: v2-cache-{{ checksum "composer.lock" }}-{{ readme.md }}
+          key: v2-cache-{{ checksum "composer.lock" }}-{{ checksum "readme.md" }}
           paths:
             - assets
             - vendor
