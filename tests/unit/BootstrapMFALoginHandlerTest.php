@@ -44,6 +44,13 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
      */
     protected $handler;
 
+    public function testLoginForm()
+    {
+        $form = $this->handler->LoginForm();
+
+        $this->assertInstanceOf(BootstrapMFALoginForm::class, $form);
+    }
+
     public function testSuccessValidate()
     {
         Security::setCurrentUser($this->member);
@@ -151,6 +158,7 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
             BootstrapMFALoginForm::class,
             [Controller::curr(), $this->authenticator, 'test']
         );
-        $this->handler = Injector::inst()->createWithArgs(MockBootstrapMFAHandler::class, ['login', $this->authenticator]);
+        $this->handler = Injector::inst()->createWithArgs(MockBootstrapMFAHandler::class,
+            ['login', $this->authenticator]);
     }
 }

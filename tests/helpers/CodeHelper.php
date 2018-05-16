@@ -3,6 +3,7 @@
 namespace Firesphere\BootstrapMFA\Tests\Helpers;
 
 use SilverStripe\Control\Controller;
+use SilverStripe\Control\Session;
 
 class CodeHelper
 {

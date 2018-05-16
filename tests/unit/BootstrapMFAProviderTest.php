@@ -6,6 +6,7 @@ use Firesphere\BootstrapMFA\Providers\BootstrapMFAProvider;
 use Firesphere\BootstrapMFA\Tests\Helpers\CodeHelper;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
+use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 
@@ -32,5 +33,16 @@ class BootstrapMFAProviderTest extends SapphireTest
         $provider->updateTokens();
 
         $this->assertEquals(0, count(CodeHelper::getCodesFromSession()));
+    }
+
+    public function testResultCreated()
+    {
+        $result = null;
+
+        $provider = Injector::inst()->get(BootstrapMFAProvider::class);
+
+        $provider->verifyToken('123345', $result);
+
+        $this->assertInstanceOf(ValidationResult::class, $result);
     }
 }
