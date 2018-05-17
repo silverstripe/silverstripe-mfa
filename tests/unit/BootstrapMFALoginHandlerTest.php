@@ -158,7 +158,9 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
             BootstrapMFALoginForm::class,
             [Controller::curr(), $this->authenticator, 'test']
         );
-        $this->handler = Injector::inst()->createWithArgs(MockBootstrapMFAHandler::class,
-            ['login', $this->authenticator]);
+        $this->handler = Injector::inst()->createWithArgs(
+            MockBootstrapMFAHandler::class,
+            ['login', $this->authenticator]
+        );
     }
 }
