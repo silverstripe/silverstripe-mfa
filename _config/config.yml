@@ -12,3 +12,6 @@ Firesphere\BootstrapMFA\Generators\CodeGenerator:
   length: 6
   type: mixed
   case: mixed
+SilverStripe\SiteConfig\SiteConfig:
+  extensions:
+    - Firesphere\BootstrapMFA\Extensions\SiteConfigExtension

@@ -60,9 +60,9 @@ class MemberExtension extends DataExtension
 
     public function onBeforeWrite()
     {
-        if (SiteConfig::current_site_config()->ForceMFA) {
-            $this->MFAEnabled = true;
-            $this->updateMFA = true;
+        if (SiteConfig::current_site_config()->ForceMFA && !$this->owner->MFAEnableds) {
+            $this->owner->MFAEnabled = true;
+            $this->owner->updateMFA = true;
         }
     }
 

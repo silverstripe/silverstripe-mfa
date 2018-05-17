@@ -12,6 +12,7 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TabSet;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
+use SilverStripe\SiteConfig\SiteConfig;
 
 class MemberExtensionTest extends SapphireTest
 {
@@ -97,5 +98,40 @@ class MemberExtensionTest extends SapphireTest
         $extension->onAfterWrite();
 
         $this->assertEquals(15, count(CodeHelper::getCodesFromSession()));
+    }
+
+    public function testOnBeforeWrite()
+    {
+        /** @var MemberExtension $extension */
+        $extension = Injector::inst()->get(MemberExtension::class);
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, 'member1');
+        $member->MFAEnabled = false;
+        $id = $member->write();
+        $config = SiteConfig::current_site_config();
+        $config->ForceMFA = true;
+        $config->write;
+        $extension->setOwner($member);
+
+        $extension->onBeforeWrite();
+
+        $this->assertTrue($member->MFAEnabled);
+    }
+
+    public function testOnBeforeWriteNoForce()
+    {
+        /** @var MemberExtension $extension */
+        $extension = Injector::inst()->get(MemberExtension::class);
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, 'member1');
+        $member->MFAEnabled = false;
+        $config = SiteConfig::current_site_config();
+        $config->ForceMFA = false;
+        $config->write;
+        $extension->setOwner($member);
+
+        $extension->onBeforeWrite();
+
+        $this->assertFalse($member->MFAEnabled);
     }
 }
