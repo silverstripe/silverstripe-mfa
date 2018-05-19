@@ -2,7 +2,6 @@
 
 namespace Firesphere\BootstrapMFA\Extensions;
 
-use Firesphere\BootstrapMFA\Config\MFAEnabledFields;
 use Firesphere\BootstrapMFA\Models\BackupCode;
 use Firesphere\BootstrapMFA\Providers\BootstrapMFAProvider;
 use SilverStripe\Control\Controller;
