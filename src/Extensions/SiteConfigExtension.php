@@ -26,6 +26,7 @@ class SiteConfigExtension extends DataExtension
 
     public function updateCMSFields(FieldList $fields)
     {
-        $fields->addFieldToTab('Root.MFA', CheckboxField::create('ForceMFA', _t(__CLASS__ . '.ENFORCEMFA', 'Enforce MFA on all users')));
+        $fields->addFieldToTab('Root.MFA',
+            CheckboxField::create('ForceMFA', _t(__CLASS__ . '.ENFORCEMFA', 'Enforce MFA on all users')));
     }
 }

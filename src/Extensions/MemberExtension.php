@@ -6,7 +6,6 @@ use Firesphere\BootstrapMFA\Config\MFAEnabledFields;
 use Firesphere\BootstrapMFA\Models\BackupCode;
 use Firesphere\BootstrapMFA\Providers\BootstrapMFAProvider;
 use SilverStripe\Control\Controller;
-use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\CheckboxField;
@@ -63,8 +62,10 @@ class MemberExtension extends DataExtension
         $rootTabSet->push(
             $tab
         );
-        $fields->addFieldToTab('Root.MFA', $enabled = CheckboxField::create('MFAEnabled', _t(__CLASS__ . '.MFAEnabled', 'MFA Enabled')));
-        $fields->addFieldToTab('Root.MFA', CheckboxField::create('updateMFA', _t(__CLASS__ . '.RESETMFA', 'Reset MFA codes')));
+        $fields->addFieldToTab('Root.MFA',
+            $enabled = CheckboxField::create('MFAEnabled', _t(__CLASS__ . '.MFAEnabled', 'MFA Enabled')));
+        $fields->addFieldToTab('Root.MFA',
+            CheckboxField::create('updateMFA', _t(__CLASS__ . '.RESETMFA', 'Reset MFA codes')));
 
         if ($session->get('tokens')) {
             $fields->addFieldToTab('Root.MFA', $field);
