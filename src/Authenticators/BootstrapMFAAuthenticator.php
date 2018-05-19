@@ -37,6 +37,6 @@ class BootstrapMFAAuthenticator extends MemberAuthenticator
         }
 
         $member->registerFailedLogin();
-        $result->addError('Invalid token');
+        $result->addError(_t(__CLASS__ . '.INVALIDTOKEN', 'Invalid token'));
     }
 }

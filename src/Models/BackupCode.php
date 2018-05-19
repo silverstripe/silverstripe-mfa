@@ -90,15 +90,17 @@ class BackupCode extends DataObject
         $mail->setTo($member->Email);
         $mail->setFrom(Config::inst()->get(Email::class, 'admin_email'));
         $mail->setSubject(_t(static::class . '.REGENERATIONMAIL', 'Your backup tokens need to be regenerated'));
-        $mail->setBody(_t(
-            static::class . '.REGENERATIONREQUIRED',
-            sprintf(
+        $mail->setBody(
+            _t(
+                static::class . '.REGENERATIONREQUIRED',
                 '<p>Your backup codes for multi factor authentication have been requested to regenerate by someone that is not you. 
-                    Please visit the <a href="%s/%s">website to regenerate your backupcodes</a></p>',
-                Director::absoluteBaseURL(),
-                Security::config()->get('lost_password_url')
+                    Please visit the <a href="{url}/{segment}">website to regenerate your backupcodes</a></p>',
+                [
+                    $url = Director::absoluteBaseURL(),
+                    $segment = Security::config()->get('lost_password_url')
+                ]
             )
-        ));
+        );
         $mail->send();
     }
 

@@ -28,44 +28,64 @@ class MemberExtension extends DataExtension
 {
     use Configurable;
 
+    /**
+     * @var array
+     */
     private static $db = [
         'MFAEnabled' => 'Boolean(false)',
     ];
+
+    /**
+     * @var array
+     */
     private static $has_many = [
         'Backupcodes' => BackupCode::class
     ];
 
+    /**
+     * @var bool
+     */
     protected $updateMFA = false;
 
+    /**
+     * @param FieldList $fields
+     */
     public function updateCMSFields(FieldList $fields)
     {
-        $fields->addFieldToTab('Root.Main', $enabled = CheckboxField::create('MFAEnabled', 'MFA Enabled'));
-        $fields->addFieldToTab('Root.Main', CheckboxField::create('updateMFA', 'Reset MFA codes'));
         $fields->removeByName(['Backupcodes']);
         $session = Controller::curr()->getRequest()->getSession();
+        $rootTabSet = $fields->fieldByName("Root");
+        $field = LiteralField::create('tokens', $session->get('tokens'));
+        $tab = Tab::create(
+            'MFA',
+            _t(__CLASS__ . '.MFATAB', 'Multi Factor Authentication')
+        );
+        $rootTabSet->push(
+            $tab
+        );
+        $fields->addFieldToTab('Root.MFA', $enabled = CheckboxField::create('MFAEnabled', _t(__CLASS__ . '.MFAEnabled', 'MFA Enabled')));
+        $fields->addFieldToTab('Root.MFA', CheckboxField::create('updateMFA', _t(__CLASS__ . '.RESETMFA', 'Reset MFA codes')));
+
         if ($session->get('tokens')) {
-            $rootTabSet = $fields->fieldByName("Root");
-            $field = LiteralField::create('tokens', $session->get('tokens'));
-            $tab = Tab::create(
-                'BackupTokens',
-                'Backup Tokens'
-            );
-            $rootTabSet->push(
-                $tab
-            );
-            $fields->addFieldToTab('Root.BackupTokens', $field);
+            $fields->addFieldToTab('Root.MFA', $field);
             $session->clear('tokens');
         }
     }
 
+    /**
+     *
+     */
     public function onBeforeWrite()
     {
-        if (SiteConfig::current_site_config()->ForceMFA && !$this->owner->MFAEnableds) {
+        if (SiteConfig::current_site_config()->ForceMFA && !$this->owner->MFAEnabled) {
             $this->owner->MFAEnabled = true;
             $this->owner->updateMFA = true;
         }
     }
 
+    /**
+     *
+     */
     public function onAfterWrite()
     {
         parent::onAfterWrite();

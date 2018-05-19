@@ -8,7 +8,6 @@
 
 namespace Firesphere\BootstrapMFA\Extensions;
 
-
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\ORM\DataExtension;
@@ -21,13 +20,12 @@ use SilverStripe\ORM\DataExtension;
  */
 class SiteConfigExtension extends DataExtension
 {
-
     private static $db = [
         'ForceMFA' => 'Boolean(false)'
     ];
 
     public function updateCMSFields(FieldList $fields)
     {
-        $fields->addFieldToTab('Root.MFA', CheckboxField::create('ForceMFA', 'Enforce MFA on all users'));
+        $fields->addFieldToTab('Root.MFA', CheckboxField::create('ForceMFA', _t(__CLASS__ . '.ENFORCEMFA', 'Enforce MFA on all users')));
     }
 }

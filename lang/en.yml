@@ -1,0 +1,15 @@
+en:
+  Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator:
+    INVALIDTOKEN: 'Invalid token'
+  Firesphere\BootstrapMFA\Extensions\MemberExtension:
+    MFAEnabled: 'MFA Enabled'
+    MFATAB: 'Multi Factor Authentication'
+    RESETMFA: 'Reset MFA codes'
+  Firesphere\BootstrapMFA\Extensions\SiteConfigExtension:
+    ENFORCEMFA: 'Enforce MFA on all users'
+  Firesphere\BootstrapMFA\Models\BackupCode:
+    PLURALNAME: 'Backup Codes'
+    PLURALS:
+      one: 'A Backup Code'
+      other: '{count} Backup Codes'
+    SINGULARNAME: 'Backup Code'
