@@ -2,12 +2,8 @@
 
 namespace Firesphere\BootstrapMFA\Tests;
 
-use Firesphere\BootstrapMFA\Extensions\MemberExtension;
-use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\FieldList;
-use SilverStripe\Forms\TabSet;
 use SilverStripe\SiteConfig\SiteConfig;
 
 class SiteConfigExtensionTest extends SapphireTest

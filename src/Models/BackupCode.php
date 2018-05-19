@@ -96,7 +96,7 @@ class BackupCode extends DataObject
                 '<p>Your backup codes for multi factor authentication have been requested to regenerate by someone that is not you. 
                     Please visit the <a href="{url}/{segment}">website to regenerate your backupcodes</a></p>',
                 [
-                    'url' => Director::absoluteBaseURL(),
+                    'url'     => Director::absoluteBaseURL(),
                     'segment' => Security::config()->get('lost_password_url')
                 ]
             )
