@@ -8,20 +8,14 @@ use SilverStripe\Dev\SapphireTest;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TabSet;
+use SilverStripe\SiteConfig\SiteConfig;
 
 class SiteConfigExtensionTest extends SapphireTest
 {
-
     public function testUpdateCMSFields()
     {
-        $fields = FieldList::create([TabSet::create('Root')]);
-
-        /** @var MemberExtension $extension */
-        $extension = Injector::inst()->get(MemberExtension::class);
-
-        $extension->updateCMSFields($fields);
+        $fields = SiteConfig::current_site_config()->getCMSFields();
 
         $this->assertInstanceOf(CheckboxField::class, $fields->dataFieldByName('ForceMFA'));
     }
-
 }

@@ -62,10 +62,14 @@ class MemberExtension extends DataExtension
         $rootTabSet->push(
             $tab
         );
-        $fields->addFieldToTab('Root.MFA',
-            $enabled = CheckboxField::create('MFAEnabled', _t(__CLASS__ . '.MFAEnabled', 'MFA Enabled')));
-        $fields->addFieldToTab('Root.MFA',
-            CheckboxField::create('updateMFA', _t(__CLASS__ . '.RESETMFA', 'Reset MFA codes')));
+        $fields->addFieldToTab(
+            'Root.MFA',
+            $enabled = CheckboxField::create('MFAEnabled', _t(__CLASS__ . '.MFAEnabled', 'MFA Enabled'))
+        );
+        $fields->addFieldToTab(
+            'Root.MFA',
+            CheckboxField::create('updateMFA', _t(__CLASS__ . '.RESETMFA', 'Reset MFA codes'))
+        );
 
         if ($session->get('tokens')) {
             $fields->addFieldToTab('Root.MFA', $field);
