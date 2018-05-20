@@ -19,21 +19,33 @@ use SilverStripe\Security\Security;
  * @property string $Code
  * @property boolean $Used
  * @property int $MemberID
- * @method \SilverStripe\Security\Member Member()
+ * @method Member Member()
  */
 class BackupCode extends DataObject
 {
+    /**
+     * @var string
+     */
     private static $table_name = 'BackupCode';
 
+    /**
+     * @var array
+     */
     private static $db = [
         'Code' => 'Varchar(255)',
         'Used' => 'Boolean(false)'
     ];
 
+    /**
+     * @var array
+     */
     private static $has_one = [
         'Member' => Member::class
     ];
 
+    /**
+     * @var array
+     */
     private static $indexes = [
         'Code' => [
             'type'    => 'unique',
@@ -65,7 +77,7 @@ class BackupCode extends DataObject
             self::sendWarningEmail($member);
         } else {
             $message = _t(
-                static::class . 'SESSIONMESSAGE_START',
+                self::class . '.SESSIONMESSAGE_START',
                 '<p>Here are your tokens, please store them securily. ' .
                 'They are stored encrypted and can not be recovered, only reset.</p><p>'
             );
@@ -89,12 +101,12 @@ class BackupCode extends DataObject
         $mail = Email::create();
         $mail->setTo($member->Email);
         $mail->setFrom(Config::inst()->get(Email::class, 'admin_email'));
-        $mail->setSubject(_t(static::class . '.REGENERATIONMAIL', 'Your backup tokens need to be regenerated'));
+        $mail->setSubject(_t(self::class . '.REGENERATIONMAIL', 'Your backup tokens need to be regenerated'));
         $mail->setBody(
             _t(
-                static::class . '.REGENERATIONREQUIRED',
-                '<p>Your backup codes for multi factor authentication have been requested to regenerate by someone that is not you. 
-                    Please visit the <a href="{url}/{segment}">website to regenerate your backupcodes</a></p>',
+                self::class . '.REGENERATIONREQUIRED',
+                "<p>Your backup codes for multi factor authentication have been requested to regenerate by someone that is not you. \n"
+                    . "Please visit the <a href='{url}/{segment}'>website to regenerate your backupcodes</a></p>",
                 [
                     'url'     => Director::absoluteBaseURL(),
                     'segment' => Security::config()->get('lost_password_url')

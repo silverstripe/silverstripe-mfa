@@ -2,13 +2,18 @@
 
 namespace Firesphere\BootstrapMFA\Forms;
 
+use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Security\MemberAuthenticator\MemberLoginForm;
 
+/**
+ * Class BootstrapMFALoginForm
+ * @package Firesphere\BootstrapMFA\Forms
+ */
 class BootstrapMFALoginForm extends MemberLoginForm
 {
     /**
-     * @return \SilverStripe\Forms\FieldList
+     * @return FieldList
      */
     public function getFormFields()
     {

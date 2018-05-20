@@ -7,8 +7,10 @@ use Firesphere\BootstrapMFA\Models\BackupCode;
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\DataList;
+use SilverStripe\ORM\ValidationException;
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\Member;
+use SilverStripe\Security\PasswordEncryptor_NotFoundException;
 
 class BootstrapMFAProvider implements MFAProvider
 {
@@ -18,8 +20,8 @@ class BootstrapMFAProvider implements MFAProvider
      * @param string $token
      * @param null|ValidationResult $result
      * @return Member|bool
-     * @throws \SilverStripe\ORM\ValidationException
-     * @throws \SilverStripe\Security\PasswordEncryptor_NotFoundException
+     * @throws ValidationException
+     * @throws PasswordEncryptor_NotFoundException
      */
     public function verifyToken($token, &$result = null)
     {
@@ -50,7 +52,7 @@ class BootstrapMFAProvider implements MFAProvider
     }
 
     /**
-     * @throws \SilverStripe\ORM\ValidationException
+     * @throws ValidationException
      */
     public function updateTokens()
     {

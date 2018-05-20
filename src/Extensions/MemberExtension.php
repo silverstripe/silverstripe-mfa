@@ -12,15 +12,16 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\Tab;
 use SilverStripe\ORM\DataExtension;
+use SilverStripe\ORM\DataList;
 use SilverStripe\SiteConfig\SiteConfig;
 
 /**
  * Class MemberExtension
  *
  * @package Firesphere\BootstrapMFA
- * @property \Firesphere\BootstrapMFA\Extensions\MemberExtension $owner
+ * @property MemberExtension $owner
  * @property boolean $MFAEnabled
- * @method \SilverStripe\ORM\DataList|\Firesphere\BootstrapMFA\Models\BackupCode[] Backupcodes()
+ * @method DataList|BackupCode[] Backupcodes()
  */
 class MemberExtension extends DataExtension
 {
@@ -56,18 +57,18 @@ class MemberExtension extends DataExtension
         $field = LiteralField::create('tokens', $session->get('tokens'));
         $tab = Tab::create(
             'MFA',
-            _t(__CLASS__ . '.MFATAB', 'Multi Factor Authentication')
+            _t(self::class . '.MFATAB', 'Multi Factor Authentication')
         );
         $rootTabSet->push(
             $tab
         );
         $fields->addFieldToTab(
             'Root.MFA',
-            $enabled = CheckboxField::create('MFAEnabled', _t(__CLASS__ . '.MFAEnabled', 'MFA Enabled'))
+            $enabled = CheckboxField::create('MFAEnabled', _t(self::class . '.MFAEnabled', 'MFA Enabled'))
         );
         $fields->addFieldToTab(
             'Root.MFA',
-            CheckboxField::create('updateMFA', _t(__CLASS__ . '.RESETMFA', 'Reset MFA codes'))
+            CheckboxField::create('updateMFA', _t(self::class . '.RESETMFA', 'Reset MFA codes'))
         );
 
         if ($session->get('tokens')) {

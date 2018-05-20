@@ -12,4 +12,7 @@ en:
     PLURALS:
       one: 'A Backup Code'
       other: '{count} Backup Codes'
+    REGENERATIONMAIL: 'Your backup tokens need to be regenerated'
+    REGENERATIONREQUIRED: "<p>Your backup codes for multi factor authentication have been requested to regenerate by someone that is not you. \nPlease visit the <a href='{url}/{segment}'>website to regenerate your backupcodes</a></p>"
+    SESSIONMESSAGE_START: '<p>Here are your tokens, please store them securily. They are stored encrypted and can not be recovered, only reset.</p><p>'
     SINGULARNAME: 'Backup Code'
