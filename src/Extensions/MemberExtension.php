@@ -21,7 +21,7 @@ use SilverStripe\SiteConfig\SiteConfig;
  * @package Firesphere\BootstrapMFA
  * @property MemberExtension $owner
  * @property boolean $MFAEnabled
- * @method DataList|BackupCode[] Backupcodes()
+ * @method DataList|BackupCode[] BackupCodes()
  */
 class MemberExtension extends DataExtension
 {
@@ -38,7 +38,7 @@ class MemberExtension extends DataExtension
      * @var array
      */
     private static $has_many = [
-        'Backupcodes' => BackupCode::class
+        'BackupCodes' => BackupCode::class
     ];
 
     /**
@@ -51,7 +51,7 @@ class MemberExtension extends DataExtension
      */
     public function updateCMSFields(FieldList $fields)
     {
-        $fields->removeByName(['Backupcodes']);
+        $fields->removeByName(['BackupCodes']);
         $session = Controller::curr()->getRequest()->getSession();
         $rootTabSet = $fields->fieldByName("Root");
         $field = LiteralField::create('tokens', $session->get('tokens'));
@@ -82,7 +82,7 @@ class MemberExtension extends DataExtension
      */
     public function onBeforeWrite()
     {
-        if (SiteConfig::current_site_config()->ForceMFA && !$this->owner->MFAEnabled) {
+        if (!$this->owner->MFAEnabled && SiteConfig::current_site_config()->ForceMFA) {
             $this->owner->MFAEnabled = true;
             $this->owner->updateMFA = true;
         }
@@ -90,6 +90,7 @@ class MemberExtension extends DataExtension
 
     /**
      *
+     * @throws \Psr\Container\NotFoundExceptionInterface
      */
     public function onAfterWrite()
     {
@@ -99,5 +100,10 @@ class MemberExtension extends DataExtension
             $provider->setMember($this->owner);
             $provider->updateTokens();
         }
+    }
+
+    public function getBackupcodes()
+    {
+        return $this->owner->BackupCodes();
     }
 }

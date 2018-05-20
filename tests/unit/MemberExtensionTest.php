@@ -98,6 +98,7 @@ class MemberExtensionTest extends SapphireTest
         $extension->onAfterWrite();
 
         $this->assertEquals(15, count(CodeHelper::getCodesFromSession()));
+        $this->assertEquals(15, $member->BackupCodes()->count());
     }
 
     public function testOnBeforeWrite()
@@ -107,7 +108,7 @@ class MemberExtensionTest extends SapphireTest
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'member1');
         $member->MFAEnabled = false;
-        $id = $member->write();
+        $member->write();
         $config = SiteConfig::current_site_config();
         $config->ForceMFA = true;
         $config->write;
@@ -133,5 +134,24 @@ class MemberExtensionTest extends SapphireTest
         $extension->onBeforeWrite();
 
         $this->assertFalse($member->MFAEnabled);
+    }
+
+    public function testGetBackupcodes()
+    {
+        /** @var MemberExtension $extension */
+        $extension = Injector::inst()->get(MemberExtension::class);
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, 'member1');
+        $member->updateMFA = true;
+
+        Security::setCurrentUser($member);
+        $extension->setOwner($member);
+
+        $extension->onAfterWrite();
+
+        $directCodes = $member->BackupCodes()->map('ID', 'Code');
+        $indirectCodes = $member->getBackupcodes()->map('ID', 'Code');
+
+        $this->assertEquals($directCodes, $indirectCodes);
     }
 }
