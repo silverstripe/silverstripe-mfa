@@ -15,6 +15,10 @@ use SilverStripe\Security\PasswordEncryptor_NotFoundException;
  */
 class BootstrapMFAAuthenticator extends MemberAuthenticator
 {
+    /**
+     * Key for array to be stored in between steps in the session
+     */
+    const SESSION_KEY = 'MFALogin';
 
     /**
      * @param Member $member

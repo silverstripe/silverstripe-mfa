@@ -20,10 +20,6 @@ use SilverStripe\Security\PasswordEncryptor_NotFoundException;
  */
 abstract class BootstrapMFALoginHandler extends LoginHandler
 {
-    /**
-     * Key for array to be stored in between steps in the session
-     */
-    const SESSION_KEY = 'MFALogin';
 
     /**
      * @var array
@@ -70,7 +66,7 @@ abstract class BootstrapMFALoginHandler extends LoginHandler
         }
         /** @var BootstrapMFAProvider $provider */
         $provider = new BootstrapMFAProvider();
-        $memberID = $request->getSession()->get(static::SESSION_KEY . '.MemberID');
+        $memberID = $request->getSession()->get(BootstrapMFAAuthenticator::SESSION_KEY . '.MemberID');
         /** @var Member $member */
         $member = Member::get()->byID($memberID);
         $provider->setMember($member);
@@ -94,10 +90,10 @@ abstract class BootstrapMFALoginHandler extends LoginHandler
         /** @var Member $member */
         $member = $this->checkLogin($data, $request, $message);
         if ($message->isValid()) {
-            $session->set(static::SESSION_KEY . '.MemberID', $member->ID);
-            $session->set(static::SESSION_KEY . '.Data', $data);
+            $session->set(BootstrapMFAAuthenticator::SESSION_KEY . '.MemberID', $member->ID);
+            $session->set(BootstrapMFAAuthenticator::SESSION_KEY . '.Data', $data);
             if (!empty($data['BackURL'])) {
-                $session->set(static::SESSION_KEY . '.BackURL', $data['BackURL']);
+                $session->set(BootstrapMFAAuthenticator::SESSION_KEY . '.BackURL', $data['BackURL']);
             }
 
             return $this->redirect($this->link('verify'));

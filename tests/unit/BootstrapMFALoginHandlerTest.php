@@ -92,7 +92,7 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
                     'Password' => 'password1',
                 ]
         ];
-        $this->assertEquals($expected, $session->get('MFALogin'));
+        $this->assertEquals($expected, $session->get(BootstrapMFAAuthenticator::SESSION_KEY));
     }
 
     public function testBackURLLogin()
@@ -120,7 +120,7 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
                     'BackURL'  => '/memberlocation',
                 ],
         ];
-        $this->assertEquals($expected, $session->get('MFALogin'));
+        $this->assertEquals($expected, $session->get(BootstrapMFAAuthenticator::SESSION_KEY));
     }
 
     public function testDoWrongLogin()
@@ -151,7 +151,7 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
         $this->member = $this->objFromFixture(Member::class, 'member1');
 
         $session = $this->request->getSession();
-        $session->set('MFALogin.MemberID', $this->member->ID);
+        $session->set(BootstrapMFAAuthenticator::SESSION_KEY . '.MemberID', $this->member->ID);
 
         $this->authenticator = Injector::inst()->create(BootstrapMFAAuthenticator::class);
         $this->form = Injector::inst()->createWithArgs(
