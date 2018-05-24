@@ -2,6 +2,7 @@
 
 namespace Firesphere\BootstrapMFA\Handlers;
 
+use Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator;
 use Firesphere\BootstrapMFA\Forms\BootstrapMFALoginForm;
 use Firesphere\BootstrapMFA\Providers\BootstrapMFAProvider;
 use SilverStripe\Control\HTTPRequest;
