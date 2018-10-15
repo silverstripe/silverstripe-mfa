@@ -2,15 +2,12 @@
 
 namespace Firesphere\BootstrapMFA\Providers;
 
-use Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator;
 use Firesphere\BootstrapMFA\Models\BackupCode;
 use SilverStripe\Control\Controller;
-use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\ValidationException;
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\Member;
-use SilverStripe\Security\PasswordEncryptor_NotFoundException;
 
 class BootstrapMFAProvider implements MFAProvider
 {
@@ -21,7 +18,6 @@ class BootstrapMFAProvider implements MFAProvider
      * @param null|ValidationResult $result
      * @return Member|bool
      * @throws ValidationException
-     * @throws PasswordEncryptor_NotFoundException
      */
     public function verifyToken($token, &$result = null)
     {
@@ -29,10 +25,21 @@ class BootstrapMFAProvider implements MFAProvider
             $result = new ValidationResult();
         }
         $member = $this->getMember();
-        /** @var BootstrapMFAAuthenticator $authenticator */
-        $authenticator = Injector::inst()->get(BootstrapMFAAuthenticator::class);
 
-        return $authenticator->validateBackupCode($member, $token, $result);
+        /** @var BackupCode $backupCode */
+        $backupCode = BackupCode::getValidTokensForMember($member)
+            ->filter(['Code' => $token])
+            ->first();
+
+        if ($backupCode && $backupCode->exists()) {
+            $backupCode->expire();
+
+            /** @var Member $member */
+            return $member;
+        }
+
+        $member->registerFailedLogin();
+        $result->addError(_t(self::class . '.INVALIDTOKEN', 'Invalid token'));
     }
 
     /**
