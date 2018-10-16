@@ -2,7 +2,7 @@
 
 namespace Firesphere\BootstrapMFA\Providers;
 
-use SilverStripe\ORM\ValidationResult;
+use Firesphere\BootstrapMFA\Models\BackupCode;
 use SilverStripe\Security\Member;
 
 interface MFAProvider
@@ -14,8 +14,7 @@ interface MFAProvider
 
     /**
      * @param string $token
-     * @param null|ValidationResult $result
-     * @return bool|Member
+     * @return bool|BackupCode
      */
-    public function verifyToken($token, &$result = null);
+    public function fetchToken($token);
 }

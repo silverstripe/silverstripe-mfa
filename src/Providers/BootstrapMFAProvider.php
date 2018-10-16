@@ -15,15 +15,10 @@ class BootstrapMFAProvider implements MFAProvider
 
     /**
      * @param string $token
-     * @param null|ValidationResult $result
-     * @return Member|bool
-     * @throws ValidationException
+     * @return null|BackupCode
      */
-    public function verifyToken($token, &$result = null)
+    public function fetchToken($token)
     {
-        if (!$result) {
-            $result = new ValidationResult();
-        }
         $member = $this->getMember();
 
         /** @var BackupCode $backupCode */
@@ -31,15 +26,7 @@ class BootstrapMFAProvider implements MFAProvider
             ->filter(['Code' => $token])
             ->first();
 
-        if ($backupCode && $backupCode->exists()) {
-            $backupCode->expire();
-
-            /** @var Member $member */
-            return $member;
-        }
-
-        $member->registerFailedLogin();
-        $result->addError(_t(self::class . '.INVALIDTOKEN', 'Invalid token'));
+        return $backupCode;
     }
 
     /**

@@ -25,7 +25,7 @@ class BootstrapMFAAuthenticator extends MemberAuthenticator
      * @param Member $member
      * @param string $token
      * @param ValidationResult|null $result
-     * @return void|Member
+     * @return bool|Member
      * @throws ValidationException
      * @throws PasswordEncryptor_NotFoundException
      */
@@ -40,6 +40,19 @@ class BootstrapMFAAuthenticator extends MemberAuthenticator
         $provider = Injector::inst()->get(BootstrapMFAProvider::class);
         $provider->setMember($member);
 
-        return $provider->verifyToken($token, $result);
+        $backupCode = $provider->fetchToken($token);
+
+        if ($backupCode && $backupCode->exists()) {
+            $backupCode->expire();
+            $result = Injector::inst()->get(ValidationResult::class, false);
+
+            /** @var Member $member */
+            return $member;
+        }
+
+        $member->registerFailedLogin();
+        $result->addError(_t(self::class . '.INVALIDTOKEN', 'Invalid token'));
+
+        return false;
     }
 }

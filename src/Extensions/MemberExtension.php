@@ -51,6 +51,7 @@ class MemberExtension extends DataExtension
      */
     public function updateCMSFields(FieldList $fields)
     {
+        $this->updateMFA = 0;
         $fields->removeByName(['BackupCodes']);
         $session = Controller::curr()->getRequest()->getSession();
         $rootTabSet = $fields->fieldByName("Root");

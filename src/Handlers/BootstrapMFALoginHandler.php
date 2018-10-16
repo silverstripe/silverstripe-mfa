@@ -4,7 +4,6 @@ namespace Firesphere\BootstrapMFA\Handlers;
 
 use Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator;
 use Firesphere\BootstrapMFA\Forms\BootstrapMFALoginForm;
-use Firesphere\BootstrapMFA\Providers\BootstrapMFAProvider;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\ORM\ValidationException;
@@ -13,7 +12,6 @@ use SilverStripe\Security\LoginForm;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\MemberAuthenticator\LoginHandler;
 use SilverStripe\Security\MemberAuthenticator\MemberLoginForm;
-use SilverStripe\Security\PasswordEncryptor_NotFoundException;
 
 /**
  * Class BootstrapMFALoginHandler
@@ -58,20 +56,20 @@ abstract class BootstrapMFALoginHandler extends LoginHandler
      * @param $validationResult
      * @return ValidationResult|Member
      * @throws ValidationException
-     * @throws PasswordEncryptor_NotFoundException
+     * @throws \SilverStripe\Security\PasswordEncryptor_NotFoundException
      */
     public function validate($data, $form, $request, &$validationResult)
     {
         if (!$validationResult) {
             $validationResult = new ValidationResult();
         }
-        /** @var BootstrapMFAProvider $provider */
-        $provider = new BootstrapMFAProvider();
+        /** @var BootstrapMFAAuthenticator $authenticator */
+        $authenticator = new BootstrapMFAAuthenticator();
         $memberID = $request->getSession()->get(BootstrapMFAAuthenticator::SESSION_KEY . '.MemberID');
         /** @var Member $member */
         $member = Member::get()->byID($memberID);
-        $provider->setMember($member);
-        $member = $provider->verifyToken($data['token'], $validationResult);
+
+        $member = $authenticator->validateBackupCode($member, $data['token'], $validationResult);
         if ($member instanceof Member && $validationResult->isValid()) {
             return $member;
         }
@@ -89,6 +87,7 @@ abstract class BootstrapMFALoginHandler extends LoginHandler
     {
         $session = $request->getSession();
         /** @var Member $member */
+        /** @var ValidationResult $message */
         $member = $this->checkLogin($data, $request, $message);
         if ($message->isValid()) {
             $session->set(BootstrapMFAAuthenticator::SESSION_KEY . '.MemberID', $member->ID);

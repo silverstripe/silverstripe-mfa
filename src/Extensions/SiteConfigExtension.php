@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: simon
- * Date: 17-May-18
- * Time: 19:17
- */
 
 namespace Firesphere\BootstrapMFA\Extensions;
 
