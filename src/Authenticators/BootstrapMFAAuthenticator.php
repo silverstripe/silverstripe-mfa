@@ -2,6 +2,8 @@
 
 namespace Firesphere\BootstrapMFA\Authenticators;
 
+use Firesphere\BootstrapMFA\Handlers\BootstrapMFALoginHandler;
+use Firesphere\BootstrapMFA\Interfaces\MFAAuthenticator;
 use Firesphere\BootstrapMFA\Providers\BootstrapMFAProvider;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\ValidationException;
@@ -12,9 +14,13 @@ use SilverStripe\Security\PasswordEncryptor_NotFoundException;
 
 /**
  * Class BootstrapMFAAuthenticator
+ * It needs to be instantiable, therefore it can't be an Abstract.
+ *
+ * @todo Interface!
+ *
  * @package Firesphere\BootstrapMFA\Authenticators
  */
-class BootstrapMFAAuthenticator extends MemberAuthenticator
+class BootstrapMFAAuthenticator extends MemberAuthenticator implements MFAAuthenticator
 {
     /**
      * Key for array to be stored in between steps in the session
@@ -44,6 +50,7 @@ class BootstrapMFAAuthenticator extends MemberAuthenticator
 
         if ($backupCode && $backupCode->exists()) {
             $backupCode->expire();
+            // Reset the subclass authenticator results
             $result = Injector::inst()->get(ValidationResult::class, false);
 
             /** @var Member $member */
@@ -54,5 +61,33 @@ class BootstrapMFAAuthenticator extends MemberAuthenticator
         $result->addError(_t(self::class . '.INVALIDTOKEN', 'Invalid token'));
 
         return false;
+    }
+
+    /**
+     * @param string $link
+     * @return BootstrapMFALoginHandler|static
+     */
+    public function getLoginHandler($link)
+    {
+        return BootstrapMFALoginHandler::create($link, $this);
+    }
+
+    /**
+     * @param $member
+     * @param $token
+     * @param $result
+     * @throws \Exception
+     */
+    public function verifyMFA($member, $token, &$result)
+    {
+        throw new \LogicException('No token verification implemented');
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function getMFAForm()
+    {
+        throw new \LogicException('No MFA Form implementation found');
     }
 }

@@ -6,6 +6,9 @@ use Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator;
 use Firesphere\BootstrapMFA\Forms\BootstrapMFALoginForm;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Manifest\ClassLoader;
+use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\ValidationException;
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\LoginForm;
@@ -17,7 +20,7 @@ use SilverStripe\Security\MemberAuthenticator\MemberLoginForm;
  * Class BootstrapMFALoginHandler
  * @package Firesphere\BootstrapMFA\Handlers
  */
-abstract class BootstrapMFALoginHandler extends LoginHandler
+class BootstrapMFALoginHandler extends LoginHandler
 {
 
     /**
@@ -85,18 +88,22 @@ abstract class BootstrapMFALoginHandler extends LoginHandler
      */
     public function doLogin($data, MemberLoginForm $form, HTTPRequest $request)
     {
+        $member = $this->checkLogin($data, $request, $message);
+        // @todo temporarily, so I can log in
+        if ($member->isInGracePeriod()) {
+            return parent::doLogin($data, $form, $request);
+        }
         $session = $request->getSession();
         /** @var Member $member */
         /** @var ValidationResult $message */
-        $member = $this->checkLogin($data, $request, $message);
-        if ($message->isValid()) {
+        if ($member instanceof Member && $message->isValid()) {
             $session->set(BootstrapMFAAuthenticator::SESSION_KEY . '.MemberID', $member->ID);
             $session->set(BootstrapMFAAuthenticator::SESSION_KEY . '.Data', $data);
             if (!empty($data['BackURL'])) {
                 $session->set(BootstrapMFAAuthenticator::SESSION_KEY . '.BackURL', $data['BackURL']);
             }
 
-            return $this->redirect($this->link('verify'));
+            return $this->redirect($this->Link('verify'));
         }
 
         return $this->redirectBack();
@@ -105,13 +112,19 @@ abstract class BootstrapMFALoginHandler extends LoginHandler
     /**
      * @return array
      */
-    public function secondFactor()
+    public function secondFactor(HTTPRequest $request)
     {
+        $memberID = $request->getSession()->get(BootstrapMFAAuthenticator::SESSION_KEY . '.MemberID');
+        $member = Member::get()->byID($memberID);
+        $primary = $member->PrimaryMFA;
+        $classManifest = ClassLoader::inst()->getManifest();
+        $classNames = $classManifest->getDescendantsOf(BootstrapMFAAuthenticator::class);
+        $forms = ArrayList::create();
+        foreach ($classNames as $key => $className) {
+            $class = Injector::inst()->get($className);
+            $forms->push(['Form' => $class->getMFAForm()]);
+        }
+
         return ['Form' => $this->MFAForm()];
     }
-
-    /**
-     * @return mixed
-     */
-    abstract public function MFAForm();
 }

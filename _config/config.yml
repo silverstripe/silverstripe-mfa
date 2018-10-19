@@ -3,6 +3,11 @@ name: MFAAuthenticator
 After:
   - #coresecurity
 ---
+SilverStripe\Core\Injector\Injector:
+  SilverStripe\Security\Security:
+    properties:
+      Authenticators:
+        default: %$Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator
 SilverStripe\Security\Member:
   extensions:
     - Firesphere\BootstrapMFA\Extensions\MemberExtension

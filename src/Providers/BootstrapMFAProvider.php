@@ -6,10 +6,9 @@ use Firesphere\BootstrapMFA\Models\BackupCode;
 use SilverStripe\Control\Controller;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\ValidationException;
-use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\Member;
 
-class BootstrapMFAProvider implements MFAProvider
+class BootstrapMFAProvider
 {
     protected $member;
 

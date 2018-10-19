@@ -19,7 +19,7 @@ use SilverStripe\SiteConfig\SiteConfig;
  * Class MemberExtension
  *
  * @package Firesphere\BootstrapMFA
- * @property MemberExtension $owner
+ * @property Member|MemberExtension $owner
  * @property boolean $MFAEnabled
  * @method DataList|BackupCode[] BackupCodes()
  */
@@ -106,5 +106,23 @@ class MemberExtension extends DataExtension
     public function getBackupcodes()
     {
         return $this->owner->BackupCodes();
+    }
+
+    public function isInGracePeriod()
+    {
+        $member = $this->owner;
+
+        // If MFA is enabled on the member, we're always using it
+        if ($member->MFAEnabled) {
+            return false;
+        }
+
+        $config = SiteConfig::current_site_config();
+        // If MFA is not enforced, we're in an endless grace period
+        if (!$config->ForceMFA) {
+            return true;
+        }
+
+        $graceStartDay = ($member->Created > $config->ForceMFA) ? $member->Created : $config->ForceMFA;
     }
 }

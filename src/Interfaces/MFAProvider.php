@@ -1,6 +1,6 @@
 <?php
 
-namespace Firesphere\BootstrapMFA\Providers;
+namespace Firesphere\BootstrapMFA\Interfaces;
 
 use Firesphere\BootstrapMFA\Models\BackupCode;
 use SilverStripe\Security\Member;
