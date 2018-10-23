@@ -2,9 +2,12 @@
 
 namespace Firesphere\BootstrapMFA\Extensions;
 
+use DateTime;
+use Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator;
 use Firesphere\BootstrapMFA\Models\BackupCode;
 use Firesphere\BootstrapMFA\Providers\BootstrapMFAProvider;
 use SilverStripe\Control\Controller;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\CheckboxField;
@@ -52,10 +55,10 @@ class MemberExtension extends DataExtension
      */
     public function updateCMSFields(FieldList $fields)
     {
-        $this->updateMFA = 0;
+        $this->updateMFA = false;
         $fields->removeByName(['BackupCodes']);
         $session = Controller::curr()->getRequest()->getSession();
-        $rootTabSet = $fields->fieldByName("Root");
+        $rootTabSet = $fields->fieldByName('Root');
         $field = LiteralField::create('tokens', $session->get('tokens'));
         $tab = Tab::create(
             'MFA',
@@ -126,5 +129,14 @@ class MemberExtension extends DataExtension
         }
 
         $graceStartDay = ($member->Created > $config->ForceMFA) ? $member->Created : $config->ForceMFA;
+        $graceStartDay = new DateTime($graceStartDay);
+
+        $gracePeriod = Config::inst()->get(BootstrapMFAAuthenticator::class, 'grace_period');
+
+        $nowDate = new DateTime(date('Y-m-d'));
+
+        $diff = $nowDate->diff($graceStartDay)->format('%a');
+
+        return !($diff >= $gracePeriod);
     }
 }

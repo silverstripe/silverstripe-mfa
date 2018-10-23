@@ -17,6 +17,8 @@ Firesphere\BootstrapMFA\Generators\CodeGenerator:
   length: 6
   type: mixed
   case: mixed
+Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator:
+  grace_period: 14
 SilverStripe\SiteConfig\SiteConfig:
   extensions:
     - Firesphere\BootstrapMFA\Extensions\SiteConfigExtension
