@@ -5,9 +5,11 @@ namespace Firesphere\BootstrapMFA\Authenticators;
 use Firesphere\BootstrapMFA\Handlers\BootstrapMFALoginHandler;
 use Firesphere\BootstrapMFA\Interfaces\MFAAuthenticator;
 use Firesphere\BootstrapMFA\Providers\BootstrapMFAProvider;
+use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\ValidationException;
 use SilverStripe\ORM\ValidationResult;
+use SilverStripe\Security\Authenticator;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\MemberAuthenticator\MemberAuthenticator;
 use SilverStripe\Security\PasswordEncryptor_NotFoundException;
@@ -16,9 +18,8 @@ use SilverStripe\Security\PasswordEncryptor_NotFoundException;
  * Class BootstrapMFAAuthenticator
  * It needs to be instantiable, therefore it can't be an Abstract.
  *
- * @todo Interface!
- *
  * @package Firesphere\BootstrapMFA\Authenticators
+ * @method getTokenField() Stub for child implementations
  */
 class BootstrapMFAAuthenticator extends MemberAuthenticator implements MFAAuthenticator
 {
@@ -26,6 +27,16 @@ class BootstrapMFAAuthenticator extends MemberAuthenticator implements MFAAuthen
      * Key for array to be stored in between steps in the session
      */
     const SESSION_KEY = 'MFALogin';
+
+    /**
+     * @return int
+     */
+    public function supportedServices()
+    {
+        // Bitwise-OR of all the supported services in this Authenticator, to make a bitmask
+        return Authenticator::LOGIN | Authenticator::LOGOUT | Authenticator::CHANGE_PASSWORD
+            | Authenticator::RESET_PASSWORD | Authenticator::CHECK_PASSWORD;
+    }
 
     /**
      * @param Member $member
@@ -73,20 +84,26 @@ class BootstrapMFAAuthenticator extends MemberAuthenticator implements MFAAuthen
     }
 
     /**
-     * @param $member
-     * @param $token
-     * @param $result
-     * @throws \Exception
+     * This implementation should be on the subclass
+     *
+     * @param array $data
+     * @param HTTPRequest $request
+     * @param string $token
+     * @param ValidationResult $result
+     * @throws \LogicException
      */
-    public function verifyMFA($member, $token, &$result)
+    public function verifyMFA($data, $request, $token, &$result)
     {
         throw new \LogicException('No token verification implemented');
     }
 
     /**
-     * @throws \Exception
+     * This implementation should be on the subclass
+     *
+     * @param BootstrapMFALoginHandler $controller
+     * @param string $name
      */
-    public function getMFAForm()
+    public function getMFAForm($controller, $name)
     {
         throw new \LogicException('No MFA Form implementation found');
     }

@@ -13,6 +13,7 @@ use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\Tab;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\DataList;
+use SilverStripe\Security\Member;
 use SilverStripe\SiteConfig\SiteConfig;
 
 /**

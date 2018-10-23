@@ -9,6 +9,7 @@
 namespace Firesphere\BootstrapMFA\Interfaces;
 
 
+use SilverStripe\Control\HTTPRequest;
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\Member;
 
@@ -19,16 +20,17 @@ interface MFAAuthenticator
      * Get the MFA form
      * @return mixed
      */
-    public function getMFAForm();
+    public function getMFAForm($controller, $name);
 
     /**
      * Verify the MFA code
      *
-     * @param Member $member
+     * @param array $data
+     * @param HTTPRequest $request
      * @param string $token
      * @param ValidationResult $result
      * @return mixed
      */
-    public function verifyMFA($member, $token, &$result);
+    public function verifyMFA($data, $request, $token, &$result);
 
 }
