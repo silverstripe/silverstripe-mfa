@@ -1,24 +1,21 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: simon
- * Date: 19-Oct-18
- * Time: 13:47
- */
 
 namespace Firesphere\BootstrapMFA\Interfaces;
 
-
+use Firesphere\BootstrapMFA\Forms\BootstrapMFALoginForm;
+use Firesphere\BootstrapMFA\Handlers\BootstrapMFALoginHandler;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\ORM\ValidationResult;
-use SilverStripe\Security\Member;
 
 interface MFAAuthenticator
 {
 
     /**
      * Get the MFA form
-     * @return mixed
+     *
+     * @param BootstrapMFALoginHandler $controller
+     * @param string $name
+     * @return BootstrapMFALoginForm
      */
     public function getMFAForm($controller, $name);
 
@@ -33,4 +30,10 @@ interface MFAAuthenticator
      */
     public function verifyMFA($data, $request, $token, &$result);
 
+    /**
+     * Required to find the token field for the authenticator
+     *
+     * @return string
+     */
+    public function getTokenField();
 }

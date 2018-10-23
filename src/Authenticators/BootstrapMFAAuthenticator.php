@@ -3,7 +3,6 @@
 namespace Firesphere\BootstrapMFA\Authenticators;
 
 use Firesphere\BootstrapMFA\Handlers\BootstrapMFALoginHandler;
-use Firesphere\BootstrapMFA\Interfaces\MFAAuthenticator;
 use Firesphere\BootstrapMFA\Providers\BootstrapMFAProvider;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Injector\Injector;
@@ -19,9 +18,9 @@ use SilverStripe\Security\PasswordEncryptor_NotFoundException;
  * It needs to be instantiable, therefore it can't be an Abstract.
  *
  * @package Firesphere\BootstrapMFA\Authenticators
- * @method getTokenField() Stub for child implementations
+ * @method string getTokenField() Stub for child implementations
  */
-class BootstrapMFAAuthenticator extends MemberAuthenticator implements MFAAuthenticator
+class BootstrapMFAAuthenticator extends MemberAuthenticator
 {
     /**
      * Key for array to be stored in between steps in the session

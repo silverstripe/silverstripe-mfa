@@ -68,7 +68,7 @@ class SiteConfigExtension extends DataExtension
             $this->owner->ForceMFA = DBDatetime::now()->Format('YYYY-MM-dd');
         }
 
-        /* Reset the MFA enforcement */
+        /* Reset the MFA enforcement if the checkbox is unchecked */
         if (!$this->owner->EnforceMFA) {
             $this->owner->ForceMFA = null;
         }

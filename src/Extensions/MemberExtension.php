@@ -80,7 +80,7 @@ class MemberExtension extends DataExtension
     }
 
     /**
-     *
+     * Force enable MFA on the member if needed
      */
     public function onBeforeWrite()
     {
@@ -111,6 +111,7 @@ class MemberExtension extends DataExtension
 
     public function isInGracePeriod()
     {
+        /** @var Member $member */
         $member = $this->owner;
 
         // If MFA is enabled on the member, we're always using it

@@ -10,10 +10,8 @@ use SilverStripe\Control\Session;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Manifest\ClassLoader;
 use SilverStripe\ORM\ArrayList;
-use SilverStripe\ORM\ValidationException;
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\IdentityStore;
-use SilverStripe\Security\LoginForm;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\MemberAuthenticator\LoginHandler;
 use SilverStripe\Security\MemberAuthenticator\MemberLoginForm;
@@ -26,7 +24,6 @@ use SilverStripe\View\ArrayData;
  */
 class BootstrapMFALoginHandler extends LoginHandler
 {
-
     const VERIFICATION_METHOD = 'validateMFA';
 
     /**
@@ -87,6 +84,7 @@ class BootstrapMFALoginHandler extends LoginHandler
 
             return $this->redirect($this->Link('verify'));
         }
+
         return $this->redirectBack();
     }
 
