@@ -8,7 +8,6 @@ use Firesphere\BootstrapMFA\Models\BackupCode;
 use Firesphere\BootstrapMFA\Providers\BootstrapMFAProvider;
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Config\Config;
-use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\FieldList;
@@ -25,17 +24,17 @@ use SilverStripe\SiteConfig\SiteConfig;
  * @package Firesphere\BootstrapMFA
  * @property Member|MemberExtension $owner
  * @property boolean $MFAEnabled
+ * @property string $PrimaryMFA
  * @method DataList|BackupCode[] BackupCodes()
  */
 class MemberExtension extends DataExtension
 {
-    use Configurable;
-
     /**
      * @var array
      */
     private static $db = [
         'MFAEnabled' => 'Boolean(false)',
+        'PrimaryMFA' => 'Varchar(255)',
     ];
 
     /**
@@ -56,10 +55,11 @@ class MemberExtension extends DataExtension
     public function updateCMSFields(FieldList $fields)
     {
         $this->updateMFA = false;
-        $fields->removeByName(['BackupCodes']);
+        $fields->removeByName(['BackupCodes', 'PrimaryMFA']);
         $session = Controller::curr()->getRequest()->getSession();
         $rootTabSet = $fields->fieldByName('Root');
         $field = LiteralField::create('tokens', $session->get('tokens'));
+        // We need to push the tab for unit tests
         $tab = Tab::create(
             'MFA',
             _t(self::class . '.MFATAB', 'Multi Factor Authentication')
@@ -114,7 +114,7 @@ class MemberExtension extends DataExtension
 
     public function isInGracePeriod()
     {
-        /** @var Member $member */
+        /** @var Member|MemberExtension $member */
         $member = $this->owner;
 
         // If MFA is enabled on the member, we're always using it
@@ -122,6 +122,7 @@ class MemberExtension extends DataExtension
             return false;
         }
 
+        /** @var SiteConfig|SiteConfigExtension $config */
         $config = SiteConfig::current_site_config();
         // If MFA is not enforced, we're in an endless grace period
         if (!$config->ForceMFA) {

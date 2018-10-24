@@ -6,6 +6,8 @@ use SilverStripe\Core\Config\Configurable;
 
 /**
  * Class CodeGenerator
+ * Slightly modified version of a class randomly found online
+ * It's modified to fit the SilverStripe config
  *
  * @package Firesphere\BootstrapMFA\Generators
  */
@@ -31,21 +33,42 @@ class CodeGenerator
 
     const TYPE_ALNUM = 'alnum';
 
+    /**
+     * @var static
+     */
     protected static $global_inst;
 
+    /**
+     * @var string
+     */
     private $case;
 
+    /**
+     * @var string
+     */
     private $type;
 
+    /**
+     * @var integer
+     */
     private $length;
 
+    /**
+     * @var string
+     */
     private $validChars;
 
+    /**
+     * @return static
+     */
     public static function inst()
     {
         return singleton(static::class);
     }
 
+    /**
+     * @return $this
+     */
     public function uppercase()
     {
         $this->case = self::CASE_UPPER;
@@ -53,6 +76,9 @@ class CodeGenerator
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function lowercase()
     {
         $this->case = self::CASE_LOWER;
@@ -60,6 +86,9 @@ class CodeGenerator
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function numbersonly()
     {
         $this->type = self::TYPE_NUMERIC;
@@ -67,6 +96,9 @@ class CodeGenerator
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function charactersonly()
     {
         $this->type = self::TYPE_ALPHA;
@@ -74,6 +106,10 @@ class CodeGenerator
         return $this;
     }
 
+    /**
+     * @param $chars
+     * @return $this
+     */
     public function setChars($chars)
     {
         $this->validChars = $chars;
@@ -81,11 +117,19 @@ class CodeGenerator
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return $this->generate();
     }
 
+    /**
+     * Generate a random resulting string
+     *
+     * @return string
+     */
     public function generate()
     {
         $chars = $this->validChars();
@@ -99,6 +143,9 @@ class CodeGenerator
         return implode('', $code);
     }
 
+    /**
+     * @return string
+     */
     private function validChars()
     {
         if ($this->validChars) {
@@ -107,14 +154,14 @@ class CodeGenerator
         $chars = array();
         $type = $this->getType();
         $case = $this->getCase();
-        if ($type == self::TYPE_ALNUM || $type == self::TYPE_NUMERIC) {
+        if ($type === self::TYPE_ALNUM || $type === self::TYPE_NUMERIC) {
             $chars[] = self::NUMBERS;
         }
-        if ($type == self::TYPE_ALNUM || $type == self::TYPE_ALPHA) {
-            if ($case == self::CASE_MIXED || $case == self::CASE_LOWER) {
+        if ($type === self::TYPE_ALNUM || $type === self::TYPE_ALPHA) {
+            if ($case === self::CASE_MIXED || $case === self::CASE_LOWER) {
                 $chars[] = self::CHARS_LOWER;
             }
-            if ($case == self::CASE_MIXED || $case == self::CASE_UPPER) {
+            if ($case === self::CASE_MIXED || $case === self::CASE_UPPER) {
                 $chars[] = self::CHARS_UPPER;
             }
         }
@@ -122,11 +169,17 @@ class CodeGenerator
         return implode('', $chars);
     }
 
+    /**
+     * @return mixed
+     */
     public function getType()
     {
         return $this->type ?: static::global_inst()->getType();
     }
 
+    /**
+     * @return mixed
+     */
     public static function global_inst()
     {
         if (!static::$global_inst) {
@@ -139,6 +192,9 @@ class CodeGenerator
         return static::$global_inst;
     }
 
+    /**
+     * @return $this
+     */
     public function mixedcase()
     {
         $this->case = self::CASE_MIXED;
@@ -146,6 +202,9 @@ class CodeGenerator
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function alphanumeric()
     {
         $this->type = self::TYPE_ALNUM;
@@ -153,16 +212,26 @@ class CodeGenerator
         return $this;
     }
 
+    /**
+     * @return mixed
+     */
     public function getCase()
     {
         return $this->case ?: static::global_inst()->getCase();
     }
 
+    /**
+     * @return mixed
+     */
     public function getLength()
     {
         return $this->length ?: static::global_inst()->getLength();
     }
 
+    /**
+     * @param $length
+     * @return $this
+     */
     public function setLength($length)
     {
         $this->length = $length;

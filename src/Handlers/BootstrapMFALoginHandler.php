@@ -3,6 +3,7 @@
 namespace Firesphere\BootstrapMFA\Handlers;
 
 use Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator;
+use Firesphere\BootstrapMFA\Extensions\MemberExtension;
 use Firesphere\BootstrapMFA\Forms\BootstrapMFALoginForm;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
@@ -65,7 +66,10 @@ class BootstrapMFALoginHandler extends LoginHandler
      */
     public function doLogin($data, MemberLoginForm $form, HTTPRequest $request)
     {
-        /** @var ValidationResult $message */
+        /**
+         * @var ValidationResult $message
+         * @var Member|MemberExtension $member
+         */
         $member = $this->checkLogin($data, $request, $message);
         // If we're in grace period, continue to the parent
         if ($member->isInGracePeriod()) {
@@ -96,16 +100,10 @@ class BootstrapMFALoginHandler extends LoginHandler
     public function secondFactor(HTTPRequest $request)
     {
         $memberID = $request->getSession()->get(BootstrapMFAAuthenticator::SESSION_KEY . '.MemberID');
+        /** @var Member|MemberExtension $member */
         $member = Member::get()->byID($memberID);
         $primary = $member->PrimaryMFA;
-        $classManifest = ClassLoader::inst()->getManifest();
-        $classNames = $classManifest->getDescendantsOf(BootstrapMFAAuthenticator::class);
-        $formList = [];
-        foreach ($classNames as $key => $className) {
-            /** @var BootstrapMFAAuthenticator $class */
-            $class = Injector::inst()->get($className);
-            $formList[] = $class->getMFAForm($this, static::VERIFICATION_METHOD);
-        }
+        $formList = $this->getFormList();
 
         $view = ArrayData::create(['Forms' => ArrayList::create($formList)]);
         $rendered = [
@@ -115,6 +113,23 @@ class BootstrapMFALoginHandler extends LoginHandler
         ];
 
         return $rendered;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getFormList()
+    {
+        $classManifest = ClassLoader::inst()->getManifest();
+        $classNames = $classManifest->getDescendantsOf(BootstrapMFAAuthenticator::class);
+        $formList = [];
+        foreach ($classNames as $key => $className) {
+            /** @var BootstrapMFAAuthenticator $class */
+            $class = Injector::inst()->get($className);
+            $formList[] = $class->getMFAForm($this, static::VERIFICATION_METHOD);
+        }
+
+        return $formList;
     }
 
     /**
@@ -134,7 +149,10 @@ class BootstrapMFALoginHandler extends LoginHandler
         $member = $authenticator->verifyMFA($postVars, $request, $postVars[$field], $result);
         // Manually login
         if ($member && $result->isValid()) {
-            Injector::inst()->get(IdentityStore::class)->logIn($member);
+            $data = $request->getSession()->get(BootstrapMFAAuthenticator::SESSION_KEY . '.Data');
+            $this->performLogin($member, $data, $request);
+            // Redirecting after successful login expects a getVar to be set
+            $request->offsetSet('BackURL', $data['BackURL']);
 
             return $this->redirectAfterSuccessfulLogin();
         }
