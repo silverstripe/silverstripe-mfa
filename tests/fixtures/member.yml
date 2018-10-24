@@ -5,6 +5,7 @@ SilverStripe\Security\Member:
     FirstName: Lancelot
     Surname: du Lac
     Password: 'password1'
+    MFAEnabled: true
   member2:
     Email: admin
     Password: password
