@@ -70,7 +70,7 @@ class BootstrapMFAAuthenticatorTest extends SapphireTest
 
     public function testGetLoginHandler()
     {
-        $handler = $this->authenticator->getLoginHandler();
+        $handler = $this->authenticator->getLoginHandler('/Security/login');
 
         $this->assertInstanceOf(BootstrapMFALoginHandler::class, $handler);
     }
