@@ -10,6 +10,7 @@ use Firesphere\BootstrapMFA\Tests\Mock\MockBootstrapMFAHandler;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
+use SilverStripe\Control\Session;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\Security\Member;
@@ -51,25 +52,6 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
         $this->assertInstanceOf(BootstrapMFALoginForm::class, $form);
     }
 
-    public function testSuccessValidate()
-    {
-        Security::setCurrentUser($this->member);
-        BackupCode::generateTokensForMember($this->member);
-        $tokens = CodeHelper::getCodesFromSession();
-        $data = ['token' => $tokens[0]];
-        $response = $this->handler->validate($data, $this->form, $this->request, $result);
-
-        $this->assertInstanceOf(Member::class, $response);
-    }
-
-    public function testErrorValidate()
-    {
-        $data = ['token' => 'wrongtokenforsure'];
-        $this->handler->validate($data, $this->form, $this->request, $result);
-
-        $this->assertFalse($result->isValid());
-    }
-
     public function testDoLogin()
     {
         $data = [
@@ -77,13 +59,20 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
             'Password' => 'password1'
         ];
 
-        $response = $this->handler->doLogin($data, $this->form, $this->request);
+        $request = Controller::curr()->getRequest();
+
+        $session = new Session(['key' => 'value']);
+        $session->init($request);
+
+        $request->setSession($session);
+
+        $response = $this->handler->doLogin($data, $this->form, $request);
 
         $this->assertInstanceOf(HTTPResponse::class, $response);
         $this->assertEquals(302, $response->getStatusCode());
         $this->assertContains('verify', $response->getHeader('location'));
 
-        $session = $this->request->getSession();
+        $session = $request->getSession();
         $expected = [
             'MemberID' => 1,
             'Data'     =>
@@ -103,13 +92,20 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
             'BackURL'  => '/memberlocation'
         ];
 
-        $response = $this->handler->doLogin($data, $this->form, $this->request);
+        $request = Controller::curr()->getRequest();
+
+        $session = new Session(['key' => 'value']);
+        $session->init($request);
+
+        $request->setSession($session);
+
+        $response = $this->handler->doLogin($data, $this->form, $request);
 
         $this->assertInstanceOf(HTTPResponse::class, $response);
         $this->assertEquals(302, $response->getStatusCode());
         $this->assertContains('verify', $response->getHeader('location'));
 
-        $session = $this->request->getSession();
+        $session = $request->getSession();
         $expected = [
             'MemberID' => 1,
             'BackURL'  => '/memberlocation',
@@ -139,7 +135,7 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
 
     public function testMFALoginForm()
     {
-        $result = $this->handler->secondFactor();
+        $result = $this->handler->secondFactor($this->request);
 
         $this->assertArrayHasKey('Form', $result);
     }
@@ -150,8 +146,9 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
         $this->request = Controller::curr()->getRequest();
         $this->member = $this->objFromFixture(Member::class, 'member1');
 
-        $session = $this->request->getSession();
+        $session = new Session([]);
         $session->set(BootstrapMFAAuthenticator::SESSION_KEY . '.MemberID', $this->member->ID);
+        $this->request->setSession($session);
 
         $this->authenticator = Injector::inst()->create(BootstrapMFAAuthenticator::class);
         $this->form = Injector::inst()->createWithArgs(

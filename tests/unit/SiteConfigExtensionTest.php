@@ -12,6 +12,6 @@ class SiteConfigExtensionTest extends SapphireTest
     {
         $fields = SiteConfig::current_site_config()->getCMSFields();
 
-        $this->assertInstanceOf(CheckboxField::class, $fields->dataFieldByName('ForceMFA'));
+        $this->assertInstanceOf(CheckboxField::class, $fields->dataFieldByName('EnforceMFA'));
     }
 }

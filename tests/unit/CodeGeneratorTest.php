@@ -33,6 +33,8 @@ class CodeGeneratorTest extends SapphireTest
 
         $generator->setChars('1234567890');
 
+        $generator->setLength(6);
+
         $code = $generator->generate();
 
         $this->assertTrue(is_numeric($code));

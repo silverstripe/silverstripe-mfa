@@ -61,5 +61,4 @@ class BootstrapMFAProvider
         }
         // Fail silently
     }
-
 }

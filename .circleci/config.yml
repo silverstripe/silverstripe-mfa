@@ -6,7 +6,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: brettt89/silverstripe-web
+      - image: brettt89/silverstripe-web:7.1-ssp
         environment:
           - SS_DATABASE_CLASS=MySQLPDODatabase
           - SS_DATABASE_SERVER=127.0.0.1

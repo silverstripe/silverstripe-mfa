@@ -72,7 +72,7 @@ class BootstrapMFALoginHandler extends LoginHandler
          */
         $member = $this->checkLogin($data, $request, $message);
         // If we're in grace period, continue to the parent
-        if ($member->isInGracePeriod()) {
+        if ($member && $member->isInGracePeriod()) {
             return parent::doLogin($data, $form, $request);
         }
 
@@ -108,7 +108,7 @@ class BootstrapMFALoginHandler extends LoginHandler
         $view = ArrayData::create(['Forms' => ArrayList::create($formList)]);
         $rendered = [
             'Forms'   => $formList,
-            'Form'    => $view->renderWith(static::class . '_MFAForms'),
+            'Form'    => $view->renderWith(self::class . '_MFAForms'),
             'Primary' => $primary
         ];
 
