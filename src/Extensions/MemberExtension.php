@@ -125,7 +125,7 @@ class MemberExtension extends DataExtension
         /** @var SiteConfig|SiteConfigExtension $config */
         $config = SiteConfig::current_site_config();
         // If MFA is not enforced, we're in an endless grace period
-        if (!$config->ForceMFA) {
+        if ($config->ForceMFA === null) {
             return true;
         }
 
