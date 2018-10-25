@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - checkout
-      - run: apt-get install netcat -y
+      - run: apt-get update && apt-get install -y apt-transport-https lsb-release netcat
       # Install additional requirements
       - run:
           command: |
