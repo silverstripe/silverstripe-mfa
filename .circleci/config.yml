@@ -27,6 +27,7 @@ jobs:
 
     steps:
       - checkout
+      - run: apt-get install netcat -y
       # Install additional requirements
       - run:
           command: |
