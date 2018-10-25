@@ -32,6 +32,22 @@ class SiteConfigExtension extends DataExtension
     protected $EnforceMFA = false;
 
     /**
+     * @return bool
+     */
+    public function isEnforceMFA()
+    {
+        return $this->EnforceMFA;
+    }
+
+    /**
+     * @param bool $EnforceMFA
+     */
+    public function setEnforceMFA($EnforceMFA)
+    {
+        $this->EnforceMFA = $EnforceMFA;
+    }
+
+    /**
      * Add the checkbox and if enabled the date since enforcement
      *
      * @param FieldList $fields

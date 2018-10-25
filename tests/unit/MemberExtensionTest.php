@@ -160,11 +160,12 @@ class MemberExtensionTest extends SapphireTest
     {
         /** @var Member|MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'member2');
+        Security::setCurrentUser($member);
         $this->assertTrue($member->isInGracePeriod());
         /** @var SiteConfig|SiteConfigExtension $config */
         $config = SiteConfig::current_site_config();
         $config->ForceMFA = date('Y-m-d');
-        $config->EnforceMFA = true;
+        $config->setEnforceMFA(true);
         $config->write();
         $this->assertTrue($member->isInGracePeriod());
         $member->Created = '1970-01-01 00:00:00';
