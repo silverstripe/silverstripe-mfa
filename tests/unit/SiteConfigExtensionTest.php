@@ -15,7 +15,7 @@ class SiteConfigExtensionTest extends SapphireTest
         /** @var SiteConfig|SiteConfigExtension $config */
         $config = SiteConfig::current_site_config();
 
-        $config->setEnforceMFA(false);
+        $config->EnforceMFA = false;
         $config->ForceMFA = '0000-00-00';
 
         $config->write();
@@ -24,7 +24,7 @@ class SiteConfigExtensionTest extends SapphireTest
 
         $this->assertNull($config->ForceMFA);
 
-        $config->setEnforceMFA(true);
+        $config->EnforceMFA = true;
 
         $config->write();
 
@@ -32,7 +32,7 @@ class SiteConfigExtensionTest extends SapphireTest
 
         $this->assertEquals(date('Y-m-d'), $config->ForceMFA);
 
-        $config->setEnforceMFA(false);
+        $config->EnforceMFA = false;
 
         $config->write();
 
