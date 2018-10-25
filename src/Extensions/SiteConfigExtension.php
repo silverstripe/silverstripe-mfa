@@ -24,28 +24,13 @@ class SiteConfigExtension extends DataExtension
     private static $db = [
         'ForceMFA' => 'Date'
     ];
+
     /**
      * Is MFA Enforced via a comparison in {@link updateCMSFields()}
      *
      * @var bool
      */
-    protected $EnforceMFA = false;
-
-    /**
-     * @return bool
-     */
-    public function isEnforceMFA()
-    {
-        return $this->EnforceMFA;
-    }
-
-    /**
-     * @param bool $EnforceMFA
-     */
-    public function setEnforceMFA($EnforceMFA)
-    {
-        $this->EnforceMFA = $EnforceMFA;
-    }
+    public $EnforceMFA = false;
 
     /**
      * Add the checkbox and if enabled the date since enforcement

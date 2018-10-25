@@ -11,6 +11,7 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TabSet;
+use SilverStripe\ORM\DataList;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 use SilverStripe\SiteConfig\SiteConfig;
@@ -21,7 +22,7 @@ class MemberExtensionTest extends SapphireTest
 
     public function testMemberCodesExpired()
     {
-        /** @var Member $member */
+        /** @var Member|MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'member1');
 
         $member->updateMFA = true;
@@ -42,7 +43,7 @@ class MemberExtensionTest extends SapphireTest
 
     public function testMemberCodesNotExpired()
     {
-        /** @var Member $member */
+        /** @var Member|MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'member1');
 
         $member->updateMFA = true;
@@ -98,7 +99,7 @@ class MemberExtensionTest extends SapphireTest
 
         $extension->onAfterWrite();
 
-        $this->assertEquals(15, count(CodeHelper::getCodesFromSession()));
+        $this->assertCount(15, CodeHelper::getCodesFromSession());
         $this->assertEquals(15, $member->BackupCodes()->count());
     }
 
@@ -164,8 +165,7 @@ class MemberExtensionTest extends SapphireTest
         $this->assertTrue($member->isInGracePeriod());
         /** @var SiteConfig|SiteConfigExtension $config */
         $config = SiteConfig::current_site_config();
-        $config->ForceMFA = date('Y-m-d');
-        $config->setEnforceMFA(true);
+        $config->EnforceMFA = true;
         $config->write();
         $this->assertTrue($member->isInGracePeriod());
         $member->Created = '1970-01-01 00:00:00';

@@ -55,7 +55,5 @@ class SiteConfigExtensionTest extends SapphireTest
         $fields = SiteConfig::current_site_config()->getCMSFields();
 
         $this->assertInstanceOf(ReadonlyField::class, $fields->dataFieldByName('ForceMFA'));
-
     }
-
 }

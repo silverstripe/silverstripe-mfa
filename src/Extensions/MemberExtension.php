@@ -47,7 +47,7 @@ class MemberExtension extends DataExtension
     /**
      * @var bool
      */
-    protected $updateMFA = false;
+    public $updateMFA = false;
 
     /**
      * @param FieldList $fields

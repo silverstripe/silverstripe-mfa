@@ -49,6 +49,7 @@ jobs:
             - assets
             - vendor
             - mysite
+      - run: until nc -z -v -w30 127.0.0.1 3306; do sleep 1; done
       - run: vendor/bin/sake dev/build
 
       # run tests!
