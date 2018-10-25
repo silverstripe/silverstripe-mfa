@@ -3,6 +3,7 @@
 namespace Firesphere\BootstrapMFA\Tests;
 
 use Firesphere\BootstrapMFA\Extensions\MemberExtension;
+use Firesphere\BootstrapMFA\Extensions\SiteConfigExtension;
 use Firesphere\BootstrapMFA\Models\BackupCode;
 use Firesphere\BootstrapMFA\Tests\Helpers\CodeHelper;
 use SilverStripe\Control\Controller;
@@ -153,5 +154,24 @@ class MemberExtensionTest extends SapphireTest
         $indirectCodes = $member->getBackupcodes()->map('ID', 'Code');
 
         $this->assertEquals($directCodes, $indirectCodes);
+    }
+
+    public function testIsInGracePeriod()
+    {
+        /** @var Member|MemberExtension $member */
+        $member = $this->objFromFixture(Member::class, 'member2');
+        $this->assertTrue($member->isInGracePeriod());
+        /** @var SiteConfig|SiteConfigExtension $config */
+        $config = SiteConfig::current_site_config();
+        $config->ForceMFA = date('Y-m-d');
+        $config->write();
+        $this->assertTrue($member->isInGracePeriod());
+        $member->Created = '1970-01-01 00:00:00';
+        $member->write();
+        $this->assertFalse($member->isInGracePeriod());
+        $member->Created = date('Y-m-d 00:00:00');
+        $member->MFAEnabled = true;
+        $member->write();
+        $this->assertFalse($member->isInGracePeriod());
     }
 }
