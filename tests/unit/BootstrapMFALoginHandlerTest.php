@@ -4,17 +4,16 @@ namespace Firesphere\BootstrapMFA\Tests;
 
 use Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator;
 use Firesphere\BootstrapMFA\Forms\BootstrapMFALoginForm;
-use Firesphere\BootstrapMFA\Models\BackupCode;
-use Firesphere\BootstrapMFA\Tests\Helpers\CodeHelper;
-use Firesphere\BootstrapMFA\Tests\Mock\MockBootstrapMFAHandler;
+use Firesphere\BootstrapMFA\Handlers\BootstrapMFALoginHandler;
+use Firesphere\BootstrapMFA\Tests\Mocks\MockAuthenticator;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\Session;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
+use SilverStripe\Forms\FormField;
 use SilverStripe\Security\Member;
-use SilverStripe\Security\Security;
 
 class BootstrapMFALoginHandlerTest extends SapphireTest
 {
@@ -41,7 +40,7 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
     protected $form;
 
     /**
-     * @var MockBootstrapMFAHandler
+     * @var BootstrapMFALoginHandler
      */
     protected $handler;
 
@@ -82,6 +81,23 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
                 ]
         ];
         $this->assertEquals($expected, $session->get(BootstrapMFAAuthenticator::SESSION_KEY));
+
+        $session = new Session(['key' => 'value']);
+        $session->init($request);
+
+        $request->setSession($session);
+
+        $data = [
+            'Email'    => 'admin',
+            'Password' => 'password'
+        ];
+
+        $this->handler->setRequest($request);
+        $response = $this->handler->doLogin($data, $this->form, $request);
+
+        $this->assertEquals(302, $response->getStatusCode());
+        // We don't have a backURL, so expect to go back to '/login'
+        $this->assertContains('login', $response->getHeader('location'));
     }
 
     public function testBackURLLogin()
@@ -133,11 +149,15 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
         $this->assertContains('login', $response->getHeader('location'));
     }
 
-    public function testMFALoginForm()
+    public function testSecondFactor()
     {
         $result = $this->handler->secondFactor($this->request);
 
         $this->assertArrayHasKey('Form', $result);
+        $form = $result['Forms'][0];
+        /** @var FormField $field */
+        $field = $form->Fields()->dataFieldByName('AuthenticationMethod');
+        $this->assertEquals(MockAuthenticator::class, $field->Value());
     }
 
     protected function setUp()
@@ -156,7 +176,7 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
             [Controller::curr(), $this->authenticator, 'test']
         );
         $this->handler = Injector::inst()->createWithArgs(
-            MockBootstrapMFAHandler::class,
+            BootstrapMFALoginHandler::class,
             ['login', $this->authenticator]
         );
     }

@@ -75,25 +75,6 @@ class BootstrapMFAAuthenticatorTest extends SapphireTest
         $this->assertInstanceOf(BootstrapMFALoginHandler::class, $handler);
     }
 
-    /**
-     * @expectedException \LogicException
-     */
-    public function testVerifyMFA()
-    {
-        $request = Controller::curr()->getRequest();
-
-        $this->authenticator->verifyMFA([], $request, '', $result);
-    }
-
-    /**
-     * @expectedException \LogicException
-     */
-    public function testGetMFAForm()
-    {
-        $controller = Controller::curr();
-        $this->authenticator->getMFAForm($controller, '');
-    }
-
     protected function setUp()
     {
         $this->authenticator = Injector::inst()->get(BootstrapMFAAuthenticator::class);

@@ -81,29 +81,4 @@ class BootstrapMFAAuthenticator extends MemberAuthenticator
     {
         return BootstrapMFALoginHandler::create($link, $this);
     }
-
-    /**
-     * This implementation should be on the subclass
-     *
-     * @param array $data
-     * @param HTTPRequest $request
-     * @param string $token
-     * @param ValidationResult $result
-     * @throws \LogicException
-     */
-    public function verifyMFA($data, $request, $token, &$result)
-    {
-        throw new \LogicException('No token verification implemented');
-    }
-
-    /**
-     * This implementation should be on the subclass
-     *
-     * @param BootstrapMFALoginHandler $controller
-     * @param string $name
-     */
-    public function getMFAForm($controller, $name)
-    {
-        throw new \LogicException('No MFA Form implementation found');
-    }
 }
