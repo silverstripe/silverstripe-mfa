@@ -4,7 +4,6 @@ namespace Firesphere\BootstrapMFA\Authenticators;
 
 use Firesphere\BootstrapMFA\Handlers\BootstrapMFALoginHandler;
 use Firesphere\BootstrapMFA\Providers\BootstrapMFAProvider;
-use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\ValidationException;
 use SilverStripe\ORM\ValidationResult;

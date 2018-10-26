@@ -7,10 +7,12 @@ use Firesphere\BootstrapMFA\Forms\BootstrapMFALoginForm;
 use Firesphere\BootstrapMFA\Handlers\BootstrapMFALoginHandler;
 use Firesphere\BootstrapMFA\Tests\Mocks\MockAuthenticator;
 use SilverStripe\Control\Controller;
+use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\Session;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Dev\Debug;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\Forms\FormField;
 use SilverStripe\Security\Member;
@@ -154,10 +156,64 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
         $result = $this->handler->secondFactor($this->request);
 
         $this->assertArrayHasKey('Form', $result);
+        /** @var BootstrapMFALoginForm $form */
         $form = $result['Forms'][0];
         /** @var FormField $field */
         $field = $form->Fields()->dataFieldByName('AuthenticationMethod');
         $this->assertEquals(MockAuthenticator::class, $field->Value());
+    }
+
+    public function testValidateMFA()
+    {
+        $data = [
+            'Email'    => 'test@test.com',
+            'Password' => 'password1',
+            'BackURL'  => '/memberlocation'
+        ];
+
+        $request = Controller::curr()->getRequest();
+
+        $session = new Session(['key' => 'value']);
+        $session->init($request);
+
+        $request->setSession($session);
+
+        $response = $this->handler->doLogin($data, $this->form, $request);
+
+        $session = $request->getSession();
+        $data = [
+            'AuthenticationMethod' => MockAuthenticator::class,
+            'token' => 'success'
+        ];
+
+        $request = new HTTPRequest('POST', 'Security/default/validateMFA', [], $data);
+        $request->setSession($session);
+
+        $this->handler->setRequest($request);
+
+        $verification = $this->handler->validateMFA($request);
+
+        $this->assertEquals(302, $verification->getStatusCode());
+        $this->assertContains('memberlocation', $verification->getHeader('location'));
+
+        $data = [
+            'AuthenticationMethod' => MockAuthenticator::class,
+            'token' => 'error'
+        ];
+
+        $request = new HTTPRequest('POST', 'Security/default/validateMFA', [], $data);
+        $request->setSession($session);
+
+        $this->handler->setRequest($request);
+
+        $verification = $this->handler->validateMFA($request);
+
+        $this->assertEquals(302, $verification->getStatusCode());
+        $this->assertNotContains('memberlocation', $verification->getHeader('location'));
+        $this->assertContains('login', $verification->getHeader('location'));
+        $session = $request->getSession();
+        $this->assertEmpty($session);
+
     }
 
     protected function setUp()

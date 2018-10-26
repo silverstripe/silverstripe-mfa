@@ -2,6 +2,7 @@
 
 namespace Firesphere\BootstrapMFA\Tests\Mocks;
 
+
 use Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator;
 use Firesphere\BootstrapMFA\Forms\BootstrapMFALoginForm;
 use Firesphere\BootstrapMFA\Handlers\BootstrapMFALoginHandler;
@@ -12,6 +13,7 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\ValidationResult;
+use SilverStripe\Security\Member;
 
 class MockAuthenticator extends BootstrapMFAAuthenticator implements TestOnly, MFAAuthenticator
 {
@@ -39,7 +41,7 @@ class MockAuthenticator extends BootstrapMFAAuthenticator implements TestOnly, M
     }
 
     /**
-     * Verify the MFA code
+     * Verify the MFA code. Or just fake it
      *
      * @param array $data
      * @param HTTPRequest $request
@@ -49,7 +51,16 @@ class MockAuthenticator extends BootstrapMFAAuthenticator implements TestOnly, M
      */
     public function verifyMFA($data, $request, $token, &$result)
     {
-        // TODO: Implement verifyMFA() method.
+        if (!$result) {
+            $result = ValidationResult::create();
+        }
+        if ($token === 'success') {
+            $id = $request->getSession()->get(BootstrapMFAAuthenticator::SESSION_KEY . '.MemberID');
+            return Member::get()->byID($id);
+        } else {
+            $result->addError('This is not correct');
+            return false;
+        }
     }
 
     public function getTokenField()
