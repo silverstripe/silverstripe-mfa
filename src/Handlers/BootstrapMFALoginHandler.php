@@ -159,7 +159,7 @@ class BootstrapMFALoginHandler extends LoginHandler
 
         // Failure of login, trash session and redirect back
         Injector::inst()->get(IdentityStore::class)->logOut();
-        $request->getSession()->destroy();
+        $request->getSession()->clear(BootstrapMFAAuthenticator::SESSION_KEY);
 
         return $this->redirect(Security::login_url());
     }

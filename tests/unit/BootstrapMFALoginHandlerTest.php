@@ -212,7 +212,7 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
         $this->assertNotContains('memberlocation', $verification->getHeader('location'));
         $this->assertContains('login', $verification->getHeader('location'));
         $session = $request->getSession();
-        $this->assertEmpty($session);
+        $this->assertEmpty($session->get(BootstrapMFAAuthenticator::SESSION_KEY));
 
     }
 
