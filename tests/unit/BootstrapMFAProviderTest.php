@@ -37,7 +37,6 @@ class BootstrapMFAProviderTest extends SapphireTest
 
     public function testResultFound()
     {
-        $result = null;
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'member1');
         /** @var BootstrapMFAProvider $provider */

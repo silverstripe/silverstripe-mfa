@@ -2,7 +2,6 @@
 
 namespace Firesphere\BootstrapMFA\Tests\Mocks;
 
-
 use Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator;
 use Firesphere\BootstrapMFA\Forms\BootstrapMFALoginForm;
 use Firesphere\BootstrapMFA\Handlers\BootstrapMFALoginHandler;
@@ -56,9 +55,11 @@ class MockAuthenticator extends BootstrapMFAAuthenticator implements TestOnly, M
         }
         if ($token === 'success') {
             $id = $request->getSession()->get(BootstrapMFAAuthenticator::SESSION_KEY . '.MemberID');
+
             return Member::get()->byID($id);
         } else {
             $result->addError('This is not correct');
+
             return false;
         }
     }

@@ -5,13 +5,11 @@ namespace Firesphere\BootstrapMFA\Handlers;
 use Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator;
 use Firesphere\BootstrapMFA\Extensions\MemberExtension;
 use Firesphere\BootstrapMFA\Forms\BootstrapMFALoginForm;
-use http\Exception\InvalidArgumentException;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\Session;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Manifest\ClassLoader;
-use SilverStripe\Dev\Debug;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\IdentityStore;
@@ -106,7 +104,7 @@ class BootstrapMFALoginHandler extends LoginHandler
                 $session->set(BootstrapMFAAuthenticator::SESSION_KEY . '.BackURL', $data['BackURL']);
             }
 
-            return $this->redirect($this->Link('verify'));
+            return $this->redirect($this->link('verify'));
         }
 
         return $this->redirectBack();
@@ -131,6 +129,8 @@ class BootstrapMFALoginHandler extends LoginHandler
             'Form'    => $view->renderWith(self::class . '_MFAForms'),
             'Primary' => $primary
         ];
+
+        $this->extend('onBeforeSecondFactor', $rendered, $view, $this);
 
         return $rendered;
     }
@@ -163,19 +163,21 @@ class BootstrapMFALoginHandler extends LoginHandler
         /** @var BootstrapMFAAuthenticator $authenticator */
         $authenticator = Injector::inst()->get($postVars['AuthenticationMethod']);
 
+        /** @var string $field */
         $field = $authenticator->getTokenField();
 
-        /**
-         * @var Member $member
-         * @var ValidationResult $result
-         */
+        /** @var ValidationResult $result */
+        $result = ValidationResult::create();
+
+        /** @var Member $member */
         $member = $authenticator->verifyMFA($postVars, $request, $postVars[$field], $result);
         // Manually login
         if ($member && $result->isValid()) {
             $data = $request->getSession()->get(BootstrapMFAAuthenticator::SESSION_KEY . '.Data');
+            $backURL = $request->getSession()->get('BackURL'); // defaults to null, so it's fine
             $this->performLogin($member, $data, $request);
             // Redirecting after successful login expects a getVar to be set
-            $request->offsetSet('BackURL', $data['BackURL']);
+            $request->offsetSet('BackURL', $backURL);
 
             return $this->redirectAfterSuccessfulLogin();
         }
@@ -183,6 +185,13 @@ class BootstrapMFALoginHandler extends LoginHandler
         // Failure of login, trash session and redirect back
         Injector::inst()->get(IdentityStore::class)->logOut();
         $request->getSession()->clear(BootstrapMFAAuthenticator::SESSION_KEY);
+
+        Injector::inst()->get(BootstrapMFALoginForm::class)->sessionMessage(
+            _t(
+                self::class . 'MFAFAILURE',
+                'Multi Factor failure'
+            )
+        );
 
         return $this->redirect(Security::login_url());
     }

@@ -11,7 +11,6 @@ use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\Session;
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Dev\Debug;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\Forms\FormField;
 use SilverStripe\Security\Member;
@@ -214,7 +213,6 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
         $this->assertContains('login', $verification->getHeader('location'));
         $session = $request->getSession();
         $this->assertEmpty($session->get(BootstrapMFAAuthenticator::SESSION_KEY));
-
     }
 
     /**
