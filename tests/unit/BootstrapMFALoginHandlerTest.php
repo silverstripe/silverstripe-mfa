@@ -7,7 +7,6 @@ use Firesphere\BootstrapMFA\Forms\BootstrapMFALoginForm;
 use Firesphere\BootstrapMFA\Handlers\BootstrapMFALoginHandler;
 use Firesphere\BootstrapMFA\Tests\Mocks\MockAuthenticator;
 use SilverStripe\Control\Controller;
-use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\Session;
@@ -16,6 +15,7 @@ use SilverStripe\Dev\Debug;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\Forms\FormField;
 use SilverStripe\Security\Member;
+use SilverStripe\Security\SecurityToken;
 
 class BootstrapMFALoginHandlerTest extends SapphireTest
 {
@@ -165,25 +165,25 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
 
     public function testValidateMFA()
     {
-        $data = [
-            'Email'    => 'test@test.com',
-            'Password' => 'password1',
-            'BackURL'  => '/memberlocation'
-        ];
-
         $request = Controller::curr()->getRequest();
 
         $session = new Session(['key' => 'value']);
         $session->init($request);
 
         $request->setSession($session);
+        $data = [
+            'Email'    => 'test@test.com',
+            'Password' => 'password1',
+            'BackURL'  => '/memberlocation',
+        ];
 
-        $response = $this->handler->doLogin($data, $this->form, $request);
+        $this->handler->doLogin($data, $this->form, $request);
 
         $session = $request->getSession();
         $data = [
             'AuthenticationMethod' => MockAuthenticator::class,
-            'token' => 'success'
+            'token'                => 'success',
+            'SecurityID'           => SecurityToken::inst()->getValue()
         ];
 
         $request = new HTTPRequest('POST', 'Security/default/validateMFA', [], $data);
@@ -198,7 +198,8 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
 
         $data = [
             'AuthenticationMethod' => MockAuthenticator::class,
-            'token' => 'error'
+            'token'                => 'error',
+            'SecurityID'           => SecurityToken::inst()->getValue()
         ];
 
         $request = new HTTPRequest('POST', 'Security/default/validateMFA', [], $data);
@@ -214,6 +215,74 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
         $session = $request->getSession();
         $this->assertEmpty($session->get(BootstrapMFAAuthenticator::SESSION_KEY));
 
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testValidateMFAWrongSecurityID()
+    {
+        $request = Controller::curr()->getRequest();
+
+        $session = new Session(['key' => 'value']);
+        $session->init($request);
+
+        $request->setSession($session);
+        $data = [
+            'Email'    => 'test@test.com',
+            'Password' => 'password1',
+            'BackURL'  => '/memberlocation',
+        ];
+
+        $this->handler->doLogin($data, $this->form, $request);
+
+        $data = [
+            'AuthenticationMethod' => MockAuthenticator::class,
+            'token'                => 'error',
+            'SecurityID'           => 'thisisnotavalidtoken'
+        ];
+
+        $request = new HTTPRequest('POST', 'Security/default/validateMFA', [], $data);
+        $request->setSession($session);
+
+        $this->handler->setRequest($request);
+
+        $this->handler->validateMFA($request);
+        $this->assertEmpty($session->get(BootstrapMFAAuthenticator::SESSION_KEY));
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testValidateMFAWrongAuthenticator()
+    {
+        $request = Controller::curr()->getRequest();
+
+        $session = new Session(['key' => 'value']);
+        $session->init($request);
+
+        $request->setSession($session);
+        $data = [
+            'Email'    => 'test@test.com',
+            'Password' => 'password1',
+            'BackURL'  => '/memberlocation',
+        ];
+
+        $this->handler->doLogin($data, $this->form, $request);
+
+        $data = [
+            'AuthenticationMethod' => 'nonexisting\\class',
+            'token'                => 'error',
+            'SecurityID'           => SecurityToken::inst()->getValue()
+        ];
+
+        $request = new HTTPRequest('POST', 'Security/default/validateMFA', [], $data);
+        $request->setSession($session);
+
+        $this->handler->setRequest($request);
+
+        $this->handler->validateMFA($request);
+        $this->assertEmpty($session->get(BootstrapMFAAuthenticator::SESSION_KEY));
     }
 
     protected function setUp()
