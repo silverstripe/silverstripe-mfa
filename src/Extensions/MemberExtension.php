@@ -54,6 +54,8 @@ class MemberExtension extends DataExtension
      */
     public function updateCMSFields(FieldList $fields)
     {
+        // Force the updateMFA value of this field. This resolves that when it's checked and submitted
+        // The checkbox stays checked.
         $this->updateMFA = false;
         $fields->removeByName(['BackupCodes', 'PrimaryMFA']);
         $session = Controller::curr()->getRequest()->getSession();
@@ -105,11 +107,6 @@ class MemberExtension extends DataExtension
             $provider->setMember($this->owner);
             $provider->updateTokens();
         }
-    }
-
-    public function getBackupcodes()
-    {
-        return $this->owner->BackupCodes();
     }
 
     public function isInGracePeriod()

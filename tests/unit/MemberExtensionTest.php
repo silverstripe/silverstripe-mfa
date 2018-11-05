@@ -138,25 +138,6 @@ class MemberExtensionTest extends SapphireTest
         $this->assertFalse($member->MFAEnabled);
     }
 
-    public function testGetBackupcodes()
-    {
-        /** @var MemberExtension $extension */
-        $extension = Injector::inst()->get(MemberExtension::class);
-        /** @var Member $member */
-        $member = $this->objFromFixture(Member::class, 'member1');
-        $member->updateMFA = true;
-
-        Security::setCurrentUser($member);
-        $extension->setOwner($member);
-
-        $extension->onAfterWrite();
-
-        $directCodes = $member->BackupCodes()->map('ID', 'Code');
-        $indirectCodes = $member->getBackupcodes()->map('ID', 'Code');
-
-        $this->assertEquals($directCodes, $indirectCodes);
-    }
-
     public function testIsInGracePeriod()
     {
         /** @var Member|MemberExtension $member */
