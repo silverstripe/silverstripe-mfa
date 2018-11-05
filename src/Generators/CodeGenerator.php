@@ -6,7 +6,7 @@ use SilverStripe\Core\Config\Configurable;
 
 /**
  * Class CodeGenerator
- * Slightly modified version of a class randomly found online
+ * Slightly modified version of a generic generator class
  * It's modified to fit the SilverStripe config
  *
  * @package Firesphere\BootstrapMFA\Generators

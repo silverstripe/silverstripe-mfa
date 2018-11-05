@@ -111,6 +111,8 @@ class BootstrapMFALoginHandler extends LoginHandler
     }
 
     /**
+     * Render the second factor forms for displaying at the frontend
+     *
      * @param HTTPRequest $request
      * @return array
      * @throws \Exception
@@ -136,6 +138,8 @@ class BootstrapMFALoginHandler extends LoginHandler
     }
 
     /**
+     * Get all MFA forms from the enabled authenticators
+     *
      * @return array
      */
     protected function getFormList()
@@ -186,7 +190,8 @@ class BootstrapMFALoginHandler extends LoginHandler
         Injector::inst()->get(IdentityStore::class)->logOut();
         $request->getSession()->clear(BootstrapMFAAuthenticator::SESSION_KEY);
 
-        Injector::inst()->get(BootstrapMFALoginForm::class)->sessionMessage(
+        Injector::inst()->get(BootstrapMFALoginForm::class, true,
+            [$this, BootstrapMFAAuthenticator::class, 'LoginForm'])->sessionMessage(
             _t(
                 self::class . 'MFAFAILURE',
                 'Multi Factor failure'

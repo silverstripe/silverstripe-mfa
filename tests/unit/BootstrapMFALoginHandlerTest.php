@@ -182,7 +182,9 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
         $data = [
             'AuthenticationMethod' => MockAuthenticator::class,
             'token'                => 'success',
-            'SecurityID'           => SecurityToken::inst()->getValue()
+            'SecurityID'           => SecurityToken::inst()->getValue(),
+            'BackURL'              => '/memberlocation',
+
         ];
 
         $request = new HTTPRequest('POST', 'Security/default/validateMFA', [], $data);

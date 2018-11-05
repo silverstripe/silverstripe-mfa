@@ -100,14 +100,14 @@ class MemberExtensionTest extends SapphireTest
         $extension->onAfterWrite();
 
         $this->assertCount(15, CodeHelper::getCodesFromSession());
-        $this->assertEquals(15, $member->BackupCodes()->count());
+        $this->assertCount(15, $member->BackupCodes());
     }
 
     public function testOnBeforeWrite()
     {
         /** @var MemberExtension $extension */
         $extension = Injector::inst()->get(MemberExtension::class);
-        /** @var Member $member */
+        /** @var Member|MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'member1');
         $member->MFAEnabled = false;
         $member->write();

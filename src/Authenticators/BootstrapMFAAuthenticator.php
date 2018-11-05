@@ -60,7 +60,7 @@ class BootstrapMFAAuthenticator extends MemberAuthenticator
         if ($backupCode && $backupCode->exists()) {
             $backupCode->expire();
             // Reset the subclass authenticator results
-            $result = Injector::inst()->get(ValidationResult::class, false);
+            $result = ValidationResult::create();
 
             /** @var Member $member */
             return $member;

@@ -2,6 +2,8 @@
 
 namespace Firesphere\BootstrapMFA\Providers;
 
+use ElliotSawyer\TOTPAuthenticator\MemberExtension;
+use Firesphere\BootstrapMFA\Extensions\MemberExtension as MFAMemberExtension;
 use Firesphere\BootstrapMFA\Models\BackupCode;
 use SilverStripe\Control\Controller;
 use SilverStripe\ORM\DataList;
@@ -29,7 +31,7 @@ class BootstrapMFAProvider
     }
 
     /**
-     * @return Member|null
+     * @return Member|MemberExtension|MFAMemberExtension|null
      */
     public function getMember()
     {
