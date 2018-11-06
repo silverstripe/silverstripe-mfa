@@ -1,8 +1,8 @@
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Firesphere/silverstripe-bootstrapmfa/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Firesphere/silverstripe-bootstrapmfa/?branch=master)
-[![Build Status](https://scrutinizer-ci.com/g/Firesphere/silverstripe-bootstrapmfa/badges/build.png?b=master)](https://scrutinizer-ci.com/g/Firesphere/silverstripe-bootstrapmfa/build-status/master)
-[![codecov](https://codecov.io/gh/Firesphere/silverstripe-bootstrapmfa/branch/master/graph/badge.svg)](https://codecov.io/gh/Firesphere/silverstripe-bootstrapmfa)
-
 # MultiFactor Boostrap for SilverStripe
+
+[![Build Status](https://api.travis-ci.org/Firesphere/silverstripe-bootstrapmfa.svg?branch=master)](https://travis-ci.org/Firesphere/silverstripe-bootstrapmfa)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Firesphere/silverstripe-bootstrapmfa/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Firesphere/silverstripe-bootstrapmfa/?branch=master)
+[![codecov](https://codecov.io/gh/Firesphere/silverstripe-bootstrapmfa/branch/master/graph/badge.svg)](https://codecov.io/gh/Firesphere/silverstripe-bootstrapmfa)
 
 This module aims to help create an multi-factor authentication method for SilverStripe, by bootstrapping an unregistered authenticator with Backup tokens to have a basic start.
 

@@ -18,11 +18,10 @@
   ],
   "require": {
     "silverstripe/framework": "^4",
-    "silverstripe/versioned": "^1"
+    "silverstripe/siteconfig": "^4"
   },
   "require-dev": {
-    "phpunit/phpunit": "^5.7",
-    "silverstripe/recipe-cms": "^1.0"
+    "phpunit/phpunit": "^5.7"
   },
   "extra": {
     "installer-name": "bootstrapmfa",
