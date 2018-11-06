@@ -3,6 +3,7 @@
 namespace Firesphere\BootstrapMFA\Generators;
 
 use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Injector\Injectable;
 
 /**
  * Class CodeGenerator
@@ -14,6 +15,7 @@ use SilverStripe\Core\Config\Configurable;
 class CodeGenerator
 {
     use Configurable;
+    use Injectable;
 
     const CHARS_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
@@ -59,14 +61,6 @@ class CodeGenerator
     private $validChars;
 
     /**
-     * @return static
-     */
-    public static function inst()
-    {
-        return singleton(static::class);
-    }
-
-    /**
      * @return $this
      */
     public function uppercase()
@@ -107,7 +101,7 @@ class CodeGenerator
     }
 
     /**
-     * @param $chars
+     * @param string $chars
      * @return $this
      */
     public function setChars($chars)
@@ -137,7 +131,7 @@ class CodeGenerator
         $length = $this->getLength();
         $code = array();
         for ($i = 0; $i < $length; ++$i) {
-            $code[] = $chars[mt_rand(0, $numChars)];
+            $code[] = $chars[random_int(0, $numChars)];
         }
 
         return implode('', $code);
@@ -170,7 +164,7 @@ class CodeGenerator
     }
 
     /**
-     * @return mixed
+     * @return string One of the type constants of this class
      */
     public function getType()
     {
@@ -183,7 +177,7 @@ class CodeGenerator
     public static function global_inst()
     {
         if (!static::$global_inst) {
-            static::$global_inst = (new static())
+            static::$global_inst = static::create()
                 ->alphanumeric()
                 ->mixedcase()
                 ->setLength(6);

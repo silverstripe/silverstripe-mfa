@@ -5,6 +5,7 @@ namespace Firesphere\BootstrapMFA\Handlers;
 use Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator;
 use Firesphere\BootstrapMFA\Extensions\MemberExtension;
 use Firesphere\BootstrapMFA\Forms\BootstrapMFALoginForm;
+use InvalidArgumentException;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\Session;
@@ -46,6 +47,11 @@ class BootstrapMFALoginHandler extends LoginHandler
         'validateMFA',
     ];
 
+    /**
+     * Class names of descendants of BootstrapMFAAuthenticator
+     *
+     * @var string[]
+     */
     protected $availableAuthenticators = [];
 
     /**
@@ -89,13 +95,17 @@ class BootstrapMFALoginHandler extends LoginHandler
          * @var Member|MemberExtension $member
          */
         $member = $this->checkLogin($data, $request, $message);
+
+        if (!$member) {
+            return $this->redirectBack();
+        }
+
         // If we're in grace period, continue to the parent
-        if ($member && $member->isInGracePeriod()) {
+        if ($member->isInGracePeriod()) {
             return parent::doLogin($data, $form, $request);
         }
 
-        /** @var Member $member */
-        if ($member instanceof Member && $message->isValid()) {
+        if ($message->isValid()) {
             /** @var Session $session */
             $session = $request->getSession();
             $session->set(BootstrapMFAAuthenticator::SESSION_KEY . '.MemberID', $member->ID);
@@ -122,6 +132,12 @@ class BootstrapMFALoginHandler extends LoginHandler
         $memberID = $request->getSession()->get(BootstrapMFAAuthenticator::SESSION_KEY . '.MemberID');
         /** @var Member|MemberExtension $member */
         $member = Member::get()->byID($memberID);
+
+        if (!$member) {
+            // Assume the session has gone state...
+            return $this->redirectBack();
+        }
+
         $primary = $member->PrimaryMFA;
         $formList = $this->getFormList();
 
@@ -132,7 +148,7 @@ class BootstrapMFALoginHandler extends LoginHandler
             'Primary' => $primary
         ];
 
-        $this->extend('onBeforeSecondFactor', $rendered, $view, $this);
+        $this->extend('onBeforeSecondFactor', $rendered, $view);
 
         return $rendered;
     }
@@ -163,11 +179,18 @@ class BootstrapMFALoginHandler extends LoginHandler
     public function validateMFA(HTTPRequest $request)
     {
         $postVars = $request->postVars();
-        $this->validateFormData($request, $postVars);
-        /** @var BootstrapMFAAuthenticator $authenticator */
-        $authenticator = Injector::inst()->get($postVars['AuthenticationMethod']);
+        $this->validateFormData($request);
 
-        /** @var string $field */
+        $authenticationMethod = $postVars['AuthenticationMethod'];
+        // Validate that the posted authentication method is a valid registered authenticator
+        if (!$this->isValidAuthenticator($authenticationMethod)) {
+            throw new InvalidArgumentException(
+                sprintf('Unknown MFA authentication method "%s"', $authenticationMethod)
+            );
+        }
+
+        /** @var BootstrapMFAAuthenticator $authenticator */
+        $authenticator = Injector::inst()->get($authenticationMethod);
         $field = $authenticator->getTokenField();
 
         /** @var ValidationResult $result */
@@ -187,11 +210,9 @@ class BootstrapMFALoginHandler extends LoginHandler
         }
 
         // Failure of login, trash session and redirect back
-        Injector::inst()->get(IdentityStore::class)->logOut();
-        $request->getSession()->clear(BootstrapMFAAuthenticator::SESSION_KEY);
+        $this->cancelLogin($request);
 
-        Injector::inst()->get(BootstrapMFALoginForm::class, true,
-            [$this, BootstrapMFAAuthenticator::class, 'LoginForm'])->sessionMessage(
+        BootstrapMFALoginForm::create($this, BootstrapMFAAuthenticator::class, 'LoginForm')->sessionMessage(
             _t(
                 self::class . 'MFAFAILURE',
                 'Multi Factor failure'
@@ -203,24 +224,40 @@ class BootstrapMFALoginHandler extends LoginHandler
 
     /**
      * @param HTTPRequest $request
-     * @param $postVars
      * @throws \Exception
      */
-    protected function validateFormData(HTTPRequest $request, $postVars)
+    protected function validateFormData(HTTPRequest $request)
     {
         /** @var SecurityToken $securityToken */
         $securityToken = Injector::inst()->get(SecurityToken::class);
-        $tokenCheck = $securityToken->check($postVars['SecurityID']);
+        $tokenCheck = $securityToken->check($request->postVar('SecurityID'));
 
-        if (
-            !$tokenCheck ||
-            !in_array($postVars['AuthenticationMethod'], array_values($this->availableAuthenticators), true)
-        ) {
+        $authenticationMethod = $request->postVar('AuthenticationMethod');
+        if (!$tokenCheck || !$this->isValidAuthenticator($authenticationMethod)) {
             // Failure of login, trash session and redirect back
-            Injector::inst()->get(IdentityStore::class)->logOut();
-            $request->getSession()->clear(BootstrapMFAAuthenticator::SESSION_KEY);
+            $this->cancelLogin($request);
             // User tampered with the authentication method input. Thus invalidate
             throw new \Exception('Invalid authentication', 1);
         }
+    }
+
+
+
+    /**
+     * @param $authenticationMethod
+     * @return bool
+     */
+    protected function isValidAuthenticator($authenticationMethod)
+    {
+        return in_array($authenticationMethod, $this->availableAuthenticators, true);
+    }
+
+    /**
+     * @param HTTPRequest $request
+     */
+    protected function cancelLogin(HTTPRequest $request)
+    {
+        $request->getSession()->clear(BootstrapMFAAuthenticator::SESSION_KEY);
+        Injector::inst()->get(IdentityStore::class)->logOut();
     }
 }

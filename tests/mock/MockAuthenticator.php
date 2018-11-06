@@ -53,15 +53,14 @@ class MockAuthenticator extends BootstrapMFAAuthenticator implements TestOnly, M
         if (!$result) {
             $result = ValidationResult::create();
         }
+
         if ($token === 'success') {
             $id = $request->getSession()->get(BootstrapMFAAuthenticator::SESSION_KEY . '.MemberID');
-
             return Member::get()->byID($id);
-        } else {
-            $result->addError('This is not correct');
-
-            return false;
         }
+
+        $result->addError('This is not correct');
+        return false;
     }
 
     public function getTokenField()

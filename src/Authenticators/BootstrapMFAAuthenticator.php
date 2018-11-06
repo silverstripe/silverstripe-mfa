@@ -62,7 +62,6 @@ class BootstrapMFAAuthenticator extends MemberAuthenticator
             // Reset the subclass authenticator results
             $result = ValidationResult::create();
 
-            /** @var Member $member */
             return $member;
         }
 

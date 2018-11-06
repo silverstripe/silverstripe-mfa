@@ -45,8 +45,7 @@ class BootstrapMFAProviderTest extends SapphireTest
         $token = $member->encryptWithUserSettings('123345');
         $result = $provider->fetchToken($token);
 
-        // No backupcodes generated yet
-        $this->assertNull($result);
+        $this->assertNull($result, 'Backup codes should not have been generated yet');
 
         Security::setCurrentUser($member);
         $provider->updateTokens();
@@ -58,13 +57,5 @@ class BootstrapMFAProviderTest extends SapphireTest
 
         // New backupcodes
         $this->assertInstanceOf(BackupCode::class, $result);
-    }
-
-    /**
-     * Somehow, setUp is required otherwise the fixtures aren't loaded
-     */
-    public function setUp()
-    {
-        return parent::setUp();
     }
 }

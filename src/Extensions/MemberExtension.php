@@ -15,6 +15,7 @@ use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\Tab;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\DataList;
+use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverStripe\Security\Member;
 use SilverStripe\SiteConfig\SiteConfig;
 
@@ -126,15 +127,16 @@ class MemberExtension extends DataExtension
             return true;
         }
 
+        // Default the grace start day
         $graceStartDay = ($member->Created > $config->ForceMFA) ? $member->Created : $config->ForceMFA;
         $graceStartDay = new DateTime($graceStartDay);
 
-        $gracePeriod = Config::inst()->get(BootstrapMFAAuthenticator::class, 'grace_period');
+        $gracePeriodInDays = Config::inst()->get(BootstrapMFAAuthenticator::class, 'grace_period');
 
-        $nowDate = new DateTime(date('Y-m-d'));
+        $nowDate = new DateTime(DBDatetime::now()->format(DBDatetime::ISO_DATE));
 
-        $diff = $nowDate->diff($graceStartDay)->format('%a');
+        $daysSinceGraceStart = $nowDate->diff($graceStartDay)->days;
 
-        return !($diff >= $gracePeriod);
+        return $daysSinceGraceStart < $gracePeriodInDays;
     }
 }
