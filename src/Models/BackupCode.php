@@ -105,7 +105,8 @@ class BackupCode extends DataObject
         $mail->setBody(
             _t(
                 self::class . '.REGENERATIONREQUIRED',
-                "<p>Your backup codes for multi factor authentication have been requested to regenerate by someone that is not you. \n"
+                "<p>Your backup codes for multi factor authentication have been requested to regenerate by someone"
+                . "that is not you. \n"
                 . "Please visit the <a href='{url}/{segment}'>website to regenerate your backupcodes</a></p>",
                 [
                     'url'     => Director::absoluteBaseURL(),
