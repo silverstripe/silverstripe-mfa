@@ -10,7 +10,7 @@ class CodeGeneratorTest extends SapphireTest
 {
     public function testInst()
     {
-        $this->assertInstanceOf(CodeGenerator::class, CodeGenerator::inst());
+        $this->assertInstanceOf(CodeGenerator::class, CodeGenerator::create());
     }
 
     public function testGlobal()
@@ -29,9 +29,11 @@ class CodeGeneratorTest extends SapphireTest
     public function testChars()
     {
         /** @var CodeGenerator $generator */
-        $generator = CodeGenerator::inst();
+        $generator = CodeGenerator::create();
 
         $generator->setChars('1234567890');
+
+        $generator->setLength(6);
 
         $code = $generator->generate();
 

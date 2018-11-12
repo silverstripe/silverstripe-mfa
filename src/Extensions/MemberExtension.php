@@ -2,10 +2,12 @@
 
 namespace Firesphere\BootstrapMFA\Extensions;
 
+use DateTime;
+use Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator;
 use Firesphere\BootstrapMFA\Models\BackupCode;
 use Firesphere\BootstrapMFA\Providers\BootstrapMFAProvider;
 use SilverStripe\Control\Controller;
-use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\FieldList;
@@ -13,25 +15,27 @@ use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\Tab;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\DataList;
+use SilverStripe\ORM\FieldType\DBDatetime;
+use SilverStripe\Security\Member;
 use SilverStripe\SiteConfig\SiteConfig;
 
 /**
  * Class MemberExtension
  *
  * @package Firesphere\BootstrapMFA
- * @property MemberExtension $owner
+ * @property Member|MemberExtension $owner
  * @property boolean $MFAEnabled
+ * @property string $PrimaryMFA
  * @method DataList|BackupCode[] BackupCodes()
  */
 class MemberExtension extends DataExtension
 {
-    use Configurable;
-
     /**
      * @var array
      */
     private static $db = [
         'MFAEnabled' => 'Boolean(false)',
+        'PrimaryMFA' => 'Varchar(255)',
     ];
 
     /**
@@ -44,17 +48,21 @@ class MemberExtension extends DataExtension
     /**
      * @var bool
      */
-    protected $updateMFA = false;
+    public $updateMFA = false;
 
     /**
      * @param FieldList $fields
      */
     public function updateCMSFields(FieldList $fields)
     {
-        $fields->removeByName(['BackupCodes']);
+        // Force the updateMFA value of this field. This resolves that when it's checked and submitted
+        // The checkbox stays checked.
+        $this->updateMFA = false;
+        $fields->removeByName(['BackupCodes', 'PrimaryMFA']);
         $session = Controller::curr()->getRequest()->getSession();
-        $rootTabSet = $fields->fieldByName("Root");
+        $rootTabSet = $fields->fieldByName('Root');
         $field = LiteralField::create('tokens', $session->get('tokens'));
+        // We need to push the tab for unit tests
         $tab = Tab::create(
             'MFA',
             _t(self::class . '.MFATAB', 'Multi Factor Authentication')
@@ -78,7 +86,7 @@ class MemberExtension extends DataExtension
     }
 
     /**
-     *
+     * Force enable MFA on the member if needed
      */
     public function onBeforeWrite()
     {
@@ -102,8 +110,33 @@ class MemberExtension extends DataExtension
         }
     }
 
-    public function getBackupcodes()
+    public function isInGracePeriod()
     {
-        return $this->owner->BackupCodes();
+        /** @var Member|MemberExtension $member */
+        $member = $this->owner;
+
+        // If MFA is enabled on the member, we're always using it
+        if ($member->MFAEnabled) {
+            return false;
+        }
+
+        /** @var SiteConfig|SiteConfigExtension $config */
+        $config = SiteConfig::current_site_config();
+        // If MFA is not enforced, we're in an endless grace period
+        if ($config->ForceMFA === null) {
+            return true;
+        }
+
+        // Default the grace start day
+        $graceStartDay = ($member->Created > $config->ForceMFA) ? $member->Created : $config->ForceMFA;
+        $graceStartDay = new DateTime($graceStartDay);
+
+        $gracePeriodInDays = Config::inst()->get(BootstrapMFAAuthenticator::class, 'grace_period');
+
+        $nowDate = new DateTime(DBDatetime::now()->format(DBDatetime::ISO_DATE));
+
+        $daysSinceGraceStart = $nowDate->diff($graceStartDay)->days;
+
+        return $daysSinceGraceStart < $gracePeriodInDays;
     }
 }

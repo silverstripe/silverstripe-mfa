@@ -8,11 +8,13 @@ use SilverStripe\Security\MemberAuthenticator\MemberLoginForm;
 
 /**
  * Class BootstrapMFALoginForm
+ *
  * @package Firesphere\BootstrapMFA\Forms
  */
 class BootstrapMFALoginForm extends MemberLoginForm
 {
     /**
+     * @todo make this a lot better!
      * @return FieldList
      */
     public function getFormFields()

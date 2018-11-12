@@ -2,28 +2,23 @@
 
 namespace Firesphere\BootstrapMFA\Providers;
 
+use Firesphere\BootstrapMFA\Extensions\MemberExtension;
 use Firesphere\BootstrapMFA\Models\BackupCode;
 use SilverStripe\Control\Controller;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\ValidationException;
-use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\Member;
 
-class BootstrapMFAProvider implements MFAProvider
+class BootstrapMFAProvider
 {
     protected $member;
 
     /**
      * @param string $token
-     * @param null|ValidationResult $result
-     * @return Member|bool
-     * @throws ValidationException
+     * @return null|BackupCode
      */
-    public function verifyToken($token, &$result = null)
+    public function fetchToken($token)
     {
-        if (!$result) {
-            $result = new ValidationResult();
-        }
         $member = $this->getMember();
 
         /** @var BackupCode $backupCode */
@@ -31,19 +26,11 @@ class BootstrapMFAProvider implements MFAProvider
             ->filter(['Code' => $token])
             ->first();
 
-        if ($backupCode && $backupCode->exists()) {
-            $backupCode->expire();
-
-            /** @var Member $member */
-            return $member;
-        }
-
-        $member->registerFailedLogin();
-        $result->addError(_t(self::class . '.INVALIDTOKEN', 'Invalid token'));
+        return $backupCode;
     }
 
     /**
-     * @return Member|null
+     * @return Member|MemberExtension|null
      */
     public function getMember()
     {

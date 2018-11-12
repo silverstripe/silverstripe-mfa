@@ -4,6 +4,7 @@ namespace Firesphere\BootstrapMFA\Tests;
 
 use Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator;
 use Firesphere\BootstrapMFA\Generators\CodeGenerator;
+use Firesphere\BootstrapMFA\Handlers\BootstrapMFALoginHandler;
 use Firesphere\BootstrapMFA\Models\BackupCode;
 use Firesphere\BootstrapMFA\Tests\Helpers\CodeHelper;
 use SilverStripe\Core\Config\Config;
@@ -64,6 +65,13 @@ class BootstrapMFAAuthenticatorTest extends SapphireTest
 
         $this->assertInstanceOf(ValidationResult::class, $result);
         $this->assertFalse($result->isValid());
+    }
+
+    public function testGetLoginHandler()
+    {
+        $handler = $this->authenticator->getLoginHandler('/Security/login');
+
+        $this->assertInstanceOf(BootstrapMFALoginHandler::class, $handler);
     }
 
     protected function setUp()

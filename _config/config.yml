@@ -3,6 +3,11 @@ name: MFAAuthenticator
 After:
   - #coresecurity
 ---
+SilverStripe\Core\Injector\Injector:
+  SilverStripe\Security\Security:
+    properties:
+      Authenticators:
+        default: '%$Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator'
 SilverStripe\Security\Member:
   extensions:
     - Firesphere\BootstrapMFA\Extensions\MemberExtension
@@ -12,6 +17,8 @@ Firesphere\BootstrapMFA\Generators\CodeGenerator:
   length: 6
   type: mixed
   case: mixed
+Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator:
+  grace_period: 14
 SilverStripe\SiteConfig\SiteConfig:
   extensions:
     - Firesphere\BootstrapMFA\Extensions\SiteConfigExtension

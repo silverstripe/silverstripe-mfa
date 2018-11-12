@@ -6,7 +6,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: brettt89/silverstripe-web
+      - image: brettt89/silverstripe-web:7.1-ssp
         environment:
           - SS_DATABASE_CLASS=MySQLPDODatabase
           - SS_DATABASE_SERVER=127.0.0.1
@@ -26,15 +26,15 @@ jobs:
     working_directory: ~/var/www
 
     steps:
+      - checkout
+      - run: apt-get update && apt-get install -y apt-transport-https lsb-release netcat
       # Install additional requirements
       - run:
           command: |
             php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-            php -r "if (hash_file('SHA384', 'composer-setup.php') === '544e09ee996cdf60ece3804abc52599c22b1f40f4323403c44d44fdfdd586475ca9813a858088ffbc1f233e9b180f061') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-            php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+            php -r "if (hash_file('SHA384', 'composer-setup.php') === '93b54496392c062774670ac18b134c3b3a95e5a5e5c8f1a9f115f203b75bf9a129d5daa8ba6a13e2cc8a1da0806388a8') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+            php composer-setup.php
             php -r "unlink('composer-setup.php');"
-
-      - checkout
       # Composer Cache, Yarn and non-vendor modules
       - restore_cache:
           keys:
@@ -42,7 +42,7 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v2-cache-
       # update, because why not
-      - run: composer update
+      - run: php composer.phar install
       # Save all dependencies to cache
       - save_cache:
           key: v2-cache-{{ checksum "composer.lock" }}-{{ checksum "readme.md" }}
@@ -50,8 +50,14 @@ jobs:
             - assets
             - vendor
             - mysite
+      - run: until nc -z -v -w30 127.0.0.1 3306; do sleep 1; done
       - run: vendor/bin/sake dev/build
 
       # run tests!
-      - run: vendor/bin/phpunit --coverage-clover=coverage.xml -d memory_limit=512M tests/unit
+      - run: vendor/bin/phpunit --log-junit ./coverage/junit.xml --coverage-clover=coverage.xml -d memory_limit=1G tests/unit
       - run: bash <(curl -s https://codecov.io/bash) -f coverage.xml
+      - store_artifacts:
+          path: ~/var/www/coverage
+          destination: phpunit
+      - store_test_results:
+          path: ~/var/www/coverage

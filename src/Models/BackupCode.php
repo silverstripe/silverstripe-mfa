@@ -79,7 +79,7 @@ class BackupCode extends DataObject
             $message = _t(
                 self::class . '.SESSIONMESSAGE_START',
                 '<p>Here are your tokens, please store them securily. ' .
-                'They are stored encrypted and can not be recovered, only reset.</p><p>'
+                'They are stored hashed and can not be recovered, only reset.</p><p>'
             );
             $session = Controller::curr()->getRequest()->getSession();
             $limit = static::config()->get('token_limit');

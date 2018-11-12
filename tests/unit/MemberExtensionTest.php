@@ -3,6 +3,7 @@
 namespace Firesphere\BootstrapMFA\Tests;
 
 use Firesphere\BootstrapMFA\Extensions\MemberExtension;
+use Firesphere\BootstrapMFA\Extensions\SiteConfigExtension;
 use Firesphere\BootstrapMFA\Models\BackupCode;
 use Firesphere\BootstrapMFA\Tests\Helpers\CodeHelper;
 use SilverStripe\Control\Controller;
@@ -10,6 +11,7 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TabSet;
+use SilverStripe\ORM\DataList;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 use SilverStripe\SiteConfig\SiteConfig;
@@ -20,7 +22,7 @@ class MemberExtensionTest extends SapphireTest
 
     public function testMemberCodesExpired()
     {
-        /** @var Member $member */
+        /** @var Member|MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'member1');
 
         $member->updateMFA = true;
@@ -41,7 +43,7 @@ class MemberExtensionTest extends SapphireTest
 
     public function testMemberCodesNotExpired()
     {
-        /** @var Member $member */
+        /** @var Member|MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'member1');
 
         $member->updateMFA = true;
@@ -97,15 +99,15 @@ class MemberExtensionTest extends SapphireTest
 
         $extension->onAfterWrite();
 
-        $this->assertEquals(15, count(CodeHelper::getCodesFromSession()));
-        $this->assertEquals(15, $member->BackupCodes()->count());
+        $this->assertCount(15, CodeHelper::getCodesFromSession());
+        $this->assertCount(15, $member->BackupCodes());
     }
 
     public function testOnBeforeWrite()
     {
         /** @var MemberExtension $extension */
         $extension = Injector::inst()->get(MemberExtension::class);
-        /** @var Member $member */
+        /** @var Member|MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'member1');
         $member->MFAEnabled = false;
         $member->write();
@@ -136,22 +138,23 @@ class MemberExtensionTest extends SapphireTest
         $this->assertFalse($member->MFAEnabled);
     }
 
-    public function testGetBackupcodes()
+    public function testIsInGracePeriod()
     {
-        /** @var MemberExtension $extension */
-        $extension = Injector::inst()->get(MemberExtension::class);
-        /** @var Member $member */
-        $member = $this->objFromFixture(Member::class, 'member1');
-        $member->updateMFA = true;
-
+        /** @var Member|MemberExtension $member */
+        $member = $this->objFromFixture(Member::class, 'member2');
         Security::setCurrentUser($member);
-        $extension->setOwner($member);
-
-        $extension->onAfterWrite();
-
-        $directCodes = $member->BackupCodes()->map('ID', 'Code');
-        $indirectCodes = $member->getBackupcodes()->map('ID', 'Code');
-
-        $this->assertEquals($directCodes, $indirectCodes);
+        $this->assertTrue($member->isInGracePeriod());
+        /** @var SiteConfig|SiteConfigExtension $config */
+        $config = SiteConfig::current_site_config();
+        $config->EnforceMFA = true;
+        $config->write();
+        $this->assertTrue($member->isInGracePeriod());
+        $member->Created = '1970-01-01 00:00:00';
+        $member->write();
+        $this->assertFalse($member->isInGracePeriod());
+        $member->Created = date('Y-m-d 00:00:00');
+        $member->MFAEnabled = true;
+        $member->write();
+        $this->assertFalse($member->isInGracePeriod());
     }
 }
