@@ -59,12 +59,7 @@ class BackupCode extends DataObject
      */
     public static function getValidTokensForMember($member)
     {
-        return static::get()->filter(
-            [
-                'Used'     => false,
-                'MemberID' => $member->ID
-            ]
-        );
+        return static::get()->filter(['MemberID' => $member->ID]);
     }
 
     /**
@@ -105,7 +100,7 @@ class BackupCode extends DataObject
         $mail->setBody(
             _t(
                 self::class . '.REGENERATIONREQUIRED',
-                "<p>Your backup codes for multi factor authentication have been requested to regenerate by someone"
+                "<p>Your backup codes for multi factor authentication have been requested to regenerate by someone "
                 . "that is not you. \n"
                 . "Please visit the <a href='{url}/{segment}'>website to regenerate your backupcodes</a></p>",
                 [
@@ -124,8 +119,9 @@ class BackupCode extends DataObject
      */
     private static function createCode($member)
     {
-        $code = static::create();
-        $code->MemberID = $member->ID;
+        $code = static::create([
+            'MemberID' => $member->ID
+        ]);
         $token = $code->Code;
         $code->write();
         $code->destroy();
@@ -151,6 +147,7 @@ class BackupCode extends DataObject
     protected function generateToken()
     {
         $config = Config::inst()->get(CodeGenerator::class);
+        /** @var CodeGenerator $generator */
         $generator = Injector::inst()->get(CodeGenerator::class)
             ->setLength($config['length']);
         switch ($config['type']) {
@@ -191,8 +188,9 @@ class BackupCode extends DataObject
         parent::onBeforeWrite();
         // Encrypt a new temporary key before writing to the database
         if (!$this->Used) {
-            $member = $this->Member();
-            $this->Code = $member->encryptWithUserSettings($this->Code);
+            $hashingMethod = Security::config()->get('password_encryption_algorithm');
+            $hashed = Security::encrypt_password($this->Code, $this->Member()->BackupSalt, $hashingMethod);
+            $this->Code = $hashed['password'];
         }
     }
 

@@ -9,6 +9,7 @@ use Firesphere\BootstrapMFA\Providers\BootstrapMFAProvider;
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Dev\Debug;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\LiteralField;
@@ -17,6 +18,8 @@ use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverStripe\Security\Member;
+use SilverStripe\Security\PasswordEncryptor;
+use SilverStripe\Security\Security;
 use SilverStripe\SiteConfig\SiteConfig;
 
 /**
@@ -26,6 +29,7 @@ use SilverStripe\SiteConfig\SiteConfig;
  * @property Member|MemberExtension $owner
  * @property boolean $MFAEnabled
  * @property string $PrimaryMFA
+ * @property string $BackupSalt
  * @method DataList|BackupCode[] BackupCodes()
  */
 class MemberExtension extends DataExtension
@@ -36,6 +40,7 @@ class MemberExtension extends DataExtension
     private static $db = [
         'MFAEnabled' => 'Boolean(false)',
         'PrimaryMFA' => 'Varchar(255)',
+        'BackupSalt' => 'Varchar(255)'
     ];
 
     /**
@@ -58,10 +63,9 @@ class MemberExtension extends DataExtension
         // Force the updateMFA value of this field. This resolves that when it's checked and submitted
         // The checkbox stays checked.
         $this->updateMFA = false;
-        $fields->removeByName(['BackupCodes', 'PrimaryMFA']);
+        $fields->removeByName(['BackupCodes', 'PrimaryMFA', 'BackupSalt']);
         $session = Controller::curr()->getRequest()->getSession();
         $rootTabSet = $fields->fieldByName('Root');
-        $field = LiteralField::create('tokens', $session->get('tokens'));
         // We need to push the tab for unit tests
         $tab = Tab::create(
             'MFA',
@@ -80,6 +84,7 @@ class MemberExtension extends DataExtension
         );
 
         if ($session->get('tokens')) {
+            $field = LiteralField::create('tokens', $session->get('tokens'));
             $fields->addFieldToTab('Root.MFA', $field);
             $session->clear('tokens');
         }
@@ -94,22 +99,37 @@ class MemberExtension extends DataExtension
             $this->owner->MFAEnabled = true;
             $this->owner->updateMFA = true;
         }
+        if (!$this->owner->BackupSalt || $this->owner->updateMFA) {
+            $algorithm = Security::config()->get('password_encryption_algorithm');
+
+            $encryptor = PasswordEncryptor::create_for_algorithm($algorithm);
+
+            // No password. It's not even used in the salt generation
+            $this->owner->BackupSalt = $encryptor->salt('');
+        }
     }
 
     /**
      *
      * @throws \Psr\Container\NotFoundExceptionInterface
+     * @throws \SilverStripe\ORM\ValidationException
      */
     public function onAfterWrite()
     {
         parent::onAfterWrite();
         if ($this->owner->updateMFA) {
+            /** @var BootstrapMFAProvider $provider */
             $provider = Injector::inst()->get(BootstrapMFAProvider::class);
             $provider->setMember($this->owner);
             $provider->updateTokens();
         }
     }
 
+    /**
+     * Check if a member is in grace period based on Created, date or enforcement
+     * @return bool
+     * @throws \Exception
+     */
     public function isInGracePeriod()
     {
         /** @var Member|MemberExtension $member */
@@ -133,7 +153,7 @@ class MemberExtension extends DataExtension
 
         $gracePeriodInDays = Config::inst()->get(BootstrapMFAAuthenticator::class, 'grace_period');
 
-        $nowDate = new DateTime(DBDatetime::now()->format(DBDatetime::ISO_DATE));
+        $nowDate = new DateTime(DBDatetime::now()->Format(DBDatetime::ISO_DATE));
 
         $daysSinceGraceStart = $nowDate->diff($graceStartDay)->days;
 

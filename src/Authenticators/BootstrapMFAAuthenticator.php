@@ -2,15 +2,19 @@
 
 namespace Firesphere\BootstrapMFA\Authenticators;
 
+use Firesphere\BootstrapMFA\Extensions\MemberExtension;
 use Firesphere\BootstrapMFA\Handlers\BootstrapMFALoginHandler;
+use Firesphere\BootstrapMFA\Models\BackupCode;
 use Firesphere\BootstrapMFA\Providers\BootstrapMFAProvider;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\ValidationException;
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\Authenticator;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\MemberAuthenticator\MemberAuthenticator;
 use SilverStripe\Security\PasswordEncryptor_NotFoundException;
+use SilverStripe\Security\Security;
 
 /**
  * Class BootstrapMFAAuthenticator
@@ -37,7 +41,7 @@ class BootstrapMFAAuthenticator extends MemberAuthenticator
     }
 
     /**
-     * @param Member $member
+     * @param Member|MemberExtension $member
      * @param string $token
      * @param ValidationResult|null $result
      * @return bool|Member
@@ -49,19 +53,34 @@ class BootstrapMFAAuthenticator extends MemberAuthenticator
         if (!$result) {
             $result = new ValidationResult();
         }
-        $token = $member->encryptWithUserSettings($token);
+        $hashingMethod = Security::config()->get('password_encryption_algorithm');
+        $token = Security::encrypt_password($token, $member->BackupSalt, $hashingMethod);
 
         /** @var BootstrapMFAProvider $provider */
         $provider = Injector::inst()->get(BootstrapMFAProvider::class);
         $provider->setMember($member);
 
-        $backupCode = $provider->fetchToken($token);
+        /** @var DataList|BackupCode[] $backupCodes */
+        $backupCodes = $provider->fetchToken($token['password']);
 
-        if ($backupCode && $backupCode->exists()) {
-            $backupCode->expire();
-            // Reset the subclass authenticator results
-            $result = ValidationResult::create();
+        // Stub, as the ValidationResult so far _could_ be valid, e.g. when not passed in
+        $valid = false;
+        foreach ($backupCodes as $backupCode) {
+            /** @noinspection NotOptimalIfConditionsInspection */
+            if ($backupCode &&
+                $backupCode->exists() &&
+                hash_equals($backupCode->Code, $token['password']) &&
+                !$backupCode->Used
+            ) {
+                $backupCode->expire();
+                // Reset the subclass authenticator results
+                $result = ValidationResult::create();
 
+                $valid = true;
+            }
+        }
+
+        if ($valid) {
             return $member;
         }
 
