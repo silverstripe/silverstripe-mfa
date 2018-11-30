@@ -56,6 +56,7 @@ class SiteConfigExtensionTest extends SapphireTest
     {
         /** @var SiteConfig|SiteConfigExtension $config */
         $config = SiteConfig::current_site_config();
+        $config->ForceMFA = null;
 
         $date = DBDatetime::now()->Format(DBDatetime::ISO_DATE);
 
