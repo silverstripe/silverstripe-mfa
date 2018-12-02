@@ -6,7 +6,6 @@ use Firesphere\BootstrapMFA\Models\BackupCode;
 use Firesphere\BootstrapMFA\Providers\BootstrapMFAProvider;
 use Firesphere\BootstrapMFA\Tests\Helpers\CodeHelper;
 use SilverStripe\Control\Controller;
-use SilverStripe\Control\Session;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\Security\Member;

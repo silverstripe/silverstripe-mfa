@@ -57,7 +57,7 @@ class BackupCode extends DataObject
      * @param Member $member
      * @return DataList|static[]
      */
-    public static function getValidTokensForMember($member)
+    public static function getTokensForMember($member)
     {
         return static::get()->filter(['MemberID' => $member->ID]);
     }
@@ -189,7 +189,7 @@ class BackupCode extends DataObject
         // Encrypt a new temporary key before writing to the database
         if (!$this->Used) {
             $hashingMethod = Security::config()->get('password_encryption_algorithm');
-            $hashed = Security::encrypt_password($this->Code, $this->Member()->BackupSalt, $hashingMethod);
+            $hashed = Security::encrypt_password($this->Code, $this->Member()->BackupCodeSalt, $hashingMethod);
             $this->Code = $hashed['password'];
         }
     }

@@ -21,7 +21,7 @@ class BootstrapMFAProvider
     {
         $member = $this->getMember();
 
-        return BackupCode::getValidTokensForMember($member);
+        return BackupCode::getTokensForMember($member);
     }
 
     /**

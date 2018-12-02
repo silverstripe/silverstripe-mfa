@@ -65,9 +65,9 @@ class SiteConfigExtension extends DataExtension
     }
 
     /**
-     * Magic method, {@see Form::saveInto()} line 1516
+     * Magic method, {@see Form::saveInto()}
      *
-     * @param $value
+     * @param string|null|false $value Date string
      */
     public function saveEnforceMFA($value)
     {
@@ -76,7 +76,7 @@ class SiteConfigExtension extends DataExtension
         // If the value is truthy and we don't have MFA already enforced
         if ($value && !$MFAEnforced) {
             $this->owner->ForceMFA = DBDatetime::now()->Format(DBDatetime::ISO_DATE);
-        // Otherwise if the field indicates MFA should not be enforced but it currently is
+            // Otherwise if the field indicates MFA should not be enforced but it currently is
         } elseif (!$value && $MFAEnforced) {
             $this->owner->ForceMFA = null;
         }

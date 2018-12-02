@@ -8,7 +8,6 @@ use Firesphere\BootstrapMFA\Models\BackupCode;
 use Firesphere\BootstrapMFA\Tests\Helpers\CodeHelper;
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Dev\Debug;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TabSet;

@@ -72,7 +72,7 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
         $this->assertEquals(302, $response->getStatusCode());
         $this->assertContains('verify', $response->getHeader('location'));
 
-        $member = Member::get()->filter(['Email' => 'test@example.com'])->first();
+        $member = $this->objFromFixture(Member::class, 'member1');
 
         $session = $request->getSession();
         $expected = [
@@ -124,7 +124,7 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
         $this->assertEquals(302, $response->getStatusCode());
         $this->assertContains('verify', $response->getHeader('location'));
 
-        $member = Member::get()->filter(['Email' => 'test@example.com'])->first();
+        $member = $this->objFromFixture(Member::class, 'member1');
 
         $session = $request->getSession();
         $expected = [

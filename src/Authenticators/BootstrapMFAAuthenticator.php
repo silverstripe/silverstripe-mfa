@@ -54,7 +54,7 @@ class BootstrapMFAAuthenticator extends MemberAuthenticator
             $result = new ValidationResult();
         }
         $hashingMethod = Security::config()->get('password_encryption_algorithm');
-        $token = Security::encrypt_password($token, $member->BackupSalt, $hashingMethod);
+        $token = Security::encrypt_password($token, $member->BackupCodeSalt, $hashingMethod);
 
         /** @var BootstrapMFAProvider $provider */
         $provider = Injector::inst()->get(BootstrapMFAProvider::class);

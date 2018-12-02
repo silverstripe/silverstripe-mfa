@@ -50,7 +50,7 @@ class BackupCodeTest extends SapphireTest
 
         $this->assertGreaterThan(0, $codes->count());
 
-        $codesFromValid = BackupCode::getValidTokensForMember($member);
+        $codesFromValid = BackupCode::getTokensForMember($member);
 
         $this->assertEquals($codes->count(), $codesFromValid->count());
     }

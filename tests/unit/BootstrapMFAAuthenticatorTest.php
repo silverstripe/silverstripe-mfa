@@ -49,7 +49,7 @@ class BootstrapMFAAuthenticatorTest extends SapphireTest
             $this->assertTrue($result->isValid());
             $this->assertInstanceOf(Member::class, $member);
 
-            $encryptedCode = Security::encrypt_password($code, $member->BackupSalt);
+            $encryptedCode = Security::encrypt_password($code, $member->BackupCodeSalt);
 
             /** @var BackupCode $code */
             $code = BackupCode::get()->filter(['Code' => $encryptedCode['password']])->first();

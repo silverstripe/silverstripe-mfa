@@ -9,7 +9,6 @@ use Firesphere\BootstrapMFA\Providers\BootstrapMFAProvider;
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Dev\Debug;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\LiteralField;
@@ -29,7 +28,7 @@ use SilverStripe\SiteConfig\SiteConfig;
  * @property Member|MemberExtension $owner
  * @property boolean $MFAEnabled
  * @property string $PrimaryMFA
- * @property string $BackupSalt
+ * @property string $BackupCodeSalt
  * @method DataList|BackupCode[] BackupCodes()
  */
 class MemberExtension extends DataExtension
@@ -38,9 +37,9 @@ class MemberExtension extends DataExtension
      * @var array
      */
     private static $db = [
-        'MFAEnabled' => 'Boolean(false)',
-        'PrimaryMFA' => 'Varchar(255)',
-        'BackupSalt' => 'Varchar(255)'
+        'MFAEnabled'     => 'Boolean(false)',
+        'PrimaryMFA'     => 'Varchar(255)',
+        'BackupCodeSalt' => 'Varchar(255)'
     ];
 
     /**
@@ -63,7 +62,7 @@ class MemberExtension extends DataExtension
         // Force the updateMFA value of this field. This resolves that when it's checked and submitted
         // The checkbox stays checked.
         $this->updateMFA = false;
-        $fields->removeByName(['BackupCodes', 'PrimaryMFA', 'BackupSalt']);
+        $fields->removeByName(['BackupCodes', 'PrimaryMFA', 'BackupCodeSalt']);
         $session = Controller::curr()->getRequest()->getSession();
         $rootTabSet = $fields->fieldByName('Root');
         // We need to push the tab for unit tests
@@ -99,13 +98,13 @@ class MemberExtension extends DataExtension
             $this->owner->MFAEnabled = true;
             $this->owner->updateMFA = true;
         }
-        if (!$this->owner->BackupSalt || $this->owner->updateMFA) {
+        if (!$this->owner->BackupCodeSalt || $this->owner->updateMFA) {
             $algorithm = Security::config()->get('password_encryption_algorithm');
 
             $encryptor = PasswordEncryptor::create_for_algorithm($algorithm);
 
             // No password. It's not even used in the salt generation
-            $this->owner->BackupSalt = $encryptor->salt('');
+            $this->owner->BackupCodeSalt = $encryptor->salt('');
         }
     }
 
