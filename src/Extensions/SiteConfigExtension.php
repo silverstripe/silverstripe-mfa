@@ -4,10 +4,7 @@ namespace Firesphere\BootstrapMFA\Extensions;
 
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\FieldList;
-use SilverStripe\Forms\Form;
-use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\ORM\DataExtension;
-use SilverStripe\ORM\FieldType\DBDate;
 use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverStripe\SiteConfig\SiteConfig;
 
@@ -15,7 +12,7 @@ use SilverStripe\SiteConfig\SiteConfig;
  * Class \Firesphere\BootstrapMFA\Extensions\SiteConfigExtension
  *
  * @property SiteConfig|SiteConfigExtension $owner
- * @property string|DBDatetime $ForceMFA
+ * @property string $ForceMFA
  */
 class SiteConfigExtension extends DataExtension
 {
@@ -46,19 +43,10 @@ class SiteConfigExtension extends DataExtension
         $this->updateCheckboxDescription($fields);
     }
 
-    public function saveEnforceMFA($value)
+    protected function isMFAEnforced()
     {
-        $MFAEnforced = $this->isMFAEnforced();
-
-        // If the value is truthy and we don't have MFA already enforced
-        if ($value && !$MFAEnforced) {
-            $this->owner->ForceMFA = DBDatetime::now()->format(DBDatetime::ISO_DATE);
-            // Otherwise if the field indicates MFA should not be enforced but it currently is
-        } elseif (!$value && $MFAEnforced) {
-            $this->owner->ForceMFA = null;
-        }
-
-        $this->updateCheckboxDescription();
+        // "0000-00-00" provides BC support for version 1.0 of BootstrapMFA where this attribute was stored as a boolean
+        return $this->owner->ForceMFA !== null && $this->owner->ForceMFA !== '0000-00-00';
     }
 
     public function updateCheckboxDescription(FieldList $fields = null)
@@ -68,7 +56,7 @@ class SiteConfigExtension extends DataExtension
                 $fields = $this->owner->getCMSFields();
             }
 
-            $fields->fieldByName('Root.MFA.EnforceMFA')->setDescription(_t(
+            $fields->dataFieldByName('EnforceMFA')->setDescription(_t(
                 self::class . '.ENFORCEDSINCE',
                 'MFA enforced since {date}',
                 ['date' => $this->owner->obj('ForceMFA')->Nice()]
@@ -76,9 +64,23 @@ class SiteConfigExtension extends DataExtension
         }
     }
 
-    protected function isMFAEnforced()
+    /**
+     * Magic method, {@see Form::saveInto()}
+     *
+     * @param string|null|false $value Date string
+     */
+    public function saveEnforceMFA($value)
     {
-        // "0000-00-00" provides BC support for version 1.0 of BootstrapMFA where this attribute was stored as a boolean
-        return $this->owner->ForceMFA !== null && $this->owner->ForceMFA !== '0000-00-00';
+        $MFAEnforced = $this->isMFAEnforced();
+
+        // If the value is truthy and we don't have MFA already enforced
+        if ($value && !$MFAEnforced) {
+            $this->owner->ForceMFA = DBDatetime::now()->Format(DBDatetime::ISO_DATE);
+            // Otherwise if the field indicates MFA should not be enforced but it currently is
+        } elseif (!$value && $MFAEnforced) {
+            $this->owner->ForceMFA = null;
+        }
+
+        $this->updateCheckboxDescription();
     }
 }

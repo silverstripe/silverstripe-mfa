@@ -55,7 +55,7 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
     public function testDoLogin()
     {
         $data = [
-            'Email'    => 'test@test.com',
+            'Email'    => 'test@example.com',
             'Password' => 'password1'
         ];
 
@@ -72,12 +72,14 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
         $this->assertEquals(302, $response->getStatusCode());
         $this->assertContains('verify', $response->getHeader('location'));
 
+        $member = $this->objFromFixture(Member::class, 'member1');
+
         $session = $request->getSession();
         $expected = [
-            'MemberID' => 1,
+            'MemberID' => $member->ID,
             'Data'     =>
                 [
-                    'Email'    => 'test@test.com',
+                    'Email'    => 'test@example.com',
                     'Password' => 'password1',
                 ]
         ];
@@ -89,7 +91,7 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
         $request->setSession($session);
 
         $data = [
-            'Email'    => 'admin',
+            'Email'    => 'admin@example.com',
             'Password' => 'password'
         ];
 
@@ -104,7 +106,7 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
     public function testBackURLLogin()
     {
         $data = [
-            'Email'    => 'test@test.com',
+            'Email'    => 'test@example.com',
             'Password' => 'password1',
             'BackURL'  => '/memberlocation'
         ];
@@ -122,13 +124,15 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
         $this->assertEquals(302, $response->getStatusCode());
         $this->assertContains('verify', $response->getHeader('location'));
 
+        $member = $this->objFromFixture(Member::class, 'member1');
+
         $session = $request->getSession();
         $expected = [
-            'MemberID' => 1,
+            'MemberID' => $member->ID,
             'BackURL'  => '/memberlocation',
             'Data'     =>
                 [
-                    'Email'    => 'test@test.com',
+                    'Email'    => 'test@example.com',
                     'Password' => 'password1',
                     'BackURL'  => '/memberlocation',
                 ],
@@ -139,7 +143,7 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
     public function testDoWrongLogin()
     {
         $data = [
-            'Email'    => 'test@test.com',
+            'Email'    => 'test@example.com',
             'Password' => 'wrongpassword'
         ];
 
@@ -171,7 +175,7 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
 
         $request->setSession($session);
         $data = [
-            'Email'    => 'test@test.com',
+            'Email'    => 'test@example.com',
             'Password' => 'password1',
             'BackURL'  => '/memberlocation',
         ];
@@ -229,7 +233,7 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
 
         $request->setSession($session);
         $data = [
-            'Email'    => 'test@test.com',
+            'Email'    => 'test@example.com',
             'Password' => 'password1',
             'BackURL'  => '/memberlocation',
         ];
@@ -263,7 +267,7 @@ class BootstrapMFALoginHandlerTest extends SapphireTest
 
         $request->setSession($session);
         $data = [
-            'Email'    => 'test@test.com',
+            'Email'    => 'test@example.com',
             'Password' => 'password1',
             'BackURL'  => '/memberlocation',
         ];

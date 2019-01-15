@@ -14,19 +14,14 @@ class BootstrapMFAProvider
     protected $member;
 
     /**
-     * @param string $token
-     * @return null|BackupCode
+     * @param null|string $token If it's a specific token to be fetched
+     * @return DataList|BackupCode[]
      */
-    public function fetchToken($token)
+    public function fetchToken($token = null)
     {
         $member = $this->getMember();
 
-        /** @var BackupCode $backupCode */
-        $backupCode = BackupCode::getValidTokensForMember($member)
-            ->filter(['Code' => $token])
-            ->first();
-
-        return $backupCode;
+        return BackupCode::getTokensForMember($member);
     }
 
     /**

@@ -242,7 +242,6 @@ class BootstrapMFALoginHandler extends LoginHandler
     }
 
 
-
     /**
      * @param $authenticationMethod
      * @return bool

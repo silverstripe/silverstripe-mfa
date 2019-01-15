@@ -13,6 +13,7 @@ use SilverStripe\Dev\SapphireTest;
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\IdentityStore;
 use SilverStripe\Security\Member;
+use SilverStripe\Security\Security;
 
 class BootstrapMFAAuthenticatorTest extends SapphireTest
 {
@@ -48,10 +49,10 @@ class BootstrapMFAAuthenticatorTest extends SapphireTest
             $this->assertTrue($result->isValid());
             $this->assertInstanceOf(Member::class, $member);
 
-            $encryptedCode = $member->encryptWithUserSettings($code);
+            $encryptedCode = Security::encrypt_password($code, $member->BackupCodeSalt);
 
             /** @var BackupCode $code */
-            $code = BackupCode::get()->filter(['Code' => $encryptedCode])->first();
+            $code = BackupCode::get()->filter(['Code' => $encryptedCode['password']])->first();
 
             $this->assertTrue((bool)$code->Used);
         }
