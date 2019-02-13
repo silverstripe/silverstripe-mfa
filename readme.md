@@ -32,7 +32,7 @@ This can be done on creation of the Member, via `BootstrapMFAProvider::updateTok
 ```yaml
 
 ---
-name: MFAAuthenticator
+name: AppMFAAuthenticator
 ---
 Firesphere\BootstrapMFA\BackupCode:
   token_limit: 15 # Default amount of tokens
