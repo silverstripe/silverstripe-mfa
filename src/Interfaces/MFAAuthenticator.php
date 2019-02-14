@@ -28,7 +28,7 @@ interface MFAAuthenticator
      * @param ValidationResult $result
      * @return mixed
      */
-    public function verifyMFA($data, $request, $token, &$result);
+    public function verifyMFA($data, $request, $token, $result);
 
     /**
      * Required to find the token field for the authenticator

@@ -48,7 +48,7 @@ class MockAuthenticator extends BootstrapMFAAuthenticator implements TestOnly, M
      * @param ValidationResult $result
      * @return mixed
      */
-    public function verifyMFA($data, $request, $token, &$result)
+    public function verifyMFA($data, $request, $token, $result)
     {
         if (!$result) {
             $result = ValidationResult::create();
