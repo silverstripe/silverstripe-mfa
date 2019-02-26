@@ -1,0 +1,70 @@
+{
+  "name": "silverstripe-mfa",
+  "main": "./client/src/boot/index.js",
+  "license": "BSD-3-Clause",
+  "homepage": "https://github.com/silverstripe/silverstripe-ckan-registry",
+  "author": "SilverStripe Ltd",
+  "engines": {
+    "node": ">=10.x"
+  },
+  "scripts": {
+    "build": "yarn && yarn lint && yarn test && NODE_ENV=production webpack -p --bail --progress",
+    "dev": "NODE_ENV=development webpack --progress",
+    "watch": "NODE_ENV=development webpack --watch --progress",
+    "css": "WEBPACK_CHILD=css npm run build",
+    "test": "jest --passWithNoTests",
+    "coverage": "jest --coverage --passWithNoTests",
+    "lock": "npm-shrinkwrap --dev",
+    "lint": "eslint client/src && sass-lint client/src",
+    "lint-js": "eslint client/src",
+    "lint-js-fix": "eslint client/src --fix",
+    "lint-sass": "sass-lint client/src"
+  },
+  "dependencies": {
+    "jquery": "^3.3.1",
+    "prop-types": "^15.7.2",
+    "react": "^16.8.3",
+    "react-dom": "^16.8.3"
+  },
+  "devDependencies": {
+    "@silverstripe/eslint-config": "^0.0.5",
+    "@silverstripe/webpack-config": "^0.12.0",
+    "babel-jest": "^24.1.0",
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-16": "^1.10.0",
+    "jest-cli": "^24.1.0"
+  },
+  "jest": {
+    "roots": [
+      "client/src"
+    ],
+    "modulePaths": [
+      "client/src"
+    ],
+    "collectCoverageFrom": [
+      "**/*.{js,jsx}",
+      "!**/node_modules/**",
+      "!**/boot/**",
+      "!**/bundles/**",
+      "!**/legacy/**",
+      "!**/vendor/**",
+      "!**/*-test.{js,jsx}",
+      "!**/*-story.{js,jsx}"
+    ],
+    "testMatch": [
+      "**/tests/**/*-test.js?(x)"
+    ],
+    "transform": {
+      ".*": "babel-jest"
+    }
+  },
+  "babel": {
+    "presets": [
+      "env",
+      "react"
+    ],
+    "plugins": [
+      "transform-object-rest-spread"
+    ]
+  }
+}
