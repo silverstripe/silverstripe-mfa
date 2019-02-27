@@ -1,23 +1,30 @@
 <?php
 namespace SilverStripe\MFA\BasicMath;
 
-use SilverStripe\MFA\AuthenticationMethod\AuthenticatorInterface;
-use SilverStripe\MFA\AuthenticationMethodInterface;
+use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
+use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
+use SilverStripe\MFA\Method\MethodInterface;
+use SilverStripe\MFA\MethodRegisterHandler;
 
-class Method implements AuthenticationMethodInterface
+class Method implements MethodInterface
 {
     /**
      * Return the authenticator interface that is used to start and verify login attempts with this method
      *
-     * @return AuthenticatorInterface
+     * @return LoginHandlerInterface
      */
-    public function getAuthenticator()
+    public function getLoginHandler()
     {
-        return new MethodAuthenticator();
+        return new MethodAuthenticationHandler();
     }
 
-    public function getRegistrar()
+    /**
+     * Return the RegisterHandler that is used to perform registrations with this method
+     *
+     * @return RegisterHandlerInterface
+     */
+    public function getRegisterHandler()
     {
-        // TODO: Implement getRegistrar() method.
+        return new MethodRegisterHandler();
     }
 }

@@ -5,4 +5,4 @@ After:
 ---
 SilverStripe\Security\Member:
   extensions:
-    mfaExtension: SilverStripe\MFA\Extensions\MemberExtension
+    mfaExtension: SilverStripe\MFA\Extension\MemberExtension

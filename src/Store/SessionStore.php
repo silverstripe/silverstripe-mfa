@@ -1,5 +1,5 @@
 <?php
-namespace SilverStripe\MFA;
+namespace SilverStripe\MFA\Store;
 
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\MFA\Extensions\MemberExtension;
@@ -13,7 +13,7 @@ use SilverStripe\Security\Member;
  */
 class SessionStore
 {
-    const SESSION_KEY = 'thing';
+    const SESSION_KEY = 'MFASessionStore';
 
     /**
      * The member that is currently going through the MFA process
@@ -137,6 +137,12 @@ class SessionStore
         return $this;
     }
 
+    /**
+     * Clear any stored values for the given request
+     *
+     * @param HTTPRequest $request
+     * @return void
+     */
     public static function clear(HTTPRequest $request)
     {
         $request->getSession()->clear(static::SESSION_KEY);
@@ -145,6 +151,8 @@ class SessionStore
     protected function resetMethod()
     {
         $this->setMethod(null)->setState([]);
+
+        return $this;
     }
 
     protected function build()
