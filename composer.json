@@ -1,6 +1,6 @@
 {
-    "name": "firesphere/bootstrapmfa",
-    "description": "Enable authentication with fallback codes",
+    "name": "silverstripe/mfa",
+    "description": "Enable multi factor authentication with fallback codes",
     "type": "silverstripe-vendormodule",
     "license": "BSD-3-Clause",
     "keywords": [
@@ -14,6 +14,14 @@
         {
             "name": "Simon `Firesphere` Erkelens",
             "email": "simonerkelens@silverstripe.com"
+        },
+        {
+            "name": "SilverStripe",
+            "homepage": "https://www.silverstripe.com"
+        },
+        {
+            "name": "The SilverStripe Community",
+            "homepage": "https://www.silverstripe.org"
         }
     ],
     "require": {
@@ -27,14 +35,13 @@
     "extra": {
         "branch-alias": {
             "dev-master": "4.0.x-dev"
-        }
+        },
+        "expose": [
+            "client/dist"
+        ]
     },
     "support": {
-        "issues": "https://github.com/firesphere/silverstripe-bootstrapmfa/issues",
-        "source": "https://github.com/firesphere/silverstripe-bootstrapmfa"
-    },
-    "suggest": {
-        "firesphere/yubiauth": "Authentication via Yubikey 2FA"
+        "issues": "https://github.com/silverstripe/silverstripe-mfa/issues"
     },
     "minimum-stability": "dev",
     "prefer-stable": true
