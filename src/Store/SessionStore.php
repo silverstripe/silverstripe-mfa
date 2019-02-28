@@ -45,7 +45,7 @@ class SessionStore implements StoreInterface
     {
         $state = $request->getSession()->get(static::SESSION_KEY);
 
-        $new = new static;
+        $new = new static();
 
         if ($state) {
             $new->setMethod($state['method']);
