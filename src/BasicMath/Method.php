@@ -9,13 +9,13 @@ use SilverStripe\MFA\MethodRegisterHandler;
 class Method implements MethodInterface
 {
     /**
-     * Return the authenticator interface that is used to start and verify login attempts with this method
+     * Return the LoginHandler that is used to start and verify login attempts with this method
      *
      * @return LoginHandlerInterface
      */
     public function getLoginHandler()
     {
-        return new MethodAuthenticationHandler();
+        return new MethodLoginHandler();
     }
 
     /**

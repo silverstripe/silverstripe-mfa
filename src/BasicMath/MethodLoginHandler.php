@@ -9,7 +9,7 @@ use SilverStripe\MFA\Store\StoreInterface;
 /**
  * Handles login attempts for the Math Method
  */
-class MethodAuthenticationHandler implements LoginHandlerInterface
+class MethodLoginHandler implements LoginHandlerInterface
 {
     use Configurable;
 

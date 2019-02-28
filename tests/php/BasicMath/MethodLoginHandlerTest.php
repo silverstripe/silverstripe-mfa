@@ -5,14 +5,14 @@ namespace SilverStripe\MFA\Tests\BasicMath;
 use PHPUnit_Framework_MockObject_MockObject;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Dev\SapphireTest;
-use SilverStripe\MFA\BasicMath\MethodAuthenticationHandler;
+use SilverStripe\MFA\BasicMath\MethodLoginHandler;
 use SilverStripe\MFA\Store\StoreInterface;
 
-class MethodAuthenticationHandlerTest extends SapphireTest
+class MethodLoginHandlerTest extends SapphireTest
 {
     public function testStart()
     {
-        $handler = new MethodAuthenticationHandler();
+        $handler = new MethodLoginHandler();
 
         /** @var StoreInterface|PHPUnit_Framework_MockObject_MockObject $store */
         $store = $this->createMock(StoreInterface::class);
@@ -23,7 +23,7 @@ class MethodAuthenticationHandlerTest extends SapphireTest
 
     public function testVerify()
     {
-        $handler = new MethodAuthenticationHandler();
+        $handler = new MethodLoginHandler();
 
         /** @var HTTPRequest|PHPUnit_Framework_MockObject_MockObject $request */
         $request = $this->createMock(HTTPRequest::class);
