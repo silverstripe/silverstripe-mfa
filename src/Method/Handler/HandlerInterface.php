@@ -5,9 +5,7 @@ namespace SilverStripe\MFA\Method\Handler;
 use SilverStripe\MFA\Store\StoreInterface;
 
 /**
- * Interface HandlerInterface
- *
- * @package SilverStripe\MFA\Method\Handler
+ * A base interface for both login and register interfaces, which both "start" their process
  */
 interface HandlerInterface
 {

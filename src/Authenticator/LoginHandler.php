@@ -83,7 +83,7 @@ class LoginHandler extends BaseLoginHandler
         }
 
         // Get a list of authentication for the user and the find default
-        $authMethods = $member->RegisteredMethods();
+        $authMethods = $member->RegisteredMFAMethods();
 
         // Pool a list of "lead in" labels. We skip the default here assuming it's not required.
         $alternateLeadInLabels = [];
@@ -249,7 +249,7 @@ class LoginHandler extends BaseLoginHandler
         $method = null;
 
         // Find the actual method registration data object from the member for the specified default authenticator
-        foreach ($member->RegisteredMethods() as $candidate) {
+        foreach ($member->RegisteredMFAMethods() as $candidate) {
             if ($candidate->MethodClassName === $specifiedMethod) {
                 $method = $candidate;
                 break;

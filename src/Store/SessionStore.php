@@ -2,7 +2,7 @@
 namespace SilverStripe\MFA\Store;
 
 use SilverStripe\Control\HTTPRequest;
-use SilverStripe\MFA\Extensions\MemberExtension;
+use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\Security\Member;
 
 /**
@@ -11,7 +11,7 @@ use SilverStripe\Security\Member;
  *
  * @package SilverStripe\MFA
  */
-class SessionStore
+class SessionStore implements StoreInterface
 {
     const SESSION_KEY = 'MFASessionStore';
 
@@ -39,8 +39,7 @@ class SessionStore
     /**
      * Create a store from the given request getting any initial state from the session of the request
      *
-     * @param HTTPRequest $request
-     * @return SessionStore
+     * {@inheritdoc}
      */
     public static function create(HTTPRequest $request)
     {
@@ -105,18 +104,11 @@ class SessionStore
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getState()
     {
         return $this->state;
     }
 
-    /**
-     * @param array $state
-     * @return $this
-     */
     public function setState(array $state)
     {
         $this->state = $state;
@@ -127,8 +119,7 @@ class SessionStore
     /**
      * Save this store into the session of the given request
      *
-     * @param HTTPRequest $request
-     * @return $this
+     * {@inheritdoc}
      */
     public function save(HTTPRequest $request)
     {
@@ -140,8 +131,7 @@ class SessionStore
     /**
      * Clear any stored values for the given request
      *
-     * @param HTTPRequest $request
-     * @return void
+     * {@inheritdoc}
      */
     public static function clear(HTTPRequest $request)
     {
