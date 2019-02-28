@@ -16,15 +16,21 @@ class LoginHandler extends BaseLoginHandler
     const SESSION_KEY = 'MFALogin';
 
     private static $url_handlers = [
-        'mfa/start/$Method' => 'start',
-        'mfa/verify' => 'verify',
-        'mfa' => 'mfa',
+        'GET mfa' => 'mfa', # Renders the MFA Login Page to init the app
+        'GET mfa/schema' => 'getSchema', # Provides details about existing registered methods, etc.
+        'GET mfa/register/$Method' => 'startRegister', # Initiates registration process for $Method
+        'POST mfa/register/$Method' => 'finishRegister', # Completes registration process for $Method
+        'GET mfa/login/$Method' => 'startLogin', # Initiates login process for $Method
+        'POST mfa/login/$Method' => 'verifyLogin', # Verifies login via $Method
     ];
 
     private static $allowed_actions = [
         'mfa',
-        'start',
-        'verify',
+        'getSchema',
+        'startRegister',
+        'finishRegister',
+        'startLogin',
+        'verifyLogin',
     ];
 
     /**
@@ -69,11 +75,21 @@ class LoginHandler extends BaseLoginHandler
     }
 
     /**
-     * Action handler for displaying the MFA authentication React app
+     * Action handler for loading the MFA authentication React app
      *
      * @return array|HTTPResponse
      */
     public function mfa()
+    {
+        return [];
+    }
+
+    /**
+     * Provides information about the current Member's MFA state
+     *
+     * @return array|HTTPResponse
+     */
+    public function getSchema()
     {
         $member = $this->getSessionStore()->getMember();
 
@@ -93,8 +109,29 @@ class LoginHandler extends BaseLoginHandler
         }
 
         return [
-            'methods' => $alternateLeadInLabels,
+            'registered_methods' => $alternateLeadInLabels,
         ];
+    }
+
+    /**
+     * Handles the request to start a registration
+     *
+     * @param HTTPRequest $request
+     * @return HTTPResponse
+     */
+    public function startRegister(HTTPRequest $request)
+    {
+        return $this->jsonResponse(['errors' => ['Registration not yet implemented']], 500);
+    }
+
+    /**
+     * Handles the request to verify and process a new registration
+     *
+     * @param HTTPRequest $request
+     */
+    public function finishRegister(HTTPRequest $request)
+    {
+        return $this->jsonResponse(['errors' => ['Registration not yet implemented']], 500);
     }
 
     /**
@@ -103,7 +140,7 @@ class LoginHandler extends BaseLoginHandler
      * @param HTTPRequest $request
      * @return HTTPResponse
      */
-    public function start(HTTPRequest $request)
+    public function startLogin(HTTPRequest $request)
     {
         $sessionStore = $this->getSessionStore();
         $member = $sessionStore->getMember();
@@ -113,12 +150,12 @@ class LoginHandler extends BaseLoginHandler
             return $this->redirectBack();
         }
 
-        // Pull a method to use from the request or use the default
-        $specifiedMethod = str_replace('-', '\\', $request->param('Method')) ?: $member->DefaultAuthenticationMethod;
-        list($method, $candidate) = $this->getMethodFromMember($member, $specifiedMethod);
+        // Pull a method to use from the request or use the default (TODO: Should we have the default as a fallback?)
+        $specifiedMethod = str_replace('-', '\\', $request->param('Method')) ?: $member->DefaultRegisteredMethod;
+        $method = $this->getMethodFromMember($member, $specifiedMethod);
 
         // Mark the given method as started within the session
-        $sessionStore->setMethod($candidate->MethodClassName);
+        $sessionStore->setMethod($method->MethodClassName);
         // Allow the authenticator to begin the process and generate some data to pass through to the front end
         $data = $method->getLoginHandler()->start($sessionStore);
         // Ensure detail is saved to the session
@@ -134,7 +171,7 @@ class LoginHandler extends BaseLoginHandler
      * @param HTTPRequest $request
      * @return HTTPResponse
      */
-    public function verify(HTTPRequest $request)
+    public function verifyLogin(HTTPRequest $request)
     {
         $method = $this->getSessionStore()->getMethod();
 
@@ -180,9 +217,11 @@ class LoginHandler extends BaseLoginHandler
      * @param array $response
      * @return HTTPResponse
      */
-    protected function jsonResponse(array $response)
+    protected function jsonResponse(array $response, $code = 200)
     {
-        return HTTPResponse::create(json_encode($response))->addHeader('Content-Type', 'application/json');
+        return HTTPResponse::create(json_encode($response))
+            ->addHeader('Content-Type', 'application/json')
+            ->setStatusCode($code);
     }
 
     /**
@@ -242,7 +281,7 @@ class LoginHandler extends BaseLoginHandler
      *
      * @param Member|MemberExtension $member
      * @param string $specifiedMethod
-     * @return MethodInterface
+     * @return RegisteredMethod
      */
     protected function getMethodFromMember(Member $member, $specifiedMethod)
     {
