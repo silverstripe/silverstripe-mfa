@@ -50,7 +50,7 @@ class MethodAuthenticationHandler implements LoginHandlerInterface
     public function verify(HTTPRequest $request, StoreInterface $store)
     {
         $state = $store->getState();
-        return hash_equals($state['answer'], $request->param('answer'));
+        return hash_equals((string)$state['answer'], (string)$request->param('answer'));
     }
 
     /**
