@@ -40,6 +40,12 @@
             "client/dist"
         ]
     },
+    "autoload": {
+        "psr-4": {
+            "SilverStripe\\MFA\\": "src/",
+            "SilverStripe\\MFA\\Tests\\": "tests/php/"
+        }
+    },
     "support": {
         "issues": "https://github.com/silverstripe/silverstripe-mfa/issues"
     },

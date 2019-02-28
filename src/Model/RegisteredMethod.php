@@ -2,8 +2,9 @@
 namespace SilverStripe\MFA\Model;
 
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\MFA\AuthenticationMethod\AuthenticatorInterface;
-use SilverStripe\MFA\AuthenticationMethodInterface;
+use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
+use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
+use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
 
@@ -13,12 +14,12 @@ use SilverStripe\Security\Member;
  * @property string MethodClassName
  * @property array Data
  */
-class AuthenticationMethod extends DataObject
+class RegisteredMethod extends DataObject
 {
-    private static $table_name = 'MFAAuthenticationMethod';
+    private static $table_name = 'MFARegisteredMethod';
 
     private static $db = [
-        // The class name of the AuthenticationMethodInterface that this record refers to
+        // The class name of the MethodInterface that this record refers to
         'MethodClassName' => 'Varchar',
         // Data stored as a JSON blob that may contain detail specific to this registration of the authenticator
         'Data' => 'Text',
@@ -29,24 +30,24 @@ class AuthenticationMethod extends DataObject
     ];
 
     /**
-     * @var AuthenticationMethodInterface
+     * @var MethodInterface
      */
     protected $method;
 
     /**
-     * @return AuthenticatorInterface
+     * @return LoginHandlerInterface
      */
-    public function getAuthenticator()
+    public function getLoginHandler()
     {
-        return $this->getMethod()->getAuthenticator();
+        return $this->getMethod()->getLoginHandler();
     }
 
     /**
-     * @return mixed
+     * @return RegisterHandlerInterface
      */
-    public function getRegistrar()
+    public function getRegisterHandler()
     {
-        return $this->getMethod()->getRegistrar();
+        return $this->getMethod()->getRegisterHandler();
     }
 
     /**
@@ -70,7 +71,7 @@ class AuthenticationMethod extends DataObject
     }
 
     /**
-     * @return AuthenticationMethodInterface
+     * @return MethodInterface
      */
     protected function getMethod()
     {

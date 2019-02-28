@@ -1,12 +1,12 @@
 <?php
-namespace SilverStripe\MFA;
+namespace SilverStripe\MFA\Authenticator;
 
 use LogicException;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\MFA\Extensions\MemberExtension;
-use SilverStripe\MFA\Model\AuthenticationMethod;
+use SilverStripe\MFA\Extension\MemberExtension;
+use SilverStripe\MFA\Method\MethodInterface;
+use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\MemberAuthenticator\LoginHandler as BaseLoginHandler;
 use SilverStripe\Security\MemberAuthenticator\MemberLoginForm;
@@ -23,7 +23,8 @@ class LoginHandler extends BaseLoginHandler
 
     private static $allowed_actions = [
         'mfa',
-        'startMethod',
+        'start',
+        'verify',
     ];
 
     /**
@@ -56,8 +57,7 @@ class LoginHandler extends BaseLoginHandler
         }
 
         // Store a reference to the member in session
-        $this->getSessionStore()->setMember($member);
-        $this->getSessionStore()->save($request);
+        $this->getSessionStore()->setMember($member)->save($request);
 
         // Store the BackURL for use after the process is complete
         if (!empty($data)) {
@@ -83,13 +83,13 @@ class LoginHandler extends BaseLoginHandler
         }
 
         // Get a list of authentication for the user and the find default
-        $authMethods = $member->AuthenticationMethods();
+        $authMethods = $member->RegisteredMFAMethods();
 
         // Pool a list of "lead in" labels. We skip the default here assuming it's not required.
         $alternateLeadInLabels = [];
         foreach ($authMethods as $method) {
             $alternateLeadInLabels[str_replace('\\', '-', get_class($method))] =
-                $method->getAuthenticator()->getLeadInLabel();
+                $method->getLoginHandler()->getLeadInLabel();
         }
 
         return [
@@ -120,7 +120,7 @@ class LoginHandler extends BaseLoginHandler
         // Mark the given method as started within the session
         $sessionStore->setMethod($candidate->MethodClassName);
         // Allow the authenticator to begin the process and generate some data to pass through to the front end
-        $data = $method->getAuthenticator()->start($sessionStore);
+        $data = $method->getLoginHandler()->start($sessionStore);
         // Ensure detail is saved to the session
         $sessionStore->save($request);
 
@@ -128,6 +128,12 @@ class LoginHandler extends BaseLoginHandler
         return $this->jsonResponse($data);
     }
 
+    /**
+     * Handles requests to authenticate from any MFA method, directing verification to the Method supplied.
+     *
+     * @param HTTPRequest $request
+     * @return HTTPResponse
+     */
     public function verify(HTTPRequest $request)
     {
         $method = $this->getSessionStore()->getMethod();
@@ -139,7 +145,7 @@ class LoginHandler extends BaseLoginHandler
 
         // Get the member and authenticator ready
         $member = $this->getSessionStore()->getMember();
-        $authenticator = $this->getMethodFromMember($member, $method)->getAuthenticator();
+        $authenticator = $this->getMethodFromMember($member, $method)->getLoginHandler();
 
         if (!$authenticator->verify($request, $this->getSessionStore())) {
             // TODO figure out how to return a message here too.
@@ -180,9 +186,11 @@ class LoginHandler extends BaseLoginHandler
     }
 
     /**
-     * Indicate that the user has successfully verifed the given authentication method
+     * Indicate that the user has successfully verified the given authentication method
      *
+     * @param HTTPRequest $request
      * @param string $method The method class name
+     * @return LoginHandler
      */
     protected function addSuccessfulVerification(HTTPRequest $request, $method)
     {
@@ -234,14 +242,14 @@ class LoginHandler extends BaseLoginHandler
      *
      * @param Member|MemberExtension $member
      * @param string $specifiedMethod
-     * @return AuthenticationMethodInterface
+     * @return MethodInterface
      */
     protected function getMethodFromMember(Member $member, $specifiedMethod)
     {
         $method = null;
 
         // Find the actual method registration data object from the member for the specified default authenticator
-        foreach ($member->AuthenticationMethods() as $candidate) {
+        foreach ($member->RegisteredMFAMethods() as $candidate) {
             if ($candidate->MethodClassName === $specifiedMethod) {
                 $method = $candidate;
                 break;

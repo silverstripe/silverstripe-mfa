@@ -3,10 +3,13 @@ namespace SilverStripe\MFA\BasicMath;
 
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Config\Configurable;
-use SilverStripe\MFA\AuthenticationMethod\AuthenticatorInterface;
-use SilverStripe\MFA\SessionStore;
+use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
+use SilverStripe\MFA\Store\StoreInterface;
 
-class MethodAuthenticator implements AuthenticatorInterface
+/**
+ * Handles login attempts for the Math Method
+ */
+class MethodLoginHandler implements LoginHandlerInterface
 {
     use Configurable;
 
@@ -16,10 +19,10 @@ class MethodAuthenticator implements AuthenticatorInterface
      * Prepare this authentication method to verify a member by initialising state in session and generating details to
      * provide to a frontend React component
      *
-     * @param SessionStore $store An object that hold session data (and the Member) that can be mutated
+     * @param StoreInterface $store An object that hold session data (and the Member) that can be mutated
      * @return array Props to be passed to a front-end React component
      */
-    public function start(SessionStore $store)
+    public function start(StoreInterface $store)
     {
         $numbers = [];
 
@@ -41,13 +44,13 @@ class MethodAuthenticator implements AuthenticatorInterface
      * that may have been set prior
      *
      * @param HTTPRequest $request
-     * @param SessionStore $store
+     * @param StoreInterface $store
      * @return bool
      */
-    public function verify(HTTPRequest $request, SessionStore $store)
+    public function verify(HTTPRequest $request, StoreInterface $store)
     {
         $state = $store->getState();
-        return hash_equals($state['answer'], $request->param('answer'));
+        return hash_equals((string)$state['answer'], (string)$request->param('answer'));
     }
 
     /**

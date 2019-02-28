@@ -1,5 +1,5 @@
 <?php
-namespace SilverStripe\MFA;
+namespace SilverStripe\MFA\Authenticator;
 
 use SilverStripe\Security\MemberAuthenticator\MemberAuthenticator as BaseMemberAuthenticator;
 
