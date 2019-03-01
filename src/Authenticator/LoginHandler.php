@@ -80,11 +80,13 @@ class LoginHandler extends BaseLoginHandler
     /**
      * Action handler for loading the MFA authentication React app
      *
-     * @return array|HTTPResponse
+     * @return array template variables {@see SilverStripe\Security\Security::renderWrappedController}
      */
     public function mfa()
     {
-        return [];
+        return [
+            'Form' => $this->renderWith($this->getViewerTemplates()),
+        ];
     }
 
     /**
@@ -95,6 +97,10 @@ class LoginHandler extends BaseLoginHandler
     public function getSchema()
     {
         $member = $this->getSessionStore()->getMember();
+
+        if (!$member) {
+            $member = Security::getCurrentUser();
+        }
 
         // If we don't have a valid member we shouldn't be here...
         if (!$member) {
