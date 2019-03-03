@@ -1,15 +1,16 @@
 <?php
 
-namespace SilverStripe\MFA;
+namespace SilverStripe\MFA\Tests\Stub\BasicMath;
 
 use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Dev\TestOnly;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Store\StoreInterface;
 
 /**
  * Handles registration processing for the Math Method.
  */
-class MethodRegisterHandler implements RegisterHandlerInterface
+class MethodRegisterHandler implements RegisterHandlerInterface, TestOnly
 {
     /**
      * Prepare to register this authentication method against a member by initialising state in session and generating

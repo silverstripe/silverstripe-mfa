@@ -1,12 +1,12 @@
 <?php
-namespace SilverStripe\MFA\BasicMath;
+namespace SilverStripe\MFA\Tests\Stub\BasicMath;
 
-use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
+use SilverStripe\Dev\TestOnly;
 use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
+use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
-use SilverStripe\MFA\MethodRegisterHandler;
 
-class Method implements MethodInterface
+class Method implements MethodInterface, TestOnly
 {
     /**
      * Return the LoginHandler that is used to start and verify login attempts with this method
