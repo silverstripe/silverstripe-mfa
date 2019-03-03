@@ -5,8 +5,8 @@ namespace SilverStripe\MFA\Tests\BasicMath;
 use PHPUnit_Framework_MockObject_MockObject;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Dev\SapphireTest;
-use SilverStripe\MFA\BasicMath\MethodLoginHandler;
 use SilverStripe\MFA\Store\StoreInterface;
+use SilverStripe\MFA\Tests\Stub\BasicMath\MethodLoginHandler;
 
 class MethodLoginHandlerTest extends SapphireTest
 {
