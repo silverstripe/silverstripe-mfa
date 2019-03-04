@@ -38,7 +38,15 @@ class SessionStore implements StoreInterface
     protected $state = [];
 
     /**
-     * Create a store from the given request getting any initial state from the session of the request
+     * @param Member $member
+     */
+    public function __construct(Member $member = null)
+    {
+        $this->member = $member;
+    }
+
+    /**
+     * Attempt to create a store from the given request getting any existing state from the session of the request
      *
      * {@inheritdoc}
      */
@@ -46,17 +54,18 @@ class SessionStore implements StoreInterface
     {
         $state = $request->getSession()->get(static::SESSION_KEY);
 
-        $new = new static();
+        if ($state && $state['member']) {
+            /** @var Member $member */
+            $member = DataObject::get_by_id(Member::class, $state['member']);
 
-        if ($state) {
+            $new = new static($member);
             $new->setMethod($state['method']);
             $new->setState($state['state']);
-            if ($state['member']) {
-                $new->setMember(DataObject::get_by_id(Member::class, $state['member']));
-            }
+
+            return $new;
         }
 
-        return $new;
+        return new static();
     }
 
     /**

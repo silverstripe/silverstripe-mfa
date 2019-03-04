@@ -3,6 +3,8 @@
 namespace SilverStripe\MFA\Store;
 
 use SilverStripe\Control\HTTPRequest;
+use SilverStripe\MFA\Extension\MemberExtension;
+use SilverStripe\Security\Member;
 
 /**
  * Represents a place for temporarily storing state related to a login or registration attempt.
@@ -16,6 +18,22 @@ interface StoreInterface
      * @return StoreInterface
      */
     public static function create(HTTPRequest $request);
+
+    /**
+     * Persist the stored state for the given request
+     *
+     * @param HTTPRequest $request
+     * @return StoreInterface
+     */
+    public function save(HTTPRequest $request);
+
+    /**
+     * Clear any stored state for the given request
+     *
+     * @param HTTPRequest $request
+     * @return void
+     */
+    public static function clear(HTTPRequest $request);
 
     /**
      * Get the state from the store
@@ -33,18 +51,24 @@ interface StoreInterface
     public function setState(array $state);
 
     /**
-     * Persist the stored state for the given request
-     *
-     * @param HTTPRequest $request
-     * @return StoreInterface
+     * @return Member|MemberExtension
      */
-    public function save(HTTPRequest $request);
+    public function getMember();
 
     /**
-     * Clear any stored state for the given request
-     *
-     * @param HTTPRequest $request
-     * @return void
+     * @param Member $member
+     * @return $this
      */
-    public static function clear(HTTPRequest $request);
+    public function setMember(Member $member);
+
+    /**
+     * @return string
+     */
+    public function getMethod();
+
+    /**
+     * @param string $method
+     * @return $this
+     */
+    public function setMethod($method);
 }
