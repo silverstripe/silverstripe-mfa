@@ -42,7 +42,9 @@ class SessionStore implements StoreInterface
      */
     public function __construct(Member $member = null)
     {
-        $this->member = $member;
+        if (!is_null($member)) {
+            $this->setMember($member);
+        }
     }
 
     /**

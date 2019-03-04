@@ -3,10 +3,15 @@ namespace SilverStripe\MFA\Authenticator;
 
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\MFA\Extension\MemberExtension;
+use SilverStripe\MFA\Method\MethodInterface;
+use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\Security\MemberAuthenticator\LoginHandler as BaseLoginHandler;
 use SilverStripe\Security\MemberAuthenticator\MemberLoginForm;
+use SilverStripe\Security\Security;
 
 class LoginHandler extends BaseLoginHandler
 {
@@ -14,8 +19,8 @@ class LoginHandler extends BaseLoginHandler
 
     private static $url_handlers = [
         'GET mfa/schema' => 'getSchema', // Provides details about existing registered methods, etc.
-        'GET mfa/register/$Method' => 'startRegister', // Initiates registration process for $Method
-        'POST mfa/register/$Method' => 'finishRegister', // Completes registration process for $Method
+        'GET mfa/register/$Method' => 'startRegistration', // Initiates registration process for $Method
+        'POST mfa/register/$Method' => 'finishRegistration', // Completes registration process for $Method
         'GET mfa/login/$Method' => 'startLogin', // Initiates login process for $Method
         'POST mfa/login/$Method' => 'verifyLogin', // Verifies login via $Method
         'GET mfa' => 'mfa', // Renders the MFA Login Page to init the app
@@ -24,8 +29,8 @@ class LoginHandler extends BaseLoginHandler
     private static $allowed_actions = [
         'mfa',
         'getSchema',
-        'startRegister',
-        'finishRegister',
+        'startRegistration',
+        'finishRegistration',
         'startLogin',
         'verifyLogin',
     ];
@@ -144,9 +149,64 @@ class LoginHandler extends BaseLoginHandler
      * @param HTTPRequest $request
      * @return HTTPResponse
      */
-    public function startRegister(HTTPRequest $request)
+    public function startRegistration(HTTPRequest $request)
     {
-        return $this->jsonResponse(['errors' => ['Registration not yet implemented']], 500);
+        $sessionStore = $this->getSessionStore();
+        $sessionMember = $sessionStore->getMember();
+        $loggedInMember = Security::getCurrentUser();
+
+        if (is_null($loggedInMember) && is_null($sessionMember)) {
+            return $this->jsonResponse(
+                ['errors' => [_t(__CLASS__ . '.NOT_AUTHENTICATING', 'You must be logged or logging in')]],
+                403
+            );
+        }
+
+        // If the user isn't fully logged in and they already have a registered method, they can't register another
+        if (is_null($loggedInMember) && $sessionMember && count($sessionMember->RegisteredMFAMethods()) > 0) {
+            return $this->jsonResponse(
+                ['errors' => [_t(__CLASS__ . '.MUST_USE_EXISTING_METHOD', 'This member already has an MFA method')]],
+                400
+            );
+        }
+
+        $method = $this->getMethodRegistry()->getMethodByURLSegment($request->param('Method'));
+
+        if (is_null($method)) {
+            return $this->jsonResponse(
+                ['errors' => [_t(__CLASS__ . '.INVALID_METHOD', 'No such method is available')]],
+                400
+            );
+        }
+
+        // Fall back to the logged in user at this point if not in the login process
+        $member = $sessionMember ?: $loggedInMember;
+
+        // Sanity check that the method hasn't already been registered
+        $existingRegisteredMethod = $this->getMethodRegistry()->getMethodFromMember($member, get_class($method));
+
+        if ($existingRegisteredMethod) {
+            return $this->jsonResponse(
+                [
+                    'errors' => [
+                        _t(
+                            __CLASS__ . '.METHOD_ALREADY_REGISTERED',
+                            'That method has already been registered against this Member'
+                        )
+                    ]
+                ],
+                400
+            );
+        }
+
+        // Mark the given method as started within the session
+        $sessionStore->setMethod(get_class($method));
+        // Allow the registration handler to begin the process and generate some data to pass through to the front-end
+        $data = $method->getRegisterHandler()->start($sessionStore);
+        // Ensure details are saved to the session
+        $sessionStore->save($request);
+
+        return $this->jsonResponse($data);
     }
 
     /**
@@ -155,9 +215,50 @@ class LoginHandler extends BaseLoginHandler
      * @param HTTPRequest $request
      * @return HTTPResponse
      */
-    public function finishRegister(HTTPRequest $request)
+    public function finishRegistration(HTTPRequest $request)
     {
-        return $this->jsonResponse(['errors' => ['Registration not yet implemented']], 500);
+        $sessionStore = $this->getSessionStore();
+        $sessionMember = $sessionStore->getMember();
+        $loggedInMember = Security::getCurrentUser();
+
+        if (is_null($loggedInMember) && is_null($sessionMember)) {
+            return $this->jsonResponse(
+                ['errors' => [_t(__CLASS__ . '.NOT_AUTHENTICATING', 'You must be logged or logging in')]],
+                403
+            );
+        }
+
+        $storedMethodName = $sessionStore->getMethod();
+        $method = $this->getMethodRegistry()->getMethodByURLSegment($request->param('Method'));
+
+        // If a registration process hasn't been initiated in a previous request, calling this method is invalid
+        if (!$storedMethodName) {
+            return $this->jsonResponse(
+                ['errors' => [_t(__CLASS__ . '.NO_REGISTRATION_IN_PROGRESS', 'No registration in progress')]],
+                400
+            );
+        }
+
+        if ($storedMethodName !== $method->getURLSegment()) {
+            return $this->jsonResponse(
+                ['errors' => [_t(__CLASS__ . '.METHOD_MISMATCH', 'Method does not match registration in progress')]],
+                400
+            );
+        }
+
+        $registrationHandler = $method->getRegisterHandler();
+
+        $success = $registrationHandler->register($request, $sessionStore);
+
+        if ($success) {
+            // TODO: Do we need to send any further details back here?
+            return $this->jsonResponse(['success' => true], 201);
+        }
+
+        return $this->jsonResponse(
+            ['errors' => [_t(__CLASS__ . '.REGISTER_FAILED', 'Registration failed')]],
+            400
+        );
     }
 
     /**
@@ -179,6 +280,16 @@ class LoginHandler extends BaseLoginHandler
         // Pull a method to use from the request or use the default (TODO: Should we have the default as a fallback?)
         $specifiedMethod = str_replace('-', '\\', $request->param('Method')) ?: $member->DefaultRegisteredMethod;
         $method = $this->getMethodRegistry()->getMethodFromMember($member, $specifiedMethod);
+
+        // We can't proceed with login if the Member doesn't have this method registered
+        if (!$method) {
+            $this->jsonResponse(
+                ['errors' => [
+                    _t(__CLASS__ . '.METHOD_NOT_REGISTERED', 'Member does not have this method registered')
+                ]],
+                400
+            );
+        }
 
         // Mark the given method as started within the session
         $sessionStore->setMethod($method->MethodClassName);

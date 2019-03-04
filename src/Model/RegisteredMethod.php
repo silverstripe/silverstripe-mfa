@@ -61,24 +61,4 @@ class RegisteredMethod extends DataObject
     {
         return $this->getMethod()->getRegisterHandler();
     }
-
-    /**
-     * Accessor for Data field to ensure it's presented as an array instead of a JSON blob
-     *
-     * @return array
-     */
-    public function getData()
-    {
-        return (array) json_decode($this->getField('Data'), true);
-    }
-
-    /**
-     * Setter for the Data field to ensure it's saved as a JSON blob
-     *
-     * @param mixed $data
-     */
-    public function setData($data)
-    {
-        $this->setField('Data', json_encode($data));
-    }
 }

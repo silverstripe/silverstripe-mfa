@@ -89,4 +89,21 @@ class MethodRegistry
 
         return $method;
     }
+
+    /**
+     * Fetches a Method by its URL Segment
+     *
+     * @param $segment
+     * @return MethodInterface|null
+     */
+    public function getMethodByURLSegment($segment)
+    {
+        foreach ($this->getMethods() as $method) {
+            if ($method->getURLSegment() === $segment) {
+                return $method;
+            }
+        }
+
+        return null;
+    }
 }

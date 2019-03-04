@@ -1,0 +1,12 @@
+SilverStripe\MFA\Model\RegisteredMethod:
+  math-method-for-stale-user:
+    MethodClassName: 'SilverStripe\MFA\Tests\Stub\BasicMath\Method'
+    Data: '[]'
+
+SilverStripe\Security\Member:
+  fresh-member:
+    Email: 'fresh.member'
+  stale-member:
+    Email: 'stale.member'
+    RegisteredMFAMethods:
+      - =>SilverStripe\MFA\Model\RegisteredMethod.math-method-for-stale-user
