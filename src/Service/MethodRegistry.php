@@ -32,8 +32,9 @@ class MethodRegistry
      * Get implementations of all configured methods
      *
      * @return MethodInterface[]
+     * @throws UnexpectedValueException When an invalid method is registered
      */
-    public function getAllMethods()
+    public function getMethods()
     {
         $configuredMethods = (array) static::config()->get('methods');
 
@@ -61,17 +62,18 @@ class MethodRegistry
      *
      * @return bool
      */
-    public function areMethodsAvailable()
+    public function hasMethods()
     {
-        return count($this->getAllMethods()) > 0;
+        return count($this->getMethods()) > 0;
     }
 
     /**
-     * Get an authentication method object matching the given method from the given member.
+     * Get an authentication method object matching the given method from the given member. Returns null if the given
+     * method could not be found attached to the Member
      *
      * @param Member|MemberExtension $member
-     * @param string $specifiedMethod
-     * @return RegisteredMethod
+     * @param string $specifiedMethod The class name of the requested method
+     * @return RegisteredMethod|null
      */
     public function getMethodFromMember(Member $member, $specifiedMethod)
     {
@@ -83,14 +85,6 @@ class MethodRegistry
                 $method = $candidate;
                 break;
             }
-        }
-
-        // In this scenario the member has managed to set a default authenticator that has no registration.
-        if (!$method) {
-            throw new LogicException(sprintf(
-                'There is no authenticator registered for this member that matches the requested method ("%s")',
-                $specifiedMethod
-            ));
         }
 
         return $method;

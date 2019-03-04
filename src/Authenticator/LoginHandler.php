@@ -56,7 +56,7 @@ class LoginHandler extends BaseLoginHandler
 
         // If there's no member it's an invalid login. We'll delegate this to the parent
         // Additionally if there are no MFA methods registered then we will also delegate
-        if (!$member || !$this->getMethodRegistry()->areMethodsAvailable()) {
+        if (!$member || !$this->getMethodRegistry()->hasMethods()) {
             return parent::doLogin($data, $form, $request);
         }
 
@@ -111,7 +111,7 @@ class LoginHandler extends BaseLoginHandler
         $registeredMethodNames = array_keys($alternateLeadInLabels);
 
         // Get all methods that may be registered
-        $allMethods = MethodRegistry::singleton()->getAllMethods();
+        $allMethods = MethodRegistry::singleton()->getMethods();
 
         // Resolve details for methods that aren't setup
         foreach ($allMethods as $method) {

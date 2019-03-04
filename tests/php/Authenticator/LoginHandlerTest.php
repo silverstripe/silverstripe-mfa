@@ -25,7 +25,7 @@ class LoginHandlerTest extends FunctionalTest
         Config::modify()->set(MethodRegistry::class, 'methods', [Method::class]);
 
         Injector::inst()->load([
-            'SilverStripe\Security\Security' => [
+            Security::class => [
                 'properties' => [
                     'authenticators' => [
                         'default' => '%$' . MemberAuthenticator::class,
@@ -44,7 +44,7 @@ class LoginHandlerTest extends FunctionalTest
         $this->autoFollowRedirection = true;
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertSame('http://localhost/Security/login/default/mfa', $response->getHeader('location'));
+        $this->assertStringEndsWith('/Security/login/default/mfa', $response->getHeader('location'));
     }
     
     public function testMethodsNotBeingAvailableWillLogin()
@@ -61,7 +61,7 @@ class LoginHandlerTest extends FunctionalTest
         $this->autoFollowRedirection = true;
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertSame('http://localhost/something', $response->getHeader('location'));
+        $this->assertStringEndsWith('/something', $response->getHeader('location'));
     }
 
     public function testMFASchemaEndpointIsNotAccessibleByDefault()
@@ -179,7 +179,7 @@ class LoginHandlerTest extends FunctionalTest
         $this->get(Config::inst()->get(Security::class, 'login_url'));
 
         return $this->submitForm(
-            "MemberLoginForm_LoginForm",
+            'MemberLoginForm_LoginForm',
             null,
             array(
                 'Email' => $member->Email,

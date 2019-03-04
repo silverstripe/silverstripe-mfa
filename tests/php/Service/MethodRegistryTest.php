@@ -15,7 +15,7 @@ class MethodRegistryTest extends SapphireTest
     {
         Config::modify()->set(MethodRegistry::class, 'methods', [Method::class]);
         $registry = MethodRegistry::singleton();
-        $methods = $registry->getAllMethods();
+        $methods = $registry->getMethods();
 
         $this->assertCount(1, $methods);
         $this->assertInstanceOf(Method::class, reset($methods));
@@ -31,6 +31,6 @@ class MethodRegistryTest extends SapphireTest
     {
         Config::modify()->set(MethodRegistry::class, 'methods', [Member::class]);
         $registry = MethodRegistry::singleton();
-        $registry->getAllMethods();
+        $registry->getMethods();
     }
 }
