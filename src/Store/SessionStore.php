@@ -3,6 +3,7 @@ namespace SilverStripe\MFA\Store;
 
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\MFA\Extension\MemberExtension;
+use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
 
 /**
@@ -51,7 +52,7 @@ class SessionStore implements StoreInterface
             $new->setMethod($state['method']);
             $new->setState($state['state']);
             if ($state['member']) {
-                $new->setMember(Member::get_by_id($state['member']));
+                $new->setMember(DataObject::get_by_id(Member::class, $state['member']));
             }
         }
 
