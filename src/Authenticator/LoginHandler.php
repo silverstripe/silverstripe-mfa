@@ -1,14 +1,10 @@
 <?php
 namespace SilverStripe\MFA\Authenticator;
 
-use LogicException;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
-use SilverStripe\MFA\Extension\MemberExtension;
-use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Store\SessionStore;
-use SilverStripe\Security\Member;
 use SilverStripe\Security\MemberAuthenticator\LoginHandler as BaseLoginHandler;
 use SilverStripe\Security\MemberAuthenticator\MemberLoginForm;
 
@@ -59,7 +55,8 @@ class LoginHandler extends BaseLoginHandler
         $member = $this->checkLogin($data, $request, $result);
 
         // If there's no member it's an invalid login. We'll delegate this to the parent
-        if (!$member) {
+        // Additionally if there are no MFA methods registered then we will also delegate
+        if (!$member || !$this->getMethodRegistry()->areMethodsAvailable()) {
             return parent::doLogin($data, $form, $request);
         }
 
@@ -181,7 +178,7 @@ class LoginHandler extends BaseLoginHandler
 
         // Pull a method to use from the request or use the default (TODO: Should we have the default as a fallback?)
         $specifiedMethod = str_replace('-', '\\', $request->param('Method')) ?: $member->DefaultRegisteredMethod;
-        $method = $this->getMethodFromMember($member, $specifiedMethod);
+        $method = $this->getMethodRegistry()->getMethodFromMember($member, $specifiedMethod);
 
         // Mark the given method as started within the session
         $sessionStore->setMethod($method->MethodClassName);
@@ -211,7 +208,7 @@ class LoginHandler extends BaseLoginHandler
 
         // Get the member and authenticator ready
         $member = $this->getSessionStore()->getMember();
-        $authenticator = $this->getMethodFromMember($member, $method)->getLoginHandler();
+        $authenticator = $this->getMethodRegistry()->getMethodFromMember($member, $method)->getLoginHandler();
 
         if (!$authenticator->verify($request, $this->getSessionStore())) {
             // TODO figure out how to return a message here too.
@@ -306,32 +303,12 @@ class LoginHandler extends BaseLoginHandler
     }
 
     /**
-     * Get an authentication method object matching the given method from the given member.
+     * Helper method for getting an instance of a method registry
      *
-     * @param Member|MemberExtension $member
-     * @param string $specifiedMethod
-     * @return RegisteredMethod
+     * @return MethodRegistry
      */
-    protected function getMethodFromMember(Member $member, $specifiedMethod)
+    protected function getMethodRegistry()
     {
-        $method = null;
-
-        // Find the actual method registration data object from the member for the specified default authenticator
-        foreach ($member->RegisteredMFAMethods() as $candidate) {
-            if ($candidate->MethodClassName === $specifiedMethod) {
-                $method = $candidate;
-                break;
-            }
-        }
-
-        // In this scenario the member has managed to set a default authenticator that has no registration.
-        if (!$method) {
-            throw new LogicException(sprintf(
-                'There is no authenticator registered for this member that matches the requested method ("%s")',
-                $specifiedMethod
-            ));
-        }
-
-        return $method;
+        return MethodRegistry::singleton();
     }
 }

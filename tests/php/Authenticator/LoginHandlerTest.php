@@ -2,16 +2,18 @@
 
 namespace SilverStripe\MFA\Tests\Authenticator;
 
+use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\FunctionalTest;
-use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
+use SilverStripe\MFA\Authenticator\MemberAuthenticator;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
 use SilverStripe\Security\Member;
+use SilverStripe\Security\Security;
 
 class LoginHandlerTest extends FunctionalTest
 {
@@ -21,6 +23,45 @@ class LoginHandlerTest extends FunctionalTest
     {
         parent::setUp();
         Config::modify()->set(MethodRegistry::class, 'methods', [Method::class]);
+
+        Injector::inst()->load([
+            'SilverStripe\Security\Security' => [
+                'properties' => [
+                    'authenticators' => [
+                        'default' => '%$' . MemberAuthenticator::class,
+                    ]
+                ]
+            ]
+        ]);
+    }
+
+    public function testMFAStepIsAdded()
+    {
+        $member = $this->objFromFixture(Member::class, 'guy');
+
+        $this->autoFollowRedirection = false;
+        $response = $this->doLogin($member, 'Password123');
+        $this->autoFollowRedirection = true;
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame('http://localhost/Security/login/default/mfa', $response->getHeader('location'));
+    }
+    
+    public function testMethodsNotBeingAvailableWillLogin()
+    {
+        Config::modify()->set(MethodRegistry::class, 'methods', []);
+
+        $member = $this->objFromFixture(Member::class, 'guy');
+
+        // Ensure a URL is set to redirect to after successful login
+        $this->session()->set('BackURL', 'something');
+
+        $this->autoFollowRedirection = false;
+        $response = $this->doLogin($member, 'Password123');
+        $this->autoFollowRedirection = true;
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame('http://localhost/something', $response->getHeader('location'));
     }
 
     public function testMFASchemaEndpointIsNotAccessibleByDefault()
@@ -28,6 +69,7 @@ class LoginHandlerTest extends FunctionalTest
         // Assert that this endpoint is not available if you haven't started the login process
         $this->autoFollowRedirection = false;
         $response = $this->get('Security/login/default/mfa/schema');
+        $this->autoFollowRedirection = true;
 
         $this->assertSame(302, $response->getStatusCode());
     }
@@ -125,5 +167,26 @@ class LoginHandlerTest extends FunctionalTest
             'method' => null,
             'state' => [],
         ]);
+    }
+
+    /**
+     * @param Member $member
+     * @param string $password
+     * @return HTTPResponse
+     */
+    protected function doLogin(Member $member, $password)
+    {
+        $this->get(Config::inst()->get(Security::class, 'login_url'));
+
+        return $this->submitForm(
+            "MemberLoginForm_LoginForm",
+            null,
+            array(
+                'Email' => $member->Email,
+                'Password' => $password,
+                'AuthenticationMethod' => MemberAuthenticator::class,
+                'action_doLogin' => 1,
+            )
+        );
     }
 }

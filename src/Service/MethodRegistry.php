@@ -2,10 +2,14 @@
 
 namespace SilverStripe\MFA\Service;
 
+use LogicException;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
+use SilverStripe\MFA\Model\RegisteredMethod;
+use SilverStripe\Security\Member;
 use UnexpectedValueException;
 
 /**
@@ -50,5 +54,45 @@ class MethodRegistry
         }
 
         return $allMethods;
+    }
+
+    /**
+     * Helper method to indicate whether any MFA methods are registered
+     *
+     * @return bool
+     */
+    public function areMethodsAvailable()
+    {
+        return count($this->getAllMethods()) > 0;
+    }
+
+    /**
+     * Get an authentication method object matching the given method from the given member.
+     *
+     * @param Member|MemberExtension $member
+     * @param string $specifiedMethod
+     * @return RegisteredMethod
+     */
+    public function getMethodFromMember(Member $member, $specifiedMethod)
+    {
+        $method = null;
+
+        // Find the actual method registration data object from the member for the specified default authenticator
+        foreach ($member->RegisteredMFAMethods() as $candidate) {
+            if ($candidate->MethodClassName === $specifiedMethod) {
+                $method = $candidate;
+                break;
+            }
+        }
+
+        // In this scenario the member has managed to set a default authenticator that has no registration.
+        if (!$method) {
+            throw new LogicException(sprintf(
+                'There is no authenticator registered for this member that matches the requested method ("%s")',
+                $specifiedMethod
+            ));
+        }
+
+        return $method;
     }
 }
