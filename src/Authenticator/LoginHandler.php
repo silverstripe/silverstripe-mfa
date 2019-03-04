@@ -5,7 +5,8 @@ use LogicException;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\MFA\Extension\MemberExtension;
-use SilverStripe\MFA\Method\MethodInterface;
+use SilverStripe\MFA\Model\RegisteredMethod;
+use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\MemberAuthenticator\LoginHandler as BaseLoginHandler;
@@ -16,12 +17,12 @@ class LoginHandler extends BaseLoginHandler
     const SESSION_KEY = 'MFALogin';
 
     private static $url_handlers = [
-        'GET mfa' => 'mfa', # Renders the MFA Login Page to init the app
-        'GET mfa/schema' => 'getSchema', # Provides details about existing registered methods, etc.
-        'GET mfa/register/$Method' => 'startRegister', # Initiates registration process for $Method
-        'POST mfa/register/$Method' => 'finishRegister', # Completes registration process for $Method
-        'GET mfa/login/$Method' => 'startLogin', # Initiates login process for $Method
-        'POST mfa/login/$Method' => 'verifyLogin', # Verifies login via $Method
+        'GET mfa/schema' => 'getSchema', // Provides details about existing registered methods, etc.
+        'GET mfa/register/$Method' => 'startRegister', // Initiates registration process for $Method
+        'POST mfa/register/$Method' => 'finishRegister', // Completes registration process for $Method
+        'GET mfa/login/$Method' => 'startLogin', // Initiates login process for $Method
+        'POST mfa/login/$Method' => 'verifyLogin', // Verifies login via $Method
+        'GET mfa' => 'mfa', // Renders the MFA Login Page to init the app
     ];
 
     private static $allowed_actions = [
@@ -87,7 +88,7 @@ class LoginHandler extends BaseLoginHandler
     /**
      * Provides information about the current Member's MFA state
      *
-     * @return array|HTTPResponse
+     * @return HTTPResponse
      */
     public function getSchema()
     {
@@ -99,18 +100,45 @@ class LoginHandler extends BaseLoginHandler
         }
 
         // Get a list of authentication for the user and the find default
-        $authMethods = $member->RegisteredMFAMethods();
+        $registeredMethods = $member->RegisteredMFAMethods();
 
         // Pool a list of "lead in" labels. We skip the default here assuming it's not required.
         $alternateLeadInLabels = [];
-        foreach ($authMethods as $method) {
-            $alternateLeadInLabels[str_replace('\\', '-', get_class($method))] =
+        foreach ($registeredMethods as $method) {
+            $alternateLeadInLabels[$method->getMethod()->getURLSegment()] =
                 $method->getLoginHandler()->getLeadInLabel();
         }
 
-        return [
-            'registered_methods' => $alternateLeadInLabels,
-        ];
+        // Prepare an array to hold details for available methods to register
+        $registrationDetails = [];
+        $registeredMethodNames = array_keys($alternateLeadInLabels);
+
+        // Get all methods that may be registered
+        $allMethods = MethodRegistry::singleton()->getAllMethods();
+
+        // Resolve details for methods that aren't setup
+        foreach ($allMethods as $method) {
+            // Skip registration details if the user has already registered this method
+            if (in_array($method->getURLSegment(), $registeredMethodNames)) {
+                continue;
+            }
+
+            $registerHandler = $method->getRegisterHandler();
+
+            $registrationDetails[$method->getURLSegment()] = [
+                'name' => $registerHandler->getName(),
+                'description' => $registerHandler->getDescription(),
+                'supportLink' => $registerHandler->getSupportLink(),
+            ];
+        }
+
+        $defaultMethod = $member->DefaultRegisteredMethod;
+
+        return $this->jsonResponse([
+            'registeredMethods' => $alternateLeadInLabels,
+            'registrationDetails' => $registrationDetails,
+            'defaultMethod' => $defaultMethod ? $defaultMethod->getMethod()->getURLSegment() : null,
+        ]);
     }
 
     /**
@@ -128,6 +156,7 @@ class LoginHandler extends BaseLoginHandler
      * Handles the request to verify and process a new registration
      *
      * @param HTTPRequest $request
+     * @return HTTPResponse
      */
     public function finishRegister(HTTPRequest $request)
     {

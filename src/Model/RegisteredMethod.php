@@ -35,6 +35,18 @@ class RegisteredMethod extends DataObject
     protected $method;
 
     /**
+     * @return MethodInterface
+     */
+    public function getMethod()
+    {
+        if (!$this->method) {
+            $this->method = Injector::inst()->create($this->MethodClassName);
+        }
+
+        return $this->method;
+    }
+
+    /**
      * @return LoginHandlerInterface
      */
     public function getLoginHandler()
@@ -68,17 +80,5 @@ class RegisteredMethod extends DataObject
     public function setData($data)
     {
         $this->setField('Data', json_encode($data));
-    }
-
-    /**
-     * @return MethodInterface
-     */
-    protected function getMethod()
-    {
-        if (!$this->method) {
-            $this->method = Injector::inst()->create($this->MethodClassName);
-        }
-
-        return $this->method;
     }
 }

@@ -1,0 +1,17 @@
+SilverStripe\MFA\Model\RegisteredMethod:
+  simon-math:
+    MethodClassName: "SilverStripe\\MFA\\Tests\\Stub\\BasicMath\\Method"
+  robbie-math:
+    MethodClassName: "SilverStripe\\MFA\\Tests\\Stub\\BasicMath\\Method"
+
+SilverStripe\Security\Member:
+  guy:
+    Email: guy@example.com
+  simon:
+    Email: simon@example.com
+    RegisteredMFAMethods: =>SilverStripe\MFA\Model\RegisteredMethod.simon-math
+  robbie:
+    Email: robbie@example.com
+    RegisteredMFAMethods: =>SilverStripe\MFA\Model\RegisteredMethod.robbie-math
+    DefaultRegisteredMethodID: =>SilverStripe\MFA\Model\RegisteredMethod.robbie-math
+
