@@ -93,7 +93,7 @@ class MethodRegistry
     /**
      * Fetches a Method by its URL Segment
      *
-     * @param $segment
+     * @param string $segment
      * @return MethodInterface|null
      */
     public function getMethodByURLSegment($segment)
