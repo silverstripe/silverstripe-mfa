@@ -101,24 +101,24 @@ class LoginHandler extends BaseLoginHandler
             return $this->redirectBack();
         }
 
-        // Get a list of authentication for the user and the find default
+        // Get a list of methods registered to the user
         $registeredMethods = $member->RegisteredMFAMethods();
 
-        // Pool a list of "lead in" labels. We skip the default here assuming it's not required.
-        $alternateLeadInLabels = [];
+        // Generate a map of URL Segments to 'lead in labels', which are used to describe the method in the login UI
+        $registeredMethodDetails = [];
         foreach ($registeredMethods as $method) {
-            $alternateLeadInLabels[$method->getMethod()->getURLSegment()] =
+            $registeredMethodDetails[$method->getMethod()->getURLSegment()] =
                 $method->getLoginHandler()->getLeadInLabel();
         }
 
-        // Prepare an array to hold details for available methods to register
-        $registrationDetails = [];
-        $registeredMethodNames = array_keys($alternateLeadInLabels);
+        // Prepare an array to hold details for methods available to register
+        $availableMethodDetails = [];
+        $registeredMethodNames = array_keys($registeredMethodDetails);
 
-        // Get all methods that may be registered
+        // Get all methods enabled on the site
         $allMethods = MethodRegistry::singleton()->getMethods();
 
-        // Resolve details for methods that aren't setup
+        // Compile details for methods that aren't already registered to the user
         foreach ($allMethods as $method) {
             // Skip registration details if the user has already registered this method
             if (in_array($method->getURLSegment(), $registeredMethodNames)) {
@@ -127,7 +127,7 @@ class LoginHandler extends BaseLoginHandler
 
             $registerHandler = $method->getRegisterHandler();
 
-            $registrationDetails[$method->getURLSegment()] = [
+            $availableMethodDetails[$method->getURLSegment()] = [
                 'name' => $registerHandler->getName(),
                 'description' => $registerHandler->getDescription(),
                 'supportLink' => $registerHandler->getSupportLink(),
@@ -137,8 +137,8 @@ class LoginHandler extends BaseLoginHandler
         $defaultMethod = $member->DefaultRegisteredMethod;
 
         return $this->jsonResponse([
-            'registeredMethods' => $alternateLeadInLabels,
-            'registrationDetails' => $registrationDetails,
+            'registeredMethods' => $registeredMethodDetails,
+            'availableMethods' => $availableMethodDetails,
             'defaultMethod' => $defaultMethod ? $defaultMethod->getMethod()->getURLSegment() : null,
         ]);
     }

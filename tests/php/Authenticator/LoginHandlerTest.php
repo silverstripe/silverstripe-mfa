@@ -46,7 +46,7 @@ class LoginHandlerTest extends FunctionalTest
         $this->assertSame(302, $response->getStatusCode());
         $this->assertStringEndsWith('/Security/login/default/mfa', $response->getHeader('location'));
     }
-    
+
     public function testMethodsNotBeingAvailableWillLogin()
     {
         Config::modify()->set(MethodRegistry::class, 'methods', []);
@@ -85,11 +85,11 @@ class LoginHandlerTest extends FunctionalTest
         $response = json_decode($result->getBody(), true);
 
         $this->assertArrayHasKey('registeredMethods', $response);
-        $this->assertArrayHasKey('registrationDetails', $response);
+        $this->assertArrayHasKey('availableMethods', $response);
         $this->assertArrayHasKey('defaultMethod', $response);
 
         $this->assertCount(0, $response['registeredMethods']);
-        $this->assertCount(1, $response['registrationDetails']);
+        $this->assertCount(1, $response['availableMethods']);
         $this->assertNull($response['defaultMethod']);
 
         /** @var MethodInterface $method */
@@ -100,7 +100,7 @@ class LoginHandlerTest extends FunctionalTest
             'name' => $registerHandler->getName(),
             'description' => $registerHandler->getDescription(),
             'supportLink' => $registerHandler->getSupportLink(),
-        ]], $response['registrationDetails']);
+        ]], $response['availableMethods']);
     }
 
     public function testMFASchemaEndpointShowsRegisteredMethodsIfSetUp()
@@ -114,11 +114,11 @@ class LoginHandlerTest extends FunctionalTest
         $response = json_decode($result->getBody(), true);
 
         $this->assertArrayHasKey('registeredMethods', $response);
-        $this->assertArrayHasKey('registrationDetails', $response);
+        $this->assertArrayHasKey('availableMethods', $response);
         $this->assertArrayHasKey('defaultMethod', $response);
 
         $this->assertCount(1, $response['registeredMethods']);
-        $this->assertCount(0, $response['registrationDetails']);
+        $this->assertCount(0, $response['availableMethods']);
         $this->assertNull($response['defaultMethod']);
 
         /** @var MethodInterface $method */
@@ -142,11 +142,11 @@ class LoginHandlerTest extends FunctionalTest
         $response = json_decode($result->getBody(), true);
 
         $this->assertArrayHasKey('registeredMethods', $response);
-        $this->assertArrayHasKey('registrationDetails', $response);
+        $this->assertArrayHasKey('availableMethods', $response);
         $this->assertArrayHasKey('defaultMethod', $response);
 
         $this->assertCount(1, $response['registeredMethods']);
-        $this->assertCount(0, $response['registrationDetails']);
+        $this->assertCount(0, $response['availableMethods']);
 
         /** @var RegisteredMethod $mathMethod */
         $mathMethod = $this->objFromFixture(RegisteredMethod::class, 'robbie-math');
