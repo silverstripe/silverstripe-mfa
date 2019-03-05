@@ -112,9 +112,12 @@ class LoginHandler extends BaseLoginHandler
 
         // Generate a map of URL Segments to 'lead in labels', which are used to describe the method in the login UI
         $registeredMethodDetails = [];
-        foreach ($registeredMethods as $method) {
-            $registeredMethodDetails[$method->getMethod()->getURLSegment()] =
-                $method->getLoginHandler()->getLeadInLabel();
+        foreach ($registeredMethods as $registeredMethod) {
+            $method = $registeredMethod->getMethod();
+            $registeredMethodDetails[] = [
+                'urlSegment' => $method->getURLSegment(),
+                'leadInLabel' => $method->getLoginHandler()->getLeadInLabel()
+            ];
         }
 
         // Prepare an array to hold details for methods available to register
@@ -133,7 +136,8 @@ class LoginHandler extends BaseLoginHandler
 
             $registerHandler = $method->getRegisterHandler();
 
-            $availableMethodDetails[$method->getURLSegment()] = [
+            $availableMethodDetails[] = [
+                'urlSegment' => $method->getURLSegment(),
                 'name' => $registerHandler->getName(),
                 'description' => $registerHandler->getDescription(),
                 'supportLink' => $registerHandler->getSupportLink(),

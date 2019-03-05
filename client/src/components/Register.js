@@ -22,10 +22,11 @@ class Register extends Component {
 
   /**
    * If the site has more than one multi factor method enabled, show others a user can register
-   * @param {Array} registerableMethods Available methods the user has not already set up
    */
-  renderMethods(registerableMethods) {
-    if (!registerableMethods) {
+  renderMethods() {
+    const { availableMethods } = this.props;
+
+    if (!availableMethods) {
       return null;
     }
 
@@ -33,11 +34,13 @@ class Register extends Component {
       <div>
         <h1>Register an authentication method</h1>
         <ul>
-          {registerableMethods.map(method => (
-            <li>
+          {availableMethods.map(method => (
+            <li key={method.urlSegment}>
+              {method.description}
               <button onClick={this.getMethodRegistrationHandler(method)}>
                 {method.name}
               </button>
+              <a href={method.supportLink} target="_blank" rel="noopener noreferrer">Find out more</a>
             </li>
           ))}
         </ul>
@@ -46,23 +49,25 @@ class Register extends Component {
   }
 
   render() {
-    const {
-      availableMethods,
-    } = this.props;
     const { RegistrationComponent } = this.state;
     return (
       <div>
         <div className="mfa__log-out">
           <a href="Security/logout">Log out</a>
         </div>
-        {RegistrationComponent || this.renderMethods(availableMethods)}
+        {RegistrationComponent || this.renderMethods()}
       </div>
     );
   }
 }
 
 Register.propTypes = {
-  availableMethods: PropTypes.arrayOf(PropTypes.object),
+  availableMethods: PropTypes.arrayOf(PropTypes.shape({
+    urlSegment: PropTypes.string,
+    name: PropTypes.string,
+    description: PropTypes.string,
+    supportLink: PropTypes.string,
+  })),
 };
 
 export default Register;
