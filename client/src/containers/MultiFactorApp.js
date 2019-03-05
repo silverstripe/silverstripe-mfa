@@ -5,8 +5,8 @@ import Register from '../components/Register';
 import fetch from 'isomorphic-fetch';
 
 class MultiFactorApp extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       schema: null,
       schemaLoaded: false,
@@ -44,8 +44,9 @@ class MultiFactorApp extends Component {
 
     if (!schema) {
       if (schemaLoaded) {
-        throw new Error('uh oh.');
+        throw new Error('Could not read configuration schema to load MFA interface');
       }
+      // TODO: <Loading /> ?
       return null;
     }
 

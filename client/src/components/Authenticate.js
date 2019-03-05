@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 class Authenticate extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     const { defaultMethod } = this.props;
     this.state = {
       ActiveMethod: null,

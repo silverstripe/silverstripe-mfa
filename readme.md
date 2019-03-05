@@ -6,18 +6,10 @@
 
 # Setup
 
-After installing this module _and_ a supported factor method module (e.g. TOTP), you will need to use configuration to replace the default member authenticator with the MFA authenticator instead.
-
-E.g.
+After installing this module _and_ a supported factor method module (e.g. TOTP), the default member authenticator will be replaced with the MFA authenticator instead. However this will provide no change in the steps taken to log in until an MFA Method has also been configured for the site:
 
 ```yml
----
-Name: mysitemfa
-After: '#coresecurity'
----
-SilverStripe\Core\Injector\Injector:
-  SilverStripe\Security\Security:
-    properties:
-      Authenticators:
-        default: %$SilverStripe\MFA\Authenticator\MemberAuthenticator
+SilverStripe\MFA\Service\MethodRegistry:
+  methods:
+    # register methods here
 ```
