@@ -5,6 +5,7 @@ namespace SilverStripe\MFA\Tests\Stub\BasicMath;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Dev\TestOnly;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
+use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Store\StoreInterface;
 
 /**
@@ -21,7 +22,6 @@ class MethodRegisterHandler implements RegisterHandlerInterface, TestOnly
      */
     public function start(StoreInterface $store)
     {
-        // Stub
         return [];
     }
 
@@ -34,7 +34,19 @@ class MethodRegisterHandler implements RegisterHandlerInterface, TestOnly
      */
     public function register(HTTPRequest $request, StoreInterface $store)
     {
-        // Stub
+        $parameters = json_decode($request->getBody(), true);
+
+        if (!array_key_exists('number', $parameters)) {
+            return false;
+        }
+
+        $methodRegistration = RegisteredMethod::create([
+            'MethodClassName' => Method::class,
+            'Data' => json_encode(['number' => $parameters['number']]),
+        ]);
+
+        $store->getMember()->RegisteredMFAMethods()->add($methodRegistration);
+
         return true;
     }
 
