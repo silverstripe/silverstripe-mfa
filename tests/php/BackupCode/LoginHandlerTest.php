@@ -16,34 +16,16 @@ class LoginHandlerTest extends SapphireTest
 {
     protected static $fixture_file = 'LoginHandlerTest.yml';
 
-    public function testVerifyReturnsFalseWithInvalidCode()
+    /**
+     * @dataProvider getVerifyTests
+     */
+    public function testVerifyValidatesCodes($expectedResult, $input, $message)
     {
         $handler = new LoginHandler();
 
         // Test a code with invalid characters
-        list ($request, $store, $method) = $this->scaffoldVerifyParams('asw123');
-        $this->assertFalse($handler->verify($request, $store, $method), 'Invalid characters are handled');
-
-        // Test an empty code
-        list ($request, $store, $method) = $this->scaffoldVerifyParams('');
-        $this->assertFalse($handler->verify($request, $store, $method), 'Empty codes are handled');
-
-        // Test a code param is not provided (null value)
-        list ($request, $store, $method) = $this->scaffoldVerifyParams(null);
-        $this->assertFalse($handler->verify($request, $store, $method), 'Null input is handled');
-
-        // Test a code that's way too long
-        list ($request, $store, $method) = $this->scaffoldVerifyParams(str_pad('', 10000, 'code'));
-        $this->assertFalse($handler->verify($request, $store, $method), 'Long codes are handled');
-    }
-
-    public function testVerifyReturnsTrueOnValidCode()
-    {
-        $handler = new LoginHandler();
-
-        // Test a code with invalid characters
-        list ($request, $store, $method) = $this->scaffoldVerifyParams('123456');
-        $this->assertTrue($handler->verify($request, $store, $method));
+        list ($request, $store, $method) = $this->scaffoldVerifyParams($input);
+        $this->assertSame($expectedResult, $handler->verify($request, $store, $method), $message);
     }
 
     public function testVerifyInvalidatesCodesThatHaveBeenUsed()
@@ -64,6 +46,17 @@ class LoginHandlerTest extends SapphireTest
             $handler->verify($request, $store, $method),
             'Attempting to validate the previously used code now returns false'
         );
+    }
+
+    public function getVerifyTests()
+    {
+        return [
+            [false, 'asw123', 'Invalid characters are handled'],
+            [false, '', 'Empty codes are handled'],
+            [false, null, 'Null input is handled'],
+            [false, str_pad('', 10000, 'code'), 'Long codes are handled'],
+            [true, '123456', 'Valid codes are valid'],
+        ];
     }
 
     protected function scaffoldVerifyParams($userInput)

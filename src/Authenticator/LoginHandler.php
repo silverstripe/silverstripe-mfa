@@ -192,7 +192,10 @@ class LoginHandler extends BaseLoginHandler
         $member = $sessionMember ?: $loggedInMember;
 
         // Sanity check that the method hasn't already been registered
-        $existingRegisteredMethod = $this->getMethodRegistry()->getMethodFromMember($member, get_class($method));
+        $existingRegisteredMethod = $this->getMethodRegistry()->getRegisteredMethodFromMember(
+            $member,
+            $method->getURLSegment()
+        );
 
         if ($existingRegisteredMethod) {
             return $this->jsonResponse(
@@ -297,22 +300,35 @@ class LoginHandler extends BaseLoginHandler
             return $this->redirectBack();
         }
 
-        // Pull a method to use from the request or use the default (TODO: Should we have the default as a fallback?)
-        $specifiedMethod = str_replace('-', '\\', $request->param('Method')) ?: $member->DefaultRegisteredMethod;
-        $registeredMethod = $this->getMethodRegistry()->getMethodFromMember($member, $specifiedMethod);
+        // Pull a method to use from the request...
+        $specifiedMethod = $request->param('Method');
+        $registeredMethod = $this->getMethodRegistry()->getRegisteredMethodFromMember($member, $specifiedMethod);
+
+        // ...Or use the default (TODO: Should we have the default as a fallback? Maybe just if no method is specified?)
+        if (!$registeredMethod) {
+            $registeredMethod = $member->DefaultRegisteredMethod;
+        }
 
         // We can't proceed with login if the Member doesn't have this method registered
         if (!$registeredMethod) {
+            // We can display a specific message if there was no method specified
+            if (empty($specifiedMethod)) {
+                $message = _t(
+                    __CLASS__ . '.METHOD_NOT_PROVIDED',
+                    'No method was provided to login with and the Member has no default'
+                );
+            } else {
+                $message = _t(__CLASS__ . '.METHOD_NOT_REGISTERED', 'Member does not have this method registered');
+            }
+
             $this->jsonResponse(
-                ['errors' => [
-                    _t(__CLASS__ . '.METHOD_NOT_REGISTERED', 'Member does not have this method registered')
-                ]],
+                ['errors' => [$message]],
                 400
             );
         }
 
         // Mark the given method as started within the session
-        $sessionStore->setMethod($registeredMethod->MethodClassName);
+        $sessionStore->setMethod($registeredMethod->getMethod()->getURLSegment());
         // Allow the authenticator to begin the process and generate some data to pass through to the front end
         $data = $registeredMethod->getLoginHandler()->start($sessionStore, $registeredMethod);
         // Ensure detail is saved to the session
@@ -339,7 +355,7 @@ class LoginHandler extends BaseLoginHandler
 
         // Get the member and authenticator ready
         $member = $this->getSessionStore()->getMember();
-        $registeredMethod = $this->getMethodRegistry()->getMethodFromMember($member, $method);
+        $registeredMethod = $this->getMethodRegistry()->getRegisteredMethodFromMember($member, $method);
         $authenticator = $registeredMethod->getLoginHandler();
 
         if (!$authenticator->verify($request, $this->getSessionStore(), $registeredMethod)) {

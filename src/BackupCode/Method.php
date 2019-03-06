@@ -2,6 +2,7 @@
 
 namespace SilverStripe\MFA\BackupCode;
 
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
@@ -43,7 +44,7 @@ class Method implements MethodInterface
      */
     public function getLoginHandler()
     {
-        return new LoginHandler();
+        return Injector::inst()->create(LoginHandler::class);
     }
 
     /**
@@ -53,6 +54,6 @@ class Method implements MethodInterface
      */
     public function getRegisterHandler()
     {
-        return new RegisterHandler();
+        return Injector::inst()->create(RegisterHandler::class);
     }
 }

@@ -103,7 +103,7 @@ class RegisterHandler implements RegisterHandlerInterface
      */
     public function getSupportLink()
     {
-        return '';
+        return ''; // TODO Will this have a user help link?
     }
 
     /**
