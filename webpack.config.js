@@ -3,6 +3,7 @@ const webpackConfig = require('@silverstripe/webpack-config');
 
 const {
   resolveJS,
+  externalJS,
   moduleJS,
   pluginJS,
   moduleCSS,
@@ -34,9 +35,37 @@ const config = [
     plugins: pluginJS(ENV, PATHS),
   },
   {
+    name: 'js-cms',
+    entry: {
+      'bundle-cms': `${PATHS.SRC}/bundles/bundle-cms.js`,
+    },
+    output: {
+      path: PATHS.DIST,
+      filename: 'js/[name].js',
+    },
+    devtool: (ENV !== 'production') ? 'source-map' : '',
+    resolve: resolveJS(ENV, PATHS),
+    externals: externalJS(ENV, PATHS),
+    module: moduleJS(ENV, PATHS),
+    plugins: pluginJS(ENV, PATHS),
+  },
+  {
     name: 'css',
     entry: {
       bundle: `${PATHS.SRC}/bundles/bundle.scss`,
+    },
+    output: {
+      path: PATHS.DIST,
+      filename: 'styles/[name].css',
+    },
+    devtool: (ENV !== 'production') ? 'source-map' : '',
+    module: moduleCSS(ENV, PATHS),
+    plugins: pluginCSS(ENV, PATHS),
+  },
+  {
+    name: 'css-cms',
+    entry: {
+      'bundle-cms': `${PATHS.SRC}/bundles/bundle-cms.scss`,
     },
     output: {
       path: PATHS.DIST,

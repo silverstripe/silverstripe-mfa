@@ -1,5 +1,5 @@
 ---
-name: MFAAuthenticator
+name: mfa-authenticator
 After:
   - #coresecurity
 ---
@@ -9,7 +9,7 @@ SilverStripe\Core\Injector\Injector:
       Authenticators:
         default: %$SilverStripe\MFA\Authenticator\MemberAuthenticator
 ---
-name: MFAMemberExtension
+name: mfa-memberextension
 ---
 SilverStripe\Security\Member:
   extensions:
