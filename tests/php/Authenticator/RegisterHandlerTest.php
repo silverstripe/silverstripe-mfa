@@ -2,11 +2,14 @@
 
 namespace SilverStripe\MFA\Tests\Authenticator;
 
+use Exception;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\FunctionalTest;
 use SilverStripe\MFA\Authenticator\MemberAuthenticator;
 use SilverStripe\MFA\Extension\MemberExtension;
+use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
+use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
@@ -142,6 +145,43 @@ class RegisterHandlerTest extends FunctionalTest
         $response = $this->post(self::URL, ['dummy' => 'data'], null, $this->session(), json_encode(['number' => 7]));
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertContains('Method does not match registration in progress', $response->getBody());
+    }
+
+    public function testFinishRegistrationFailsWhenMethodCannotBeRegistered()
+    {
+        $registerHandlerMock = $this->createMock(RegisterHandlerInterface::class);
+        $registerHandlerMock
+            ->expects($this->once())
+            ->method('register')
+            ->willThrowException(new Exception('No. Bad user'));
+
+        $methodMock = $this->createMock(MethodInterface::class);
+        $methodMock
+            ->expects($this->once())
+            ->method('getRegisterHandler')
+            ->willReturn($registerHandlerMock);
+        $methodMock
+            ->expects($this->once())
+            ->method('getURLSegment')
+            ->willReturn('mock-method');
+
+        $methodRegistryMock = $this->createMock(MethodRegistry::class);
+        $methodRegistryMock
+            ->expects($this->once())
+            ->method('getMethodByURLSegment')
+            ->willReturn($methodMock);
+
+        Injector::inst()->registerService($methodRegistryMock, MethodRegistry::class);
+
+        /** @var Member $freshMember */
+        $freshMember = $this->objFromFixture(Member::class, 'fresh-member');
+
+        $this->scaffoldPartialLogin($freshMember, 'mock-method');
+
+        $response = $this->post(self::URL, ['dummy' => 'data'], null, $this->session(), json_encode(['number' => 7]));
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertContains('Registration failed', $response->getBody());
+        $this->assertContains('No. Bad user', $response->getBody());
     }
 
     /**

@@ -5,6 +5,7 @@ use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Dev\TestOnly;
 use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
+use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Store\StoreInterface;
 
 /**
@@ -23,7 +24,7 @@ class MethodLoginHandler implements LoginHandlerInterface, TestOnly
      * @param StoreInterface $store An object that hold session data (and the Member) that can be mutated
      * @return array Props to be passed to a front-end React component
      */
-    public function start(StoreInterface $store)
+    public function start(StoreInterface $store, RegisteredMethod $registeredMethod)
     {
         $numbers = [];
 
@@ -48,7 +49,7 @@ class MethodLoginHandler implements LoginHandlerInterface, TestOnly
      * @param StoreInterface $store
      * @return bool
      */
-    public function verify(HTTPRequest $request, StoreInterface $store)
+    public function verify(HTTPRequest $request, StoreInterface $store, RegisteredMethod $registeredMethod)
     {
         $state = $store->getState();
         return hash_equals((string)$state['answer'], (string)$request->param('answer'));

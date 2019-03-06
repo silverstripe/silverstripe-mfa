@@ -11,8 +11,9 @@ use SilverStripe\Security\Member;
 /**
  * @package SilverStripe\MFA\Model
  *
+ * @property int ID
  * @property string MethodClassName
- * @property array Data
+ * @property string Data
  */
 class RegisteredMethod extends DataObject
 {
