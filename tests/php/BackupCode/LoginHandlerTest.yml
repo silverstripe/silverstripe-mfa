@@ -1,0 +1,12 @@
+SilverStripe\MFA\Model\RegisteredMethod:
+  codes:
+    MethodClassName: "SilverStripe\\MFA\\BackupCode\\Method"
+    # 123456, 654321, 111111, 222222
+    Data: "[\"$2y$10$AxMi8GFGNFOZavmYVzO6ee5jH45UTvDQt0fGkk726v/HZK0wh1Kp.\",\"$2y$10$uEdK6/Otu8PY1LjQlnWGw.soDjgIhCz6vHwry.kSXLLQMRxCLR6Ii\",\"$2y$10$6b6wlbCHjNjpfemAAYnHGunPMgUBE8AHX7CjEB5yCf5NdXrNjOEN2\",\"$2y$10$0uVdYy9zgkA5bdH9b.F5ieX9A5wIFun.HWUqoU/oFNVia7kTB65VG\"]"
+
+SilverStripe\Security\Member:
+  guy:
+    Email: guy@example.com
+    Password: Password123
+    PasswordExpiry: 2030-01-01
+    RegisteredMFAMethods: =>SilverStripe\MFA\Model\RegisteredMethod.codes

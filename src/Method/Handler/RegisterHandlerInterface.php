@@ -9,14 +9,26 @@ use SilverStripe\MFA\Store\StoreInterface;
  * Represents the base requirements for implementing an MFA Method's RegisterHandler, which has the responsibility
  * of initiating and managing registration of the MFA Method in question against the current Member.
  */
-interface RegisterHandlerInterface extends HandlerInterface
+interface RegisterHandlerInterface
 {
     /**
-     * Confirm that the provided details are valid, and create a new RegisteredMethod against the member.
+     * Stores any data required to handle a registration process with a method, and returns relevant state to be applied
+     * to the front-end application managing the process.
+     *
+     * @param StoreInterface $store An object that hold session data (and the Member) that can be mutated
+     * @return array Props to be passed to a front-end component
+     */
+    public function start(StoreInterface $store);
+
+    /**
+     * Confirm that the provided details are valid, and return an array of "data" to store on the RegisteredMethod
+     * created for this registration.
+     *
+     * An Exception should be thrown if the registration could not be completed
      *
      * @param HTTPRequest $request
      * @param StoreInterface $store
-     * @return bool
+     * @return array Data to be stored against the created RegisteredMethod
      */
     public function register(HTTPRequest $request, StoreInterface $store);
 

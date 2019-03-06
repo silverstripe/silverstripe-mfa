@@ -2,6 +2,7 @@
 
 namespace SilverStripe\MFA\Tests\Stub\BasicMath;
 
+use RuntimeException;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Dev\TestOnly;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
@@ -30,24 +31,18 @@ class MethodRegisterHandler implements RegisterHandlerInterface, TestOnly
      *
      * @param HTTPRequest $request
      * @param StoreInterface $store
-     * @return bool
+     * @return array
+     * @throws RuntimeException When insufficient user input is provided
      */
     public function register(HTTPRequest $request, StoreInterface $store)
     {
         $parameters = json_decode($request->getBody(), true);
 
         if (!array_key_exists('number', $parameters)) {
-            return false;
+            throw new RuntimeException('The required user input was not provided to register this method');
         }
 
-        $methodRegistration = RegisteredMethod::create([
-            'MethodClassName' => Method::class,
-            'Data' => json_encode(['number' => $parameters['number']]),
-        ]);
-
-        $store->getMember()->RegisteredMFAMethods()->add($methodRegistration);
-
-        return true;
+        return ['number' => $parameters['number']];
     }
 
     /**

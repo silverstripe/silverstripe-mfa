@@ -1,11 +1,9 @@
 <?php
 namespace SilverStripe\MFA\Authenticator;
 
+use Exception;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\MFA\Extension\MemberExtension;
-use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Store\SessionStore;
@@ -259,17 +257,28 @@ class LoginHandler extends BaseLoginHandler
 
         $registrationHandler = $method->getRegisterHandler();
 
-        $success = $registrationHandler->register($request, $sessionStore);
-
-        if ($success) {
-            // TODO: Do we need to send any further details back here?
-            return $this->jsonResponse(['success' => true], 201);
+        try {
+            $data = $registrationHandler->register($request, $sessionStore);
+        } catch (Exception $e) {
+            return $this->jsonResponse(
+                ['errors' => [
+                    _t(__CLASS__ . '.REGISTER_FAILED', 'Registration failed'),
+                    $e->getMessage(),
+                ]],
+                400
+            );
         }
 
-        return $this->jsonResponse(
-            ['errors' => [_t(__CLASS__ . '.REGISTER_FAILED', 'Registration failed')]],
-            400
-        );
+        // Create the RegisteredMethod object
+        $registeredMethod = RegisteredMethod::create([
+            'MethodClassName' => get_class($method),
+            'Data' => json_encode($data),
+        ]);
+
+        // Add it to the member
+        $sessionStore->getMember()->RegisteredMFAMethods()->add($registeredMethod);
+
+        return $this->jsonResponse(['success' => true], 201);
     }
 
     /**
@@ -290,10 +299,10 @@ class LoginHandler extends BaseLoginHandler
 
         // Pull a method to use from the request or use the default (TODO: Should we have the default as a fallback?)
         $specifiedMethod = str_replace('-', '\\', $request->param('Method')) ?: $member->DefaultRegisteredMethod;
-        $method = $this->getMethodRegistry()->getMethodFromMember($member, $specifiedMethod);
+        $registeredMethod = $this->getMethodRegistry()->getMethodFromMember($member, $specifiedMethod);
 
         // We can't proceed with login if the Member doesn't have this method registered
-        if (!$method) {
+        if (!$registeredMethod) {
             $this->jsonResponse(
                 ['errors' => [
                     _t(__CLASS__ . '.METHOD_NOT_REGISTERED', 'Member does not have this method registered')
@@ -303,9 +312,9 @@ class LoginHandler extends BaseLoginHandler
         }
 
         // Mark the given method as started within the session
-        $sessionStore->setMethod($method->MethodClassName);
+        $sessionStore->setMethod($registeredMethod->MethodClassName);
         // Allow the authenticator to begin the process and generate some data to pass through to the front end
-        $data = $method->getLoginHandler()->start($sessionStore);
+        $data = $registeredMethod->getLoginHandler()->start($sessionStore, $registeredMethod);
         // Ensure detail is saved to the session
         $sessionStore->save($request);
 
@@ -330,9 +339,10 @@ class LoginHandler extends BaseLoginHandler
 
         // Get the member and authenticator ready
         $member = $this->getSessionStore()->getMember();
-        $authenticator = $this->getMethodRegistry()->getMethodFromMember($member, $method)->getLoginHandler();
+        $registeredMethod = $this->getMethodRegistry()->getMethodFromMember($member, $method);
+        $authenticator = $registeredMethod->getLoginHandler();
 
-        if (!$authenticator->verify($request, $this->getSessionStore())) {
+        if (!$authenticator->verify($request, $this->getSessionStore(), $registeredMethod)) {
             // TODO figure out how to return a message here too.
             return $this->redirect($this->link('mfa'));
         }

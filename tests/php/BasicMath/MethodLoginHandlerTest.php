@@ -5,6 +5,7 @@ namespace SilverStripe\MFA\Tests\BasicMath;
 use PHPUnit_Framework_MockObject_MockObject;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Dev\SapphireTest;
+use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Store\StoreInterface;
 use SilverStripe\MFA\Tests\Stub\BasicMath\MethodLoginHandler;
 
@@ -18,7 +19,9 @@ class MethodLoginHandlerTest extends SapphireTest
         $store = $this->createMock(StoreInterface::class);
         $store->expects($this->once())->method('setState');
 
-        $this->assertArrayHasKey('numbers', $handler->start($store));
+        $mockRegisteredMethod = RegisteredMethod::create();
+
+        $this->assertArrayHasKey('numbers', $handler->start($store, $mockRegisteredMethod));
     }
 
     public function testVerify()
@@ -35,6 +38,8 @@ class MethodLoginHandlerTest extends SapphireTest
             'answer' => 10,
         ]);
 
-        $this->assertTrue($handler->verify($request, $store));
+        $mockRegisteredMethod = RegisteredMethod::create();
+
+        $this->assertTrue($handler->verify($request, $store, $mockRegisteredMethod));
     }
 }
