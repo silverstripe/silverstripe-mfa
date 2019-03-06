@@ -1,0 +1,6 @@
+// Nested for specificity against core styles
+.composite .mfa-settings {
+  &--hidden {
+    display: none;
+  }
+}
