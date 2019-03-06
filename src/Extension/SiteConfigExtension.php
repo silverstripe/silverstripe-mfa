@@ -45,7 +45,7 @@ class SiteConfigExtension extends DataExtension
 
         $mfaEnabled = CheckboxField::create(
             'MFAEnabled',
-            _t(__CLASS__ . '.MFA_ENABLED', 'Enable MFA for CMS access.')
+            _t(__CLASS__ . '.MFA_ENABLED', 'Enable MFA for CMS access')
         );
         $mfaEnabled->addExtraClass('mfa-settings__enabled');
 
