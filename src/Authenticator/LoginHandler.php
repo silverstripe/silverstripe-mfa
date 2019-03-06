@@ -79,12 +79,15 @@ class LoginHandler extends BaseLoginHandler
 
     /**
      * Action handler for loading the MFA authentication React app
+     * Template variables defined here will be used by the rendering controller's template - normally Page.ss
      *
-     * @return array|HTTPResponse
+     * @return array template variables {@see SilverStripe\Security\Security::renderWrappedController}
      */
     public function mfa()
     {
-        return [];
+        return [
+            'Form' => $this->renderWith($this->getViewerTemplates()),
+        ];
     }
 
     /**
@@ -96,6 +99,10 @@ class LoginHandler extends BaseLoginHandler
     {
         $member = $this->getSessionStore()->getMember();
 
+        if (!$member) {
+            $member = Security::getCurrentUser();
+        }
+
         // If we don't have a valid member we shouldn't be here...
         if (!$member) {
             return $this->redirectBack();
@@ -106,9 +113,12 @@ class LoginHandler extends BaseLoginHandler
 
         // Generate a map of URL Segments to 'lead in labels', which are used to describe the method in the login UI
         $registeredMethodDetails = [];
-        foreach ($registeredMethods as $method) {
-            $registeredMethodDetails[$method->getMethod()->getURLSegment()] =
-                $method->getLoginHandler()->getLeadInLabel();
+        foreach ($registeredMethods as $registeredMethod) {
+            $method = $registeredMethod->getMethod();
+            $registeredMethodDetails[] = [
+                'urlSegment' => $method->getURLSegment(),
+                'leadInLabel' => $method->getLoginHandler()->getLeadInLabel()
+            ];
         }
 
         // Prepare an array to hold details for methods available to register
@@ -127,7 +137,8 @@ class LoginHandler extends BaseLoginHandler
 
             $registerHandler = $method->getRegisterHandler();
 
-            $availableMethodDetails[$method->getURLSegment()] = [
+            $availableMethodDetails[] = [
+                'urlSegment' => $method->getURLSegment(),
                 'name' => $registerHandler->getName(),
                 'description' => $registerHandler->getDescription(),
                 'supportLink' => $registerHandler->getSupportLink(),

@@ -3,7 +3,6 @@ const webpackConfig = require('@silverstripe/webpack-config');
 
 const {
   resolveJS,
-  externalJS,
   moduleJS,
   pluginJS,
   moduleCSS,
@@ -23,7 +22,7 @@ const config = [
   {
     name: 'js',
     entry: {
-      'bundle': `${PATHS.SRC}/bundles/bundle.js`,
+      bundle: `${PATHS.SRC}/bundles/bundle.js`,
     },
     output: {
       path: PATHS.DIST,
@@ -31,14 +30,13 @@ const config = [
     },
     devtool: (ENV !== 'production') ? 'source-map' : '',
     resolve: resolveJS(ENV, PATHS),
-    externals: externalJS(ENV, PATHS),
     module: moduleJS(ENV, PATHS),
     plugins: pluginJS(ENV, PATHS),
   },
   {
     name: 'css',
     entry: {
-      'bundle': `${PATHS.SRC}/bundles/bundle.scss`,
+      bundle: `${PATHS.SRC}/bundles/bundle.scss`,
     },
     output: {
       path: PATHS.DIST,
