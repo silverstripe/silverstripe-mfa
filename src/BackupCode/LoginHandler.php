@@ -33,7 +33,8 @@ class LoginHandler implements LoginHandlerInterface
      */
     public function verify(HTTPRequest $request, StoreInterface $store, RegisteredMethod $registeredMethod)
     {
-        $code = $request->param('code');
+        $bodyJSON = json_decode($request->getBody(), true);
+        $code = $bodyJSON['code'];
 
         $candidates = json_decode($registeredMethod->Data, true);
 
@@ -73,5 +74,15 @@ class LoginHandler implements LoginHandlerInterface
     protected function verifyCode($code, $hash)
     {
         return password_verify($code, $hash);
+    }
+
+    /**
+     * Get the key that a React UI component is registered under (with @silverstripe/react-injector on the front-end)
+     *
+     * @return string
+     */
+    public function getComponent()
+    {
+        return 'BackupCodeLogin';
     }
 }

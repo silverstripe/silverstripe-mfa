@@ -15,7 +15,7 @@ class RegisteredMethodDetails implements RegisteredMethodDetailsInterface
     private $method;
 
     /**
-     * @param MethodInterface $Method
+     * @param MethodInterface $method
      */
     public function __construct(MethodInterface $method)
     {
@@ -32,11 +32,17 @@ class RegisteredMethodDetails implements RegisteredMethodDetailsInterface
         return $this->method->getLoginHandler()->getLeadInLabel();
     }
 
+    public function getComponent()
+    {
+        return $this->method->getLoginHandler()->getComponent();
+    }
+
     public function jsonSerialize()
     {
         return [
             'urlSegment' => $this->getURLSegment(),
             'leadInLabel' => $this->getLeadInLabel(),
+            'component' => $this->getComponent(),
         ];
     }
 }

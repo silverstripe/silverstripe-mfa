@@ -1,0 +1,10 @@
+.mfa-login-backup-codes {
+  &__container {
+    display: grid;
+    grid-template-columns: 50% 50%;
+  }
+
+  &__input {
+    display: block;
+  }
+}

@@ -19,4 +19,9 @@ interface RegisteredMethodDetailsInterface extends JsonSerializable
      * @return string
      */
     public function getLeadInLabel();
+
+    /**
+     * @return string
+     */
+    public function getComponent();
 }

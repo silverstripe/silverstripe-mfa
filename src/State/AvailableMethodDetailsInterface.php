@@ -29,4 +29,9 @@ interface AvailableMethodDetailsInterface extends JsonSerializable
      * @return string
      */
     public function getSupportLink();
+
+    /**
+     * @return string
+     */
+    public function getComponent();
 }

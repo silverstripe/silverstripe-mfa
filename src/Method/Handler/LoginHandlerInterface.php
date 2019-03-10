@@ -9,7 +9,7 @@ use SilverStripe\MFA\Store\StoreInterface;
  * Represents the base requirements for implementing an MFA Method's LoginHandlerInterface, which has the responsibility
  * of initiating and verifying login attempts for the MFA Method in question.
  */
-interface LoginHandlerInterface
+interface LoginHandlerInterface extends UIComponentProviderInterface
 {
     /**
      * Stores any data required to handle a login process with a method, and returns relevant state to be applied to the
