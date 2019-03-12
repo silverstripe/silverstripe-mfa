@@ -4,8 +4,10 @@ namespace SilverStripe\MFA\Authenticator;
 use Exception;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
+use SilverStripe\MFA\Exception\MemberNotFoundException;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\MethodRegistry;
+use SilverStripe\MFA\Service\SchemaGenerator;
 use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\Security\MemberAuthenticator\LoginHandler as BaseLoginHandler;
 use SilverStripe\Security\MemberAuthenticator\MemberLoginForm;
@@ -95,61 +97,14 @@ class LoginHandler extends BaseLoginHandler
      */
     public function getSchema()
     {
-        $member = $this->getSessionStore()->getMember();
-
-        if (!$member) {
-            $member = Security::getCurrentUser();
-        }
-
-        // If we don't have a valid member we shouldn't be here...
-        if (!$member) {
+        try {
+            $generator = SchemaGenerator::create($this->getRequest(), $this->getSessionStore());
+            $schema = $generator->getSchema();
+            return $this->jsonResponse($schema);
+        } catch (MemberNotFoundException $exception) {
+            // If we don't have a valid member we shouldn't be here...
             return $this->redirectBack();
         }
-
-        // Get a list of methods registered to the user
-        $registeredMethods = $member->RegisteredMFAMethods();
-
-        // Generate a map of URL Segments to 'lead in labels', which are used to describe the method in the login UI
-        $registeredMethodDetails = [];
-        foreach ($registeredMethods as $registeredMethod) {
-            $method = $registeredMethod->getMethod();
-            $registeredMethodDetails[] = [
-                'urlSegment' => $method->getURLSegment(),
-                'leadInLabel' => $method->getLoginHandler()->getLeadInLabel()
-            ];
-        }
-
-        // Prepare an array to hold details for methods available to register
-        $availableMethodDetails = [];
-        $registeredMethodNames = array_keys($registeredMethodDetails);
-
-        // Get all methods enabled on the site
-        $allMethods = MethodRegistry::singleton()->getMethods();
-
-        // Compile details for methods that aren't already registered to the user
-        foreach ($allMethods as $method) {
-            // Skip registration details if the user has already registered this method
-            if (in_array($method->getURLSegment(), $registeredMethodNames)) {
-                continue;
-            }
-
-            $registerHandler = $method->getRegisterHandler();
-
-            $availableMethodDetails[] = [
-                'urlSegment' => $method->getURLSegment(),
-                'name' => $registerHandler->getName(),
-                'description' => $registerHandler->getDescription(),
-                'supportLink' => $registerHandler->getSupportLink(),
-            ];
-        }
-
-        $defaultMethod = $member->DefaultRegisteredMethod;
-
-        return $this->jsonResponse([
-            'registeredMethods' => $registeredMethodDetails,
-            'availableMethods' => $availableMethodDetails,
-            'defaultMethod' => $defaultMethod ? $defaultMethod->getMethod()->getURLSegment() : null,
-        ]);
     }
 
     /**

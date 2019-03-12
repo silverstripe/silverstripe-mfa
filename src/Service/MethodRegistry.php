@@ -2,7 +2,6 @@
 
 namespace SilverStripe\MFA\Service;
 
-use LogicException;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
@@ -24,9 +23,9 @@ class MethodRegistry
      * List of configured MFA methods. These should be class names that implement MethodInterface
      *
      * @config
-     * @var array
+     * @var string[]
      */
-    private static $methods;
+    private static $methods = [];
 
     /**
      * Get implementations of all configured methods
@@ -36,7 +35,7 @@ class MethodRegistry
      */
     public function getMethods()
     {
-        $configuredMethods = (array) static::config()->get('methods');
+        $configuredMethods = (array) $this->config()->get('methods');
 
         $allMethods = [];
 
