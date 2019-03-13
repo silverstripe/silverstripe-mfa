@@ -268,12 +268,10 @@ class LoginHandler extends BaseLoginHandler
             // Redirect the user back to wherever they originally came from when they started the login process
             return $this->redirectBack();
         } catch (MemberNotFoundException $exception) {
-            if (!$enforcementManager->canSkipMFA($member)) {
-                return $this->jsonResponse(
-                    ['errors' => [_t(__CLASS__ . '.CANNOT_SKIP', 'You cannot skip MFA registration')]],
-                    403
-                );
-            }
+            return $this->jsonResponse(
+                ['errors' => [_t(__CLASS__ . '.CANNOT_SKIP', 'You cannot skip MFA registration')]],
+                403
+            );
         }
     }
 

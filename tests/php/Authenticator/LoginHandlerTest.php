@@ -42,7 +42,7 @@ class LoginHandlerTest extends FunctionalTest
 
     public function testMFAStepIsAdded()
     {
-        /** @var Member|MemberExtension $member */
+        /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'guy');
 
         $this->autoFollowRedirection = false;
@@ -57,7 +57,7 @@ class LoginHandlerTest extends FunctionalTest
     {
         Config::modify()->set(MethodRegistry::class, 'methods', []);
 
-        /** @var Member|MemberExtension $member */
+        /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'guy');
 
         // Ensure a URL is set to redirect to after successful login
@@ -84,7 +84,7 @@ class LoginHandlerTest extends FunctionalTest
     public function testMFASchemaEndpointReturnsMethodDetails()
     {
         // "Guy" isn't very security conscious - he has no MFA methods set up
-        /** @var Member|MemberExtension $member */
+        /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'guy');
         $this->scaffoldPartialLogin($member);
 
@@ -115,7 +115,7 @@ class LoginHandlerTest extends FunctionalTest
     public function testMFASchemaEndpointShowsRegisteredMethodsIfSetUp()
     {
         // "Simon" is security conscious - he uses the cutting edge MFA methods
-        /** @var Member|MemberExtension $member */
+        /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'simon');
         $this->scaffoldPartialLogin($member);
 
@@ -144,7 +144,7 @@ class LoginHandlerTest extends FunctionalTest
     public function testMFASchemaEndpointProvidesDefaultMethodIfSet()
     {
         // "Robbie" is security conscious and is also a CMS expert! He set up MFA and set a default method :o
-        /** @var Member|MemberExtension $member */
+        /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'robbie');
         $this->scaffoldPartialLogin($member);
 
@@ -166,14 +166,16 @@ class LoginHandlerTest extends FunctionalTest
 
     /**
      * @param bool $mfaRequired
+     * @param string|null $member
      * @dataProvider cannotSkipMFAProvider
      */
-    public function testCannotSkipMFA($mfaRequired)
+    public function testCannotSkipMFA($mfaRequired, $member = 'robbie')
     {
         $this->setSiteConfig(['MFARequired' => $mfaRequired]);
 
-        /** @var Member|MemberExtension $member */
-        $this->logInAs('robbie');
+        if ($member) {
+            $this->logInAs($member);
+        }
 
         $response = $this->get('Security/login/default/mfa/skip');
         $result = json_decode($response->getBody(), true);
@@ -191,6 +193,7 @@ class LoginHandlerTest extends FunctionalTest
         return [
             'mfa is required' => [false],
             'mfa is not required, but user already has configured methods' => [false],
+            'no member is available' => [false, null],
         ];
     }
 
