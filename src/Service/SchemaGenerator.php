@@ -8,8 +8,10 @@ use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\MFA\Exception\MemberNotFoundException;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Store\StoreInterface;
+use SilverStripe\ORM\FieldType\DBDate;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
+use SilverStripe\SiteConfig\SiteConfig;
 
 /**
  * Generates a multi-factor authentication frontend app schema from the given request
@@ -55,6 +57,8 @@ class SchemaGenerator
             'registeredMethods' => $registeredMethods,
             'availableMethods' => $this->getAvailableMethods($exclude),
             'defaultMethod' => $this->getDefaultMethod(),
+            'canSkip' => $this->canSkipMFA(),
+            'shouldRedirect' => $this->shouldRedirectToMFA(),
         ];
 
         $this->extend('updateSchema', $schema);
@@ -144,6 +148,93 @@ class SchemaGenerator
     {
         $defaultMethod = $this->getMember()->DefaultRegisteredMethod;
         return $defaultMethod ? $defaultMethod->getMethod()->getURLSegment() : null;
+    }
+
+    /**
+     * Whether the current member can skip the multi factor authentication registration process.
+     *
+     * This is determined by a combination of:
+     *  - Whether MFA is required or optional
+     *  - If MFA is required, whether there is a grace period
+     *  - If MFA is required and there is a grace period, whether we're currently within that timeframe
+     *
+     * @return bool
+     */
+    protected function canSkipMFA()
+    {
+        if ($this->isMFARequired()) {
+            return false;
+        }
+
+        // If they've already registered MFA methods we will not allow them to skip the authentication process
+        $registeredMethods = $this->getRegisteredMethods();
+        if (count($registeredMethods)) {
+            return false;
+        }
+
+        // MFA is optional, or is required but might be within a grace period (see isMFARequired)
+        return true;
+    }
+
+    /**
+     * Whether the authentication process should redirect the user to multi factor authentication registration or
+     * login.
+     *
+     * This is determined by a combination of:
+     *  - Whether MFA is required or optional
+     *  - Whether the user has registered MFA methods already
+     *  - If the user doesn't have any registered MFA methods already, and MFA is optional, whether the user has opted
+     *    to skip the registration process
+     *
+     * Note that in determining this, we ignore whether or not MFA is enabled for the site in general.
+     *
+     * @return bool;
+     */
+    protected function shouldRedirectToMFA()
+    {
+        $isRequired = $this->isMFARequired();
+        if ($isRequired) {
+            return true;
+        }
+
+        $hasSkipped = $this->getMember()->HasSkippedMFARegistration;
+        if (!$hasSkipped) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Whether multi factor authentication is required for site members. This also takes into account whether a
+     * grace period is set and whether we're currently inside the window for it.
+     *
+     * Note that in determining this, we ignore whether or not MFA is enabled for the site in general.
+     *
+     * @return bool
+     */
+    protected function isMFARequired()
+    {
+        $siteConfig = SiteConfig::current_site_config();
+
+        $isRequired = $siteConfig->MFARequired;
+        if (!$isRequired) {
+            return false;
+        }
+
+        /** @var DBDate $gracePeriod */
+        $gracePeriod = $siteConfig->dbObject('MFAGracePeriodExpires');
+
+        if ($isRequired && !$gracePeriod) {
+            return true;
+        }
+
+        if ($isRequired && $gracePeriod->InPast()) {
+            return true;
+        }
+
+        // MFA is required, a grace period is set, and it's in the future
+        return false;
     }
 
     /**
