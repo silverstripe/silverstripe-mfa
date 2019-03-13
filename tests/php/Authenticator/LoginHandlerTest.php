@@ -178,11 +178,7 @@ class LoginHandlerTest extends FunctionalTest
         }
 
         $response = $this->get('Security/login/default/mfa/skip');
-        $result = json_decode($response->getBody(), true);
-
-        $this->assertSame(403, $response->getStatusCode());
-        $this->assertArrayHasKey('errors', $result);
-        $this->assertContains('You cannot skip MFA registration', $result['errors']);
+        $this->assertContains('You cannot skip MFA registration', $response->getBody());
     }
 
     /**

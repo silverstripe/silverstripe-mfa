@@ -11,6 +11,7 @@ use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\SchemaGenerator;
 use SilverStripe\MFA\Store\SessionStore;
+use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\MemberAuthenticator\LoginHandler as BaseLoginHandler;
 use SilverStripe\Security\MemberAuthenticator\MemberLoginForm;
@@ -252,15 +253,18 @@ class LoginHandler extends BaseLoginHandler
      */
     public function skipRegistration(HTTPRequest $request)
     {
+        $loginUrl = Security::login_url();
+
         try {
             $member = $this->getMember();
             $enforcementManager = EnforcementManager::create();
 
             if (!$enforcementManager->canSkipMFA($member)) {
-                return $this->jsonResponse(
-                    ['errors' => [_t(__CLASS__ . '.CANNOT_SKIP', 'You cannot skip MFA registration')]],
-                    403
+                Security::singleton()->setSessionMessage(
+                    _t(__CLASS__ . '.CANNOT_SKIP', 'You cannot skip MFA registration'),
+                    ValidationResult::TYPE_ERROR
                 );
+                return $this->redirect($loginUrl);
             }
 
             $member->update(['HasSkippedMFARegistration' => true])->write();
@@ -268,10 +272,11 @@ class LoginHandler extends BaseLoginHandler
             // Redirect the user back to wherever they originally came from when they started the login process
             return $this->redirectBack();
         } catch (MemberNotFoundException $exception) {
-            return $this->jsonResponse(
-                ['errors' => [_t(__CLASS__ . '.CANNOT_SKIP', 'You cannot skip MFA registration')]],
-                403
+            Security::singleton()->setSessionMessage(
+                _t(__CLASS__ . '.CANNOT_SKIP', 'You cannot skip MFA registration'),
+                ValidationResult::TYPE_ERROR
             );
+            return $this->redirect($loginUrl);
         }
     }
 
