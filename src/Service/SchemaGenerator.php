@@ -46,51 +46,15 @@ class SchemaGenerator
      */
     public function getSchema()
     {
-        $member = $this->getMember();
+        $registeredMethods = $this->getRegisteredMethods();
 
-        // Get a list of methods registered to the user
-        $registeredMethods = $member->RegisteredMFAMethods();
-
-        // Generate a map of URL Segments to 'lead in labels', which are used to describe the method in the login UI
-        $registeredMethodDetails = [];
-        foreach ($registeredMethods as $registeredMethod) {
-            $method = $registeredMethod->getMethod();
-
-            $registeredMethodDetails[] = [
-                'urlSegment' => $method->getURLSegment(),
-                'leadInLabel' => $method->getLoginHandler()->getLeadInLabel()
-            ];
-        }
-
-        // Prepare an array to hold details for methods available to register
-        $availableMethodDetails = [];
-
-        // Get all methods enabled on the site
-        $allMethods = MethodRegistry::singleton()->getMethods();
-
-        // Compile details for methods that aren't already registered to the user
-        foreach ($allMethods as $method) {
-            // Skip registration details if the user has already registered this method
-            if (in_array($method->getURLSegment(), array_column($registeredMethodDetails, 'urlSegment'))) {
-                continue;
-            }
-
-            $registerHandler = $method->getRegisterHandler();
-
-            $availableMethodDetails[] = [
-                'urlSegment' => $method->getURLSegment(),
-                'name' => $registerHandler->getName(),
-                'description' => $registerHandler->getDescription(),
-                'supportLink' => $registerHandler->getSupportLink(),
-            ];
-        }
-
-        $defaultMethod = $member->DefaultRegisteredMethod;
+        // Skip registration details if the user has already registered this method
+        $exclude = array_column($registeredMethods, 'urlSegment');
 
         $schema = [
-            'registeredMethods' => $registeredMethodDetails,
-            'availableMethods' => $availableMethodDetails,
-            'defaultMethod' => $defaultMethod ? $defaultMethod->getMethod()->getURLSegment() : null,
+            'registeredMethods' => $registeredMethods,
+            'availableMethods' => $this->getAvailableMethods($exclude),
+            'defaultMethod' => $this->getDefaultMethod(),
         ];
 
         $this->extend('updateSchema', $schema);
@@ -112,6 +76,74 @@ class SchemaGenerator
         }
 
         return $member;
+    }
+
+    /**
+     * Get a list of methods registered to the user
+     *
+     * @return array[]
+     */
+    protected function getRegisteredMethods()
+    {
+        $registeredMethods = $this->getMember()->RegisteredMFAMethods();
+
+        // Generate a map of URL Segments to 'lead in labels', which are used to describe the method in the login UI
+        $registeredMethodDetails = [];
+        foreach ($registeredMethods as $registeredMethod) {
+            $method = $registeredMethod->getMethod();
+
+            $registeredMethodDetails[] = [
+                'urlSegment' => $method->getURLSegment(),
+                'leadInLabel' => $method->getLoginHandler()->getLeadInLabel()
+            ];
+        }
+
+        return $registeredMethodDetails;
+    }
+
+    /**
+     * Get details in a list for all available methods, optionally excluding those with urlSegments provided in
+     * $exclude
+     *
+     * @param array $exclude
+     * @return array[]
+     */
+    protected function getAvailableMethods(array $exclude = [])
+    {
+        // Prepare an array to hold details for methods available to register
+        $availableMethods = [];
+
+        // Get all methods enabled on the site
+        $allMethods = MethodRegistry::singleton()->getMethods();
+
+        // Compile details for methods that aren't already registered to the user
+        foreach ($allMethods as $method) {
+            if (in_array($method->getURLSegment(), $exclude)) {
+                continue;
+            }
+
+            $registerHandler = $method->getRegisterHandler();
+
+            $availableMethods[] = [
+                'urlSegment' => $method->getURLSegment(),
+                'name' => $registerHandler->getName(),
+                'description' => $registerHandler->getDescription(),
+                'supportLink' => $registerHandler->getSupportLink(),
+            ];
+        }
+
+        return $availableMethods;
+    }
+
+    /**
+     * Get the URL Segment for the configured default method on the current member, or null if none is configured
+     *
+     * @return string|null
+     */
+    protected function getDefaultMethod()
+    {
+        $defaultMethod = $this->getMember()->DefaultRegisteredMethod;
+        return $defaultMethod ? $defaultMethod->getMethod()->getURLSegment() : null;
     }
 
     /**
