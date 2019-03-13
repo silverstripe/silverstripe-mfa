@@ -2,10 +2,13 @@
 
 namespace SilverStripe\MFA\Tests\Authenticator;
 
+use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
+use SilverStripe\Control\Session;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\FunctionalTest;
+use SilverStripe\MFA\Authenticator\LoginHandler;
 use SilverStripe\MFA\Authenticator\MemberAuthenticator;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
@@ -207,6 +210,18 @@ class LoginHandlerTest extends FunctionalTest
 
         $member = Member::get()->byID($memberId);
         $this->assertTrue((bool)$member->HasSkippedMFARegistration);
+    }
+
+    /**
+     * @expectedException \SilverStripe\MFA\Exception\MemberNotFoundException
+     */
+    public function testGetMemberThrowsExceptionWithoutMember()
+    {
+        $this->logOut();
+        $handler = new LoginHandler('foo', $this->createMock(MemberAuthenticator::class));
+        $handler->setRequest(new HTTPRequest('GET', '/'));
+        $handler->getRequest()->setSession(new Session([]));
+        $handler->getMember();
     }
 
     /**

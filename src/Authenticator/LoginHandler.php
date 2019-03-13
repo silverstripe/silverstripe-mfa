@@ -5,10 +5,13 @@ use Exception;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\MFA\Exception\MemberNotFoundException;
+use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Model\RegisteredMethod;
+use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\SchemaGenerator;
 use SilverStripe\MFA\Store\SessionStore;
+use SilverStripe\Security\Member;
 use SilverStripe\Security\MemberAuthenticator\LoginHandler as BaseLoginHandler;
 use SilverStripe\Security\MemberAuthenticator\MemberLoginForm;
 use SilverStripe\Security\Security;
@@ -100,7 +103,8 @@ class LoginHandler extends BaseLoginHandler
     public function getSchema()
     {
         try {
-            $schema = $this->getSchemaGenerator()->getSchema();
+            $member = $this->getMember();
+            $schema = SchemaGenerator::create()->getSchema($member);
             return $this->jsonResponse($schema);
         } catch (MemberNotFoundException $exception) {
             // If we don't have a valid member we shouldn't be here...
@@ -248,18 +252,29 @@ class LoginHandler extends BaseLoginHandler
      */
     public function skipRegistration(HTTPRequest $request)
     {
-        $schemaGenerator = $this->getSchemaGenerator();
-        if (!$schemaGenerator->canSkipMFA()) {
-            return $this->jsonResponse(
-                ['errors' => [_t(__CLASS__ . '.CANNOT_SKIP', 'You cannot skip MFA registration')]],
-                403
-            );
+        try {
+            $member = $this->getMember();
+            $enforcementManager = EnforcementManager::create();
+
+            if (!$enforcementManager->canSkipMFA($member)) {
+                return $this->jsonResponse(
+                    ['errors' => [_t(__CLASS__ . '.CANNOT_SKIP', 'You cannot skip MFA registration')]],
+                    403
+                );
+            }
+
+            $member->update(['HasSkippedMFARegistration' => true])->write();
+
+            // Redirect the user back to wherever they originally came from when they started the login process
+            return $this->redirectBack();
+        } catch (MemberNotFoundException $exception) {
+            if (!$enforcementManager->canSkipMFA($member)) {
+                return $this->jsonResponse(
+                    ['errors' => [_t(__CLASS__ . '.CANNOT_SKIP', 'You cannot skip MFA registration')]],
+                    403
+                );
+            }
         }
-
-        $schemaGenerator->getMember()->update(['HasSkippedMFARegistration' => true])->write();
-
-        // Redirect the user back to wherever they originally came from when they started the login process
-        return $this->redirectBack();
     }
 
     /**
@@ -417,6 +432,22 @@ class LoginHandler extends BaseLoginHandler
     }
 
     /**
+     * @return Member&MemberExtension
+     * @throws MemberNotFoundException
+     */
+    public function getMember()
+    {
+        $member = $this->getSessionStore()->getMember() ?: Security::getCurrentUser();
+
+        // If we don't have a valid member we shouldn't be here...
+        if (!$member) {
+            throw new MemberNotFoundException();
+        }
+
+        return $member;
+    }
+
+    /**
      * @return SessionStore
      */
     protected function getSessionStore()
@@ -436,13 +467,5 @@ class LoginHandler extends BaseLoginHandler
     protected function getMethodRegistry()
     {
         return MethodRegistry::singleton();
-    }
-
-    /**
-     * @return SchemaGenerator
-     */
-    protected function getSchemaGenerator()
-    {
-        return SchemaGenerator::create($this->getRequest(), $this->getSessionStore());
     }
 }
