@@ -222,14 +222,14 @@ class SchemaGenerator
             return false;
         }
 
-        /** @var DBDate $gracePeriod */
-        $gracePeriod = $siteConfig->dbObject('MFAGracePeriodExpires');
-
+        $gracePeriod = $siteConfig->MFAGracePeriodExpires;
         if ($isRequired && !$gracePeriod) {
             return true;
         }
 
-        if ($isRequired && $gracePeriod->InPast()) {
+        /** @var DBDate $gracePeriodDate */
+        $gracePeriodDate = $siteConfig->dbObject('MFAGracePeriodExpires');
+        if ($isRequired && $gracePeriodDate->InPast()) {
             return true;
         }
 
