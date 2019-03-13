@@ -4,9 +4,15 @@ namespace SilverStripe\MFA\Authenticator;
 use Exception;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
+use SilverStripe\MFA\Exception\MemberNotFoundException;
+use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Model\RegisteredMethod;
+use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\MFA\Service\MethodRegistry;
+use SilverStripe\MFA\Service\SchemaGenerator;
 use SilverStripe\MFA\Store\SessionStore;
+use SilverStripe\ORM\ValidationResult;
+use SilverStripe\Security\Member;
 use SilverStripe\Security\MemberAuthenticator\LoginHandler as BaseLoginHandler;
 use SilverStripe\Security\MemberAuthenticator\MemberLoginForm;
 use SilverStripe\Security\Security;
@@ -19,6 +25,7 @@ class LoginHandler extends BaseLoginHandler
         'GET mfa/schema' => 'getSchema', // Provides details about existing registered methods, etc.
         'GET mfa/register/$Method' => 'startRegistration', // Initiates registration process for $Method
         'POST mfa/register/$Method' => 'finishRegistration', // Completes registration process for $Method
+        'GET mfa/skip' => 'skipRegistration', // Allows the user to skip MFA registration
         'GET mfa/login/$Method' => 'startLogin', // Initiates login process for $Method
         'POST mfa/login/$Method' => 'verifyLogin', // Verifies login via $Method
         'GET mfa' => 'mfa', // Renders the MFA Login Page to init the app
@@ -29,6 +36,7 @@ class LoginHandler extends BaseLoginHandler
         'getSchema',
         'startRegistration',
         'finishRegistration',
+        'skipRegistration',
         'startLogin',
         'verifyLogin',
     ];
@@ -95,61 +103,14 @@ class LoginHandler extends BaseLoginHandler
      */
     public function getSchema()
     {
-        $member = $this->getSessionStore()->getMember();
-
-        if (!$member) {
-            $member = Security::getCurrentUser();
-        }
-
-        // If we don't have a valid member we shouldn't be here...
-        if (!$member) {
+        try {
+            $member = $this->getMember();
+            $schema = SchemaGenerator::create()->getSchema($member);
+            return $this->jsonResponse($schema);
+        } catch (MemberNotFoundException $exception) {
+            // If we don't have a valid member we shouldn't be here...
             return $this->redirectBack();
         }
-
-        // Get a list of methods registered to the user
-        $registeredMethods = $member->RegisteredMFAMethods();
-
-        // Generate a map of URL Segments to 'lead in labels', which are used to describe the method in the login UI
-        $registeredMethodDetails = [];
-        foreach ($registeredMethods as $registeredMethod) {
-            $method = $registeredMethod->getMethod();
-            $registeredMethodDetails[] = [
-                'urlSegment' => $method->getURLSegment(),
-                'leadInLabel' => $method->getLoginHandler()->getLeadInLabel()
-            ];
-        }
-
-        // Prepare an array to hold details for methods available to register
-        $availableMethodDetails = [];
-        $registeredMethodNames = array_keys($registeredMethodDetails);
-
-        // Get all methods enabled on the site
-        $allMethods = MethodRegistry::singleton()->getMethods();
-
-        // Compile details for methods that aren't already registered to the user
-        foreach ($allMethods as $method) {
-            // Skip registration details if the user has already registered this method
-            if (in_array($method->getURLSegment(), $registeredMethodNames)) {
-                continue;
-            }
-
-            $registerHandler = $method->getRegisterHandler();
-
-            $availableMethodDetails[] = [
-                'urlSegment' => $method->getURLSegment(),
-                'name' => $registerHandler->getName(),
-                'description' => $registerHandler->getDescription(),
-                'supportLink' => $registerHandler->getSupportLink(),
-            ];
-        }
-
-        $defaultMethod = $member->DefaultRegisteredMethod;
-
-        return $this->jsonResponse([
-            'registeredMethods' => $registeredMethodDetails,
-            'availableMethods' => $availableMethodDetails,
-            'defaultMethod' => $defaultMethod ? $defaultMethod->getMethod()->getURLSegment() : null,
-        ]);
     }
 
     /**
@@ -282,6 +243,41 @@ class LoginHandler extends BaseLoginHandler
         $sessionStore->getMember()->RegisteredMFAMethods()->add($registeredMethod);
 
         return $this->jsonResponse(['success' => true], 201);
+    }
+
+    /**
+     * Handle an HTTP request to skip MFA registration
+     *
+     * @param HTTPRequest $request
+     * @return HTTPResponse
+     */
+    public function skipRegistration(HTTPRequest $request)
+    {
+        $loginUrl = Security::login_url();
+
+        try {
+            $member = $this->getMember();
+            $enforcementManager = EnforcementManager::create();
+
+            if (!$enforcementManager->canSkipMFA($member)) {
+                Security::singleton()->setSessionMessage(
+                    _t(__CLASS__ . '.CANNOT_SKIP', 'You cannot skip MFA registration'),
+                    ValidationResult::TYPE_ERROR
+                );
+                return $this->redirect($loginUrl);
+            }
+
+            $member->update(['HasSkippedMFARegistration' => true])->write();
+
+            // Redirect the user back to wherever they originally came from when they started the login process
+            return $this->redirectBack();
+        } catch (MemberNotFoundException $exception) {
+            Security::singleton()->setSessionMessage(
+                _t(__CLASS__ . '.CANNOT_SKIP', 'You cannot skip MFA registration'),
+                ValidationResult::TYPE_ERROR
+            );
+            return $this->redirect($loginUrl);
+        }
     }
 
     /**
@@ -436,6 +432,22 @@ class LoginHandler extends BaseLoginHandler
         }
 
         return count($successfulMethods) >= static::config()->get('required_mfa_methods');
+    }
+
+    /**
+     * @return Member&MemberExtension
+     * @throws MemberNotFoundException
+     */
+    public function getMember()
+    {
+        $member = $this->getSessionStore()->getMember() ?: Security::getCurrentUser();
+
+        // If we don't have a valid member we shouldn't be here...
+        if (!$member) {
+            throw new MemberNotFoundException();
+        }
+
+        return $member;
     }
 
     /**

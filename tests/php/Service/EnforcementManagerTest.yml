@@ -1,0 +1,12 @@
+SilverStripe\MFA\Model\RegisteredMethod:
+  codes:
+    MethodClassName: SilverStripe\MFA\BackupCode\Method
+
+SilverStripe\Security\Member:
+  sally_smith:
+    FirstName: Sally
+    Surname: Smith
+    Email: sally.smith@example.com
+    RegisteredMFAMethods:
+      - =>SilverStripe\MFA\Model\RegisteredMethod.codes
+    DefaultRegisteredMethodID: =>SilverStripe\MFA\Model\RegisteredMethod.codes

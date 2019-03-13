@@ -13,6 +13,7 @@ use SilverStripe\Security\Member;
  * @method RegisteredMethod[]|HasManyList RegisteredMFAMethods
  * @property MethodInterface DefaultRegisteredMethod
  * @property string DefaultRegisteredMethodID
+ * @property bool HasSkippedMFARegistration
  * @property Member|MemberExtension owner
  */
 class MemberExtension extends DataExtension
@@ -23,6 +24,7 @@ class MemberExtension extends DataExtension
 
     private static $db = [
         'DefaultRegisteredMethodID' => 'Int',
+        'HasSkippedMFARegistration' => 'Boolean',
     ];
 
     /**
