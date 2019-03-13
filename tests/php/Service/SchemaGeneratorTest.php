@@ -38,13 +38,17 @@ class SchemaGeneratorTest extends SapphireTest
 
         $this->assertArrayHasKey('registeredMethods', $schema);
         $this->assertNotEmpty($schema['registeredMethods']);
+        $this->assertSame('backup-codes', $schema['registeredMethods'][0]['urlSegment']);
+
         $this->assertArrayHasKey('availableMethods', $schema);
         $this->assertNotEmpty($schema['availableMethods']);
+        $this->assertSame('basic-math', $schema['availableMethods'][0]['urlSegment']);
+
         $this->assertArrayHasKey('defaultMethod', $schema);
         $this->assertNotEmpty($schema['defaultMethod']);
-
-        $this->assertSame('backup-codes', $schema['registeredMethods'][0]['urlSegment']);
-        $this->assertSame('basic-math', $schema['availableMethods'][0]['urlSegment']);
         $this->assertSame('backup-codes', $schema['defaultMethod']);
+
+        $this->assertArrayHasKey('canSkip', $schema);
+        $this->assertArrayHasKey('shouldRedirect', $schema);
     }
 }
