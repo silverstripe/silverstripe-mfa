@@ -164,7 +164,7 @@ class SchemaGeneratorTest extends SapphireTest
      *
      * @param array $data
      */
-    protected function setSiteConfig($data)
+    protected function setSiteConfig(array $data)
     {
         $siteConfig = SiteConfig::current_site_config();
         $siteConfig->update($data);

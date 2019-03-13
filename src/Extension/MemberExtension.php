@@ -24,7 +24,7 @@ class MemberExtension extends DataExtension
 
     private static $db = [
         'DefaultRegisteredMethodID' => 'Int',
-        'HasSkippedMFARegistration' => 'Bool',
+        'HasSkippedMFARegistration' => 'Boolean',
     ];
 
     /**

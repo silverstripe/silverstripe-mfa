@@ -21,6 +21,7 @@ class LoginHandler extends BaseLoginHandler
         'GET mfa/schema' => 'getSchema', // Provides details about existing registered methods, etc.
         'GET mfa/register/$Method' => 'startRegistration', // Initiates registration process for $Method
         'POST mfa/register/$Method' => 'finishRegistration', // Completes registration process for $Method
+        'GET mfa/skip' => 'skipRegistration', // Allows the user to skip MFA registration
         'GET mfa/login/$Method' => 'startLogin', // Initiates login process for $Method
         'POST mfa/login/$Method' => 'verifyLogin', // Verifies login via $Method
         'GET mfa' => 'mfa', // Renders the MFA Login Page to init the app
@@ -31,6 +32,7 @@ class LoginHandler extends BaseLoginHandler
         'getSchema',
         'startRegistration',
         'finishRegistration',
+        'skipRegistration',
         'startLogin',
         'verifyLogin',
     ];
@@ -98,8 +100,7 @@ class LoginHandler extends BaseLoginHandler
     public function getSchema()
     {
         try {
-            $generator = SchemaGenerator::create($this->getRequest(), $this->getSessionStore());
-            $schema = $generator->getSchema();
+            $schema = $this->getSchemaGenerator()->getSchema();
             return $this->jsonResponse($schema);
         } catch (MemberNotFoundException $exception) {
             // If we don't have a valid member we shouldn't be here...
@@ -237,6 +238,28 @@ class LoginHandler extends BaseLoginHandler
         $sessionStore->getMember()->RegisteredMFAMethods()->add($registeredMethod);
 
         return $this->jsonResponse(['success' => true], 201);
+    }
+
+    /**
+     * Handle an HTTP request to skip MFA registration
+     *
+     * @param HTTPRequest $request
+     * @return HTTPResponse
+     */
+    public function skipRegistration(HTTPRequest $request)
+    {
+        $schemaGenerator = $this->getSchemaGenerator();
+        if (!$schemaGenerator->canSkipMFA()) {
+            return $this->jsonResponse(
+                ['errors' => [_t(__CLASS__ . '.CANNOT_SKIP', 'You cannot skip MFA registration')]],
+                403
+            );
+        }
+
+        $schemaGenerator->getMember()->update(['HasSkippedMFARegistration' => true])->write();
+
+        // Redirect the user back to wherever they originally came from when they started the login process
+        return $this->redirectBack();
     }
 
     /**
@@ -413,5 +436,13 @@ class LoginHandler extends BaseLoginHandler
     protected function getMethodRegistry()
     {
         return MethodRegistry::singleton();
+    }
+
+    /**
+     * @return SchemaGenerator
+     */
+    protected function getSchemaGenerator()
+    {
+        return SchemaGenerator::create($this->getRequest(), $this->getSessionStore());
     }
 }

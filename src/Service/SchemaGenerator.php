@@ -160,7 +160,7 @@ class SchemaGenerator
      *
      * @return bool
      */
-    protected function canSkipMFA()
+    public function canSkipMFA()
     {
         if ($this->isMFARequired()) {
             return false;

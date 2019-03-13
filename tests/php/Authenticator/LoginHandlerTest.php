@@ -7,6 +7,7 @@ use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\FunctionalTest;
 use SilverStripe\MFA\Authenticator\MemberAuthenticator;
+use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\MethodRegistry;
@@ -14,6 +15,7 @@ use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
+use SilverStripe\SiteConfig\SiteConfig;
 
 class LoginHandlerTest extends FunctionalTest
 {
@@ -37,6 +39,7 @@ class LoginHandlerTest extends FunctionalTest
 
     public function testMFAStepIsAdded()
     {
+        /** @var Member|MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'guy');
 
         $this->autoFollowRedirection = false;
@@ -51,6 +54,7 @@ class LoginHandlerTest extends FunctionalTest
     {
         Config::modify()->set(MethodRegistry::class, 'methods', []);
 
+        /** @var Member|MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'guy');
 
         // Ensure a URL is set to redirect to after successful login
@@ -77,6 +81,7 @@ class LoginHandlerTest extends FunctionalTest
     public function testMFASchemaEndpointReturnsMethodDetails()
     {
         // "Guy" isn't very security conscious - he has no MFA methods set up
+        /** @var Member|MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'guy');
         $this->scaffoldPartialLogin($member);
 
@@ -107,6 +112,7 @@ class LoginHandlerTest extends FunctionalTest
     public function testMFASchemaEndpointShowsRegisteredMethodsIfSetUp()
     {
         // "Simon" is security conscious - he uses the cutting edge MFA methods
+        /** @var Member|MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'simon');
         $this->scaffoldPartialLogin($member);
 
@@ -135,6 +141,7 @@ class LoginHandlerTest extends FunctionalTest
     public function testMFASchemaEndpointProvidesDefaultMethodIfSet()
     {
         // "Robbie" is security conscious and is also a CMS expert! He set up MFA and set a default method :o
+        /** @var Member|MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'robbie');
         $this->scaffoldPartialLogin($member);
 
@@ -152,6 +159,54 @@ class LoginHandlerTest extends FunctionalTest
         /** @var RegisteredMethod $mathMethod */
         $mathMethod = $this->objFromFixture(RegisteredMethod::class, 'robbie-math');
         $this->assertSame($mathMethod->getMethod()->getURLSegment(), $response['defaultMethod']);
+    }
+
+    /**
+     * @param bool $mfaRequired
+     * @dataProvider cannotSkipMFAProvider
+     */
+    public function testCannotSkipMFA($mfaRequired)
+    {
+        $this->setSiteConfig(['MFARequired' => $mfaRequired]);
+
+        /** @var Member|MemberExtension $member */
+        $this->logInAs('robbie');
+
+        $response = $this->get('Security/login/default/mfa/skip');
+        $result = json_decode($response->getBody(), true);
+
+        $this->assertSame(403, $response->getStatusCode());
+        $this->assertArrayHasKey('errors', $result);
+        $this->assertContains('You cannot skip MFA registration', $result['errors']);
+    }
+
+    /**
+     * @return array[]
+     */
+    public function cannotSkipMFAProvider()
+    {
+        return [
+            'mfa is required' => [false],
+            'mfa is not required, but user already has configured methods' => [false],
+        ];
+    }
+
+    public function testSkipRegistration()
+    {
+        $this->setSiteConfig(['MFARequired' => false]);
+
+        $member = new Member();
+        $member->FirstName = 'Some new';
+        $member->Surname = 'member';
+        $memberId = $member->write();
+        $this->logInAs($member);
+
+        $response = $this->get('Security/login/default/mfa/skip');
+
+        $this->assertSame(200, $response->getStatusCode());
+
+        $member = Member::get()->byID($memberId);
+        $this->assertTrue((bool)$member->HasSkippedMFARegistration);
     }
 
     /**
@@ -189,5 +244,17 @@ class LoginHandlerTest extends FunctionalTest
                 'action_doLogin' => 1,
             )
         );
+    }
+
+    /**
+     * Helper method for changing the current SiteConfig values
+     *
+     * @param array $data
+     */
+    protected function setSiteConfig(array $data)
+    {
+        $siteConfig = SiteConfig::current_site_config();
+        $siteConfig->update($data);
+        $siteConfig->write();
     }
 }
