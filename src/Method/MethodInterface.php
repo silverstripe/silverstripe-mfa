@@ -3,6 +3,7 @@ namespace SilverStripe\MFA\Method;
 
 use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
+use SilverStripe\MFA\State\AvailableMethodDetailsInterface;
 
 /**
  * Defines an Authentication Method, which serves as an additional factor for authentication beyond the standard
@@ -30,4 +31,9 @@ interface MethodInterface
      * @return RegisterHandlerInterface
      */
     public function getRegisterHandler();
+
+    /**
+     * @return AvailableMethodDetailsInterface
+     */
+    public function getDetails();
 }

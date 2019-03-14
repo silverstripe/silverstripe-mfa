@@ -6,6 +6,7 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
+use SilverStripe\MFA\State\AvailableMethodDetailsInterface;
 
 class Method implements MethodInterface
 {
@@ -55,5 +56,10 @@ class Method implements MethodInterface
     public function getRegisterHandler()
     {
         return Injector::inst()->create(RegisterHandler::class);
+    }
+
+    public function getDetails()
+    {
+        return Injector::inst()->create(AvailableMethodDetailsInterface::class, $this);
     }
 }

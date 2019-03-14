@@ -5,6 +5,8 @@ namespace SilverStripe\MFA\Service;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\MFA\Extension\MemberExtension;
+use SilverStripe\MFA\State\AvailableMethodDetailsInterface;
+use SilverStripe\MFA\State\RegisteredMethodDetailsInterface;
 use SilverStripe\Security\Member;
 
 /**
@@ -28,7 +30,9 @@ class SchemaGenerator
         $registeredMethods = $this->getRegisteredMethods($member);
 
         // Skip registration details if the user has already registered this method
-        $exclude = array_column($registeredMethods, 'urlSegment');
+        $exclude = array_map(function (RegisteredMethodDetailsInterface $methodDetails) {
+            return $methodDetails->getURLSegment();
+        }, $registeredMethods);
 
         $schema = [
             'registeredMethods' => $registeredMethods,
@@ -47,23 +51,14 @@ class SchemaGenerator
      * Get a list of methods registered to the user
      *
      * @param Member&MemberExtension $member
-     * @return array[]
+     * @return RegisteredMethodDetailsInterface[]
      */
     protected function getRegisteredMethods(Member $member)
     {
-        $registeredMethods = $member->RegisteredMFAMethods();
-
-        // Generate a map of URL Segments to 'lead in labels', which are used to describe the method in the login UI
         $registeredMethodDetails = [];
-        foreach ($registeredMethods as $registeredMethod) {
-            $method = $registeredMethod->getMethod();
-
-            $registeredMethodDetails[] = [
-                'urlSegment' => $method->getURLSegment(),
-                'leadInLabel' => $method->getLoginHandler()->getLeadInLabel()
-            ];
+        foreach ($member->RegisteredMFAMethods() as $registeredMethod) {
+            $registeredMethodDetails[] = $registeredMethod->getDetails();
         }
-
         return $registeredMethodDetails;
     }
 
@@ -72,7 +67,7 @@ class SchemaGenerator
      * $exclude
      *
      * @param array $exclude
-     * @return array[]
+     * @return AvailableMethodDetailsInterface[]
      */
     protected function getAvailableMethods(array $exclude = [])
     {
@@ -87,15 +82,7 @@ class SchemaGenerator
             if (in_array($method->getURLSegment(), $exclude)) {
                 continue;
             }
-
-            $registerHandler = $method->getRegisterHandler();
-
-            $availableMethods[] = [
-                'urlSegment' => $method->getURLSegment(),
-                'name' => $registerHandler->getName(),
-                'description' => $registerHandler->getDescription(),
-                'supportLink' => $registerHandler->getSupportLink(),
-            ];
+            $availableMethods[] = $method->getDetails();
         }
 
         return $availableMethods;

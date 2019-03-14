@@ -5,6 +5,7 @@ use SilverStripe\Dev\TestOnly;
 use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
+use SilverStripe\MFA\State\AvailableMethodDetails;
 
 class Method implements MethodInterface, TestOnly
 {
@@ -36,5 +37,10 @@ class Method implements MethodInterface, TestOnly
     public function getRegisterHandler()
     {
         return new MethodRegisterHandler();
+    }
+
+    public function getDetails()
+    {
+        return new AvailableMethodDetails($this);
     }
 }
