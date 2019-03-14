@@ -3,6 +3,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { loadComponent } from 'lib/Injector';
+import registeredMethodType from 'types/registeredMethod';
 
 class Login extends Component {
   constructor(props) {
@@ -249,12 +250,15 @@ class Login extends Component {
 }
 
 Login.propTypes = {
+  // Endpoints that this app uses to communicate with the server
   endpoints: PropTypes.shape({
     login: PropTypes.string.isRequired,
     register: PropTypes.string,
   }),
-  registeredMethods: PropTypes.arrayOf(PropTypes.object),
-  defaultMethod: PropTypes.object,
+  // An array of registered method definition objects
+  registeredMethods: PropTypes.arrayOf(registeredMethodType),
+  // The URL segment of the method to be used as default
+  defaultMethod: PropTypes.string,
 };
 
 export default Login;

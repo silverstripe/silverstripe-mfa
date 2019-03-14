@@ -17,12 +17,11 @@ class MultiFactorApp extends Component {
   }
 
   componentDidMount() {
-    const thisComponent = this;
     const { schemaURL } = this.props;
     return fetch(schemaURL)
       .then(response => response.json())
       .then(schemaData =>
-        thisComponent.setState({
+        this.setState({
           schema: schemaData
         })
       );

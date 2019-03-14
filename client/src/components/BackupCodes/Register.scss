@@ -3,7 +3,7 @@
     display: inline-grid;
     grid-template-columns: auto auto auto;
 
-    border: 1px dashed #aaaaaa;
+    border: 1px dashed $gray-300;
     font-weight: bold;
 
     > div {

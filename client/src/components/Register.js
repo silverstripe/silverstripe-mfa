@@ -3,6 +3,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { loadComponent } from 'lib/Injector';
+import availableMethodType from 'types/availableMethod';
+
 
 class Register extends Component {
   constructor(props) {
@@ -191,12 +193,7 @@ class Register extends Component {
 }
 
 Register.propTypes = {
-  availableMethods: PropTypes.arrayOf(PropTypes.shape({
-    urlSegment: PropTypes.string,
-    name: PropTypes.string,
-    description: PropTypes.string,
-    supportLink: PropTypes.string,
-  })),
+  availableMethods: PropTypes.arrayOf(availableMethodType),
   endpoints: PropTypes.shape({
     register: PropTypes.string.isRequired,
   })
