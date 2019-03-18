@@ -2,8 +2,9 @@
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { loadComponent } from 'lib/Injector';
+import { loadComponent } from 'lib/Injector'; // eslint-disable-line
 import registeredMethodType from 'types/registeredMethod';
+import LoadingIndicator from 'components/LoadingIndicator';
 
 class Login extends Component {
   constructor(props) {
@@ -98,10 +99,10 @@ class Login extends Component {
 
     // "start" a login
     fetch(endpoint).then(response => response.json().then(result => {
-      this.setState(() => ({
+      this.setState({
         loading: false,
         loginProps: result,
-      }));
+      });
     }));
   }
 
@@ -251,7 +252,7 @@ class Login extends Component {
           className="mfa-login__other-methods-back"
           onClick={this.handleHideOtherMethodsPane}
         >
-          Back
+          {i18n._t('MFALogin.BACK', 'Back')}
         </button>
       </div>
     );
@@ -285,14 +286,14 @@ class Login extends Component {
     const { loading, selectedMethod, showOtherMethods } = this.state;
 
     if (loading) {
-      return <div className="mfa__loader" />;
+      return <LoadingIndicator />;
     }
 
-    if (showOtherMethods || !selectedMethod) {
-      return this.renderOtherMethods();
+    if (selectedMethod && !showOtherMethods) {
+      return this.renderSelectedMethod();
     }
 
-    return this.renderSelectedMethod();
+    return this.renderOtherMethods();
   }
 }
 

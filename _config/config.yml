@@ -14,9 +14,3 @@ name: mfa-memberextension
 SilverStripe\Security\Member:
   extensions:
     mfaExtension: SilverStripe\MFA\Extension\MemberExtension
----
-name: MFABackupCodeAuthenticator
----
-SilverStripe\MFA\Service\MethodRegistry:
-  methods:
-    backupCodes: SilverStripe\MFA\BackupCode\Method

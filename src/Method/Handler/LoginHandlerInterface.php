@@ -9,7 +9,7 @@ use SilverStripe\MFA\Store\StoreInterface;
  * Represents the base requirements for implementing an MFA Method's LoginHandlerInterface, which has the responsibility
  * of initiating and verifying login attempts for the MFA Method in question.
  */
-interface LoginHandlerInterface extends UIComponentProviderInterface
+interface LoginHandlerInterface
 {
     /**
      * Stores any data required to handle a login process with a method, and returns relevant state to be applied to the
@@ -40,4 +40,11 @@ interface LoginHandlerInterface extends UIComponentProviderInterface
      * @return string
      */
     public function getLeadInLabel();
+
+    /**
+     * Get the key that a React UI component is registered under (with @silverstripe/react-injector on the front-end)
+     *
+     * @return string
+     */
+    public function getComponent();
 }

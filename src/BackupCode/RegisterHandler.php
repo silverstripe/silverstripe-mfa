@@ -136,7 +136,7 @@ class RegisterHandler implements RegisterHandlerInterface
      */
     public function getSupportLink()
     {
-        return static::config()->get('user_help_link') ?: '';
+        return (string) $this->config()->get('user_help_link');
     }
 
     /**

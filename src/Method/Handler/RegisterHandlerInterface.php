@@ -9,7 +9,7 @@ use SilverStripe\MFA\Store\StoreInterface;
  * Represents the base requirements for implementing an MFA Method's RegisterHandler, which has the responsibility
  * of initiating and managing registration of the MFA Method in question against the current Member.
  */
-interface RegisterHandlerInterface extends UIComponentProviderInterface
+interface RegisterHandlerInterface
 {
     /**
      * Stores any data required to handle a registration process with a method, and returns relevant state to be applied
@@ -56,4 +56,11 @@ interface RegisterHandlerInterface extends UIComponentProviderInterface
      * @return string
      */
     public function getSupportLink();
+
+    /**
+     * Get the key that a React UI component is registered under (with @silverstripe/react-injector on the front-end)
+     *
+     * @return string
+     */
+    public function getComponent();
 }

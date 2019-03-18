@@ -169,7 +169,7 @@ class Register extends Component {
   /**
    * Render the "copy" action. A link allowing the user to easily copy the backup codes to clipboard
    *
-   * @return {HTMLElement}
+   * @return {CopyToClipboard}
    */
   renderCopyAction() {
     const { codes } = this.props;

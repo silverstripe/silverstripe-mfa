@@ -2,6 +2,7 @@
 
 namespace SilverStripe\MFA\BackupCode;
 
+use RuntimeException;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
@@ -34,6 +35,13 @@ class LoginHandler implements LoginHandlerInterface
     public function verify(HTTPRequest $request, StoreInterface $store, RegisteredMethod $registeredMethod)
     {
         $bodyJSON = json_decode($request->getBody(), true);
+
+        if (!isset($bodyJSON['code'])) {
+            throw new RuntimeException(
+                'Verification of backup codes requires the code to be provided but it was not given'
+            );
+        }
+
         $code = $bodyJSON['code'];
 
         $candidates = json_decode($registeredMethod->Data, true);

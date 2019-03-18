@@ -18,7 +18,7 @@ class Login extends Component {
   /**
    * Handle a change to the backup code input
    *
-   * @param event
+   * @param {Event} event
    */
   handleChange(event) {
     this.setState({
@@ -29,7 +29,7 @@ class Login extends Component {
   /**
    * Handle pressing the "next" button after entering a backup code
    *
-   * @param event
+   * @param {Event} event
    */
   handleCompleteLogin(event) {
     event.preventDefault();
@@ -42,7 +42,7 @@ class Login extends Component {
   /**
    * Render the next button and any controls that are passed down from the parent
    *
-   * @return {*}
+   * @return {HTMLElement}
    */
   renderControls() {
     const { moreOptionsControl } = this.props;

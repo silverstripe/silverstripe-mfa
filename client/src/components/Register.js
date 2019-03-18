@@ -2,9 +2,9 @@
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { loadComponent } from 'lib/Injector';
+import { loadComponent } from 'lib/Injector'; // eslint-disable-line
 import availableMethodType from 'types/availableMethod';
-
+import LoadingIndicator from 'components/LoadingIndicator';
 
 class Register extends Component {
   constructor(props) {
@@ -62,6 +62,8 @@ class Register extends Component {
   /**
    * Provided to individual method components to be called when the registration process is
    * completed
+   *
+   * @param {object} registrationData
    */
   handleCompleteRegistration(registrationData) {
     // Clear out the register props now - any process that returns the user to the register screen
@@ -106,7 +108,7 @@ class Register extends Component {
 
     // Render loading if we don't have props yet...
     if (!registerProps) {
-      return <div className="mfa__loader" />;
+      return <LoadingIndicator />;
     }
 
     const RegistrationComponent = loadComponent(selectedMethod.component);
@@ -126,7 +128,7 @@ class Register extends Component {
   /**
    * Get the support link as a "target=_blank" anchor tag from the given method (if one is set)
    *
-   * @param method
+   * @param {object} method
    * @return {HTMLElement|null}
    */
   renderSupportLink(method) {

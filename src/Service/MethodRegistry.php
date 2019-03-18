@@ -6,7 +6,6 @@ use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\MFA\Extension\MemberExtension;
-use SilverStripe\MFA\Method\Handler\UIComponentProviderInterface;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\Security\Member;

@@ -2,8 +2,10 @@
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Login from '../components/Login';
-import Register from '../components/Register';
+import Login from 'components/Login';
+import Register from 'components/Register';
+import LoadingIndicator from 'components/LoadingIndicator';
+
 
 class MultiFactorApp extends Component {
   constructor(props) {
@@ -54,7 +56,7 @@ class MultiFactorApp extends Component {
         throw new Error('Could not read configuration schema to load MFA interface');
       }
 
-      return <div className="mfa__loader" />;
+      return <LoadingIndicator />;
     }
 
     const { registeredMethods } = schema;

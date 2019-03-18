@@ -387,7 +387,7 @@ class LoginHandler extends BaseLoginHandler
         if (!$this->isLoginComplete($request)) {
             return $this->jsonResponse([
                 'message' => 'Additional authentication required',
-            ], 200);
+            ], 202);
         }
 
         // Load the previously stored data from session and perform the login using it...
