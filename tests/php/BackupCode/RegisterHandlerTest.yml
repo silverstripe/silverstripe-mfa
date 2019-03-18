@@ -1,0 +1,5 @@
+SilverStripe\Security\Member:
+  guy:
+    Email: guy@example.com
+    Password: Password123
+    PasswordExpiry: 2030-01-01

@@ -28,9 +28,9 @@
     eslint-plugin-jsx-a11y "^5.1.1"
     eslint-plugin-react "^7.3.0"
 
-"@silverstripe/react-injector@git://github.com/creative-commoners/react-injector.git#pulls/1.0/downgrade-webpack":
-  version "0.1.1"
-  resolved "git://github.com/creative-commoners/react-injector.git#ceabfb5ebc3b77c1c8c6090ada3b4e0587e6ee7e"
+"@silverstripe/react-injector@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@silverstripe/react-injector/-/react-injector-0.1.2.tgz#36e704da8cb893a5981b60ae3e42d1a0d3acb7be"
   dependencies:
     classnames "^2.2.6"
     merge "^1.2.1"
