@@ -24,7 +24,7 @@ const config = [
     name: 'js',
     entry: {
       bundle: `${PATHS.SRC}/bundles/bundle.js`,
-      injector: `${PATHS.ROOT}/node_modules/@silverstripe/react-injector/dist/injector.js`,
+      injector: `${PATHS.MODULES}/@silverstripe/react-injector/dist/injector.js`,
     },
     output: {
       path: PATHS.DIST,
