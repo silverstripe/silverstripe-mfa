@@ -13,10 +13,13 @@ class Login extends Component {
       selectedMethod: null,
       loginProps: null,
       message: null,
+      showOtherMethods: false,
     };
 
     this.handleCompleteLogin = this.handleCompleteLogin.bind(this);
     this.handleShowOtherMethodsPane = this.handleShowOtherMethodsPane.bind(this);
+    this.handleHideOtherMethodsPane = this.handleHideOtherMethodsPane.bind(this);
+    this.handleClickOtherMethod = this.handleClickOtherMethod.bind(this);
   }
 
   componentDidMount() {
@@ -59,6 +62,8 @@ class Login extends Component {
   setSelectedMethod(method) {
     this.setState({
       selectedMethod: method,
+      // When a method is chosen we'll assume the "select other method" screen is not relevant now
+      showOtherMethods: false,
     });
   }
 
@@ -70,6 +75,10 @@ class Login extends Component {
   getOtherMethods() {
     const { registeredMethods } = this.props;
     const { selectedMethod } = this.state;
+
+    if (!selectedMethod) {
+      return registeredMethods;
+    }
 
     return registeredMethods.filter(method => method.urlSegment !== selectedMethod.urlSegment);
   }
@@ -149,8 +158,42 @@ class Login extends Component {
    * @param {Event} event
    */
   handleShowOtherMethodsPane(event) {
-    // TODO
     event.preventDefault();
+
+    this.setState({
+      showOtherMethods: true,
+    });
+  }
+
+  /**
+   * Handle a click on a "More options" link to show other methods that have been registered
+   *
+   * @param {Event} event
+   */
+  handleHideOtherMethodsPane(event) {
+    event.preventDefault();
+
+    this.setState({
+      showOtherMethods: false,
+    });
+  }
+
+  /**
+   * Handle a click event on a button that will set the selected method of this login component. The
+   * method specified should be the value of the target of the event (ie. the value of the button)
+   *
+   * @param {Event} event
+   */
+  handleClickOtherMethod(event) {
+    event.preventDefault();
+    const method = event.target && event.target.value;
+    const { registeredMethods } = this.props;
+
+    if (method) {
+      this.setSelectedMethod(
+        registeredMethods.find(methodSpec => methodSpec.urlSegment === method)
+      );
+    }
   }
 
   /**
@@ -163,6 +206,7 @@ class Login extends Component {
     const otherMethods = this.getOtherMethods();
     const { ss: { i18n } } = window;
 
+    // There shouldn't be a control if there are no other methods to choose from
     if (!Array.isArray(otherMethods) || !otherMethods.length) {
       return null;
     }
@@ -184,17 +228,15 @@ class Login extends Component {
     const otherMethods = this.getOtherMethods();
     const { ss: { i18n } } = window;
 
-    if (!Array.isArray(otherMethods) || !otherMethods.length) {
-      return null;
-    }
-
     return (
-      <div>
+      <div className="mfa-login__other-methods">
         <h2>{i18n._t('MFALogin.OTHER_METHODS_TITLE', 'Try another way to verify')}</h2>
         <ul>
           {otherMethods.map(method => (
             <li key={method.urlSegment}>
-              <button onClick={() => this.setSelectedMethod(method)}>{method.name}</button>
+              <button onClick={this.handleClickOtherMethod} value={method.urlSegment}>
+                {method.name}
+              </button>
             </li>
           ))}
         </ul>
@@ -205,6 +247,12 @@ class Login extends Component {
               'be reset'
           )}
         </p>
+        <button
+          className="mfa-login__other-methods-back"
+          onClick={this.handleHideOtherMethodsPane}
+        >
+          Back
+        </button>
       </div>
     );
   }
@@ -234,15 +282,14 @@ class Login extends Component {
   }
 
   render() {
-    const { loading, selectedMethod } = this.state;
+    const { loading, selectedMethod, showOtherMethods } = this.state;
 
     if (loading) {
       return <div className="mfa__loader" />;
     }
 
-    if (!selectedMethod) {
-      // TODO What here?
-      return '';
+    if (showOtherMethods || !selectedMethod) {
+      return this.renderOtherMethods();
     }
 
     return this.renderSelectedMethod();
