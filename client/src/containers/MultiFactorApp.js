@@ -1,8 +1,11 @@
+/* global window */
+
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Authenticate from '../components/Authenticate';
-import Register from '../components/Register';
-import fetch from 'isomorphic-fetch';
+import Login from 'components/Login';
+import Register from 'components/Register';
+import LoadingIndicator from 'components/LoadingIndicator';
+
 
 class MultiFactorApp extends Component {
   constructor(props) {
@@ -11,18 +14,25 @@ class MultiFactorApp extends Component {
       schema: null,
       schemaLoaded: false,
     };
+
+    this.handleCompleteLogin = this.handleCompleteLogin.bind(this);
   }
 
   componentDidMount() {
-    const thisComponent = this;
     const { schemaURL } = this.props;
     return fetch(schemaURL)
       .then(response => response.json())
       .then(schemaData =>
-        thisComponent.setState({
+        this.setState({
           schema: schemaData
         })
       );
+  }
+
+  handleCompleteLogin() {
+    const { schema: { endpoints: { complete } } } = this.state;
+
+    window.location = complete;
   }
 
   /**
@@ -39,33 +49,27 @@ class MultiFactorApp extends Component {
    * 3. schema, member, login: show more authentication factors
    */
   render() {
-    const { id } = this.props;
     const { schema, schemaLoaded } = this.state;
 
     if (!schema) {
       if (schemaLoaded) {
         throw new Error('Could not read configuration schema to load MFA interface');
       }
-      // TODO: <Loading /> ?
-      return null;
+
+      return <LoadingIndicator />;
     }
 
-    const { login } = schema;
+    const { registeredMethods } = schema;
 
-    if (!login) {
+    if (!registeredMethods.length) {
       return <Register {...schema} />;
     }
 
-    return (
-      <div id={id}>
-        <Authenticate {...schema} />
-      </div>
-    );
+    return <Login {...schema} onCompleteLogin={this.handleCompleteLogin} />;
   }
 }
 
 MultiFactorApp.propTypes = {
-  id: PropTypes.string,
   schemaURL: PropTypes.string
 };
 

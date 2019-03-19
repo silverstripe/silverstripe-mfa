@@ -5,14 +5,27 @@ namespace SilverStripe\MFA\BackupCode;
 use Exception;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Extensible;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
-use SilverStripe\MFA\Model\RegisteredMethod;
+use SilverStripe\MFA\Method\MethodInterface;
+use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Store\StoreInterface;
 
 class RegisterHandler implements RegisterHandlerInterface
 {
     use Extensible;
+    use Configurable;
+
+    /**
+     * Provide a user help link that will be available when registering backup codes
+     * TODO Will this have a user help link as a default?
+     *
+     * @config
+     * @var string
+     */
+    private static $user_help_link;
 
     /**
      * Stores any data required to handle a registration process with a method, and returns relevant state to be applied
@@ -35,10 +48,9 @@ class RegisterHandler implements RegisterHandlerInterface
             do {
                 $code = '';
                 // We can only generate 9 digits at a time on 32 bit systems
-                for ($j = 0; $j < $codeLength; $j += 9) {
-                    $code .= str_pad((string) random_int(0, 999999999), 9, '0', STR_PAD_LEFT);
+                for ($j = 0; $j < $codeLength; $j++) {
+                    $code .= (string) random_int(0, 9);
                 }
-                $code = substr($code, 0, $codeLength);
             } while (in_array($code, $codes));
             $codes[] = $code;
         }
@@ -48,8 +60,15 @@ class RegisterHandler implements RegisterHandlerInterface
         // Create hashes for these codes
         $hashedCodes = array_map([$this, 'hashCode'], $codes);
 
-        $store->setState($hashedCodes);
+        // Create or update the RegisteredMethod on the member. This breaks the normal flow as it's created on "start"
+        // instead of after receiving a response from the user
 
+        /** @var MethodInterface $method */
+        $method = Injector::inst()->get(Method::class);
+
+        RegisteredMethodManager::singleton()->registerForMember($store->getMember(), $method, $hashedCodes);
+
+        // Return unhashed codes for the front-end UI
         return [
             'codes' => $codes,
         ];
@@ -64,7 +83,8 @@ class RegisterHandler implements RegisterHandlerInterface
      */
     public function register(HTTPRequest $request, StoreInterface $store)
     {
-        return $store->getState();
+        // Backup codes are unique where no confirmation or user input is required. The method is registered on "start"
+        return [];
     }
 
     /**
@@ -76,7 +96,7 @@ class RegisterHandler implements RegisterHandlerInterface
      */
     public function getName()
     {
-        return _t(__CLASS__ . '.NAME', 'Backup codes');
+        return _t(__CLASS__ . '.NAME', 'Backup recovery codes');
     }
 
     /**
@@ -91,8 +111,8 @@ class RegisterHandler implements RegisterHandlerInterface
         return _t(
             __CLASS__ . '.DESCRIPTION',
             'Recovery codes enable you to log into your account in the event your primary authentication is not '
-            . 'available. Each code can only be used once.' . PHP_EOL . PHP_EOL . 'Please store these codes somewhere '
-            . 'safe, as they will not be viewable after this leaving this page.'
+            . 'available. Each code can only be used once. Store these codes somewhere safe, as they will not be '
+            . 'viewable after this leaving this page.'
         );
     }
 
@@ -103,7 +123,7 @@ class RegisterHandler implements RegisterHandlerInterface
      */
     public function getSupportLink()
     {
-        return ''; // TODO Will this have a user help link?
+        return (string) $this->config()->get('user_help_link');
     }
 
     /**
@@ -116,5 +136,15 @@ class RegisterHandler implements RegisterHandlerInterface
     protected function hashCode($code)
     {
         return password_hash($code, PASSWORD_DEFAULT);
+    }
+
+    /**
+     * Get the key that a React UI component is registered under (with @silverstripe/react-injector on the front-end)
+     *
+     * @return string
+     */
+    public function getComponent()
+    {
+        return 'BackupCodeRegister';
     }
 }

@@ -66,7 +66,7 @@ class LoginHandlerTest extends SapphireTest
 
         /** @var HTTPRequest|PHPUnit_Framework_MockObject_MockObject $request */
         $request = $this->createMock(HTTPRequest::class);
-        $request->expects($this->once())->method('param')->with('code')->willReturn($userInput);
+        $request->expects($this->once())->method('getBody')->willReturn("{\"code\":\"{$userInput}\"}");
 
         /** @var StoreInterface|PHPUnit_Framework_MockObject_MockObject $store */
         $store = $this->createMock(StoreInterface::class);

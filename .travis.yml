@@ -45,5 +45,5 @@ script:
   - if [[ $NPM_TEST ]]; then yarn run lint; fi
 
 after_success:
-  - if [[ $PHPUNIT_COVERAGE_TEST ]]; then bash <(curl -s https://codecov.io/bash) -f coverage.xml; fi
+  - if [[ $PHPUNIT_COVERAGE_TEST ]]; then bash <(curl -s https://codecov.io/bash) -f coverage.xml -F php; fi
   - if [[ $NPM_TEST ]]; then bash <(curl -s https://codecov.io/bash) -F js; fi

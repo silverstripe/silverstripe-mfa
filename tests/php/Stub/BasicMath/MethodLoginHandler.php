@@ -67,4 +67,14 @@ class MethodLoginHandler implements LoginHandlerInterface, TestOnly
     {
         return 'Verify by solving a complex math problem';
     }
+
+    /**
+     * Get the key that a React UI component is registered under (with @silverstripe/react-injector on the front-end)
+     *
+     * @return string
+     */
+    public function getComponent()
+    {
+        return 'N/A';
+    }
 }

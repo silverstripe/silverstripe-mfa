@@ -1,0 +1,23 @@
+.mfa-register-backup-codes {
+  &__code-grid {
+    display: inline-grid;
+    grid-template-columns: auto auto auto;
+
+    border: 1px dashed $gray-300;
+    font-weight: bold;
+
+    > div {
+      margin: 10px;
+    }
+  }
+
+  &__helper-links {
+    a + a {
+      margin-left: 20px;
+    }
+  }
+
+  &__container > div {
+    margin-bottom: 10px;
+  }
+}

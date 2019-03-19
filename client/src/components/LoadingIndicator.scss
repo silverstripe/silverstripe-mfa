@@ -1,0 +1,46 @@
+.mfa {
+  &__loader {
+    &, &:after {
+      border-radius: 50%;
+      width: $loading-indicator-size;
+      height: $loading-indicator-size;
+    }
+
+    margin: 60px auto;
+    font-size: $font-size-small;
+    position: relative;
+    text-indent: -9999em;
+    border: $loading-indicator-border;
+    border-left: $loading-indicator-border-size solid $brand-primary;
+    -webkit-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-animation: $loading-indicator-animation;
+    animation: $loading-indicator-animation;
+  }
+
+  &__controls {
+    margin-top: 3em;
+  }
+}
+
+@-webkit-keyframes spinner-loader {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes spinner-loader {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}

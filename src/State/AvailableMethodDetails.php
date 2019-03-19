@@ -42,6 +42,11 @@ class AvailableMethodDetails implements AvailableMethodDetailsInterface
         return $this->method->getRegisterHandler()->getSupportLink();
     }
 
+    public function getComponent()
+    {
+        return $this->method->getRegisterHandler()->getComponent();
+    }
+
     public function jsonSerialize()
     {
         return [
@@ -49,6 +54,7 @@ class AvailableMethodDetails implements AvailableMethodDetailsInterface
             'name' => $this->getName(),
             'description' => $this->getDescription(),
             'supportLink' => $this->getSupportLink(),
+            'component' => $this->getComponent(),
         ];
     }
 }

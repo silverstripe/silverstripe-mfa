@@ -6,9 +6,9 @@ use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\MFA\Exception\MemberNotFoundException;
 use SilverStripe\MFA\Extension\MemberExtension;
-use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\MFA\Service\MethodRegistry;
+use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Service\SchemaGenerator;
 use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\ORM\ValidationResult;
@@ -28,6 +28,7 @@ class LoginHandler extends BaseLoginHandler
         'GET mfa/skip' => 'skipRegistration', // Allows the user to skip MFA registration
         'GET mfa/login/$Method' => 'startLogin', // Initiates login process for $Method
         'POST mfa/login/$Method' => 'verifyLogin', // Verifies login via $Method
+        'GET mfa/complete' => 'redirectAfterSuccessfulLogin',
         'GET mfa' => 'mfa', // Renders the MFA Login Page to init the app
     ];
 
@@ -39,6 +40,7 @@ class LoginHandler extends BaseLoginHandler
         'skipRegistration',
         'startLogin',
         'verifyLogin',
+        'redirectAfterSuccessfulLogin',
     ];
 
     /**
@@ -87,10 +89,14 @@ class LoginHandler extends BaseLoginHandler
      * Action handler for loading the MFA authentication React app
      * Template variables defined here will be used by the rendering controller's template - normally Page.ss
      *
-     * @return array template variables {@see SilverStripe\Security\Security::renderWrappedController}
+     * @return array|HTTPResponse template variables {@see SilverStripe\Security\Security::renderWrappedController}
      */
     public function mfa()
     {
+        if (!$this->getSessionStore()->getMember()) {
+            return $this->redirectBack();
+        }
+
         return [
             'Form' => $this->renderWith($this->getViewerTemplates()),
         ];
@@ -99,14 +105,23 @@ class LoginHandler extends BaseLoginHandler
     /**
      * Provides information about the current Member's MFA state
      *
+     * @param HTTPRequest $request
      * @return HTTPResponse
      */
-    public function getSchema()
+    public function getSchema(HTTPRequest $request)
     {
         try {
             $member = $this->getMember();
             $schema = SchemaGenerator::create()->getSchema($member);
-            return $this->jsonResponse($schema);
+            return $this->jsonResponse(
+                $schema + [
+                    'endpoints' => [
+                        'register' => $this->Link('mfa/register/{urlSegment}'),
+                        'login' => $this->Link('mfa/login/{urlSegment}'),
+                        'complete' => $this->Link('mfa/complete'),
+                    ],
+                ]
+            );
         } catch (MemberNotFoundException $exception) {
             // If we don't have a valid member we shouldn't be here...
             return $this->redirectBack();
@@ -142,7 +157,7 @@ class LoginHandler extends BaseLoginHandler
 
         $method = $this->getMethodRegistry()->getMethodByURLSegment($request->param('Method'));
 
-        if (is_null($method)) {
+        if ($method === null) {
             return $this->jsonResponse(
                 ['errors' => [_t(__CLASS__ . '.INVALID_METHOD', 'No such method is available')]],
                 400
@@ -153,10 +168,7 @@ class LoginHandler extends BaseLoginHandler
         $member = $sessionMember ?: $loggedInMember;
 
         // Sanity check that the method hasn't already been registered
-        $existingRegisteredMethod = $this->getMethodRegistry()->getRegisteredMethodFromMember(
-            $member,
-            $method->getURLSegment()
-        );
+        $existingRegisteredMethod = $this->getRegisteredMethodManager()->getFromMember($member, $method);
 
         if ($existingRegisteredMethod) {
             return $this->jsonResponse(
@@ -173,7 +185,7 @@ class LoginHandler extends BaseLoginHandler
         }
 
         // Mark the given method as started within the session
-        $sessionStore->setMethod(get_class($method));
+        $sessionStore->setMethod($method->getURLSegment());
         // Allow the registration handler to begin the process and generate some data to pass through to the front-end
         $data = $method->getRegisterHandler()->start($sessionStore);
         // Ensure details are saved to the session
@@ -222,7 +234,14 @@ class LoginHandler extends BaseLoginHandler
         $registrationHandler = $method->getRegisterHandler();
 
         try {
-            $data = $registrationHandler->register($request, $sessionStore);
+            $this->getRegisteredMethodManager()
+                ->registerForMember(
+                    $sessionMember,
+                    $method,
+                    $registrationHandler->register($request, $sessionStore)
+                );
+
+            return $this->jsonResponse(['success' => true], 201);
         } catch (Exception $e) {
             return $this->jsonResponse(
                 ['errors' => [
@@ -232,17 +251,6 @@ class LoginHandler extends BaseLoginHandler
                 400
             );
         }
-
-        // Create the RegisteredMethod object
-        $registeredMethod = RegisteredMethod::create([
-            'MethodClassName' => get_class($method),
-            'Data' => json_encode($data),
-        ]);
-
-        // Add it to the member
-        $sessionStore->getMember()->RegisteredMFAMethods()->add($registeredMethod);
-
-        return $this->jsonResponse(['success' => true], 201);
     }
 
     /**
@@ -298,7 +306,7 @@ class LoginHandler extends BaseLoginHandler
 
         // Pull a method to use from the request...
         $specifiedMethod = $request->param('Method');
-        $registeredMethod = $this->getMethodRegistry()->getRegisteredMethodFromMember($member, $specifiedMethod);
+        $registeredMethod = $this->getRegisteredMethodManager()->getFromMember($member, $specifiedMethod);
 
         // ...Or use the default (TODO: Should we have the default as a fallback? Maybe just if no method is specified?)
         if (!$registeredMethod) {
@@ -331,7 +339,7 @@ class LoginHandler extends BaseLoginHandler
         $sessionStore->save($request);
 
         // Respond with our method
-        return $this->jsonResponse($data);
+        return $this->jsonResponse($data ?: []);
     }
 
     /**
@@ -351,18 +359,21 @@ class LoginHandler extends BaseLoginHandler
 
         // Get the member and authenticator ready
         $member = $this->getSessionStore()->getMember();
-        $registeredMethod = $this->getMethodRegistry()->getRegisteredMethodFromMember($member, $method);
+        $registeredMethod = $this->getRegisteredMethodManager()->getFromMember($member, $method);
         $authenticator = $registeredMethod->getLoginHandler();
 
         if (!$authenticator->verify($request, $this->getSessionStore(), $registeredMethod)) {
-            // TODO figure out how to return a message here too.
-            return $this->redirect($this->link('mfa'));
+            return $this->jsonResponse([
+                'message' => 'Invalid credentials',
+            ], 401);
         }
 
         $this->addSuccessfulVerification($request, $method);
 
         if (!$this->isLoginComplete($request)) {
-            return $this->redirect($this->link('mfa'));
+            return $this->jsonResponse([
+                'message' => 'Additional authentication required',
+            ], 202);
         }
 
         // Load the previously stored data from session and perform the login using it...
@@ -371,14 +382,32 @@ class LoginHandler extends BaseLoginHandler
 
         // Clear session...
         SessionStore::clear($request);
-        $request->getSession()->clear(static::SESSION_KEY . '.additionalData');
         $request->getSession()->clear(static::SESSION_KEY . '.successfulMethods');
 
         // Redirecting after successful login expects a getVar to be set
         if (!empty($data['BackURL'])) {
             $request->BackURL = $data['BackURL'];
         }
-        return $this->redirectAfterSuccessfulLogin();
+        return $this->jsonResponse([
+            'message' => 'Access granted',
+        ] + $data, 200);
+    }
+
+    public function redirectAfterSuccessfulLogin()
+    {
+        $request = $this->getRequest();
+
+        // Pull "additional data" about the login from the session before clearing it
+        $data = $request->getSession()->get(static::SESSION_KEY . '.additionalData');
+        $request->getSession()->clear(static::SESSION_KEY . '.additionalData');
+
+        // Redirecting after successful login expects a getVar to be set
+        if (!empty($data['BackURL'])) {
+            $request['BackURL'] = $data['BackURL'];
+        }
+
+        // Delegate to parent logic
+        return parent::redirectAfterSuccessfulLogin();
     }
 
     /**
@@ -463,12 +492,18 @@ class LoginHandler extends BaseLoginHandler
     }
 
     /**
-     * Helper method for getting an instance of a method registry
-     *
      * @return MethodRegistry
      */
     protected function getMethodRegistry()
     {
         return MethodRegistry::singleton();
+    }
+
+    /**
+     * @return RegisteredMethodManager
+     */
+    protected function getRegisteredMethodManager()
+    {
+        return RegisteredMethodManager::singleton();
     }
 }

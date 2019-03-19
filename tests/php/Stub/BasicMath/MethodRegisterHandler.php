@@ -78,4 +78,14 @@ class MethodRegisterHandler implements RegisterHandlerInterface, TestOnly
     {
         return 'https://google.com';
     }
+
+    /**
+     * Get the key that a React UI component is registered under (with @silverstripe/react-injector on the front-end)
+     *
+     * @return string
+     */
+    public function getComponent()
+    {
+        return 'N/A';
+    }
 }

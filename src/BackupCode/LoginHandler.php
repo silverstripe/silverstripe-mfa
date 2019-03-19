@@ -2,6 +2,7 @@
 
 namespace SilverStripe\MFA\BackupCode;
 
+use RuntimeException;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
@@ -33,7 +34,15 @@ class LoginHandler implements LoginHandlerInterface
      */
     public function verify(HTTPRequest $request, StoreInterface $store, RegisteredMethod $registeredMethod)
     {
-        $code = $request->param('code');
+        $bodyJSON = json_decode($request->getBody(), true);
+
+        if (!isset($bodyJSON['code'])) {
+            throw new RuntimeException(
+                'Verification of backup codes requires the code to be provided but it was not given'
+            );
+        }
+
+        $code = $bodyJSON['code'];
 
         $candidates = json_decode($registeredMethod->Data, true);
 
@@ -73,5 +82,15 @@ class LoginHandler implements LoginHandlerInterface
     protected function verifyCode($code, $hash)
     {
         return password_verify($code, $hash);
+    }
+
+    /**
+     * Get the key that a React UI component is registered under (with @silverstripe/react-injector on the front-end)
+     *
+     * @return string
+     */
+    public function getComponent()
+    {
+        return 'BackupCodeLogin';
     }
 }
