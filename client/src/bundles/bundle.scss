@@ -1,7 +1,8 @@
-// Watch this space...
+// Core variables
 @import 'variables';
 
-@import '../containers/MultiFactorApp';
+@import '../styles/mfa-variables';
+@import '../components/LoadingIndicator';
 
 // Backup codes
 @import '../components/BackupCodes/Register';
