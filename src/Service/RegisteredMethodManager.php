@@ -20,14 +20,14 @@ class RegisteredMethodManager
      * method could not be found attached to the Member
      *
      * @param Member&MemberExtension $member
-     * @param string $specifiedMethod The URL segment of the requested method
+     * @param string $methodURLSegment The URL segment of the requested method
      * @return RegisteredMethod|null
      */
-    public function getFromMember(Member $member, $specifiedMethodURLSegment)
+    public function getFromMember(Member $member, $methodURLSegment)
     {
         // Find the actual method registration data object from the member for the specified default authenticator
         foreach ($member->RegisteredMFAMethods() as $method) {
-            if ($method->getMethod()->getURLSegment() === $specifiedMethodURLSegment) {
+            if ($method->getMethod()->getURLSegment() === $methodURLSegment) {
                 return $method;
             }
         }
