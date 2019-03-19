@@ -9,7 +9,6 @@ use SilverStripe\Dev\SapphireTest;
 use SilverStripe\MFA\BackupCode\Method;
 use SilverStripe\MFA\BackupCode\RegisterHandler;
 use SilverStripe\MFA\Extension\MemberExtension;
-use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Store\StoreInterface;
 use SilverStripe\Security\Member;
@@ -23,7 +22,7 @@ class RegisterHandlerTest extends SapphireTest
     {
         /** @var StoreInterface|PHPUnit_Framework_MockObject_MockObject $store */
         $store = $this->createMock(StoreInterface::class);
-        $store->expects($this->exactly(2))->method('getMember')->willReturn(Security::getCurrentUser());
+        $store->expects($this->once())->method('getMember')->willReturn(Security::getCurrentUser());
 
         $handler = new RegisterHandler();
 
@@ -41,7 +40,7 @@ class RegisterHandlerTest extends SapphireTest
 
         /** @var StoreInterface|PHPUnit_Framework_MockObject_MockObject $store */
         $store = $this->createMock(StoreInterface::class);
-        $store->expects($this->exactly(2))->method('getMember')->willReturn(Security::getCurrentUser());
+        $store->expects($this->once())->method('getMember')->willReturn(Security::getCurrentUser());
 
         $handler = new RegisterHandler();
 
@@ -66,7 +65,7 @@ class RegisterHandlerTest extends SapphireTest
 
         /** @var Member|MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'guy');
-        $store->expects($this->exactly(2))->method('getMember')->willReturn($member);
+        $store->expects($this->once())->method('getMember')->willReturn($member);
 
         $handler = new RegisterHandler();
 
@@ -76,7 +75,7 @@ class RegisterHandlerTest extends SapphireTest
         }
 
         // Ensure the "current" user has no existing backup codes
-        $registeredMethod = RegisteredMethodManager::singleton()->getFromMember($member, 'backup-codes');
+        $registeredMethod = RegisteredMethodManager::singleton()->getFromMember($member, new Method());
         $this->assertNull($registeredMethod, 'No backup codes are stored yet');
 
         // Generate the codes and assert and store what's given back to the UI
@@ -85,7 +84,7 @@ class RegisterHandlerTest extends SapphireTest
         $codes = $props['codes'];
 
         // Check the registered methods on the member as the start method should have saved new backup codes
-        $registeredMethod = RegisteredMethodManager::singleton()->getFromMember($member, 'backup-codes');
+        $registeredMethod = RegisteredMethodManager::singleton()->getFromMember($member, new Method());
         $this->assertTrue($registeredMethod->isInDB(), 'Backup codes are stored');
         $this->assertJson($registeredMethod->Data, 'Backup codes are stored as valid JSON');
 
@@ -101,6 +100,7 @@ class RegisterHandlerTest extends SapphireTest
 
     public function testRegisterReturnsNothing()
     {
+        /** @var StoreInterface|PHPUnit_Framework_MockObject_MockObject $store */
         $store = $this->createMock(StoreInterface::class);
 
         /** @var HTTPRequest|PHPUnit_Framework_MockObject_MockObject $request */

@@ -6,7 +6,6 @@ use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\MFA\Exception\MemberNotFoundException;
 use SilverStripe\MFA\Extension\MemberExtension;
-use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
@@ -158,7 +157,7 @@ class LoginHandler extends BaseLoginHandler
 
         $method = $this->getMethodRegistry()->getMethodByURLSegment($request->param('Method'));
 
-        if (is_null($method)) {
+        if ($method === null) {
             return $this->jsonResponse(
                 ['errors' => [_t(__CLASS__ . '.INVALID_METHOD', 'No such method is available')]],
                 400
@@ -169,10 +168,7 @@ class LoginHandler extends BaseLoginHandler
         $member = $sessionMember ?: $loggedInMember;
 
         // Sanity check that the method hasn't already been registered
-        $existingRegisteredMethod = $this->getRegisteredMethodManager()->getFromMember(
-            $member,
-            $method->getURLSegment()
-        );
+        $existingRegisteredMethod = $this->getRegisteredMethodManager()->getFromMember($member, $method);
 
         if ($existingRegisteredMethod) {
             return $this->jsonResponse(
@@ -238,7 +234,14 @@ class LoginHandler extends BaseLoginHandler
         $registrationHandler = $method->getRegisterHandler();
 
         try {
-            $data = $registrationHandler->register($request, $sessionStore);
+            $this->getRegisteredMethodManager()
+                ->registerForMember(
+                    $sessionMember,
+                    $method,
+                    $registrationHandler->register($request, $sessionStore)
+                );
+
+            return $this->jsonResponse(['success' => true], 201);
         } catch (Exception $e) {
             return $this->jsonResponse(
                 ['errors' => [
@@ -248,23 +251,6 @@ class LoginHandler extends BaseLoginHandler
                 400
             );
         }
-
-        if (!empty($data)) {
-            $member = $sessionStore->getMember();
-
-            // Fetch an existing RegisteredMethod object from the Member or make a new one
-            $registeredMethod =
-                $this->getRegisteredMethodManager()->getFromMember($member, $method->getURLSegment())
-                    ?: RegisteredMethod::create(['MethodClassName' => get_class($method)]);
-
-            $registeredMethod->Data = json_encode($data);
-            $registeredMethod->write();
-
-            // Add it to the member
-            $member->RegisteredMFAMethods()->add($registeredMethod);
-        }
-
-        return $this->jsonResponse(['success' => true], 201);
     }
 
     /**

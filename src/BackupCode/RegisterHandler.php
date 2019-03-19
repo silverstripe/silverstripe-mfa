@@ -10,7 +10,6 @@ use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
-use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Store\StoreInterface;
 
@@ -67,17 +66,7 @@ class RegisterHandler implements RegisterHandlerInterface
         /** @var MethodInterface $method */
         $method = Injector::inst()->get(Method::class);
 
-        $registeredMethod = RegisteredMethodManager::singleton()->getFromMember(
-            $store->getMember(),
-            $method->getURLSegment()
-        ) ?: RegisteredMethod::create([
-            'MethodClassName' => get_class($method),
-        ]);
-
-        $registeredMethod->Data = json_encode($hashedCodes);
-        $registeredMethod->write();
-
-        $store->getMember()->RegisteredMFAMethods()->add($registeredMethod);
+        RegisteredMethodManager::singleton()->registerForMember($store->getMember(), $method, $hashedCodes);
 
         // Return unhashed codes for the front-end UI
         return [
