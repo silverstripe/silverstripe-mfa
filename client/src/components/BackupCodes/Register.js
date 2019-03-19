@@ -37,6 +37,11 @@ class Register extends Component {
     const { codes } = this.props;
 
     return codes.map(code => {
+      // Can't nicely split anything less than 6 characters
+      if (code.length < 6) {
+        return code;
+      }
+
       const numberOfSpaces = Math.floor(code.length / 3);
       const extraCharacters = code.length % 3;
 
@@ -44,12 +49,12 @@ class Register extends Component {
       for (let i = numberOfSpaces; i > 0; i--) {
         // Insert spaces every 3 characters. If that would leave 5 at the end it will instead do two
         // sets of four characters at the end
-        const start = (numberOfSpaces - i) * 3;
+        const start = ((numberOfSpaces - i) * 3) + (i < extraCharacters ? 1 : 0);
         const numberOfCharacters = i <= extraCharacters ? 4 : 3;
         formatted += ` ${code.substring(start, start + numberOfCharacters)}`;
       }
 
-      return formatted;
+      return formatted.trim();
     });
   }
 
@@ -122,7 +127,7 @@ class Register extends Component {
             'authentication is not available. Each code can only be used once. Store these codes ' +
             'somewhere safe, as they will not be viewable after this leaving this page.'
         )}
-
+        &nbsp;
         <a
           href={method.supportLink}
           target="_blank"
@@ -182,13 +187,19 @@ class Register extends Component {
 
     return (
       <CopyToClipboard text={codes.join('\n')}>
-        <a href="#" onClick={this.handleCopy}>{label}</a>
+        <a
+          href="#"
+          className="mfa-register-backup-codes__copy-to-clipboard"
+          onClick={this.handleCopy}
+        >
+          {label}
+        </a>
       </CopyToClipboard>
     );
   }
 
   render() {
-    const { handleCompleteRegistration } = this.props;
+    const { onCompleteRegistration } = this.props;
     const { ss: { i18n } } = window;
 
     return (
@@ -200,7 +211,7 @@ class Register extends Component {
           {this.renderDownloadAction()}
           {this.renderCopyAction()}
         </div>
-        <button className="btn btn-primary" onClick={() => handleCompleteRegistration()}>
+        <button className="btn btn-primary" onClick={() => onCompleteRegistration()}>
           {i18n._t('MFABackupCodesRegister.FINISH', 'Finish')}
         </button>
       </div>

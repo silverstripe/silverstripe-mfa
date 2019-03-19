@@ -44,6 +44,7 @@ describe('Login', () => {
     fetchMock.mockClear();
     loadComponent.mockClear();
   });
+
   it.skip('? if there are no registered methods', () => {
     // Currently it renders nothing but there's undefined behaviour here
     // TODO Update this test when there's defined behaviour

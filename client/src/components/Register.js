@@ -119,7 +119,7 @@ class Register extends Component {
         <RegistrationComponent
           {...registerProps}
           method={selectedMethod}
-          handleCompleteRegistration={this.handleCompleteRegistration}
+          onCompleteRegistration={this.handleCompleteRegistration}
         />
       </div>
     );
