@@ -2,7 +2,6 @@
 namespace SilverStripe\MFA\Authenticator;
 
 use Exception;
-use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\MFA\Exception\MemberNotFoundException;
@@ -10,6 +9,7 @@ use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\MFA\Service\MethodRegistry;
+use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Service\SchemaGenerator;
 use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\ORM\ValidationResult;
@@ -169,7 +169,7 @@ class LoginHandler extends BaseLoginHandler
         $member = $sessionMember ?: $loggedInMember;
 
         // Sanity check that the method hasn't already been registered
-        $existingRegisteredMethod = $this->getMethodRegistry()->getRegisteredMethodFromMember(
+        $existingRegisteredMethod = $this->getRegisteredMethodManager()->getFromMember(
             $member,
             $method->getURLSegment()
         );
@@ -254,7 +254,7 @@ class LoginHandler extends BaseLoginHandler
 
             // Fetch an existing RegisteredMethod object from the Member or make a new one
             $registeredMethod =
-                $this->getMethodRegistry()->getRegisteredMethodFromMember($member, $method->getURLSegment())
+                $this->getRegisteredMethodManager()->getFromMember($member, $method->getURLSegment())
                     ?: RegisteredMethod::create(['MethodClassName' => get_class($method)]);
 
             $registeredMethod->Data = json_encode($data);
@@ -320,7 +320,7 @@ class LoginHandler extends BaseLoginHandler
 
         // Pull a method to use from the request...
         $specifiedMethod = $request->param('Method');
-        $registeredMethod = $this->getMethodRegistry()->getRegisteredMethodFromMember($member, $specifiedMethod);
+        $registeredMethod = $this->getRegisteredMethodManager()->getFromMember($member, $specifiedMethod);
 
         // ...Or use the default (TODO: Should we have the default as a fallback? Maybe just if no method is specified?)
         if (!$registeredMethod) {
@@ -373,7 +373,7 @@ class LoginHandler extends BaseLoginHandler
 
         // Get the member and authenticator ready
         $member = $this->getSessionStore()->getMember();
-        $registeredMethod = $this->getMethodRegistry()->getRegisteredMethodFromMember($member, $method);
+        $registeredMethod = $this->getRegisteredMethodManager()->getFromMember($member, $method);
         $authenticator = $registeredMethod->getLoginHandler();
 
         if (!$authenticator->verify($request, $this->getSessionStore(), $registeredMethod)) {
@@ -506,12 +506,18 @@ class LoginHandler extends BaseLoginHandler
     }
 
     /**
-     * Helper method for getting an instance of a method registry
-     *
      * @return MethodRegistry
      */
     protected function getMethodRegistry()
     {
         return MethodRegistry::singleton();
+    }
+
+    /**
+     * @return RegisteredMethodManager
+     */
+    protected function getRegisteredMethodManager()
+    {
+        return RegisteredMethodManager::singleton();
     }
 }

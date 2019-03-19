@@ -10,6 +10,7 @@ use SilverStripe\MFA\BackupCode\Method;
 use SilverStripe\MFA\BackupCode\RegisterHandler;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Service\MethodRegistry;
+use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Store\StoreInterface;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
@@ -75,7 +76,7 @@ class RegisterHandlerTest extends SapphireTest
         }
 
         // Ensure the "current" user has no existing backup codes
-        $registeredMethod = MethodRegistry::singleton()->getRegisteredMethodFromMember($member, 'backup-codes');
+        $registeredMethod = RegisteredMethodManager::singleton()->getFromMember($member, 'backup-codes');
         $this->assertNull($registeredMethod, 'No backup codes are stored yet');
 
         // Generate the codes and assert and store what's given back to the UI
@@ -84,7 +85,7 @@ class RegisterHandlerTest extends SapphireTest
         $codes = $props['codes'];
 
         // Check the registered methods on the member as the start method should have saved new backup codes
-        $registeredMethod = MethodRegistry::singleton()->getRegisteredMethodFromMember($member, 'backup-codes');
+        $registeredMethod = RegisteredMethodManager::singleton()->getFromMember($member, 'backup-codes');
         $this->assertTrue($registeredMethod->isInDB(), 'Backup codes are stored');
         $this->assertJson($registeredMethod->Data, 'Backup codes are stored as valid JSON');
 

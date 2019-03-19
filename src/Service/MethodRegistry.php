@@ -5,10 +5,7 @@ namespace SilverStripe\MFA\Service;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
-use SilverStripe\MFA\Model\RegisteredMethod;
-use SilverStripe\Security\Member;
 use UnexpectedValueException;
 
 /**
@@ -64,29 +61,6 @@ class MethodRegistry
     public function hasMethods()
     {
         return count($this->getMethods()) > 0;
-    }
-
-    /**
-     * Get an authentication method object matching the given method from the given member. Returns null if the given
-     * method could not be found attached to the Member
-     *
-     * @param Member|MemberExtension $member
-     * @param string $specifiedMethod The URL segment of the requested method
-     * @return RegisteredMethod|null
-     */
-    public function getRegisteredMethodFromMember(Member $member, $specifiedMethodURLSegment)
-    {
-        $method = null;
-
-        // Find the actual method registration data object from the member for the specified default authenticator
-        foreach ($member->RegisteredMFAMethods() as $candidate) {
-            if ($candidate->getMethod()->getURLSegment() === $specifiedMethodURLSegment) {
-                $method = $candidate;
-                break;
-            }
-        }
-
-        return $method;
     }
 
     /**
