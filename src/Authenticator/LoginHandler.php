@@ -354,15 +354,18 @@ class LoginHandler extends BaseLoginHandler
     public function verifyLogin(HTTPRequest $request)
     {
         $method = $this->getSessionStore()->getMethod();
+        if ($method) {
+            $methodInstance = $this->getMethodRegistry()->getMethodByURLSegment($method);
+        }
 
         // We must've been to a "start" and set the method being used in session here.
-        if (!$method) {
+        if (!$methodInstance) {
             return $this->redirectBack();
         }
 
         // Get the member and authenticator ready
         $member = $this->getSessionStore()->getMember();
-        $registeredMethod = $this->getRegisteredMethodManager()->getFromMember($member, $method);
+        $registeredMethod = $this->getRegisteredMethodManager()->getFromMember($member, $methodInstance);
         $authenticator = $registeredMethod->getLoginHandler();
 
         if (!$authenticator->verify($request, $this->getSessionStore(), $registeredMethod)) {
