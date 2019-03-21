@@ -305,8 +305,11 @@ class LoginHandler extends BaseLoginHandler
         }
 
         // Pull a method to use from the request...
-        $specifiedMethod = $request->param('Method');
-        $registeredMethod = $this->getRegisteredMethodManager()->getFromMember($member, $specifiedMethod);
+        $requestedMethod = $this->getMethodRegistry()->getMethodByURLSegment($request->param('Method'));
+        $registeredMethod = null;
+        if ($requestedMethod) {
+            $registeredMethod = $this->getRegisteredMethodManager()->getFromMember($member, $requestedMethod);
+        }
 
         // ...Or use the default (TODO: Should we have the default as a fallback? Maybe just if no method is specified?)
         if (!$registeredMethod) {
@@ -316,7 +319,7 @@ class LoginHandler extends BaseLoginHandler
         // We can't proceed with login if the Member doesn't have this method registered
         if (!$registeredMethod) {
             // We can display a specific message if there was no method specified
-            if (empty($specifiedMethod)) {
+            if (!$requestedMethod) {
                 $message = _t(
                     __CLASS__ . '.METHOD_NOT_PROVIDED',
                     'No method was provided to login with and the Member has no default'
@@ -351,15 +354,18 @@ class LoginHandler extends BaseLoginHandler
     public function verifyLogin(HTTPRequest $request)
     {
         $method = $this->getSessionStore()->getMethod();
+        if ($method) {
+            $methodInstance = $this->getMethodRegistry()->getMethodByURLSegment($method);
+        }
 
         // We must've been to a "start" and set the method being used in session here.
-        if (!$method) {
+        if (!$methodInstance) {
             return $this->redirectBack();
         }
 
         // Get the member and authenticator ready
         $member = $this->getSessionStore()->getMember();
-        $registeredMethod = $this->getRegisteredMethodManager()->getFromMember($member, $method);
+        $registeredMethod = $this->getRegisteredMethodManager()->getFromMember($member, $methodInstance);
         $authenticator = $registeredMethod->getLoginHandler();
 
         if (!$authenticator->verify($request, $this->getSessionStore(), $registeredMethod)) {
