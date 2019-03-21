@@ -319,7 +319,7 @@ class LoginHandler extends BaseLoginHandler
         // We can't proceed with login if the Member doesn't have this method registered
         if (!$registeredMethod) {
             // We can display a specific message if there was no method specified
-            if (empty(!$requestedMethod)) {
+            if (!$requestedMethod) {
                 $message = _t(
                     __CLASS__ . '.METHOD_NOT_PROVIDED',
                     'No method was provided to login with and the Member has no default'
