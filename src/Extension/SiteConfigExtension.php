@@ -5,13 +5,9 @@ namespace SilverStripe\MFA\Extension;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DateField;
-use SilverStripe\Forms\DatetimeField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\OptionsetField;
-use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataExtension;
-use SilverStripe\ORM\FieldType\DBDate;
-use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\View\Requirements;
 
@@ -64,10 +60,7 @@ class SiteConfigExtension extends DataExtension
             'MFAGracePeriodExpires',
             'Optional: grace period end date when MFA is enforced'
         );
-        $mfaGraceEnd
-            ->addExtraClass('mfa-settings__grace-period')
-            // Don't allow users to set the date to anything earlier than now
-            ->setMinDate(DBDatetime::now()->Format(DBDate::ISO_DATE));
+        $mfaGraceEnd->addExtraClass('mfa-settings__grace-period');
 
         $mfaOptions = CompositeField::create($mfaEnabled, $mfaOptions, $mfaGraceEnd)
             ->setTitle(DBField::create_field(
