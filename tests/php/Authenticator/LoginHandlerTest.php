@@ -109,7 +109,7 @@ class LoginHandlerTest extends FunctionalTest
             'name' => $registerHandler->getName(),
             'description' => $registerHandler->getDescription(),
             'supportLink' => $registerHandler->getSupportLink(),
-            'component' => 'N/A',
+            'component' => 'BasicMathRegister',
         ]], $response['availableMethods']);
     }
 
@@ -139,7 +139,7 @@ class LoginHandlerTest extends FunctionalTest
         $this->assertSame([[
             'urlSegment' => $method->getURLSegment(),
             'leadInLabel' => $loginHandler->getLeadInLabel(),
-            'component' => 'N/A',
+            'component' => 'BasicMathLogin',
         ]], $response['registeredMethods']);
     }
 
