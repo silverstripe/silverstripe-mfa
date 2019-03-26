@@ -4,4 +4,4 @@
 <% require add_i18n_javascript('silverstripe/mfa: client/lang') %>
 <% require css('silverstripe/mfa: client/dist/styles/bundle.css') %>
 
-<div id="mfa-app" class="mfa__app" data-schemaurl="$Link('mfa/schema')"></div>
+<div id="mfa-app" class="mfa-app" data-schemaurl="$Link('mfa/schema')"></div>

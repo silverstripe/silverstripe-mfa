@@ -82,7 +82,7 @@ class EnforcementManager
      * @param Member&MemberExtension $member
      * @return bool
      */
-    public function hasFullyRegisteredMFA(Member $member)
+    public function hasCompletedRegistration(Member $member)
     {
         $methodCount = $member->RegisteredMFAMethods()->count();
 

@@ -9,7 +9,7 @@ body.mfa {
   }
 
   // Allow the h1 rendered by the React app to display
-  .mfa__app h1 {
+  .mfa-app h1 {
     display: block;
     width: $container-width;
     margin: auto;
@@ -20,6 +20,7 @@ body.mfa {
 
   h2 {
     margin-top: 0;
+    margin-bottom: $header-spacing;
     font-size: $font-size-h2;
     color: $color-grey-text;
     font-weight: normal;

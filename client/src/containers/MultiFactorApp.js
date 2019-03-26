@@ -16,7 +16,7 @@ class MultiFactorApp extends Component {
       loginCompleted: false,
       schema: null,
       schemaLoaded: false,
-      title: i18n._t('MFA.TITLE', 'Multi-factor authentication'),
+      title: i18n._t('MultiFactorApp.TITLE', 'Multi-factor authentication'),
     };
 
     this.handleSetTitle = this.handleSetTitle.bind(this);

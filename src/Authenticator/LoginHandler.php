@@ -163,8 +163,7 @@ class LoginHandler extends BaseLoginHandler
         // If the user isn't fully logged in and they already have a registered method, they can't register another
         // provided that they're not registering a backup method
         $registeredMethodCount = $sessionMember->RegisteredMFAMethods()->count();
-        $isRegisteringBackupMethod =
-            get_class($method) === Config::inst()->get(MethodRegistry::class, 'default_backup_method');
+        $isRegisteringBackupMethod = $this->getMethodRegistry()->isBackupMethod($method);
 
         if (is_null($loggedInMember) && $sessionMember && $registeredMethodCount > 0 && !$isRegisteringBackupMethod) {
             return $this->jsonResponse(
@@ -277,7 +276,7 @@ class LoginHandler extends BaseLoginHandler
         // "isLoginComplete"
         if (
             (!$mustLogin || $this->isLoginComplete($request))
-            && $enforcementManager->hasFullyRegisteredMFA($sessionMember)
+            && $enforcementManager->hasCompletedRegistration($sessionMember)
         ) {
             $this->doPerformLogin($request, $sessionMember);
         }
@@ -416,7 +415,7 @@ class LoginHandler extends BaseLoginHandler
 
         // Actually log in the member if the registration is complete
         $enforcementManager = EnforcementManager::create();
-        if ($enforcementManager->hasFullyRegisteredMFA($member)) {
+        if ($enforcementManager->hasCompletedRegistration($member)) {
             $this->doPerformLogin($request, $member);
 
             // And also clear the session
@@ -452,7 +451,7 @@ class LoginHandler extends BaseLoginHandler
         // This is potentially redundant logic as the member should only be logged in if they've fully registered.
         // They're allowed to login if they can skip - so only do assertions if they're not allowed to skip
         // We'll also check that they've registered the required MFA details
-        if (!$enforcementManager->canSkipMFA($member) && !$enforcementManager->hasFullyRegisteredMFA($member)) {
+        if (!$enforcementManager->canSkipMFA($member) && !$enforcementManager->hasCompletedRegistration($member)) {
             // Log them out again
             /** @var IdentityStore $identityStore */
             $identityStore = Injector::inst()->get(IdentityStore::class);

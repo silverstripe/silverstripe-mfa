@@ -43,7 +43,7 @@ class SchemaGenerator
             'defaultMethod' => $this->getDefaultMethod($member),
             'backupMethod' => $this->getBackupMethod(),
             'canSkip' => $enforcementManager->canSkipMFA($member),
-            'isFullyRegistered' => $enforcementManager->hasFullyRegisteredMFA($member),
+            'isFullyRegistered' => $enforcementManager->hasCompletedRegistration($member),
             'shouldRedirect' => $enforcementManager->shouldRedirectToMFA($member),
         ];
 
@@ -80,14 +80,13 @@ class SchemaGenerator
         $availableMethods = [];
 
         // Get all methods enabled on the site
-        $allMethods = MethodRegistry::singleton()->getMethods();
-
-        // Get the backup method as we omit this from the "available" methods.
-        $backupMethod = Config::inst()->get(MethodRegistry::class, 'default_backup_method');
+        $methodRegistry = MethodRegistry::singleton();
+        $allMethods = $methodRegistry->getMethods();
 
         // Compile details for methods that aren't already registered to the user
         foreach ($allMethods as $method) {
-            if (in_array($method->getURLSegment(), $exclude) || get_class($method) === $backupMethod) {
+            // Omit specified exclusions or methods that are configured as back-up methods
+            if (in_array($method->getURLSegment(), $exclude) || $methodRegistry->isBackupMethod($method)) {
                 continue;
             }
             $availableMethods[] = $method->getDetails();
