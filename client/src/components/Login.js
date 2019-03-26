@@ -1,6 +1,6 @@
 /* global window */
 
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { loadComponent } from 'lib/Injector'; // eslint-disable-line
 import registeredMethodType from 'types/registeredMethod';
@@ -232,6 +232,11 @@ class Login extends Component {
   renderOtherMethods() {
     const otherMethods = this.getOtherMethods();
     const { ss: { i18n } } = window;
+    const { selectedMethod, showOtherMethods } = this.state;
+
+    if (selectedMethod && !showOtherMethods) {
+      return null;
+    }
 
     return (
       <div className="mfa-login__other-methods">
@@ -265,10 +270,14 @@ class Login extends Component {
   /**
    * Render the component for the currently selected method
    *
-   * @return {HTMLElement}
+   * @return {HTMLElement|null}
    */
   renderSelectedMethod() {
-    const { selectedMethod, loginProps, message } = this.state;
+    const { selectedMethod, showOtherMethods, loginProps, message } = this.state;
+
+    if (!selectedMethod || showOtherMethods) {
+      return null;
+    }
 
     const MethodComponent = loadComponent(selectedMethod.component);
 
@@ -287,17 +296,20 @@ class Login extends Component {
   }
 
   render() {
-    const { loading, selectedMethod, showOtherMethods } = this.state;
+    const { loading } = this.state;
+    const { ss: { i18n } } = window;
 
     if (loading) {
       return <LoadingIndicator />;
     }
 
-    if (selectedMethod && !showOtherMethods) {
-      return this.renderSelectedMethod();
-    }
-
-    return this.renderOtherMethods();
+    return (
+      <Fragment>
+        <h1>{i18n._t('MFALogin.TITLE', 'Log in')}</h1>
+        {this.renderSelectedMethod()}
+        {this.renderOtherMethods()}
+      </Fragment>
+    );
   }
 }
 

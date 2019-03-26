@@ -1,6 +1,6 @@
 /* global window */
 
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import Login from 'components/Login';
 import Register from 'components/Register';
@@ -9,18 +9,15 @@ import LoadingIndicator from 'components/LoadingIndicator';
 
 class MultiFactorApp extends Component {
   constructor(props) {
-    const { ss: { i18n } } = window;
-
     super(props);
+
     this.state = {
       loginCompleted: false,
       schema: null,
       schemaLoaded: false,
       loading: false,
-      title: i18n._t('MultiFactorApp.TITLE', 'Multi-factor authentication'),
     };
 
-    this.handleSetTitle = this.handleSetTitle.bind(this);
     this.handleCompleteLogin = this.handleCompleteLogin.bind(this);
   }
 
@@ -33,17 +30,6 @@ class MultiFactorApp extends Component {
           schema: schemaData
         })
       );
-  }
-
-  /**
-   * Handle a request to change the title of the page
-   *
-   * @param {string} title
-   */
-  handleSetTitle(title) {
-    this.setState({
-      title,
-    });
   }
 
   /**
@@ -77,7 +63,7 @@ class MultiFactorApp extends Component {
       return null;
     }
 
-    return <Register {...schema} onSetTitle={this.handleSetTitle} />;
+    return <Register {...schema} />;
   }
 
   /**
@@ -91,11 +77,7 @@ class MultiFactorApp extends Component {
     }
 
     return (
-      <Login
-        {...schema}
-        onCompleteLogin={this.handleCompleteLogin}
-        onSetTitle={this.handleSetTitle}
-      />
+      <Login {...schema} onCompleteLogin={this.handleCompleteLogin} />
     );
   }
 
@@ -113,7 +95,7 @@ class MultiFactorApp extends Component {
    * 3. schema, member, login: show more authentication factors
    */
   render() {
-    const { schema, schemaLoaded, title, loading } = this.state;
+    const { schema, schemaLoaded, loading } = this.state;
 
     if (!schema || loading) {
       if (!schema && schemaLoaded) {
@@ -124,11 +106,10 @@ class MultiFactorApp extends Component {
     }
 
     return (
-      <div>
-        {title && <h1>{title}</h1>}
+      <Fragment>
         { this.renderRegister() }
         { this.renderLogin() }
-      </div>
+      </Fragment>
     );
   }
 }
