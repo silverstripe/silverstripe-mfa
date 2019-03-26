@@ -4,6 +4,8 @@ namespace SilverStripe\MFA\Authenticator;
 use Exception;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\MFA\Exception\MemberNotFoundException;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Service\EnforcementManager;
@@ -12,6 +14,7 @@ use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Service\SchemaGenerator;
 use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\ORM\ValidationResult;
+use SilverStripe\Security\IdentityStore;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\MemberAuthenticator\LoginHandler as BaseLoginHandler;
 use SilverStripe\Security\MemberAuthenticator\MemberLoginForm;
@@ -65,6 +68,7 @@ class LoginHandler extends BaseLoginHandler
      */
     public function doLogin($data, MemberLoginForm $form, HTTPRequest $request)
     {
+        /** @var Member&MemberExtension $member */
         $member = $this->checkLogin($data, $request, $result);
 
         // If there's no member it's an invalid login. We'll delegate this to the parent
@@ -79,6 +83,12 @@ class LoginHandler extends BaseLoginHandler
         // Store the BackURL for use after the process is complete
         if (!empty($data)) {
             $request->getSession()->set(static::SESSION_KEY . '.additionalData', $data);
+        }
+
+        // If there is at least one MFA method registered then the user MUST login with it
+        $request->getSession()->clear(static::SESSION_KEY . '.mustLogin');
+        if ($member->RegisteredMFAMethods()->count() > 0) {
+            $request->getSession()->set(static::SESSION_KEY . '.mustLogin', true);
         }
 
         // Redirect to the MFA step
@@ -99,6 +109,7 @@ class LoginHandler extends BaseLoginHandler
 
         return [
             'Form' => $this->renderWith($this->getViewerTemplates()),
+            'ClassName' => 'mfa',
         ];
     }
 
@@ -147,15 +158,19 @@ class LoginHandler extends BaseLoginHandler
             );
         }
 
+        $method = $this->getMethodRegistry()->getMethodByURLSegment($request->param('Method'));
+
         // If the user isn't fully logged in and they already have a registered method, they can't register another
-        if (is_null($loggedInMember) && $sessionMember && count($sessionMember->RegisteredMFAMethods()) > 0) {
+        // provided that they're not registering a backup method
+        $registeredMethodCount = $sessionMember->RegisteredMFAMethods()->count();
+        $isRegisteringBackupMethod = $this->getMethodRegistry()->isBackupMethod($method);
+
+        if (is_null($loggedInMember) && $sessionMember && $registeredMethodCount > 0 && !$isRegisteringBackupMethod) {
             return $this->jsonResponse(
                 ['errors' => [_t(__CLASS__ . '.MUST_USE_EXISTING_METHOD', 'This member already has an MFA method')]],
                 400
             );
         }
-
-        $method = $this->getMethodRegistry()->getMethodByURLSegment($request->param('Method'));
 
         if ($method === null) {
             return $this->jsonResponse(
@@ -240,8 +255,6 @@ class LoginHandler extends BaseLoginHandler
                     $method,
                     $registrationHandler->register($request, $sessionStore)
                 );
-
-            return $this->jsonResponse(['success' => true], 201);
         } catch (Exception $e) {
             return $this->jsonResponse(
                 ['errors' => [
@@ -251,6 +264,24 @@ class LoginHandler extends BaseLoginHandler
                 400
             );
         }
+
+        // If we've completed registration and the member is not already logged in then we need to log them in
+        /** @var EnforcementManager $enforcementManager */
+        $enforcementManager = EnforcementManager::create();
+        $mustLogin = $request->getSession()->get(static::SESSION_KEY . '.mustLogin');
+
+        // If the user has a valid registration at this point then we can log them in. We must ensure that they're not
+        // required to log in though. The "mustLogin" flag is set at the beginning of the MFA process if they have at
+        // least one method registered. They should always do that first. In that case we should assert
+        // "isLoginComplete"
+        if (
+            (!$mustLogin || $this->isLoginComplete($request))
+            && $enforcementManager->hasCompletedRegistration($sessionMember)
+        ) {
+            $this->doPerformLogin($request, $sessionMember);
+        }
+
+        return $this->jsonResponse(['success' => true], 201);
     }
 
     /**
@@ -382,35 +413,70 @@ class LoginHandler extends BaseLoginHandler
             ], 202);
         }
 
-        // Load the previously stored data from session and perform the login using it...
-        $data = $request->getSession()->get(static::SESSION_KEY . '.additionalData');
-        $this->performLogin($member, $data, $request);
+        // Actually log in the member if the registration is complete
+        $enforcementManager = EnforcementManager::create();
+        if ($enforcementManager->hasCompletedRegistration($member)) {
+            $this->doPerformLogin($request, $member);
 
-        // Clear session...
-        SessionStore::clear($request);
-        $request->getSession()->clear(static::SESSION_KEY . '.successfulMethods');
-
-        // Redirecting after successful login expects a getVar to be set
-        if (!empty($data['BackURL'])) {
-            $request->BackURL = $data['BackURL'];
+            // And also clear the session
+            SessionStore::clear($request);
+            $request->getSession()->clear(static::SESSION_KEY . '.successfulMethods');
         }
+
         return $this->jsonResponse([
-            'message' => 'Access granted',
-        ] + $data, 200);
+            'message' => 'Login complete',
+        ], 200);
     }
 
     public function redirectAfterSuccessfulLogin()
     {
-        $request = $this->getRequest();
+        // Assert that we have a member logged in already. We explicitly don't use ->getMember as that will pull from
+        // session during the MFA process
+        $member = Security::getCurrentUser();
+        $loginUrl = Security::login_url();
 
-        // Pull "additional data" about the login from the session before clearing it
-        $data = $request->getSession()->get(static::SESSION_KEY . '.additionalData');
+        if (!$member) {
+            Security::singleton()->setSessionMessage(
+                _t(__CLASS__ . '.MFA_LOGIN_INCOMPLETE', 'You must provide MFA login details'),
+                ValidationResult::TYPE_ERROR
+            );
+            return $this->redirect($loginUrl);
+        }
+
+        $request = $this->getRequest();
+        /** @var EnforcementManager $enforcementManager */
+        $enforcementManager = EnforcementManager::create();
+
+        // Assert that the member has a valid registration.
+        // This is potentially redundant logic as the member should only be logged in if they've fully registered.
+        // They're allowed to login if they can skip - so only do assertions if they're not allowed to skip
+        // We'll also check that they've registered the required MFA details
+        if (!$enforcementManager->canSkipMFA($member) && !$enforcementManager->hasCompletedRegistration($member)) {
+            // Log them out again
+            /** @var IdentityStore $identityStore */
+            $identityStore = Injector::inst()->get(IdentityStore::class);
+            $identityStore->logOut($request);
+
+            Security::singleton()->setSessionMessage(
+                _t(__CLASS__ . '.INVALID_REGISTRATION', 'You must complete MFA registration'),
+                ValidationResult::TYPE_ERROR
+            );
+            return $this->redirect($loginUrl);
+        }
+
+        // Clear the "additional data"
+        $data = $request->getSession()->get(static::SESSION_KEY . '.additionalData') ?: [];
         $request->getSession()->clear(static::SESSION_KEY . '.additionalData');
 
         // Redirecting after successful login expects a getVar to be set
         if (!empty($data['BackURL'])) {
             $request['BackURL'] = $data['BackURL'];
         }
+
+        // Ensure any left over session state is cleaned up
+        SessionStore::clear($request);
+        $request->getSession()->clear(static::SESSION_KEY . '.mustLogin');
+        $request->getSession()->clear(static::SESSION_KEY . '.successfulMethods');
 
         // Delegate to parent logic
         return parent::redirectAfterSuccessfulLogin();
@@ -511,5 +577,27 @@ class LoginHandler extends BaseLoginHandler
     protected function getRegisteredMethodManager()
     {
         return RegisteredMethodManager::singleton();
+    }
+
+    /**
+     * Complete the login process for the given member by calling "performLogin" on the parent class
+     *
+     * @param HTTPRequest $request
+     * @param Member&MemberExtension $member
+     */
+    protected function doPerformLogin(HTTPRequest $request, Member $member)
+    {
+        // Load the previously stored data from session and perform the login using it...
+        $data = $request->getSession()->get(static::SESSION_KEY . '.additionalData') ?: [];
+
+        // Check that we don't have a logged in member before actually performing a login
+        $currentMember = Security::getCurrentUser();
+
+        if (!$currentMember) {
+            // These next two lines are pulled from "parent::doLogin()"
+            $this->performLogin($member, $data, $request);
+            // Allow operations on the member after successful login
+            $this->extend('afterLogin', $member);
+        }
     }
 }

@@ -2,9 +2,12 @@
 
 namespace SilverStripe\MFA\Service;
 
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\MFA\Extension\MemberExtension;
+use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\State\AvailableMethodDetailsInterface;
 use SilverStripe\MFA\State\RegisteredMethodDetailsInterface;
 use SilverStripe\Security\Member;
@@ -38,7 +41,9 @@ class SchemaGenerator
             'registeredMethods' => $registeredMethods,
             'availableMethods' => $this->getAvailableMethods($exclude),
             'defaultMethod' => $this->getDefaultMethod($member),
+            'backupMethod' => $this->getBackupMethod(),
             'canSkip' => $enforcementManager->canSkipMFA($member),
+            'isFullyRegistered' => $enforcementManager->hasCompletedRegistration($member),
             'shouldRedirect' => $enforcementManager->shouldRedirectToMFA($member),
         ];
 
@@ -75,11 +80,13 @@ class SchemaGenerator
         $availableMethods = [];
 
         // Get all methods enabled on the site
-        $allMethods = MethodRegistry::singleton()->getMethods();
+        $methodRegistry = MethodRegistry::singleton();
+        $allMethods = $methodRegistry->getMethods();
 
         // Compile details for methods that aren't already registered to the user
         foreach ($allMethods as $method) {
-            if (in_array($method->getURLSegment(), $exclude)) {
+            // Omit specified exclusions or methods that are configured as back-up methods
+            if (in_array($method->getURLSegment(), $exclude) || $methodRegistry->isBackupMethod($method)) {
                 continue;
             }
             $availableMethods[] = $method->getDetails();
@@ -98,5 +105,23 @@ class SchemaGenerator
     {
         $defaultMethod = $member->DefaultRegisteredMethod;
         return $defaultMethod ? $defaultMethod->getMethod()->getURLSegment() : null;
+    }
+
+    /**
+     * Get the "details" of the configured back-up method (if set)
+     *
+     * @return AvailableMethodDetailsInterface|null
+     */
+    protected function getBackupMethod()
+    {
+        $methodClass = Config::inst()->get(MethodRegistry::class, 'default_backup_method');
+        if (!$methodClass) {
+            return null;
+        }
+
+        /** @var MethodInterface $method */
+        $method = Injector::inst()->create($methodClass);
+
+        return $method ? $method->getDetails() : null;
     }
 }

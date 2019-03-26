@@ -1,0 +1,40 @@
+body.mfa {
+  .page-header {
+    margin-bottom: 0;
+  }
+
+  // Hide the template provided h1
+  h1 {
+    display: none;
+  }
+
+  // Allow the h1 rendered by the React app to display
+  .mfa-app h1 {
+    display: block;
+    width: $container-width;
+    margin: auto;
+    font-size: $font-size-h1;
+    color: $color-grey-text;
+    font-weight: normal;
+  }
+
+  h2 {
+    margin-top: 0;
+    margin-bottom: $header-spacing;
+    font-size: $font-size-h2;
+    color: $color-grey-text;
+    font-weight: normal;
+  }
+
+  // Override font weight settings on labels
+  label {
+    font-weight: normal;
+  }
+}
+
+
+.mfa-app {
+  width: $container-width;
+  margin: auto;
+  color: $color-grey-text;
+}

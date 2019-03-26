@@ -2,6 +2,7 @@
 
 namespace SilverStripe\MFA\Service;
 
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\ORM\FieldType\DBDate;
@@ -71,6 +72,28 @@ class EnforcementManager
         }
 
         return false;
+    }
+
+    /**
+     * Check if the provided member has registered the required MFA methods. This includes a "back-up" method set in
+     * configuration plus at least one other method.
+     * Note that this method returns true if there is no backup method registered (and they have one other method
+     *
+     * @param Member&MemberExtension $member
+     * @return bool
+     */
+    public function hasCompletedRegistration(Member $member)
+    {
+        $methodCount = $member->RegisteredMFAMethods()->count();
+
+        $backupMethod = Config::inst()->get(MethodRegistry::class, 'default_backup_method');
+        if (!$backupMethod) {
+            // Ensure they have at least one method
+            return $methodCount > 0;
+        }
+
+        // Ensure they have the required backup method and at least 2 methods (the backup method plus one other)
+        return ((bool) $member->RegisteredMFAMethods()->find('MethodClassName', $backupMethod)) && $methodCount > 1;
     }
 
     /**

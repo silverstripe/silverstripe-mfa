@@ -9,12 +9,18 @@ import LoadingIndicator from 'components/LoadingIndicator';
 
 class MultiFactorApp extends Component {
   constructor(props) {
+    const { ss: { i18n } } = window;
+
     super(props);
     this.state = {
+      loginCompleted: false,
       schema: null,
       schemaLoaded: false,
+      loading: false,
+      title: i18n._t('MultiFactorApp.TITLE', 'Multi-factor authentication'),
     };
 
+    this.handleSetTitle = this.handleSetTitle.bind(this);
     this.handleCompleteLogin = this.handleCompleteLogin.bind(this);
   }
 
@@ -29,10 +35,68 @@ class MultiFactorApp extends Component {
       );
   }
 
-  handleCompleteLogin() {
-    const { schema: { endpoints: { complete } } } = this.state;
+  /**
+   * Handle a request to change the title of the page
+   *
+   * @param {string} title
+   */
+  handleSetTitle(title) {
+    this.setState({
+      title,
+    });
+  }
 
-    window.location = complete;
+  /**
+   * Handle an event indicating the login is complete
+   */
+  handleCompleteLogin() {
+    const { schema: { endpoints: { complete }, isFullyRegistered } } = this.state;
+
+    // Mark login as being completed. The server side will validate any further request - this state
+    // is just for controlling flow
+    this.setState({
+      loginCompleted: true,
+    });
+
+    // Redirect if the member is marked as having fully registered MFA
+    if (isFullyRegistered) {
+      this.setState({
+        loading: true,
+      });
+      window.location = complete;
+    }
+  }
+
+  /**
+   * @return {null|Register}
+   */
+  renderRegister() {
+    const { schema, loginCompleted } = this.state;
+
+    if (!schema || (!loginCompleted && schema.registeredMethods.length)) {
+      return null;
+    }
+
+    return <Register {...schema} onSetTitle={this.handleSetTitle} />;
+  }
+
+  /**
+   * @return {null|Login}
+   */
+  renderLogin() {
+    const { schema, loginCompleted } = this.state;
+
+    if (!schema || loginCompleted || !schema.registeredMethods.length) {
+      return null;
+    }
+
+    return (
+      <Login
+        {...schema}
+        onCompleteLogin={this.handleCompleteLogin}
+        onSetTitle={this.handleSetTitle}
+      />
+    );
   }
 
   /**
@@ -49,23 +113,23 @@ class MultiFactorApp extends Component {
    * 3. schema, member, login: show more authentication factors
    */
   render() {
-    const { schema, schemaLoaded } = this.state;
+    const { schema, schemaLoaded, title, loading } = this.state;
 
-    if (!schema) {
-      if (schemaLoaded) {
+    if (!schema || loading) {
+      if (!schema && schemaLoaded) {
         throw new Error('Could not read configuration schema to load MFA interface');
       }
 
       return <LoadingIndicator />;
     }
 
-    const { registeredMethods } = schema;
-
-    if (!registeredMethods.length) {
-      return <Register {...schema} />;
-    }
-
-    return <Login {...schema} onCompleteLogin={this.handleCompleteLogin} />;
+    return (
+      <div>
+        {title && <h1>{title}</h1>}
+        { this.renderRegister() }
+        { this.renderLogin() }
+      </div>
+    );
   }
 }
 

@@ -5,6 +5,7 @@ namespace SilverStripe\MFA\Service;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\MFA\BackupCode\Method;
 use SilverStripe\MFA\Method\MethodInterface;
 use UnexpectedValueException;
 
@@ -23,6 +24,17 @@ class MethodRegistry
      * @var string[]
      */
     private static $methods = [];
+
+    /**
+     * A string referring to the classname of the method (implementing SilverStripe\MFA\Method\MethodInterface) that is
+     * to be used as the back-up method for MFA. This alters the registration of this method to be required - a forced
+     * registration once the user has registered at least one other method. Additionally it cannot be set as the default
+     * method for a user to log in with.
+     *
+     * @config
+     * @var string
+     */
+    private static $default_backup_method = Method::class;
 
     /**
      * Get implementations of all configured methods
@@ -61,6 +73,17 @@ class MethodRegistry
     public function hasMethods()
     {
         return count($this->getMethods()) > 0;
+    }
+
+    /**
+     * Indicates whether the given method is registered as the back-up method for MFA
+     *
+     * @param MethodInterface $method
+     * @return bool
+     */
+    public function isBackupMethod(MethodInterface $method)
+    {
+        return is_a($method, $this->config()->get('default_backup_method'));
     }
 
     /**
