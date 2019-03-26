@@ -30,7 +30,7 @@ class MethodLoginHandlerTest extends SapphireTest
 
         /** @var HTTPRequest|PHPUnit_Framework_MockObject_MockObject $request */
         $request = $this->createMock(HTTPRequest::class);
-        $request->expects($this->once())->method('param')->with('answer')->willReturn(10);
+        $request->expects($this->once())->method('getBody')->willReturn('{"answer":"10"}');
 
         /** @var StoreInterface|PHPUnit_Framework_MockObject_MockObject $store */
         $store = $this->createMock(StoreInterface::class);

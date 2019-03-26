@@ -8,6 +8,7 @@ use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\MFA\Exception\MemberNotFoundException;
 use SilverStripe\MFA\Extension\MemberExtension;
+use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
@@ -162,10 +163,11 @@ class LoginHandler extends BaseLoginHandler
 
         // If the user isn't fully logged in and they already have a registered method, they can't register another
         // provided that they're not registering a backup method
-        $registeredMethodCount = $sessionMember->RegisteredMFAMethods()->count();
-        $isRegisteringBackupMethod = $this->getMethodRegistry()->isBackupMethod($method);
+        $registeredMethodCount = $sessionMember && $sessionMember->RegisteredMFAMethods()->count();
+        $isRegisteringBackupMethod =
+            $method instanceof MethodInterface && $this->getMethodRegistry()->isBackupMethod($method);
 
-        if (is_null($loggedInMember) && $sessionMember && $registeredMethodCount > 0 && !$isRegisteringBackupMethod) {
+        if ($loggedInMember === null && $sessionMember && $registeredMethodCount > 0 && !$isRegisteringBackupMethod) {
             return $this->jsonResponse(
                 ['errors' => [_t(__CLASS__ . '.MUST_USE_EXISTING_METHOD', 'This member already has an MFA method')]],
                 400
@@ -274,8 +276,7 @@ class LoginHandler extends BaseLoginHandler
         // required to log in though. The "mustLogin" flag is set at the beginning of the MFA process if they have at
         // least one method registered. They should always do that first. In that case we should assert
         // "isLoginComplete"
-        if (
-            (!$mustLogin || $this->isLoginComplete($request))
+        if ((!$mustLogin || $this->isLoginComplete($request))
             && $enforcementManager->hasCompletedRegistration($sessionMember)
         ) {
             $this->doPerformLogin($request, $sessionMember);
