@@ -6,6 +6,7 @@ import { loadComponent } from 'lib/Injector'; // eslint-disable-line
 import availableMethodType from 'types/availableMethod';
 import registeredMethodType from 'types/registeredMethod';
 import LoadingIndicator from 'components/LoadingIndicator';
+import Complete from 'components/Register/Complete';
 
 class Register extends Component {
   constructor(props) {
@@ -162,36 +163,6 @@ class Register extends Component {
   }
 
   /**
-   * Render a confirmation screen to inform the user that set up has been completed
-   *
-   * @return {HTMLElement}
-   */
-  renderCompleteScreen() {
-    const { ss: { i18n } } = window;
-
-    return (
-      <div className="mfa-register-confirmation">
-        <i className="font-icon-check-mark mfa-register-confirmation__icon" />
-        <h2 className="mfa-register-confirmation__title">
-          {i18n._t('MFARegister.SETUP_COMPLETE_TITLE', 'Multi-factor authentication is now set up')}
-        </h2>
-        <p className="mfa-register-confirmation__description">
-          {i18n._t(
-            'MFARegister.SETUP_COMPLETE_DESCRIPTION',
-            'You can edit these settings from your profile area in the menu.'
-          )}
-        </p>
-        <button
-          onClick={this.handleCompleteProcess}
-          className="mfa-register-confirmation__continue btn btn-primary"
-        >
-          {i18n._t('MFARegister.SETUP_COMPLETE_CONTINUE', 'Continue')}
-        </button>
-      </div>
-    );
-  }
-
-  /**
    * Render the registration component of the currently selected method.
    *
    * @return {HTMLElement|null}
@@ -283,7 +254,7 @@ class Register extends Component {
     const { isComplete, selectedMethod } = this.state;
 
     if (isComplete) {
-      return this.renderCompleteScreen();
+      return <Complete onComplete={this.handleCompleteProcess} />;
     }
 
     if (selectedMethod) {
