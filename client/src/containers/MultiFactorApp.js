@@ -16,6 +16,7 @@ class MultiFactorApp extends Component {
       loginCompleted: false,
       schema: null,
       schemaLoaded: false,
+      loading: false,
       title: i18n._t('MultiFactorApp.TITLE', 'Multi-factor authentication'),
     };
 
@@ -59,8 +60,43 @@ class MultiFactorApp extends Component {
 
     // Redirect if the member is marked as having fully registered MFA
     if (isFullyRegistered) {
+      this.setState({
+        loading: true,
+      });
       window.location = complete;
     }
+  }
+
+  /**
+   * @return {null|Register}
+   */
+  renderRegister() {
+    const { schema, loginCompleted } = this.state;
+
+    if (!schema || (!loginCompleted && schema.registeredMethods.length)) {
+      return null;
+    }
+
+    return <Register {...schema} onSetTitle={this.handleSetTitle} />;
+  }
+
+  /**
+   * @return {null|Login}
+   */
+  renderLogin() {
+    const { schema, loginCompleted } = this.state;
+
+    if (!schema || loginCompleted || !schema.registeredMethods.length) {
+      return null;
+    }
+
+    return (
+      <Login
+        {...schema}
+        onCompleteLogin={this.handleCompleteLogin}
+        onSetTitle={this.handleSetTitle}
+      />
+    );
   }
 
   /**
@@ -77,30 +113,21 @@ class MultiFactorApp extends Component {
    * 3. schema, member, login: show more authentication factors
    */
   render() {
-    const { schema, schemaLoaded, loginCompleted, title } = this.state;
+    const { schema, schemaLoaded, title, loading } = this.state;
 
-    if (!schema) {
-      if (schemaLoaded) {
+    if (!schema || loading) {
+      if (!schema && schemaLoaded) {
         throw new Error('Could not read configuration schema to load MFA interface');
       }
 
       return <LoadingIndicator />;
     }
 
-    const { registeredMethods } = schema;
-    const showRegister = loginCompleted || !registeredMethods.length;
-
     return (
       <div>
         {title && <h1>{title}</h1>}
-        {showRegister && <Register {...schema} onSetTitle={this.handleSetTitle} />}
-        {showRegister || (
-          <Login
-            {...schema}
-            onCompleteLogin={this.handleCompleteLogin}
-            onSetTitle={this.handleSetTitle}
-          />
-        )}
+        { this.renderRegister() }
+        { this.renderLogin() }
       </div>
     );
   }
