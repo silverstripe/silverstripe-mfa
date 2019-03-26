@@ -31,7 +31,7 @@ class Register extends Component {
   }
 
   render() {
-    const { onCompleteLogin, numbers } = this.props;
+    const { onCompleteLogin, moreOptionsControl, numbers } = this.props;
     const { ss: { i18n } } = window;
 
     if (!numbers) {
@@ -40,14 +40,17 @@ class Register extends Component {
 
     return (
       <div className="mfa-register-backup-codes__container">
-        <label htmlFor="answer">{this.renderQuestion()}</label>
+        <label style={{ display: 'block' }} htmlFor="answer">{this.renderQuestion()}</label>
         <input id="answer" type="text" value={this.state.answer} onChange={this.handleChange} />
-        <button
-          className="btn btn-primary"
-          onClick={() => onCompleteLogin({ answer: this.state.answer })}
-        >
-          {i18n._t('MFABackupCodesRegister.FINISH', 'Finish')}
-        </button>
+        <div>
+          <button
+            className="btn btn-primary"
+            onClick={() => onCompleteLogin({ answer: this.state.answer })}
+          >
+            {i18n._t('MFABackupCodesRegister.FINISH', 'Finish')}
+          </button>
+          { moreOptionsControl }
+        </div>
       </div>
     );
   }

@@ -217,7 +217,11 @@ class Login extends Component {
     }
 
     return (
-      <a href="#" onClick={this.handleShowOtherMethodsPane}>
+      <a
+        href="#"
+        className="mfa-login__show-other-methods"
+        onClick={this.handleShowOtherMethodsPane}
+      >
         {i18n._t('MFALogin.MORE_OPTIONS', 'More options')}
       </a>
     );
@@ -245,7 +249,7 @@ class Login extends Component {
           {otherMethods.map(method => (
             <li key={method.urlSegment}>
               <button onClick={this.handleClickOtherMethod} value={method.urlSegment}>
-                {method.name}
+                {method.leadInLabel}
               </button>
             </li>
           ))}

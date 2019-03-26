@@ -4,6 +4,7 @@ namespace SilverStripe\MFA\BackupCode;
 
 use RuntimeException;
 use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Store\StoreInterface;
@@ -20,7 +21,11 @@ class LoginHandler implements LoginHandlerInterface
      */
     public function start(StoreInterface $store, RegisteredMethod $method)
     {
-        // No-op
+        // Provide a path to the graphic shown
+        return [
+            'graphic' => ModuleLoader::getModule('silverstripe/mfa')
+                ->getResource('client/dist/images/recover.svg')->getURL(),
+        ];
     }
 
     /**
