@@ -14,6 +14,7 @@ use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Service\SchemaGenerator;
 use SilverStripe\MFA\Store\SessionStore;
+use SilverStripe\ORM\ValidationException;
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\IdentityStore;
 use SilverStripe\Security\Member;
@@ -131,6 +132,7 @@ class LoginHandler extends BaseLoginHandler
                         'register' => $this->Link('mfa/register/{urlSegment}'),
                         'login' => $this->Link('mfa/login/{urlSegment}'),
                         'complete' => $this->Link('mfa/complete'),
+                        'skip' => $this->Link('mfa/skip'),
                     ],
                 ]
             );
@@ -290,6 +292,7 @@ class LoginHandler extends BaseLoginHandler
      *
      * @param HTTPRequest $request
      * @return HTTPResponse
+     * @throws ValidationException
      */
     public function skipRegistration(HTTPRequest $request)
     {

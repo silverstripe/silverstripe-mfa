@@ -2,6 +2,8 @@
 $color-black: rgba(255, 255, 255, 0);
 $color-green: rgba(59, 162, 56, 1);
 $color-grey-text: rgba(84, 103, 128, 1);
+$color-dark-grey-text: rgba(67, 83, 109, 1);
+$color-blue: rgba(0,113,196,1);
 
 $color-grey-border: rgba(84, 103, 128, 1);
 $color-grey-border-light: rgba(214, 218, 224, 1);
@@ -16,6 +18,18 @@ $method-image-dimensions: 240px;
 $font-size-h1: 15px;
 $font-size-h2: 22px;
 $font-size-small: 10px;
+
+$font-app-title-size: 16px;
+$font-app-title-weight: normal;
+
+$font-section-title-size: 22px;
+$font-section-title-weight: normal;
+
+$font-block-heading-size: 14px;
+$font-block-heading-weight: bold;
+
+$font-content-size: 14px;
+$font-content-weight: normal;
 
 // Loading indicator
 $loading-indicator-size: 6em;

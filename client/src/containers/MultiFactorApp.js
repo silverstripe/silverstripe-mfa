@@ -12,10 +12,10 @@ class MultiFactorApp extends Component {
     super(props);
 
     this.state = {
+      loading: false,
       loginCompleted: false,
       schema: null,
       schemaLoaded: false,
-      loading: false,
     };
 
     this.handleCompleteLogin = this.handleCompleteLogin.bind(this);
