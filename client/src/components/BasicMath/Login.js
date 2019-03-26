@@ -7,7 +7,7 @@ import LoadingIndicator from 'components/LoadingIndicator';
  * This component provides the user interface for registering backup codes with a user. This process
  * only involves showing the user the backup codes. User input is not required to set up the codes.
  */
-class Register extends Component {
+class Login extends Component {
   constructor(props) {
     super(props);
 
@@ -47,7 +47,7 @@ class Register extends Component {
             className="btn btn-primary"
             onClick={() => onCompleteLogin({ answer: this.state.answer })}
           >
-            {i18n._t('MFABackupCodesRegister.FINISH', 'Finish')}
+            {i18n._t('BasicMathLogin.FINISH', 'Finish')}
           </button>
           { moreOptionsControl }
         </div>
@@ -56,4 +56,4 @@ class Register extends Component {
   }
 }
 
-export default Register;
+export default Login;
