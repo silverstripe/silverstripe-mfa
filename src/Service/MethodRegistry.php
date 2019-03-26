@@ -25,6 +25,17 @@ class MethodRegistry
     private static $methods = [];
 
     /**
+     * A string referring to the classname of the method (implementing SilverStripe\MFA\Method\MethodInterface) that is
+     * to be used as the back-up method for MFA. This alters the registration of this method to be required - a forced
+     * registration once the user has registered at least one other method. Additionally it cannot be set as the default
+     * method for a user to log in with.
+     *
+     * @config
+     * @var string
+     */
+    private static $default_backup_method;
+
+    /**
      * Get implementations of all configured methods
      *
      * @return MethodInterface[]

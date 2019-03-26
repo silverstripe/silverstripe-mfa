@@ -86,6 +86,6 @@ class MethodRegisterHandler implements RegisterHandlerInterface, TestOnly
      */
     public function getComponent()
     {
-        return 'N/A';
+        return 'BasicMathRegister';
     }
 }

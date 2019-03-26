@@ -1,0 +1,18 @@
+.mfa-register-confirmation {
+  text-align: center;
+  margin: 3em auto 3em;
+
+  &__icon {
+    line-height: 1;
+    color: $color-green;
+    font-size: 76px;
+  }
+
+  &__title {
+    margin-bottom: 6px;
+  }
+
+  &__continue {
+    margin-top: 2.5em;
+  }
+}

@@ -1,8 +1,15 @@
 // Core variables
 @import 'variables';
+@import '_fonts';
 
 @import '../styles/mfa-variables';
+
+// Base style
+@import '../styles/mfa';
+
+// Components
 @import '../components/LoadingIndicator';
+@import '../components/Register';
 
 // Backup codes
 @import '../components/BackupCodes/Register';

@@ -9,12 +9,17 @@ import LoadingIndicator from 'components/LoadingIndicator';
 
 class MultiFactorApp extends Component {
   constructor(props) {
+    const { ss: { i18n } } = window;
+
     super(props);
     this.state = {
+      loginCompleted: false,
       schema: null,
       schemaLoaded: false,
+      title: i18n._t('MFA.TITLE', 'Multi-factor authentication'),
     };
 
+    this.handleSetTitle = this.handleSetTitle.bind(this);
     this.handleCompleteLogin = this.handleCompleteLogin.bind(this);
   }
 
@@ -29,10 +34,33 @@ class MultiFactorApp extends Component {
       );
   }
 
-  handleCompleteLogin() {
-    const { schema: { endpoints: { complete } } } = this.state;
+  /**
+   * Handle a request to change the title of the page
+   *
+   * @param {string} title
+   */
+  handleSetTitle(title) {
+    this.setState({
+      title,
+    });
+  }
 
-    window.location = complete;
+  /**
+   * Handle an event indicating the login is complete
+   */
+  handleCompleteLogin() {
+    const { schema: { endpoints: { complete }, isFullyRegistered } } = this.state;
+
+    // Mark login as being completed. The server side will validate any further request - this state
+    // is just for controlling flow
+    this.setState({
+      loginCompleted: true,
+    });
+
+    // Redirect if the member is marked as having fully registered MFA
+    if (isFullyRegistered) {
+      window.location = complete;
+    }
   }
 
   /**
@@ -49,7 +77,7 @@ class MultiFactorApp extends Component {
    * 3. schema, member, login: show more authentication factors
    */
   render() {
-    const { schema, schemaLoaded } = this.state;
+    const { schema, schemaLoaded, loginCompleted, title } = this.state;
 
     if (!schema) {
       if (schemaLoaded) {
@@ -60,12 +88,21 @@ class MultiFactorApp extends Component {
     }
 
     const { registeredMethods } = schema;
+    const showRegister = loginCompleted || !registeredMethods.length;
 
-    if (!registeredMethods.length) {
-      return <Register {...schema} />;
-    }
-
-    return <Login {...schema} onCompleteLogin={this.handleCompleteLogin} />;
+    return (
+      <div>
+        {title && <h1>{title}</h1>}
+        {showRegister && <Register {...schema} onSetTitle={this.handleSetTitle} />}
+        {showRegister || (
+          <Login
+            {...schema}
+            onCompleteLogin={this.handleCompleteLogin}
+            onSetTitle={this.handleSetTitle}
+          />
+        )}
+      </div>
+    );
   }
 }
 

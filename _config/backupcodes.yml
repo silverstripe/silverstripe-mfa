@@ -4,3 +4,8 @@ name: MFABackupCodeAuthenticator
 SilverStripe\MFA\Service\MethodRegistry:
   methods:
     backupCodes: SilverStripe\MFA\BackupCode\Method
+---
+name: MFADefaultBackupMethod
+---
+SilverStripe\MFA\Service\MethodRegistry:
+  default_backup_method: SilverStripe\MFA\BackupCode\Method

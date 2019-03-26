@@ -18,6 +18,7 @@ window.ss = {
 
 const endpoints = {
   register: '/fake/{urlSegment}',
+  complete: '/fake/complete',
 };
 
 const firstMethod = {

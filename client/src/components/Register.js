@@ -4,17 +4,46 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { loadComponent } from 'lib/Injector'; // eslint-disable-line
 import availableMethodType from 'types/availableMethod';
+import registeredMethodType from 'types/registeredMethod';
 import LoadingIndicator from 'components/LoadingIndicator';
 
 class Register extends Component {
   constructor(props) {
     super(props);
+
+    const { registeredMethods, backupMethod } = props;
+
+    // Set initial selected method value based on props...
+    let selectedMethod = null;
+
+    // Set the backup method as the "selected" method if there are methods already registered for
+    // the user but one of those isn't the backup method.
+    if (
+      registeredMethods
+      && registeredMethods.length
+      && registeredMethods.filter(
+          method => method.urlSegment === backupMethod.urlSegment
+        ).length === 0
+    ) {
+      selectedMethod = backupMethod;
+    }
+
     this.state = {
-      selectedMethod: null,
+      selectedMethod,
       registerProps: null,
+      isComplete: false,
     };
 
     this.handleCompleteRegistration = this.handleCompleteRegistration.bind(this);
+    this.handleCompleteProcess = this.handleCompleteProcess.bind(this);
+  }
+
+  componentDidMount() {
+    const { selectedMethod } = this.state;
+
+    if (selectedMethod) {
+      this.fetchStartRegistrationData();
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -60,6 +89,22 @@ class Register extends Component {
   }
 
   /**
+   * Inspects the props and returns whether a back-up method should also be set up for this
+   * registration flow.
+   *
+   * @return {boolean}
+   */
+  shouldSetupBackupMethod() {
+    const { backupMethod, registeredMethods } = this.props;
+
+    if (!backupMethod) {
+      return false;
+    }
+
+    return !registeredMethods.find(method => method.urlSegment === backupMethod.urlSegment);
+  }
+
+  /**
    * Provided to individual method components to be called when the registration process is
    * completed
    *
@@ -73,7 +118,7 @@ class Register extends Component {
     });
 
     // Send registration details to server
-    const { endpoints: { register } } = this.props;
+    const { endpoints: { register }, backupMethod, onSetTitle } = this.props;
     const { selectedMethod } = this.state;
     fetch(register.replace('{urlSegment}', selectedMethod.urlSegment), {
       method: 'POST',
@@ -86,11 +131,64 @@ class Register extends Component {
         response.json();
       })
       .then(() => {
+        // If there's a backup method that's not registered then we initialise that
+        if (
+          this.shouldSetupBackupMethod()
+          && selectedMethod.urlSegment !== backupMethod.urlSegment
+        ) {
+          this.setState({
+            selectedMethod: backupMethod,
+          });
+          return;
+        }
+
+        // Set the title to blank
+        onSetTitle('');
+
         this.setState({
           selectedMethod: null,
+          isComplete: true,
         });
-        // TODO flesh out what happens here
       });
+  }
+
+  /**
+   * Handle an event triggered to complete the registration process
+   */
+  handleCompleteProcess() {
+    const { endpoints: { complete } } = this.props;
+
+    window.location = complete;
+  }
+
+  /**
+   * Render a confirmation screen to inform the user that set up has been completed
+   *
+   * @return {HTMLElement}
+   */
+  renderCompleteScreen() {
+    const { ss: { i18n } } = window;
+
+    return (
+      <div className="mfa-register-confirmation">
+        <i className="font-icon-check-mark mfa-register-confirmation__icon" />
+        <h2 className="mfa-register-confirmation__title">
+          {i18n._t('MFARegister.SETUP_COMPLETE_TITLE', 'Multi-factor authentication is now set up')}
+        </h2>
+        <p className="mfa-register-confirmation__description">
+          {i18n._t(
+            'MFARegister.SETUP_COMPLETE_DESCRIPTION',
+            'You can edit these settings from your profile area in the menu.'
+          )}
+        </p>
+        <button
+          onClick={this.handleCompleteProcess}
+          className="mfa-register-confirmation__continue btn btn-primary"
+        >
+          {i18n._t('MFARegister.SETUP_COMPLETE_CONTINUE', 'Continue')}
+        </button>
+      </div>
+    );
   }
 
   /**
@@ -165,7 +263,7 @@ class Register extends Component {
 
     return (
       <div>
-        <h1>Register an authentication method</h1>
+        <h2>Register an authentication method</h2>
         <ul>
           {availableMethods.map(method => (
             <li key={method.urlSegment}>
@@ -182,23 +280,28 @@ class Register extends Component {
   }
 
   render() {
-    return (
-      <div>
-        <div className="mfa__log-out">
-          <a href="Security/logout">Log out</a>
-        </div>
-        { this.renderMethod() }
-        { this.renderOptions() }
-      </div>
-    );
+    const { isComplete, selectedMethod } = this.state;
+
+    if (isComplete) {
+      return this.renderCompleteScreen();
+    }
+
+    if (selectedMethod) {
+      return this.renderMethod();
+    }
+
+    return this.renderOptions();
   }
 }
 
 Register.propTypes = {
   availableMethods: PropTypes.arrayOf(availableMethodType),
+  backupMethod: availableMethodType,
   endpoints: PropTypes.shape({
     register: PropTypes.string.isRequired,
-  })
+    complete: PropTypes.string.isRequired,
+  }),
+  registeredMethods: PropTypes.arrayOf(registeredMethodType)
 };
 
 export default Register;

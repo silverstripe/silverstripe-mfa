@@ -28,7 +28,9 @@ class MethodLoginHandler implements LoginHandlerInterface, TestOnly
     {
         $numbers = [];
 
-        for ($i = 0; $i < static::config()->get('number_of_numbers'); $i++) {
+        $numberOfNumbers = $this->config()->get('number_of_numbers') ?: 2;
+
+        for ($i = 0; $i < $numberOfNumbers; $i++) {
             $numbers[] = rand(1, 9);
         }
 
@@ -51,8 +53,15 @@ class MethodLoginHandler implements LoginHandlerInterface, TestOnly
      */
     public function verify(HTTPRequest $request, StoreInterface $store, RegisteredMethod $registeredMethod)
     {
+        $body = json_decode($request->getBody(), true);
+
+        if (!$body['answer']) {
+            return false;
+        }
+
         $state = $store->getState();
-        return hash_equals((string)$state['answer'], (string)$request->param('answer'));
+
+        return hash_equals((string)$state['answer'], (string)$body['answer']);
     }
 
     /**
@@ -75,6 +84,6 @@ class MethodLoginHandler implements LoginHandlerInterface, TestOnly
      */
     public function getComponent()
     {
-        return 'N/A';
+        return 'BasicMathLogin';
     }
 }

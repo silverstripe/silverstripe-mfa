@@ -24,7 +24,7 @@ class Login extends Component {
   }
 
   componentDidMount() {
-    const { defaultMethod, registeredMethods } = this.props;
+    const { defaultMethod, registeredMethods, backupMethod } = this.props;
 
     // Choose either the default method or the first method in the list as the default login screen
     const defaultMethodDefinition = defaultMethod && registeredMethods.find(
@@ -35,7 +35,11 @@ class Login extends Component {
       this.setSelectedMethod(defaultMethodDefinition);
     } else {
       // TODO is this expected? We have the "first" method as the fallback default?
-      this.setSelectedMethod(registeredMethods[0]);
+      // Use the first method that's not the backup method
+      this.setSelectedMethod(backupMethod
+        ? registeredMethods.find(method => method.urlSegment !== backupMethod.urlSegment)
+        : registeredMethods[0]
+      );
     }
   }
 
