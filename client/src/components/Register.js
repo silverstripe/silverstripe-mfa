@@ -1,6 +1,6 @@
 /* global window */
 
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { loadComponent } from 'lib/Injector'; // eslint-disable-line
 import availableMethodType from 'types/availableMethod';
@@ -119,7 +119,7 @@ class Register extends Component {
     });
 
     // Send registration details to server
-    const { endpoints: { register }, backupMethod, onSetTitle } = this.props;
+    const { endpoints: { register }, backupMethod } = this.props;
     const { selectedMethod } = this.state;
     fetch(register.replace('{urlSegment}', selectedMethod.urlSegment), {
       method: 'POST',
@@ -142,9 +142,6 @@ class Register extends Component {
           });
           return;
         }
-
-        // Set the title to blank
-        onSetTitle('');
 
         this.setState({
           selectedMethod: null,
@@ -251,17 +248,20 @@ class Register extends Component {
   }
 
   render() {
-    const { isComplete, selectedMethod } = this.state;
+    const { isComplete } = this.state;
+    const { ss: { i18n } } = window;
 
     if (isComplete) {
       return <Complete onComplete={this.handleCompleteProcess} />;
     }
 
-    if (selectedMethod) {
-      return this.renderMethod();
-    }
-
-    return this.renderOptions();
+    return (
+      <Fragment>
+        <h1>{i18n._t('MFARegister.TITLE', 'Multi-factor authentication')}</h1>
+        {this.renderMethod()}
+        {this.renderOptions()}
+      </Fragment>
+    );
   }
 }
 
