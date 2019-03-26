@@ -74,7 +74,7 @@ class Login extends Component {
       <p>
         {i18n._t(
           'MFABackupCodesLogin.DESCRIPTION',
-          'Use a recovery code that you recorded previously'
+          'Use one of the recovery codes you received'
         )}
       </p>
     );
@@ -113,14 +113,18 @@ class Login extends Component {
   }
 
   render() {
+    const { graphic, leadInLabel } = this.props;
+
     return (
       <form className="mfa-login-backup-codes__container">
         <div className="mfa-login-backup-codes__content">
           {this.renderDescription()}
           {this.renderInput()}
-          {this.renderControls()}
         </div>
-        <div className="mfa-login-backup-codes__icon" />
+        <div>
+          <img className="mfa-login-backup-codes__image" src={graphic} alt={leadInLabel} />
+        </div>
+        {this.renderControls()}
       </form>
     );
   }
