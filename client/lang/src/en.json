@@ -1,11 +1,11 @@
 {
-  "MFA.FIND_OUT_MORE": "Find out more",
-  "MFAIntroduction.TITLE": "Add extra security to your account",
-  "MFAIntroduction.HOW_IT_WORKS": "How it works",
-  "MFAIntroduction.EXTRA_LAYER_TITLE": "Extra layer of protection",
-  "MFAIntroduction.EXTRA_LAYER_DESCRIPTION": "Every time you log into your account, you'll need your password and an additional form of verification.",
-  "MFAIntroduction.UNIQUE_TITLE": "Unique to you",
-  "MFAIntroduction.UNIQUE_DESCRIPTION": "This verification is only available to you. Even if someone gets your password, they will not be able to access your account.",
-  "MFAIntroduction.GET_STARTED": "Get started",
-  "MFAIntroduction.SETUP_LATER": "Setup later"
+  "MultiFactorAuthentication.FIND_OUT_MORE": "Find out more",
+  "MultiFactorAuthentication.TITLE": "Add extra security to your account",
+  "MultiFactorAuthentication.HOW_IT_WORKS": "How it works",
+  "MultiFactorAuthentication.EXTRA_LAYER_TITLE": "Extra layer of protection",
+  "MultiFactorAuthentication.EXTRA_LAYER_DESCRIPTION": "Every time you log into your account, you'll need your password and an additional form of verification.",
+  "MultiFactorAuthentication.UNIQUE_TITLE": "Unique to you",
+  "MultiFactorAuthentication.UNIQUE_DESCRIPTION": "This verification is only available to you. Even if someone gets your password, they will not be able to access your account.",
+  "MultiFactorAuthentication.GET_STARTED": "Get started",
+  "MultiFactorAuthentication.SETUP_LATER": "Setup later"
 }

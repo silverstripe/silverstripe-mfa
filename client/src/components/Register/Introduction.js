@@ -11,11 +11,11 @@ function Introduction({ canSkip, onContinue, onSkip }) {
   return (
     <div>
       <h2 className="mfa-section-title">
-        { i18n._t('MFAIntroduction.TITLE', fallbacks['MFAIntroduction.TITLE']) }
+        { i18n._t('MultiFactorAuthentication.TITLE', fallbacks['MultiFactorAuthentication.TITLE']) }
       </h2>
 
       <h4 className="mfa-feature-list-title">
-        { i18n._t('MFAIntroduction.HOW_IT_WORKS', fallbacks['MFAIntroduction.HOW_IT_WORKS']) }
+        { i18n._t('MultiFactorAuthentication.HOW_IT_WORKS', fallbacks['MultiFactorAuthentication.HOW_IT_WORKS']) }
       </h4>
 
       <ul className="mfa-feature-list">
@@ -29,18 +29,18 @@ function Introduction({ canSkip, onContinue, onSkip }) {
           <div>
             <h5 className="mfa-block-heading mfa-feature-list-item__title">
               { i18n._t(
-                'MFAIntroduction.EXTRA_LAYER_TITLE',
-                fallbacks['MFAIntroduction.EXTRA_LAYER_TITLE']
+                'MultiFactorAuthentication.EXTRA_LAYER_TITLE',
+                fallbacks['MultiFactorAuthentication.EXTRA_LAYER_TITLE']
               ) }
             </h5>
 
             <p className="mfa-feature-list-item__description">
               { i18n._t(
-                'MFAIntroduction.EXTRA_LAYER_DESCRIPTION',
-                fallbacks['MFAIntroduction.EXTRA_LAYER_DESCRIPTION']
+                'MultiFactorAuthentication.EXTRA_LAYER_DESCRIPTION',
+                fallbacks['MultiFactorAuthentication.EXTRA_LAYER_DESCRIPTION']
               ) }
               &nbsp;
-              <a href="#">{ i18n._t('MFA.FIND_OUT_MORE', fallbacks['MFA.FIND_OUT_MORE'])}</a>
+              <a href="#">{ i18n._t('MultiFactorAuthentication.FIND_OUT_MORE', fallbacks['MultiFactorAuthentication.FIND_OUT_MORE'])}</a>
             </p>
           </div>
         </li>
@@ -56,15 +56,15 @@ function Introduction({ canSkip, onContinue, onSkip }) {
           <div>
             <h5 className="mfa-block-heading mfa-feature-list-item__title">
               { i18n._t(
-                'MFAIntroduction.UNIQUE_TITLE',
-                fallbacks['MFAIntroduction.UNIQUE_TITLE']
+                'MultiFactorAuthentication.UNIQUE_TITLE',
+                fallbacks['MultiFactorAuthentication.UNIQUE_TITLE']
               ) }
             </h5>
 
             <p className="mfa-feature-list-item__description">
               { i18n._t(
-                'MFAIntroduction.UNIQUE_DESCRIPTION',
-                fallbacks['MFAIntroduction.UNIQUE_DESCRIPTION']
+                'MultiFactorAuthentication.UNIQUE_DESCRIPTION',
+                fallbacks['MultiFactorAuthentication.UNIQUE_DESCRIPTION']
               ) }
             </p>
           </div>
@@ -74,7 +74,7 @@ function Introduction({ canSkip, onContinue, onSkip }) {
       <ul className="mfa-action-list">
         <li className="mfa-action-list__item">
           <button className="mfa-action mfa-action--primary btn btn-primary" onClick={onContinue}>
-            { i18n._t('MFAIntroduction.GET_STARTED', fallbacks['MFAIntroduction.GET_STARTED']) }
+            { i18n._t('MultiFactorAuthentication.GET_STARTED', fallbacks['MultiFactorAuthentication.GET_STARTED']) }
           </button>
         </li>
 
@@ -82,7 +82,7 @@ function Introduction({ canSkip, onContinue, onSkip }) {
           canSkip &&
           <li className="mfa-action-list__item">
             <button className="btn btn-secondary" onClick={onSkip}>
-              { i18n._t('MFAIntroduction.SETUP_LATER', fallbacks['MFAIntroduction.SETUP_LATER']) }
+              { i18n._t('MultiFactorAuthentication.SETUP_LATER', fallbacks['MultiFactorAuthentication.SETUP_LATER']) }
             </button>
           </li>
         }
