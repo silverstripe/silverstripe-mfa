@@ -42,6 +42,11 @@ class AvailableMethodDetails implements AvailableMethodDetailsInterface
         return $this->method->getRegisterHandler()->getSupportLink();
     }
 
+    public function getThumbnail()
+    {
+        return $this->method->getThumbnail();
+    }
+
     public function getComponent()
     {
         return $this->method->getRegisterHandler()->getComponent();
@@ -54,6 +59,7 @@ class AvailableMethodDetails implements AvailableMethodDetailsInterface
             'name' => $this->getName(),
             'description' => $this->getDescription(),
             'supportLink' => $this->getSupportLink(),
+            'thumbnail' => $this->getThumbnail(),
             'component' => $this->getComponent(),
         ];
     }

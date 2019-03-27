@@ -1,0 +1,64 @@
+.mfa-method-tile {
+  flex: 25%;
+  margin-right: $tile-spacing;
+  margin-bottom: $tile-spacing;
+  max-width: 50%;
+  position: relative;
+
+  &__content {
+    border-radius: $tile-border-radius;
+    box-shadow: $tile-box-shadow;
+    padding: $tile-padding;
+
+    // Remove default focus state (we have our own)
+    &:focus {
+      outline: none;
+    }
+
+    // When the method is hovered or tabbed into
+    &:hover,
+    &:focus {
+      background: $tile-border-color-hover;
+      cursor: pointer;
+    }
+  }
+
+  // When the method is highlighted (via clicking it)
+  &--active {
+    .mfa-method-tile__content {
+      box-shadow: $tile-box-shadow-active;
+    }
+  }
+
+  &__description {
+    margin: 0;
+  }
+
+  &__thumbnail-container {
+    text-align: center;
+  }
+
+  &__thumbnail {
+    width: $tile-thumbnail-size;
+  }
+
+  &__title {
+    font-size: $font-size-h1;
+  }
+
+  &__unavailable {
+    &-mask {
+      background: rgba(#ffffff, .75);
+      height: 100%;
+      left: 0;
+      padding: $tile-padding;
+      position: absolute;
+      top: 0;
+    }
+
+    &-title {
+      font-size: $font-size-h1;
+      margin-top: 0;
+    }
+  }
+}

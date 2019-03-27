@@ -1,0 +1,15 @@
+.mfa-method-tile {
+  &__container {
+    display: flex;
+    flex-flow: row wrap;
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+  }
+
+  &__action {
+    &-next {
+      margin-right: 1rem;
+    }
+  }
+}

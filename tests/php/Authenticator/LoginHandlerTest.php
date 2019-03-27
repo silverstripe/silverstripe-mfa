@@ -104,13 +104,16 @@ class LoginHandlerTest extends FunctionalTest
         $method = Injector::inst()->get(Method::class);
         $registerHandler = $method->getRegisterHandler();
 
-        $this->assertSame([[
-            'urlSegment' => $method->getURLSegment(),
-            'name' => $registerHandler->getName(),
-            'description' => $registerHandler->getDescription(),
-            'supportLink' => $registerHandler->getSupportLink(),
-            'component' => 'BasicMathRegister',
-        ]], $response['availableMethods']);
+        $methods = $response['availableMethods'];
+        $this->assertNotEmpty($methods);
+        $firstMethod = $methods[0];
+
+        $this->assertSame($method->getURLSegment(), $firstMethod['urlSegment']);
+        $this->assertSame($registerHandler->getName(), $firstMethod['name']);
+        $this->assertSame($registerHandler->getDescription(), $firstMethod['description']);
+        $this->assertSame($registerHandler->getSupportLink(), $firstMethod['supportLink']);
+        $this->assertContains('client/dist/images', $firstMethod['thumbnail']);
+        $this->assertSame('BasicMathRegister', $firstMethod['component']);
     }
 
     public function testMFASchemaEndpointShowsRegisteredMethodsIfSetUp()
