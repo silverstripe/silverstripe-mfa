@@ -73,7 +73,7 @@ class LoginHandler implements LoginHandlerInterface
      */
     public function getLeadInLabel()
     {
-        return _t(__CLASS__ . '.LEAD_IN', 'Enter one of your recovery codes');
+        return _t(__CLASS__ . '.LEAD_IN', 'Verify with recovery code');
     }
 
     /**
