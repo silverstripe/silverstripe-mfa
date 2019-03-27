@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import MethodTile from './MethodTile';
 import availableMethodType from 'types/availableMethod';
+import classnames from 'classnames';
 
 /**
  * Renders a list of authentication methods as MethodTile components
@@ -76,11 +77,15 @@ class SelectMethod extends Component {
     const { methods } = this.props;
     const { highlightedMethod } = this.state;
 
+    const classes = classnames('mfa-method-tile__container', {
+      'mfa-method-tile__container--two-columns': methods.length % 2 === 0,
+    });
+
     return (
       <div>
         <h2>{i18n._t('MFASelectMethod.SELECT_METHOD', 'Select a verification method')}</h2>
 
-        <ul className="mfa-method-tile__container">
+        <ul className={classes}>
           {methods.map(method => (
             <MethodTile
               isActive={highlightedMethod === method}

@@ -16,7 +16,7 @@ class MethodTile extends Component {
   /**
    * If the method is enabled, trigger the click handler prop
    *
-   * @param event
+   * @param {Event} event
    */
   handleClick(event) {
     const { isAvailable, onClick } = this.props;
@@ -29,7 +29,7 @@ class MethodTile extends Component {
   /**
    * If pressing enter key, trigger click event to load detail view
    *
-   * @param {Object} event
+   * @param {Event} event
    */
   handleKeyUp(event) {
     if (event.keyCode === 13) {
@@ -40,7 +40,7 @@ class MethodTile extends Component {
   /**
    * Get the support link as a "target=_blank" anchor tag from the given method (if one is set)
    *
-   * @param {object} method
+   * @param {availableMethodType} method
    * @return {HTMLElement|null}
    */
   renderSupportLink(method) {
@@ -114,7 +114,8 @@ class MethodTile extends Component {
           )}
           <h3 className="mfa-method-tile__title">{method.name}</h3>
           <p className="mfa-method-tile__description">
-            {method.description}. {this.renderSupportLink(method)}
+            {method.description && `${method.description}. `}
+            {this.renderSupportLink(method)}
           </p>
         </div>
       </li>

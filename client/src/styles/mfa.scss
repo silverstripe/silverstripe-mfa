@@ -11,7 +11,6 @@ body.mfa {
   // Allow the h1 rendered by the React app to display
   .mfa-app h1 {
     display: block;
-    width: $container-width;
     margin: auto;
     font-size: $font-size-h1;
     color: $color-grey-text;
@@ -34,7 +33,8 @@ body.mfa {
 
 
 .mfa-app {
-  width: $container-width;
+  width: 100%;
   margin: auto;
+  max-width: $container-width;
   color: $color-grey-text;
 }

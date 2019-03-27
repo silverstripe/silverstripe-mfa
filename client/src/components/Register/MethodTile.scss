@@ -1,14 +1,44 @@
 .mfa-method-tile {
-  flex: 25%;
-  margin-right: $tile-spacing;
+  display: flex;
+  flex: 100%; // mobile size (small)
   margin-bottom: $tile-spacing;
-  max-width: 50%;
   position: relative;
 
+  // Always remove the right margin for the last tile, despite rows
+  &:last-child {
+    margin-right: 0;
+  }
+
+  // Medium size
+  @media (min-width: $viewport-small) {
+    flex: calc(50% - #{$tile-spacing});
+    margin-right: $tile-spacing;
+    max-width: 50%;
+
+    @media (max-width: $viewport-medium) {
+      // Remove right margin on each end of the row
+      &:nth-child(2n) {
+        margin-right: 0;
+      }
+    }
+  }
+
+  // Large size (desktop)
+  @media (min-width: $viewport-medium) {
+    flex: calc(33% - #{$tile-spacing} * 2);
+
+    // Remove right margin on each end of the row
+    &:nth-child(3n) {
+      margin-right: 0;
+    }
+  }
+
+  // Inner content section
   &__content {
     border-radius: $tile-border-radius;
     box-shadow: $tile-box-shadow;
     padding: $tile-padding;
+    width: 100%;
 
     // Remove default focus state (we have our own)
     &:focus {
@@ -48,7 +78,7 @@
 
   &__unavailable {
     &-mask {
-      background: rgba(#ffffff, .75);
+      background: $tile-mask-background;
       height: 100%;
       left: 0;
       padding: $tile-padding;
@@ -59,6 +89,25 @@
     &-title {
       font-size: $font-size-h1;
       margin-top: 0;
+    }
+  }
+}
+
+// Custom styles for an even number of authenticators in large screens
+@media (min-width: $viewport-medium) {
+  .mfa-method-tile__container--two-columns {
+    .mfa-method-tile {
+      flex: calc(50% - #{$tile-spacing});
+
+      // Remove right margin on each end of the row
+      &:nth-child(2n) {
+        margin-right: 0;
+      }
+
+      // Restore third item margins removed by previous media queries
+      &:nth-child(3n) {
+        margin-right: $tile-spacing;
+      }
     }
   }
 }

@@ -39,3 +39,8 @@ $tile-box-shadow-active: 0 0 0 $tile-border-width-active $tile-border-color-acti
 $tile-padding: 2rem;
 $tile-spacing: .5rem;
 $tile-thumbnail-size: 100px;
+$tile-mask-background: rgba(#ffffff, .75);
+
+// Media query breakpoints
+$viewport-small: 480px;
+$viewport-medium: 768px;
