@@ -311,9 +311,10 @@ class LoginHandler extends BaseLoginHandler
             }
 
             $member->update(['HasSkippedMFARegistration' => true])->write();
+            $this->doPerformLogin($request, $member);
 
             // Redirect the user back to wherever they originally came from when they started the login process
-            return $this->redirectBack();
+            return $this->redirectAfterSuccessfulLogin();
         } catch (MemberNotFoundException $exception) {
             Security::singleton()->setSessionMessage(
                 _t(__CLASS__ . '.CANNOT_SKIP', 'You cannot skip MFA registration'),
