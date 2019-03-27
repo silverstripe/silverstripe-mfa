@@ -83,7 +83,9 @@ class SelectMethod extends Component {
 
     return (
       <div>
-        <h2>{i18n._t('MFASelectMethod.SELECT_METHOD', 'Select a verification method')}</h2>
+        <h2 className="mfa-section-title">
+          {i18n._t('MFASelectMethod.SELECT_METHOD', 'Select a verification method')}
+        </h2>
 
         <ul className={classes}>
           {methods.map(method => (
