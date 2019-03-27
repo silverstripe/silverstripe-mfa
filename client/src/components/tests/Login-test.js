@@ -185,7 +185,7 @@ describe('Login', () => {
 
       expect(preventDefault.mock.calls).toHaveLength(1);
       expect(wrapper.state('showOtherMethods')).toBe(true);
-      expect(wrapper.find('.mfa-login__other-methods')).toHaveLength(1);
+      expect(wrapper.find('SelectMethod')).toHaveLength(1);
       done();
     });
   });
@@ -204,14 +204,17 @@ describe('Login', () => {
     });
 
     setTimeout(() => {
-      const backButton = wrapper.find('.mfa-login__other-methods-back');
+      expect(wrapper.find('SelectMethod')).toHaveLength(1);
+      const chooseMethodWrapper = wrapper.find('SelectMethod').shallow();
+
+      const backButton = chooseMethodWrapper.find('.mfa-login-select-method__back');
       expect(backButton).toHaveLength(1);
 
       backButton.simulate('click', { preventDefault });
       expect(preventDefault.mock.calls).toHaveLength(1);
 
       setTimeout(() => {
-        expect(wrapper.find('.mfa-login__other-methods')).toHaveLength(0);
+        expect(wrapper.find('SelectMethod')).toHaveLength(0);
         done();
       });
     });
@@ -232,18 +235,20 @@ describe('Login', () => {
 
     setTimeout(() => {
       expect(fetchMock.mock.calls).toHaveLength(1);
+      const chooseMethodWrapper = wrapper.find('SelectMethod').shallow();
 
-      const otherMethod = wrapper.find('.mfa-login__other-methods li button');
+      const otherMethod = chooseMethodWrapper.find('li a');
       expect(otherMethod).toHaveLength(1);
 
-      otherMethod.simulate('click', { preventDefault, target: { value: 'bee' } });
+      otherMethod.simulate('click', { preventDefault });
       expect(preventDefault.mock.calls).toHaveLength(1);
       expect(fetchMock.mock.calls).toHaveLength(2);
 
       expect(fetchMock.mock.calls).toEqual([['/fake/aye'], ['/fake/bee']]);
 
       setTimeout(() => {
-        expect(wrapper.find('.mfa-login__other-methods')).toHaveLength(0);
+        expect(wrapper.find('SelectMethod')).toHaveLength(0);
+        expect(wrapper.find('h2').text()).toBe('Login with bee');
         done();
       });
     });

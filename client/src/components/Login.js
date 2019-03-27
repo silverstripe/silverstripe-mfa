@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { loadComponent } from 'lib/Injector'; // eslint-disable-line
 import registeredMethodType from 'types/registeredMethod';
 import LoadingIndicator from 'components/LoadingIndicator';
+import SelectMethod from 'components/Login/SelectMethod';
 
 class Login extends Component {
   constructor(props) {
@@ -188,15 +189,15 @@ class Login extends Component {
    * method specified should be the value of the target of the event (ie. the value of the button)
    *
    * @param {Event} event
+   * @param method
    */
-  handleClickOtherMethod(event) {
+  handleClickOtherMethod(event, method) {
     event.preventDefault();
-    const method = event.target && event.target.value;
     const { registeredMethods } = this.props;
 
     if (method) {
       this.setSelectedMethod(
-        registeredMethods.find(methodSpec => methodSpec.urlSegment === method)
+        registeredMethods.find(methodSpec => methodSpec.urlSegment === method.urlSegment)
       );
     }
   }
@@ -235,7 +236,6 @@ class Login extends Component {
    */
   renderOtherMethods() {
     const otherMethods = this.getOtherMethods();
-    const { ss: { i18n } } = window;
     const { selectedMethod, showOtherMethods } = this.state;
 
     if (selectedMethod && !showOtherMethods) {
@@ -243,31 +243,11 @@ class Login extends Component {
     }
 
     return (
-      <div className="mfa-login__other-methods">
-        <h2>{i18n._t('MFALogin.OTHER_METHODS_TITLE', 'Try another way to verify')}</h2>
-        <ul>
-          {otherMethods.map(method => (
-            <li key={method.urlSegment}>
-              <button onClick={this.handleClickOtherMethod} value={method.urlSegment}>
-                {method.leadInLabel}
-              </button>
-            </li>
-          ))}
-        </ul>
-        <p>
-          {i18n._t(
-            'MFALogin.LAST_RESORT_MESSAGE',
-            'Contact your site administrator if you require your multi-factor authentication to ' +
-              'be reset'
-          )}
-        </p>
-        <button
-          className="mfa-login__other-methods-back"
-          onClick={this.handleHideOtherMethodsPane}
-        >
-          {i18n._t('MFALogin.BACK', 'Back')}
-        </button>
-      </div>
+      <SelectMethod
+        methods={otherMethods}
+        onClickBack={this.handleHideOtherMethodsPane}
+        onSelectMethod={method => event => this.handleClickOtherMethod(event, method)}
+      />
     );
   }
 
