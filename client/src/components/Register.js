@@ -7,6 +7,7 @@ import availableMethodType from 'types/availableMethod';
 import registeredMethodType from 'types/registeredMethod';
 import LoadingIndicator from 'components/LoadingIndicator';
 import Complete from 'components/Register/Complete';
+import SelectMethod from 'components/Register/SelectMethod';
 
 class Register extends Component {
   constructor(props) {
@@ -37,6 +38,7 @@ class Register extends Component {
 
     this.handleCompleteRegistration = this.handleCompleteRegistration.bind(this);
     this.handleCompleteProcess = this.handleCompleteProcess.bind(this);
+    this.handleSelectMethod = this.handleSelectMethod.bind(this);
   }
 
   componentDidMount() {
@@ -62,14 +64,13 @@ class Register extends Component {
 
   /**
    * Set the MFA method the user is registering for
+   *
    * @param {Object} method
    */
-  getChooseMethodHandler(method) {
-    return () => {
-      this.setState({
-        selectedMethod: method
-      });
-    };
+  handleSelectMethod(method) {
+    this.setState({
+      selectedMethod: method
+    });
   }
 
   /**
@@ -192,33 +193,9 @@ class Register extends Component {
   }
 
   /**
-   * Get the support link as a "target=_blank" anchor tag from the given method (if one is set)
-   *
-   * @param {object} method
-   * @return {HTMLElement|null}
-   */
-  renderSupportLink(method) {
-    const { ss: { i18n } } = window;
-
-    if (!method.supportLink) {
-      return null;
-    }
-
-    return (
-      <a
-        href={method.supportLink}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {i18n._t('MFARegister.HELP', 'Find out more')}
-      </a>
-    );
-  }
-
-  /**
    * If the site has more than one multi factor method enabled, show others a user can register
    *
-   * @return {HTMLElement|null}
+   * @return {SelectMethod|null}
    */
   renderOptions() {
     const { availableMethods } = this.props;
@@ -230,20 +207,10 @@ class Register extends Component {
     }
 
     return (
-      <div>
-        <h2>Register an authentication method</h2>
-        <ul>
-          {availableMethods.map(method => (
-            <li key={method.urlSegment}>
-              {method.description}
-              <button onClick={this.getChooseMethodHandler(method)}>
-                {method.name}
-              </button>
-              { this.renderSupportLink(method) }
-            </li>
-          ))}
-        </ul>
-      </div>
+      <SelectMethod
+        methods={availableMethods}
+        onSelectMethod={this.handleSelectMethod}
+      />
     );
   }
 

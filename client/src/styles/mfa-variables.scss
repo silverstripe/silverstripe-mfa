@@ -3,6 +3,9 @@ $color-black: rgba(255, 255, 255, 0);
 $color-green: rgba(59, 162, 56, 1);
 $color-grey-text: rgba(84, 103, 128, 1);
 
+$color-grey-border: rgba(84, 103, 128, 1);
+$color-grey-border-light: rgba(214, 218, 224, 1);
+
 // Sizing
 $container-width: 600px;
 $header-spacing: 10px;
@@ -22,3 +25,22 @@ $loading-indicator-border: $loading-indicator-border-size solid $color-black;
 
 $loading-indicator-speed: 1.1s;
 $loading-indicator-animation: spinner-loader $loading-indicator-speed infinite linear;
+
+// Authentication method tiles
+$tile-border-color: $color-grey-border-light;
+$tile-border-color-hover: lighten($tile-border-color, 9.5);
+$tile-border-color-active: rgb(0, 111, 199);
+$tile-border-width: 1px;
+$tile-border-width-active: 2px;
+$tile-border-radius: .5rem;
+$tile-box-shadow: 0 0 0 $tile-border-width $tile-border-color inset;
+$tile-box-shadow-active: 0 0 0 $tile-border-width-active $tile-border-color-active inset;
+
+$tile-padding: 2rem;
+$tile-spacing: .5rem;
+$tile-thumbnail-size: 100px;
+$tile-mask-background: rgba(#ffffff, .75);
+
+// Media query breakpoints
+$viewport-small: 480px;
+$viewport-medium: 768px;

@@ -33,6 +33,13 @@ interface MethodInterface
     public function getRegisterHandler();
 
     /**
+     * Return a URL to an image to be used as a thumbnail in the MFA login/registration grid for all MFA methods
+     *
+     * @return string
+     */
+    public function getThumbnail();
+
+    /**
      * @return AvailableMethodDetailsInterface
      */
     public function getDetails();

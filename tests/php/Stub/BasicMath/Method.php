@@ -1,6 +1,7 @@
 <?php
 namespace SilverStripe\MFA\Tests\Stub\BasicMath;
 
+use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\Dev\TestOnly;
 use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
@@ -37,6 +38,11 @@ class Method implements MethodInterface, TestOnly
     public function getRegisterHandler()
     {
         return new MethodRegisterHandler();
+    }
+
+    public function getThumbnail()
+    {
+        return ModuleLoader::getModule('silverstripe/mfa')->getResource('client/dist/images/totp.svg')->getURL();
     }
 
     public function getDetails()

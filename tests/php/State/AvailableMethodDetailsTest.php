@@ -62,4 +62,10 @@ class AvailableMethodDetailsTest extends SapphireTest
         $this->method->expects($this->once())->method('getURLSegment')->willReturn('backup-codes');
         $this->assertSame('backup-codes', $this->details->getURLSegment());
     }
+
+    public function testGetThumbnail()
+    {
+        $this->method->expects($this->once())->method('getThumbnail')->willReturn('clipper');
+        $this->assertSame('clipper', $this->details->getThumbnail());
+    }
 }

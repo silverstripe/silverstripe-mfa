@@ -33,5 +33,10 @@ interface AvailableMethodDetailsInterface extends JsonSerializable
     /**
      * @return string
      */
+    public function getThumbnail();
+
+    /**
+     * @return string
+     */
     public function getComponent();
 }

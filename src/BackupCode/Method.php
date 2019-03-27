@@ -3,6 +3,7 @@
 namespace SilverStripe\MFA\BackupCode;
 
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
@@ -56,6 +57,13 @@ class Method implements MethodInterface
     public function getRegisterHandler()
     {
         return Injector::inst()->create(RegisterHandler::class);
+    }
+
+    public function getThumbnail()
+    {
+        return ModuleLoader::getModule('silverstripe/mfa')
+            ->getResource('client/dist/images/locked-letter.svg')
+            ->getURL();
     }
 
     public function getDetails()

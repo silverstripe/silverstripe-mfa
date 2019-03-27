@@ -9,8 +9,10 @@
 
 // Components
 @import '../components/LoadingIndicator';
-@import '../components/Register';
 @import '../components/Login';
+@import '../components/Register';
+@import '../components/Register/MethodTile';
+@import '../components/Register/SelectMethod';
 
 // Backup codes
 @import '../components/BackupCodes/Register';
