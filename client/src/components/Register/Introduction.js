@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 const fallbacks = require('../../../lang/src/en.json');
 
-function Introduction({ canSkip, onContinue, onSkip }) {
+const Introduction = ({ canSkip, onContinue, onSkip }) => {
   const { ss: { i18n } } = window;
 
   return (
@@ -21,7 +21,7 @@ function Introduction({ canSkip, onContinue, onSkip }) {
       <ul className="mfa-feature-list">
         <li className="mfa-feature-list-item">
           <img
-            alt="Shields indicating additional protection"
+            alt={i18n._t('MultiFactorAuthentication.EXTRA_LAYER_IMAGE_ALT', fallbacks['MultiFactorAuthentication.EXTRA_LAYER_IMAGE_ALT'])}
             aria-hidden="true"
             className="mfa-feature-list-item__icon"
             src="/resources/vendor/silverstripe/mfa/client/dist/images/extra-protection.svg"
@@ -40,14 +40,14 @@ function Introduction({ canSkip, onContinue, onSkip }) {
                 fallbacks['MultiFactorAuthentication.EXTRA_LAYER_DESCRIPTION']
               ) }
               &nbsp;
-              <a href="#">{ i18n._t('MultiFactorAuthentication.FIND_OUT_MORE', fallbacks['MultiFactorAuthentication.FIND_OUT_MORE'])}</a>
+              <a href="#">{ i18n._t('MultiFactorAuthentication.FIND_OUT_MORE', fallbacks['MultiFactorAuthentication.FIND_OUT_MORE']) }</a>
             </p>
           </div>
         </li>
 
         <li className="mfa-feature-list-item">
           <img
-            alt="Person with tick indicating uniqueness"
+            alt={i18n._t('MultiFactorAuthentication.UNIQUE_IMAGE_ALT', fallbacks['MultiFactorAuthentication.UNIQUE_IMAGE_ALT'])}
             aria-hidden="true"
             className="mfa-feature-list-item__icon"
             src="/resources/vendor/silverstripe/mfa/client/dist/images/unique.svg"
@@ -89,7 +89,7 @@ function Introduction({ canSkip, onContinue, onSkip }) {
       </ul>
     </div>
   );
-}
+};
 
 Introduction.propTypes = {
   canSkip: PropTypes.bool,
