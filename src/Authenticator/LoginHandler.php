@@ -4,7 +4,6 @@ namespace SilverStripe\MFA\Authenticator;
 use Exception;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
-use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\MFA\Exception\MemberNotFoundException;
 use SilverStripe\MFA\Extension\MemberExtension;
@@ -72,6 +71,7 @@ class LoginHandler extends BaseLoginHandler
     {
         /** @var Member&MemberExtension $member */
         $member = $this->checkLogin($data, $request, $result);
+        $enforcementManager = new EnforcementManager();
 
         // If there's no member it's an invalid login. We'll delegate this to the parent
         // Additionally if there are no MFA methods registered then we will also delegate
@@ -91,6 +91,12 @@ class LoginHandler extends BaseLoginHandler
         $request->getSession()->clear(static::SESSION_KEY . '.mustLogin');
         if ($member->RegisteredMFAMethods()->count() > 0) {
             $request->getSession()->set(static::SESSION_KEY . '.mustLogin', true);
+        }
+
+        // Bypass the MFA UI if the user can and has skipped it
+        if (!$enforcementManager->shouldRedirectToMFA($member)) {
+            $this->doPerformLogin($request, $member);
+            return $this->redirectAfterSuccessfulLogin();
         }
 
         // Redirect to the MFA step

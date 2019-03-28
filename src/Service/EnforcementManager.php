@@ -5,6 +5,7 @@ namespace SilverStripe\MFA\Service;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\MFA\Extension\MemberExtension;
+use SilverStripe\MFA\Extension\SiteConfigExtension;
 use SilverStripe\ORM\FieldType\DBDate;
 use SilverStripe\Security\Member;
 use SilverStripe\SiteConfig\SiteConfig;
@@ -61,13 +62,15 @@ class EnforcementManager
      */
     public function shouldRedirectToMFA(Member $member)
     {
-        $isRequired = $this->isMFARequired();
-        if ($isRequired) {
+        if ($this->isMFARequired()) {
             return true;
         }
 
-        $hasSkipped = $member->HasSkippedMFARegistration;
-        if (!$hasSkipped) {
+        if ($this->isGracePeriodInEffect()) {
+            return true;
+        }
+
+        if (!$member->HasSkippedMFARegistration) {
             return true;
         }
 
@@ -126,5 +129,34 @@ class EnforcementManager
 
         // MFA is required, a grace period is set, and it's in the future
         return false;
+    }
+
+    /**
+     * Specifically determines whether the MFA Grace Period is currently active.
+     *
+     * @return bool
+     */
+    public function isGracePeriodInEffect()
+    {
+        /** @var SiteConfig&SiteConfigExtension $siteConfig */
+        $siteConfig = SiteConfig::current_site_config();
+
+        $isRequired = $siteConfig->MFARequired;
+        if (!$isRequired) {
+            return false;
+        }
+
+        $gracePeriod = $siteConfig->MFAGracePeriodExpires;
+        if (!$gracePeriod) {
+            return false;
+        }
+
+        /** @var DBDate $gracePeriodDate */
+        $gracePeriodDate = $siteConfig->dbObject('MFAGracePeriodExpires');
+        if ($gracePeriodDate->InPast()) {
+            return false;
+        }
+
+        return true;
     }
 }
