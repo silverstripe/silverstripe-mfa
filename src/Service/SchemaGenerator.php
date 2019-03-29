@@ -133,10 +133,12 @@ class SchemaGenerator
      */
     protected function getResources()
     {
+        $module = ModuleLoader::getModule('silverstripe/mfa');
+
         return [
             'user_docs_url' => Config::inst()->get(LoginHandler::class, 'user_docs_url'),
-            'extra_factor_image_url' => ModuleLoader::getModule('silverstripe/mfa')->getResource('client/dist/images/extra-protection.svg')->getURL(),
-            'unique_image_url' => ModuleLoader::getModule('silverstripe/mfa')->getResource('client/dist/images/unique.svg')->getURL(),
+            'extra_factor_image_url' => $module->getResource('client/dist/images/extra-protection.svg')->getURL(),
+            'unique_image_url' => $module->getResource('client/dist/images/unique.svg')->getURL(),
         ];
     }
 }
