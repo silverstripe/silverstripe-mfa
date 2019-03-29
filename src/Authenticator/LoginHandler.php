@@ -56,6 +56,14 @@ class LoginHandler extends BaseLoginHandler
     private static $required_mfa_methods = 1;
 
     /**
+     * Provide a user help link that will be available on the Introduction UI
+     *
+     * @config
+     * @var string
+     */
+    private static $user_help_link = 'nope';
+
+    /**
      * A "session store" object that helps contain MFA specific session detail
      *
      * @var SessionStore

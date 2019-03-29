@@ -59,6 +59,7 @@ describe('Register', () => {
         canSkip
         endpoints={endpoints}
         availableMethods={mockAvailableMethods}
+        resources={{}}
       />
     );
 
@@ -72,6 +73,7 @@ describe('Register', () => {
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
+          resources={{}}
         />,
         { disableLifecycleMethods: true }
       );
@@ -95,6 +97,7 @@ describe('Register', () => {
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
+          resources={{}}
         />
       );
 
@@ -119,6 +122,7 @@ describe('Register', () => {
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
+          resources={{}}
         />
       );
 
@@ -138,6 +142,7 @@ describe('Register', () => {
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
+          resources={{}}
         />
       );
 
@@ -156,6 +161,7 @@ describe('Register', () => {
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
+          resources={{}}
         />
       );
 
@@ -184,6 +190,7 @@ describe('Register', () => {
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
+          resources={{}}
         />
       );
 

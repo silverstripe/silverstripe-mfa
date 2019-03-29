@@ -6,6 +6,8 @@ use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Manifest\ModuleLoader;
+use SilverStripe\MFA\Authenticator\LoginHandler;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\State\AvailableMethodDetailsInterface;
@@ -44,6 +46,7 @@ class SchemaGenerator
             'backupMethod' => $this->getBackupMethod(),
             'canSkip' => $enforcementManager->canSkipMFA($member),
             'isFullyRegistered' => $enforcementManager->hasCompletedRegistration($member),
+            'resources' => $this->getResources(),
             'shouldRedirect' => $enforcementManager->shouldRedirectToMFA($member),
         ];
 
@@ -123,5 +126,17 @@ class SchemaGenerator
         $method = Injector::inst()->create($methodClass);
 
         return $method ? $method->getDetails() : null;
+    }
+
+    /**
+     * Provide URLs for resources such as images and help articles
+     */
+    protected function getResources()
+    {
+        return [
+            'user_docs_url' => Config::inst()->get(LoginHandler::class, 'user_docs_url'),
+            'extra_factor_image_url' => ModuleLoader::getModule('silverstripe/mfa')->getResource('client/dist/images/extra-protection.svg')->getURL(),
+            'unique_image_url' => ModuleLoader::getModule('silverstripe/mfa')->getResource('client/dist/images/unique.svg')->getURL(),
+        ];
     }
 }

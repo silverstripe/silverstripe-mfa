@@ -231,7 +231,7 @@ class Register extends Component {
   }
 
   render() {
-    const { canSkip } = this.props;
+    const { canSkip, resources } = this.props;
     const { isComplete, isStarted } = this.state;
     const { ss: { i18n } } = window;
 
@@ -239,7 +239,12 @@ class Register extends Component {
       return (
         <Fragment>
           <h1 className="mfa-app-title">{i18n._t('MFARegister.TITLE', 'Multi-factor authentication')}</h1>
-          <Introduction canSkip={canSkip} onContinue={this.handleStart} onSkip={this.handleSkip} />
+          <Introduction
+            canSkip={canSkip}
+            onContinue={this.handleStart}
+            onSkip={this.handleSkip}
+            resources={resources}
+          />
         </Fragment>
       );
     }
@@ -267,7 +272,8 @@ Register.propTypes = {
     complete: PropTypes.string.isRequired,
     skip: PropTypes.string.isRequired,
   }),
-  registeredMethods: PropTypes.arrayOf(registeredMethodType)
+  registeredMethods: PropTypes.arrayOf(registeredMethodType),
+  resources: PropTypes.object,
 };
 
 export default Register;

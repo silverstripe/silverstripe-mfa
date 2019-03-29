@@ -5,7 +5,30 @@ import PropTypes from 'prop-types';
 
 const fallbacks = require('../../../lang/src/en.json');
 
-const Introduction = ({ canSkip, onContinue, onSkip }) => {
+export const ActionList = ({ canSkip, onContinue, onSkip }) => {
+  const { ss: { i18n } } = window;
+
+  return (
+    <ul className="mfa-action-list">
+      <li className="mfa-action-list__item">
+        <button className="mfa-action mfa-action--primary btn btn-primary" onClick={onContinue}>
+          { i18n._t('MultiFactorAuthentication.GET_STARTED', fallbacks['MultiFactorAuthentication.GET_STARTED']) }
+        </button>
+      </li>
+
+      {
+        canSkip &&
+        <li className="mfa-action-list__item">
+          <button className="btn btn-secondary" onClick={onSkip}>
+            { i18n._t('MultiFactorAuthentication.SETUP_LATER', fallbacks['MultiFactorAuthentication.SETUP_LATER']) }
+          </button>
+        </li>
+      }
+    </ul>
+  );
+};
+
+const Introduction = ({ canSkip, onContinue, onSkip, resources }) => {
   const { ss: { i18n } } = window;
 
   return (
@@ -20,12 +43,16 @@ const Introduction = ({ canSkip, onContinue, onSkip }) => {
 
       <ul className="mfa-feature-list">
         <li className="mfa-feature-list-item">
-          <img
-            alt={i18n._t('MultiFactorAuthentication.EXTRA_LAYER_IMAGE_ALT', fallbacks['MultiFactorAuthentication.EXTRA_LAYER_IMAGE_ALT'])}
-            aria-hidden="true"
-            className="mfa-feature-list-item__icon"
-            src="/resources/vendor/silverstripe/mfa/client/dist/images/extra-protection.svg"
-          />
+          {
+            resources.extra_factor_image_url &&
+            <img
+              alt={i18n._t('MultiFactorAuthentication.EXTRA_LAYER_IMAGE_ALT', fallbacks['MultiFactorAuthentication.EXTRA_LAYER_IMAGE_ALT'])}
+              aria-hidden="true"
+              className="mfa-feature-list-item__icon"
+              src={resources.extra_factor_image_url}
+            />
+          }
+
           <div>
             <h5 className="mfa-block-heading mfa-feature-list-item__title">
               { i18n._t(
@@ -40,18 +67,26 @@ const Introduction = ({ canSkip, onContinue, onSkip }) => {
                 fallbacks['MultiFactorAuthentication.EXTRA_LAYER_DESCRIPTION']
               ) }
               &nbsp;
-              <a href="#">{ i18n._t('MultiFactorAuthentication.FIND_OUT_MORE', fallbacks['MultiFactorAuthentication.FIND_OUT_MORE']) }</a>
+              {
+                resources.user_docs_url &&
+                <a href={resources.user_docs_url}>
+                  { i18n._t('MultiFactorAuthentication.FIND_OUT_MORE', fallbacks['MultiFactorAuthentication.FIND_OUT_MORE']) }
+                </a>
+              }
             </p>
           </div>
         </li>
 
         <li className="mfa-feature-list-item">
-          <img
-            alt={i18n._t('MultiFactorAuthentication.UNIQUE_IMAGE_ALT', fallbacks['MultiFactorAuthentication.UNIQUE_IMAGE_ALT'])}
-            aria-hidden="true"
-            className="mfa-feature-list-item__icon"
-            src="/resources/vendor/silverstripe/mfa/client/dist/images/unique.svg"
-          />
+          {
+            resources.unique_image_url &&
+            <img
+              alt={i18n._t('MultiFactorAuthentication.UNIQUE_IMAGE_ALT', fallbacks['MultiFactorAuthentication.UNIQUE_IMAGE_ALT'])}
+              aria-hidden="true"
+              className="mfa-feature-list-item__icon"
+              src={resources.unique_image_url}
+            />
+          }
 
           <div>
             <h5 className="mfa-block-heading mfa-feature-list-item__title">
@@ -71,22 +106,11 @@ const Introduction = ({ canSkip, onContinue, onSkip }) => {
         </li>
       </ul>
 
-      <ul className="mfa-action-list">
-        <li className="mfa-action-list__item">
-          <button className="mfa-action mfa-action--primary btn btn-primary" onClick={onContinue}>
-            { i18n._t('MultiFactorAuthentication.GET_STARTED', fallbacks['MultiFactorAuthentication.GET_STARTED']) }
-          </button>
-        </li>
-
-        {
-          canSkip &&
-          <li className="mfa-action-list__item">
-            <button className="btn btn-secondary" onClick={onSkip}>
-              { i18n._t('MultiFactorAuthentication.SETUP_LATER', fallbacks['MultiFactorAuthentication.SETUP_LATER']) }
-            </button>
-          </li>
-        }
-      </ul>
+      <ActionList
+        canSkip={canSkip}
+        onContinue={onContinue}
+        onSkip={onSkip}
+      />
     </div>
   );
 };
@@ -95,6 +119,11 @@ Introduction.propTypes = {
   canSkip: PropTypes.bool,
   onContinue: PropTypes.func.isRequired,
   onSkip: PropTypes.func,
+  resources: PropTypes.shape({
+    user_docs_url: PropTypes.string,
+    extra_factor_image_url: PropTypes.string,
+    unique_image_url: PropTypes.string,
+  }).isRequired,
 };
 
 export default Introduction;
