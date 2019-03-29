@@ -226,6 +226,7 @@ class Register extends Component {
       <SelectMethod
         methods={availableMethods}
         onSelectMethod={this.handleSelectMethod}
+        onClickBack={() => this.setState({ isStarted: false })}
       />
     );
   }

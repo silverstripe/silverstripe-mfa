@@ -18,6 +18,7 @@ class SelectMethod extends Component {
     };
 
     this.handleGoToNext = this.handleGoToNext.bind(this);
+    this.handleBack = this.handleBack.bind(this);
   }
 
   /**
@@ -45,7 +46,9 @@ class SelectMethod extends Component {
    * Send the user back to the introduction screen
    */
   handleBack() {
-    window.alert('Todo: introduction screen here');
+    if (this.props.onClickBack) {
+      this.props.onClickBack();
+    }
   }
 
   renderActions() {
@@ -109,6 +112,7 @@ SelectMethod.propTypes = {
     availableMethodType,
   ),
   onSelectMethod: PropTypes.func,
+  onClickBack: PropTypes.func,
 };
 
 export default SelectMethod;
