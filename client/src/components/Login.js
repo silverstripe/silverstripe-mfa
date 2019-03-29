@@ -267,7 +267,7 @@ class Login extends Component {
 
     return (
       <div>
-        <h2>{selectedMethod.leadInLabel}</h2>
+        <h2 className="mfa-section-title">{selectedMethod.leadInLabel}</h2>
         {MethodComponent && <MethodComponent
           {...loginProps}
           method={selectedMethod}
@@ -289,7 +289,7 @@ class Login extends Component {
 
     return (
       <Fragment>
-        <h1>{i18n._t('MFALogin.TITLE', 'Log in')}</h1>
+        <h1 className="mfa-app-title">{i18n._t('MFALogin.TITLE', 'Log in')}</h1>
         {this.renderSelectedMethod()}
         {this.renderOtherMethods()}
       </Fragment>

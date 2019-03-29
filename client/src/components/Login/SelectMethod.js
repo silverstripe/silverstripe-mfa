@@ -76,7 +76,9 @@ class SelectMethod extends PureComponent {
 
     return (
       <div className="mfa-login-select-method">
-        <h2>{i18n._t('MFALogin.OTHER_METHODS_TITLE', 'Try another way to verify')}</h2>
+        <h2 className="mfa-section-title">
+          {i18n._t('MFALogin.OTHER_METHODS_TITLE', 'Try another way to verify')}
+        </h2>
         { this.renderMethodList() }
         { this.renderLastResortMessage() }
         { this.renderControls() }

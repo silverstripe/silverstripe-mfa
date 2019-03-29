@@ -9,20 +9,36 @@ body.mfa {
   }
 
   // Allow the h1 rendered by the React app to display
-  .mfa-app h1 {
-    display: block;
-    margin: auto;
-    font-size: $font-size-h1;
+  .mfa-app-title {
     color: $color-grey-text;
-    font-weight: normal;
+    display: block;
+    font-size: $font-app-title-size;
+    font-weight: $font-app-title-weight;
+    margin: auto;
   }
 
-  h2 {
+  .mfa-section-title {
     margin-top: 0;
     margin-bottom: $header-spacing;
-    font-size: $font-size-h2;
+    font-size: $font-section-title-size;
     color: $color-grey-text;
-    font-weight: normal;
+    font-weight: $font-section-title-weight;
+  }
+
+  .mfa-block-heading {
+    font-size: $font-block-heading-size;
+    font-weight: $font-block-heading-weight;
+  }
+
+  .mfa-app,
+  .mfa-app p,
+  .mfa-content {
+    font-size: $font-content-size;
+    font-weight: $font-content-weight;
+  }
+
+  a {
+    text-decoration: none;
   }
 
   // Override font weight settings on labels

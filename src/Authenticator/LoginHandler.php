@@ -4,7 +4,6 @@ namespace SilverStripe\MFA\Authenticator;
 use Exception;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
-use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\MFA\Exception\MemberNotFoundException;
 use SilverStripe\MFA\Extension\MemberExtension;
@@ -14,6 +13,7 @@ use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Service\SchemaGenerator;
 use SilverStripe\MFA\Store\SessionStore;
+use SilverStripe\ORM\ValidationException;
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\IdentityStore;
 use SilverStripe\Security\Member;
@@ -56,6 +56,14 @@ class LoginHandler extends BaseLoginHandler
     private static $required_mfa_methods = 1;
 
     /**
+     * Provide a user help link that will be available on the Introduction UI
+     *
+     * @config
+     * @var string
+     */
+    private static $user_help_link = 'nope';
+
+    /**
      * A "session store" object that helps contain MFA specific session detail
      *
      * @var SessionStore
@@ -71,6 +79,7 @@ class LoginHandler extends BaseLoginHandler
     {
         /** @var Member&MemberExtension $member */
         $member = $this->checkLogin($data, $request, $result);
+        $enforcementManager = new EnforcementManager();
 
         // If there's no member it's an invalid login. We'll delegate this to the parent
         // Additionally if there are no MFA methods registered then we will also delegate
@@ -90,6 +99,12 @@ class LoginHandler extends BaseLoginHandler
         $request->getSession()->clear(static::SESSION_KEY . '.mustLogin');
         if ($member->RegisteredMFAMethods()->count() > 0) {
             $request->getSession()->set(static::SESSION_KEY . '.mustLogin', true);
+        }
+
+        // Bypass the MFA UI if the user can and has skipped it
+        if (!$enforcementManager->shouldRedirectToMFA($member)) {
+            $this->doPerformLogin($request, $member);
+            return $this->redirectAfterSuccessfulLogin();
         }
 
         // Redirect to the MFA step
@@ -131,6 +146,7 @@ class LoginHandler extends BaseLoginHandler
                         'register' => $this->Link('mfa/register/{urlSegment}'),
                         'login' => $this->Link('mfa/login/{urlSegment}'),
                         'complete' => $this->Link('mfa/complete'),
+                        'skip' => $this->Link('mfa/skip'),
                     ],
                 ]
             );
@@ -290,6 +306,7 @@ class LoginHandler extends BaseLoginHandler
      *
      * @param HTTPRequest $request
      * @return HTTPResponse
+     * @throws ValidationException
      */
     public function skipRegistration(HTTPRequest $request)
     {
@@ -308,9 +325,10 @@ class LoginHandler extends BaseLoginHandler
             }
 
             $member->update(['HasSkippedMFARegistration' => true])->write();
+            $this->doPerformLogin($request, $member);
 
             // Redirect the user back to wherever they originally came from when they started the login process
-            return $this->redirectBack();
+            return $this->redirectAfterSuccessfulLogin();
         } catch (MemberNotFoundException $exception) {
             Security::singleton()->setSessionMessage(
                 _t(__CLASS__ . '.CANNOT_SKIP', 'You cannot skip MFA registration'),

@@ -13,6 +13,10 @@ use SilverStripe\View\Requirements;
 
 /**
  * Adds multi factor authentication related settings to the SiteConfig "Access" tab
+ *
+ * @property bool MFAEnabled
+ * @property bool MFARequired
+ * @property string MFAGracePeriodExpires
  */
 class SiteConfigExtension extends DataExtension
 {

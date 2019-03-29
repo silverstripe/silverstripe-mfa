@@ -6,6 +6,7 @@ import { loadComponent } from 'lib/Injector'; // eslint-disable-line
 import availableMethodType from 'types/availableMethod';
 import registeredMethodType from 'types/registeredMethod';
 import LoadingIndicator from 'components/LoadingIndicator';
+import Introduction from 'components/Register/Introduction';
 import Complete from 'components/Register/Complete';
 import SelectMethod from 'components/Register/SelectMethod';
 
@@ -34,11 +35,14 @@ class Register extends Component {
       selectedMethod,
       registerProps: null,
       isComplete: false,
+      isStarted: false,
     };
 
     this.handleCompleteRegistration = this.handleCompleteRegistration.bind(this);
     this.handleCompleteProcess = this.handleCompleteProcess.bind(this);
     this.handleSelectMethod = this.handleSelectMethod.bind(this);
+    this.handleSkip = this.handleSkip.bind(this);
+    this.handleStart = this.handleStart.bind(this);
   }
 
   componentDidMount() {
@@ -155,9 +159,21 @@ class Register extends Component {
    * Handle an event triggered to complete the registration process
    */
   handleCompleteProcess() {
-    const { endpoints: { complete } } = this.props;
+    window.location = this.props.endpoints.complete;
+  }
 
-    window.location = complete;
+  /**
+   * Handle an event triggered to start the registration process (move past the Introduction UI)
+   */
+  handleStart() {
+    this.setState({ isStarted: true });
+  }
+
+  /**
+   * Handle an event triggered to skip the registration process
+   */
+  handleSkip() {
+    window.location = this.props.endpoints.skip;
   }
 
   /**
@@ -182,7 +198,7 @@ class Register extends Component {
 
     return (
       <div>
-        <h2>{selectedMethod.name}</h2>
+        <h2 className="mfa-section-title">{selectedMethod.name}</h2>
         <RegistrationComponent
           {...registerProps}
           method={selectedMethod}
@@ -210,13 +226,29 @@ class Register extends Component {
       <SelectMethod
         methods={availableMethods}
         onSelectMethod={this.handleSelectMethod}
+        onClickBack={() => this.setState({ isStarted: false })}
       />
     );
   }
 
   render() {
-    const { isComplete } = this.state;
+    const { canSkip, resources } = this.props;
+    const { isComplete, isStarted } = this.state;
     const { ss: { i18n } } = window;
+
+    if (!isStarted) {
+      return (
+        <Fragment>
+          <h1 className="mfa-app-title">{i18n._t('MFARegister.TITLE', 'Multi-factor authentication')}</h1>
+          <Introduction
+            canSkip={canSkip}
+            onContinue={this.handleStart}
+            onSkip={this.handleSkip}
+            resources={resources}
+          />
+        </Fragment>
+      );
+    }
 
     if (isComplete) {
       return <Complete onComplete={this.handleCompleteProcess} />;
@@ -224,7 +256,7 @@ class Register extends Component {
 
     return (
       <Fragment>
-        <h1>{i18n._t('MFARegister.TITLE', 'Multi-factor authentication')}</h1>
+        <h1 className="mfa-app-title">{i18n._t('MFARegister.TITLE', 'Multi-factor authentication')}</h1>
         {this.renderMethod()}
         {this.renderOptions()}
       </Fragment>
@@ -235,11 +267,14 @@ class Register extends Component {
 Register.propTypes = {
   availableMethods: PropTypes.arrayOf(availableMethodType),
   backupMethod: availableMethodType,
+  canSkip: PropTypes.bool,
   endpoints: PropTypes.shape({
     register: PropTypes.string.isRequired,
     complete: PropTypes.string.isRequired,
+    skip: PropTypes.string.isRequired,
   }),
-  registeredMethods: PropTypes.arrayOf(registeredMethodType)
+  registeredMethods: PropTypes.arrayOf(registeredMethodType),
+  resources: PropTypes.object,
 };
 
 export default Register;

@@ -1,0 +1,13 @@
+{
+  "MultiFactorAuthentication.FIND_OUT_MORE": "Find out more",
+  "MultiFactorAuthentication.TITLE": "Add extra security to your account",
+  "MultiFactorAuthentication.HOW_IT_WORKS": "How it works",
+  "MultiFactorAuthentication.EXTRA_LAYER_IMAGE_ALT": "Shields indicating additional protection",
+  "MultiFactorAuthentication.EXTRA_LAYER_TITLE": "Extra layer of protection",
+  "MultiFactorAuthentication.EXTRA_LAYER_DESCRIPTION": "Every time you log into your account, you'll need your password and an additional form of verification.",
+  "MultiFactorAuthentication.UNIQUE_IMAGE_ALT": "Person with tick indicating uniqueness",
+  "MultiFactorAuthentication.UNIQUE_TITLE": "Unique to you",
+  "MultiFactorAuthentication.UNIQUE_DESCRIPTION": "This verification is only available to you. Even if someone gets your password, they will not be able to access your account.",
+  "MultiFactorAuthentication.GET_STARTED": "Get started",
+  "MultiFactorAuthentication.SETUP_LATER": "Setup later"
+}

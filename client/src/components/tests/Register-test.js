@@ -19,6 +19,7 @@ window.ss = {
 
 const endpoints = {
   register: '/fake/{urlSegment}',
+  skip: '/fake/skip',
   complete: '/fake/complete',
 };
 
@@ -52,16 +53,31 @@ describe('Register', () => {
     loadComponent.mockClear();
   });
 
+  it('renders the Introduction UI on first load', () => {
+    const wrapper = shallow(
+      <Register
+        canSkip
+        endpoints={endpoints}
+        availableMethods={mockAvailableMethods}
+        resources={{}}
+      />
+    );
+
+    const actionList = wrapper.find('Introduction');
+    expect(actionList).toHaveLength(1);
+  });
+
   describe('handleCompleteRegistration()', () => {
     it('will call the "start" endpoint when a method is chosen', done => {
       const wrapper = shallow(
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
+          resources={{}}
         />,
         { disableLifecycleMethods: true }
       );
-      wrapper.setState({ selectedMethod: firstMethod });
+      wrapper.setState({ isStarted: true, selectedMethod: firstMethod });
       wrapper.instance().handleCompleteRegistration({ myData: 'foo' });
 
       setTimeout(() => {
@@ -81,11 +97,12 @@ describe('Register', () => {
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
+          resources={{}}
         />
       );
 
       // Choose the first method
-      wrapper.setState({ selectedMethod: firstMethod });
+      wrapper.setState({ isStarted: true, selectedMethod: firstMethod });
 
       setTimeout(() => {
         expect(wrapper.find('Test')).toHaveLength(1);
@@ -105,10 +122,11 @@ describe('Register', () => {
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
+          resources={{}}
         />
       );
 
-      wrapper.setState({ selectedMethod: firstMethod });
+      wrapper.setState({ isStarted: true, selectedMethod: firstMethod });
 
       setTimeout(() => {
         expect(wrapper.find('Test').props()).toEqual(expect.objectContaining({
@@ -124,10 +142,11 @@ describe('Register', () => {
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
+          resources={{}}
         />
       );
 
-      wrapper.setState({ selectedMethod: firstMethod });
+      wrapper.setState({ isStarted: true, selectedMethod: firstMethod });
 
       setTimeout(() => {
         expect(wrapper.find('Test').props()).toEqual(expect.objectContaining({
@@ -142,10 +161,11 @@ describe('Register', () => {
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
+          resources={{}}
         />
       );
 
-      wrapper.setState({ selectedMethod: firstMethod });
+      wrapper.setState({ isStarted: true, selectedMethod: firstMethod });
 
       setTimeout(() => {
         expect(fetchMock.mock.calls).toHaveLength(1);
@@ -170,8 +190,12 @@ describe('Register', () => {
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
+          resources={{}}
         />
       );
+
+      wrapper.setState({ isStarted: true });
+
       const listItems = wrapper.find('SelectMethod');
       const methods = listItems.props().methods;
 

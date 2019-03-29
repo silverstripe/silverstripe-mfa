@@ -18,6 +18,7 @@ class SelectMethod extends Component {
     };
 
     this.handleGoToNext = this.handleGoToNext.bind(this);
+    this.handleBack = this.handleBack.bind(this);
   }
 
   /**
@@ -45,7 +46,9 @@ class SelectMethod extends Component {
    * Send the user back to the introduction screen
    */
   handleBack() {
-    window.alert('Todo: introduction screen here');
+    if (this.props.onClickBack) {
+      this.props.onClickBack();
+    }
   }
 
   renderActions() {
@@ -83,7 +86,9 @@ class SelectMethod extends Component {
 
     return (
       <div>
-        <h2>{i18n._t('MFASelectMethod.SELECT_METHOD', 'Select a verification method')}</h2>
+        <h2 className="mfa-section-title">
+          {i18n._t('MFASelectMethod.SELECT_METHOD', 'Select a verification method')}
+        </h2>
 
         <ul className={classes}>
           {methods.map(method => (
@@ -107,6 +112,7 @@ SelectMethod.propTypes = {
     availableMethodType,
   ),
   onSelectMethod: PropTypes.func,
+  onClickBack: PropTypes.func,
 };
 
 export default SelectMethod;
