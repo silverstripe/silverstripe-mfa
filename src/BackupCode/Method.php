@@ -70,4 +70,9 @@ class Method implements MethodInterface
     {
         return Injector::inst()->create(AvailableMethodDetailsInterface::class, $this);
     }
+
+    public function applyRequirements()
+    {
+        // This authenticator bundles client requirements in the main bundle.
+    }
 }

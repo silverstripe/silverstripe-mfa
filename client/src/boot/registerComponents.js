@@ -1,5 +1,3 @@
-require('@silverstripe/react-injector');
-
 import Register from 'components/BackupCodes/Register';
 import Login from 'components/BackupCodes/Login';
 import BasicMathRegister from 'components/BasicMath/Register';

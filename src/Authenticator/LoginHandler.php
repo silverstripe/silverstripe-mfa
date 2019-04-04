@@ -20,6 +20,7 @@ use SilverStripe\Security\Member;
 use SilverStripe\Security\MemberAuthenticator\LoginHandler as BaseLoginHandler;
 use SilverStripe\Security\MemberAuthenticator\MemberLoginForm;
 use SilverStripe\Security\Security;
+use SilverStripe\View\Requirements;
 
 class LoginHandler extends BaseLoginHandler
 {
@@ -121,6 +122,19 @@ class LoginHandler extends BaseLoginHandler
     {
         if (!$this->getSessionStore()->getMember()) {
             return $this->redirectBack();
+        }
+
+        // Run through requirements
+        Requirements::javascript('silverstripe/mfa: client/dist/js/injector.js');
+        Requirements::javascript('silverstripe/admin: client/dist/js/i18n.js');
+        Requirements::javascript('silverstripe/mfa: client/dist/js/bundle.js');
+        Requirements::add_i18n_javascript('silverstripe/mfa: client/lang');
+        Requirements::css('silverstripe/mfa: client/dist/styles/bundle.css');
+
+        // Plugin module requirements
+        $registry = $this->getMethodRegistry();
+        foreach ($registry->getMethods() as $method) {
+            $method->applyRequirements();
         }
 
         return [
