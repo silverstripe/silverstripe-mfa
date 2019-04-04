@@ -40,6 +40,14 @@ interface MethodInterface
     public function getThumbnail();
 
     /**
+     * Leverage the Requirements API to ensure client requirements are included. This is called just after the base
+     * module requirements are specified
+     *
+     * @return void
+     */
+    public function applyRequirements();
+
+    /**
      * @return AvailableMethodDetailsInterface
      */
     public function getDetails();

@@ -49,4 +49,9 @@ class Method implements MethodInterface, TestOnly
     {
         return new AvailableMethodDetails($this);
     }
+
+    public function applyRequirements()
+    {
+        // This authenticator bundles client requirements in the main bundle.
+    }
 }
