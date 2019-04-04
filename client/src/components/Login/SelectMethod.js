@@ -13,9 +13,11 @@ class SelectMethod extends PureComponent {
     const { onClickBack } = this.props;
 
     return (
-      <button className="mfa-login-select-method__back" onClick={onClickBack}>
-        {i18n._t('MFALogin.BACK', 'Back')}
-      </button>
+      <div className="mfa-login-select-method__actions">
+        <a href="#" className="mfa-login-select-method__back" onClick={onClickBack}>
+          {i18n._t('MFALogin.BACK', 'Back')}
+        </a>
+      </div>
     );
   }
 
@@ -65,7 +67,7 @@ class SelectMethod extends PureComponent {
     const { methods } = this.props;
 
     return (
-      <ul>
+      <ul className="mfa-login-select-method__method-list">
         { methods.map(this.renderMethod.bind(this)) }
       </ul>
     );
@@ -73,15 +75,28 @@ class SelectMethod extends PureComponent {
 
   render() {
     const { ss: { i18n } } = window;
+    const { resources } = this.props;
 
     return (
       <div className="mfa-login-select-method">
         <h2 className="mfa-section-title">
           {i18n._t('MFALogin.OTHER_METHODS_TITLE', 'Try another way to verify')}
         </h2>
-        { this.renderMethodList() }
-        { this.renderLastResortMessage() }
-        { this.renderControls() }
+        <div className="mfa-login-select-method__container">
+          <div className="mfa-login-select-method__content">
+            { this.renderMethodList() }
+            { this.renderLastResortMessage() }
+            { this.renderControls() }
+          </div>
+          {
+            resources && resources.more_options_image_url && <img
+              alt={i18n._t('MultiFactorAuthentication.MORE_OPTIONS_IMAGE_ALT', 'Graphic depicting various MFA options')}
+              aria-hidden="true"
+              className="mfa-login-select-method__image"
+              src={resources.more_options_image_url}
+            />
+          }
+        </div>
       </div>
     );
   }
@@ -91,6 +106,7 @@ SelectMethod.propTypes = {
   methods: PropTypes.arrayOf(registeredMethodType),
   onSelectMethod: PropTypes.func,
   onClickBack: PropTypes.func,
+  resources: PropTypes.object,
 };
 
 export default SelectMethod;

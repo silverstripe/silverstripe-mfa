@@ -24,7 +24,7 @@ class LoginHandler implements LoginHandlerInterface
         // Provide a path to the graphic shown
         return [
             'graphic' => ModuleLoader::getModule('silverstripe/mfa')
-                ->getResource('client/dist/images/recover.svg')->getURL(),
+                ->getResource('client/dist/images/recovery-codes.svg')->getURL(),
         ];
     }
 
