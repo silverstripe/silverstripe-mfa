@@ -139,6 +139,7 @@ class SchemaGenerator
             'user_docs_url' => Config::inst()->get(LoginHandler::class, 'user_docs_url'),
             'extra_factor_image_url' => $module->getResource('client/dist/images/extra-protection.svg')->getURL(),
             'unique_image_url' => $module->getResource('client/dist/images/unique.svg')->getURL(),
+            'more_options_image_url' => $module->getResource('client/dist/images/more-options.svg')->getURL(),
         ];
     }
 }

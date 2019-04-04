@@ -237,6 +237,7 @@ class Login extends Component {
   renderOtherMethods() {
     const otherMethods = this.getOtherMethods();
     const { selectedMethod, showOtherMethods } = this.state;
+    const { resources } = this.props;
 
     if (selectedMethod && !showOtherMethods) {
       return null;
@@ -244,6 +245,7 @@ class Login extends Component {
 
     return (
       <SelectMethod
+        resources={resources}
         methods={otherMethods}
         onClickBack={this.handleHideOtherMethodsPane}
         onSelectMethod={method => event => this.handleClickOtherMethod(event, method)}
