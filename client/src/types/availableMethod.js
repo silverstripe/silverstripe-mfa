@@ -11,4 +11,6 @@ export default PropTypes.shape({
   supportLink: PropTypes.string,
   thumbnail: PropTypes.string,
   component: PropTypes.string,
+  isAvailable: PropTypes.bool,
+  unavailableMessage: PropTypes.string,
 });

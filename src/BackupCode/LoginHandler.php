@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace SilverStripe\MFA\BackupCode;
 
@@ -19,7 +19,7 @@ class LoginHandler implements LoginHandlerInterface
      * @param RegisteredMethod $method The RegisteredMethod instance that is being verified
      * @return array Props to be passed to a front-end component
      */
-    public function start(StoreInterface $store, RegisteredMethod $method)
+    public function start(StoreInterface $store, RegisteredMethod $method): array
     {
         // Provide a path to the graphic shown
         return [
@@ -37,7 +37,7 @@ class LoginHandler implements LoginHandlerInterface
      * @param RegisteredMethod $registeredMethod The RegisteredMethod instance that is being verified
      * @return bool
      */
-    public function verify(HTTPRequest $request, StoreInterface $store, RegisteredMethod $registeredMethod)
+    public function verify(HTTPRequest $request, StoreInterface $store, RegisteredMethod $registeredMethod): bool
     {
         $bodyJSON = json_decode($request->getBody(), true);
 
@@ -71,7 +71,7 @@ class LoginHandler implements LoginHandlerInterface
      *
      * @return string
      */
-    public function getLeadInLabel()
+    public function getLeadInLabel(): string
     {
         return _t(__CLASS__ . '.LEAD_IN', 'Verify with recovery code');
     }
@@ -84,7 +84,7 @@ class LoginHandler implements LoginHandlerInterface
      * @param string $hash
      * @return bool
      */
-    protected function verifyCode($code, $hash)
+    protected function verifyCode($code, $hash): bool
     {
         return password_verify($code, $hash);
     }
@@ -94,7 +94,7 @@ class LoginHandler implements LoginHandlerInterface
      *
      * @return string
      */
-    public function getComponent()
+    public function getComponent(): string
     {
         return 'BackupCodeLogin';
     }

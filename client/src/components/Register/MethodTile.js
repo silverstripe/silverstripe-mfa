@@ -19,7 +19,7 @@ class MethodTile extends Component {
    * @param {Event} event
    */
   handleClick(event) {
-    const { isAvailable, onClick } = this.props;
+    const { method: { isAvailable }, onClick } = this.props;
 
     if (isAvailable && onClick) {
       onClick(event);
@@ -69,7 +69,7 @@ class MethodTile extends Component {
    * @returns {HTMLElement|null}
    */
   renderUnavailableMask() {
-    const { isAvailable, unavailableMessage } = this.props;
+    const { method: { isAvailable, unavailableMessage } } = this.props;
     const { ss: { i18n } } = window;
 
     if (isAvailable) {
@@ -125,16 +125,12 @@ class MethodTile extends Component {
 
 MethodTile.propTypes = {
   isActive: PropTypes.bool,
-  isAvailable: PropTypes.bool,
-  unavailableMessage: PropTypes.string,
   method: availableMethodType.isRequired,
   onClick: PropTypes.func.isRequired,
 };
 
 MethodTile.defaultProps = {
   isActive: false,
-  isAvailable: true,
-  unavailableMessage: '',
 };
 
 export default MethodTile;

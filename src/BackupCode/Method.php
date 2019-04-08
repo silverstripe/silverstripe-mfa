@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace SilverStripe\MFA\BackupCode;
 
@@ -34,7 +34,7 @@ class Method implements MethodInterface
      *
      * @return string
      */
-    public function getURLSegment()
+    public function getURLSegment(): string
     {
         return 'backup-codes';
     }
@@ -44,7 +44,7 @@ class Method implements MethodInterface
      *
      * @return LoginHandlerInterface
      */
-    public function getLoginHandler()
+    public function getLoginHandler(): LoginHandlerInterface
     {
         return Injector::inst()->create(LoginHandler::class);
     }
@@ -54,24 +54,24 @@ class Method implements MethodInterface
      *
      * @return RegisterHandlerInterface
      */
-    public function getRegisterHandler()
+    public function getRegisterHandler(): RegisterHandlerInterface
     {
         return Injector::inst()->create(RegisterHandler::class);
     }
 
-    public function getThumbnail()
+    public function getThumbnail(): string
     {
-        return ModuleLoader::getModule('silverstripe/mfa')
+        return (string) ModuleLoader::getModule('silverstripe/mfa')
             ->getResource('client/dist/images/locked-letter.svg')
             ->getURL();
     }
 
-    public function getDetails()
+    public function getDetails(): AvailableMethodDetailsInterface
     {
         return Injector::inst()->create(AvailableMethodDetailsInterface::class, $this);
     }
 
-    public function applyRequirements()
+    public function applyRequirements(): void
     {
         // This authenticator bundles client requirements in the main bundle.
     }

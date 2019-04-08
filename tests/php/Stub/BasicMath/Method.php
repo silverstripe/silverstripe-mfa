@@ -7,6 +7,7 @@ use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\State\AvailableMethodDetails;
+use SilverStripe\MFA\State\AvailableMethodDetailsInterface;
 
 class Method implements MethodInterface, TestOnly
 {
@@ -15,7 +16,7 @@ class Method implements MethodInterface, TestOnly
      *
      * @return string
      */
-    public function getURLSegment()
+    public function getURLSegment(): string
     {
         return 'basic-math';
     }
@@ -25,7 +26,7 @@ class Method implements MethodInterface, TestOnly
      *
      * @return LoginHandlerInterface
      */
-    public function getLoginHandler()
+    public function getLoginHandler(): LoginHandlerInterface
     {
         return new MethodLoginHandler();
     }
@@ -35,22 +36,24 @@ class Method implements MethodInterface, TestOnly
      *
      * @return RegisterHandlerInterface
      */
-    public function getRegisterHandler()
+    public function getRegisterHandler(): RegisterHandlerInterface
     {
         return new MethodRegisterHandler();
     }
 
-    public function getThumbnail()
+    public function getThumbnail(): string
     {
-        return ModuleLoader::getModule('silverstripe/mfa')->getResource('client/dist/images/totp.svg')->getURL();
+        return (string) ModuleLoader::getModule('silverstripe/mfa')
+            ->getResource('client/dist/images/totp.svg')
+            ->getURL();
     }
 
-    public function getDetails()
+    public function getDetails(): AvailableMethodDetailsInterface
     {
         return new AvailableMethodDetails($this);
     }
 
-    public function applyRequirements()
+    public function applyRequirements(): void
     {
         // This authenticator bundles client requirements in the main bundle.
     }

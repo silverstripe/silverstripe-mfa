@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace SilverStripe\MFA\Method;
 
 use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
@@ -16,28 +17,28 @@ interface MethodInterface
      *
      * @return string
      */
-    public function getURLSegment();
+    public function getURLSegment(): string;
 
     /**
      * Return the LoginHandler that is used to start and verify login attempts with this method
      *
      * @return LoginHandlerInterface
      */
-    public function getLoginHandler();
+    public function getLoginHandler(): LoginHandlerInterface;
 
     /**
      * Return the RegisterHandler that is used to perform registrations with this method
      *
      * @return RegisterHandlerInterface
      */
-    public function getRegisterHandler();
+    public function getRegisterHandler(): RegisterHandlerInterface;
 
     /**
      * Return a URL to an image to be used as a thumbnail in the MFA login/registration grid for all MFA methods
      *
      * @return string
      */
-    public function getThumbnail();
+    public function getThumbnail(): string;
 
     /**
      * Leverage the Requirements API to ensure client requirements are included. This is called just after the base
@@ -45,10 +46,10 @@ interface MethodInterface
      *
      * @return void
      */
-    public function applyRequirements();
+    public function applyRequirements(): void;
 
     /**
      * @return AvailableMethodDetailsInterface
      */
-    public function getDetails();
+    public function getDetails(): AvailableMethodDetailsInterface;
 }

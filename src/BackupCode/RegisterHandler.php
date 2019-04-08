@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace SilverStripe\MFA\BackupCode;
 
@@ -35,7 +35,7 @@ class RegisterHandler implements RegisterHandlerInterface
      * @return array Props to be passed to a front-end component
      * @throws Exception When there is no valid source of CSPRNG
      */
-    public function start(StoreInterface $store)
+    public function start(StoreInterface $store): array
     {
         // Generate backup codes
         $codeCount = (int) Config::inst()->get(Method::class, 'backup_code_count') ?: 9;
@@ -81,7 +81,7 @@ class RegisterHandler implements RegisterHandlerInterface
      * @param StoreInterface $store
      * @return array
      */
-    public function register(HTTPRequest $request, StoreInterface $store)
+    public function register(HTTPRequest $request, StoreInterface $store): array
     {
         // Backup codes are unique where no confirmation or user input is required. The method is registered on "start"
         return [];
@@ -94,7 +94,7 @@ class RegisterHandler implements RegisterHandlerInterface
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return _t(__CLASS__ . '.NAME', 'Backup recovery codes');
     }
@@ -106,7 +106,7 @@ class RegisterHandler implements RegisterHandlerInterface
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return _t(
             __CLASS__ . '.DESCRIPTION',
@@ -121,7 +121,7 @@ class RegisterHandler implements RegisterHandlerInterface
      *
      * @return string
      */
-    public function getSupportLink()
+    public function getSupportLink(): string
     {
         return (string) $this->config()->get('user_help_link');
     }
@@ -133,7 +133,7 @@ class RegisterHandler implements RegisterHandlerInterface
      * @param string $code
      * @return bool|string
      */
-    protected function hashCode($code)
+    protected function hashCode(string $code)
     {
         return password_hash($code, PASSWORD_DEFAULT);
     }
@@ -143,8 +143,18 @@ class RegisterHandler implements RegisterHandlerInterface
      *
      * @return string
      */
-    public function getComponent()
+    public function getComponent(): string
     {
         return 'BackupCodeRegister';
+    }
+
+    public function isAvailable(): bool
+    {
+        return true;
+    }
+
+    public function getUnavailableMessage(): string
+    {
+        return '';
     }
 }
