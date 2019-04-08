@@ -22,34 +22,44 @@ class AvailableMethodDetails implements AvailableMethodDetailsInterface
         $this->method = $method;
     }
 
-    public function getURLSegment()
+    public function getURLSegment(): string
     {
         return $this->method->getURLSegment();
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->method->getRegisterHandler()->getName();
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->method->getRegisterHandler()->getDescription();
     }
 
-    public function getSupportLink()
+    public function getSupportLink(): string
     {
         return $this->method->getRegisterHandler()->getSupportLink();
     }
 
-    public function getThumbnail()
+    public function getThumbnail(): string
     {
         return $this->method->getThumbnail();
     }
 
-    public function getComponent()
+    public function getComponent(): string
     {
         return $this->method->getRegisterHandler()->getComponent();
+    }
+
+    public function isAvailable(): bool
+    {
+        return $this->method->getRegisterHandler()->isAvailable();
+    }
+
+    public function getUnavailableMessage(): string
+    {
+        return $this->method->getRegisterHandler()->getUnavailableMessage();
     }
 
     public function jsonSerialize()
@@ -61,6 +71,8 @@ class AvailableMethodDetails implements AvailableMethodDetailsInterface
             'supportLink' => $this->getSupportLink(),
             'thumbnail' => $this->getThumbnail(),
             'component' => $this->getComponent(),
+            'isAvailable' => $this->isAvailable(),
+            'unavailableMessage' => $this->isAvailable() ? '' : $this->getUnavailableMessage(),
         ];
     }
 }

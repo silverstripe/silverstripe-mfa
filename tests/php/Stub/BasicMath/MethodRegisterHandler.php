@@ -1,12 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace SilverStripe\MFA\Tests\Stub\BasicMath;
 
 use RuntimeException;
+use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Dev\TestOnly;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
-use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Store\StoreInterface;
 
 /**
@@ -21,7 +21,7 @@ class MethodRegisterHandler implements RegisterHandlerInterface, TestOnly
      * @param StoreInterface $store An object that hold session data (and the Member) that can be mutated
      * @return array Props to be passed to a front-end React component
      */
-    public function start(StoreInterface $store)
+    public function start(StoreInterface $store): array
     {
         return [];
     }
@@ -34,7 +34,7 @@ class MethodRegisterHandler implements RegisterHandlerInterface, TestOnly
      * @return array
      * @throws RuntimeException When insufficient user input is provided
      */
-    public function register(HTTPRequest $request, StoreInterface $store)
+    public function register(HTTPRequest $request, StoreInterface $store): array
     {
         $parameters = json_decode($request->getBody(), true);
 
@@ -52,7 +52,7 @@ class MethodRegisterHandler implements RegisterHandlerInterface, TestOnly
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return 'Basic math test';
     }
@@ -64,7 +64,7 @@ class MethodRegisterHandler implements RegisterHandlerInterface, TestOnly
      *
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return 'Asks you to add numbers together';
     }
@@ -74,7 +74,7 @@ class MethodRegisterHandler implements RegisterHandlerInterface, TestOnly
      *
      * @return string
      */
-    public function getSupportLink()
+    public function getSupportLink(): string
     {
         return 'https://google.com';
     }
@@ -84,8 +84,18 @@ class MethodRegisterHandler implements RegisterHandlerInterface, TestOnly
      *
      * @return string
      */
-    public function getComponent()
+    public function getComponent(): string
     {
         return 'BasicMathRegister';
+    }
+
+    public function isAvailable(): bool
+    {
+        return Director::isDev();
+    }
+
+    public function getUnavailableMessage(): string
+    {
+        return 'This is a test authenticator, only available in dev mode for tests.';
     }
 }

@@ -68,4 +68,24 @@ class AvailableMethodDetailsTest extends SapphireTest
         $this->method->expects($this->once())->method('getThumbnail')->willReturn('clipper');
         $this->assertSame('clipper', $this->details->getThumbnail());
     }
+
+    public function testIsAvailable()
+    {
+        $this->method->getRegisterHandler()
+            ->expects($this->exactly(2))
+            ->method('isAvailable')
+            ->willReturnOnConsecutiveCalls(false, true);
+
+        $this->assertFalse($this->details->isAvailable());
+        $this->assertTrue($this->details->isAvailable());
+    }
+
+    public function testGetUnavailableMesssage()
+    {
+        $this->method->getRegisterHandler()
+            ->expects($this->once())
+            ->method('getUnavailableMessage')
+            ->willReturn('We don\'t like it.');
+        $this->assertSame('We don\'t like it.', $this->details->getUnavailableMessage());
+    }
 }

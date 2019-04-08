@@ -17,6 +17,7 @@ const firstMethod = {
   description: 'Register using aye',
   supportLink: 'https://google.com',
   component: 'Test',
+  isAvailable: true,
 };
 
 const clickHandlerMock = jest.fn();
@@ -28,9 +29,9 @@ describe('MethodTile', () => {
 
   describe('handleClick()', () => {
     it('passes click to handler prop if method is available', () => {
+      firstMethod.isAvailable = true;
       const wrapper = shallow(
         <MethodTile
-          isAvailable
           method={firstMethod}
           onClick={clickHandlerMock}
         />
@@ -40,9 +41,9 @@ describe('MethodTile', () => {
     });
 
     it('doesn\'t do anything when method is not available', () => {
+      firstMethod.isAvailable = false;
       const wrapper = shallow(
         <MethodTile
-          isAvailable={false}
           method={firstMethod}
           onClick={clickHandlerMock}
         />
@@ -54,9 +55,9 @@ describe('MethodTile', () => {
 
   describe('renderUnavailableMask()', () => {
     it('does nothing when the method is available', () => {
+      firstMethod.isAvailable = true;
       const wrapper = shallow(
         <MethodTile
-          isAvailable
           method={firstMethod}
           onClick={clickHandlerMock}
         />
@@ -65,10 +66,10 @@ describe('MethodTile', () => {
     });
 
     it('renders a mask with message via props when unavailable', () => {
+      firstMethod.isAvailable = false;
+      firstMethod.unavailableMessage = 'Test message here';
       const wrapper = shallow(
         <MethodTile
-          isAvailable={false}
-          unavailableMessage="Test message here"
           method={firstMethod}
           onClick={clickHandlerMock}
         />
@@ -81,9 +82,9 @@ describe('MethodTile', () => {
 
   describe('render()', () => {
     it('has a clickable interface', () => {
+      firstMethod.isAvailable = true;
       const wrapper = shallow(
         <MethodTile
-          isAvailable
           method={firstMethod}
           onClick={clickHandlerMock}
         />
@@ -93,9 +94,9 @@ describe('MethodTile', () => {
     });
 
     it('treats the enter key as a click', () => {
+      firstMethod.isAvailable = true;
       const wrapper = shallow(
         <MethodTile
-          isAvailable
           method={firstMethod}
           onClick={clickHandlerMock}
         />

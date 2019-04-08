@@ -13,30 +13,44 @@ interface AvailableMethodDetailsInterface extends JsonSerializable
     /**
      * @return string
      */
-    public function getName();
+    public function getName(): string;
 
     /**
      * @return string
      */
-    public function getURLSegment();
+    public function getURLSegment(): string;
 
     /**
      * @return string
      */
-    public function getDescription();
+    public function getDescription(): string;
 
     /**
      * @return string
      */
-    public function getSupportLink();
+    public function getSupportLink(): string;
 
     /**
      * @return string
      */
-    public function getThumbnail();
+    public function getThumbnail(): string;
 
     /**
      * @return string
      */
-    public function getComponent();
+    public function getComponent(): string;
+
+    /**
+     * Whether the method can be used for registration.
+     *
+     * @return bool
+     */
+    public function isAvailable(): bool;
+
+    /**
+     * A message to display on the frontend for the method when it is not available to be used.
+     *
+     * @return string
+     */
+    public function getUnavailableMessage(): string;
 }

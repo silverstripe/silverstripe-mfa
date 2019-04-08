@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace SilverStripe\MFA\Method\Handler;
 
@@ -18,7 +18,7 @@ interface RegisterHandlerInterface
      * @param StoreInterface $store An object that hold session data (and the Member) that can be mutated
      * @return array Props to be passed to a front-end component
      */
-    public function start(StoreInterface $store);
+    public function start(StoreInterface $store): array;
 
     /**
      * Confirm that the provided details are valid, and return an array of "data" to store on the RegisteredMethod
@@ -30,7 +30,7 @@ interface RegisterHandlerInterface
      * @param StoreInterface $store
      * @return array Data to be stored against the created RegisteredMethod
      */
-    public function register(HTTPRequest $request, StoreInterface $store);
+    public function register(HTTPRequest $request, StoreInterface $store): array;
 
     /**
      * Provide a localised name for this MFA Method.
@@ -39,7 +39,7 @@ interface RegisterHandlerInterface
      *
      * @return string
      */
-    public function getName();
+    public function getName(): string;
 
     /**
      * Provide a localised description of this MFA Method.
@@ -48,19 +48,33 @@ interface RegisterHandlerInterface
      *
      * @return string
      */
-    public function getDescription();
+    public function getDescription(): string;
 
     /**
      * Provide a localised URL to a support article about the registration process for this MFA Method.
      *
      * @return string
      */
-    public function getSupportLink();
+    public function getSupportLink(): string;
 
     /**
      * Get the key that a React UI component is registered under (with @silverstripe/react-injector on the front-end)
      *
      * @return string
      */
-    public function getComponent();
+    public function getComponent(): string;
+
+    /**
+     * Returns whether the method is available to be used from a backend perspective.
+     *
+     * @return bool
+     */
+    public function isAvailable(): bool;
+
+    /**
+     * If not available to be used, provide a message to display on the frontend to explain why.
+     *
+     * @return string
+     */
+    public function getUnavailableMessage(): string;
 }

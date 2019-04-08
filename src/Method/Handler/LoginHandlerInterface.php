@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace SilverStripe\MFA\Method\Handler;
 
 use SilverStripe\Control\HTTPRequest;
@@ -19,7 +20,7 @@ interface LoginHandlerInterface
      * @param RegisteredMethod $method The RegisteredMethod instance that is being verified
      * @return array Props to be passed to a front-end component
      */
-    public function start(StoreInterface $store, RegisteredMethod $method);
+    public function start(StoreInterface $store, RegisteredMethod $method): array;
 
     /**
      * Verify the request has provided the right information to verify the member that aligns with any sessions state
@@ -30,7 +31,7 @@ interface LoginHandlerInterface
      * @param RegisteredMethod $registeredMethod The RegisteredMethod instance that is being verified
      * @return bool
      */
-    public function verify(HTTPRequest $request, StoreInterface $store, RegisteredMethod $registeredMethod);
+    public function verify(HTTPRequest $request, StoreInterface $store, RegisteredMethod $registeredMethod): bool;
 
     /**
      * Provide a localised string that serves as a lead in for choosing this option for authentication
@@ -39,12 +40,12 @@ interface LoginHandlerInterface
      *
      * @return string
      */
-    public function getLeadInLabel();
+    public function getLeadInLabel(): string;
 
     /**
      * Get the key that a React UI component is registered under (with @silverstripe/react-injector on the front-end)
      *
      * @return string
      */
-    public function getComponent();
+    public function getComponent(): string;
 }

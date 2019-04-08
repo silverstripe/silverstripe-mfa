@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace SilverStripe\MFA\Tests\Stub\BasicMath;
 
 use SilverStripe\Control\HTTPRequest;
@@ -24,7 +25,7 @@ class MethodLoginHandler implements LoginHandlerInterface, TestOnly
      * @param StoreInterface $store An object that hold session data (and the Member) that can be mutated
      * @return array Props to be passed to a front-end React component
      */
-    public function start(StoreInterface $store, RegisteredMethod $registeredMethod)
+    public function start(StoreInterface $store, RegisteredMethod $registeredMethod): array
     {
         $numbers = [];
 
@@ -51,7 +52,7 @@ class MethodLoginHandler implements LoginHandlerInterface, TestOnly
      * @param StoreInterface $store
      * @return bool
      */
-    public function verify(HTTPRequest $request, StoreInterface $store, RegisteredMethod $registeredMethod)
+    public function verify(HTTPRequest $request, StoreInterface $store, RegisteredMethod $registeredMethod): bool
     {
         $body = json_decode($request->getBody(), true);
 
@@ -72,7 +73,7 @@ class MethodLoginHandler implements LoginHandlerInterface, TestOnly
      *
      * @return string
      */
-    public function getLeadInLabel()
+    public function getLeadInLabel(): string
     {
         return 'Verify by solving a complex math problem';
     }
@@ -82,7 +83,7 @@ class MethodLoginHandler implements LoginHandlerInterface, TestOnly
      *
      * @return string
      */
-    public function getComponent()
+    public function getComponent(): string
     {
         return 'BasicMathLogin';
     }
