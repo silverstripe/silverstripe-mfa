@@ -9,7 +9,7 @@ use SilverStripe\MFA\Exception\EncryptionAdapterException;
 /**
  * An encryption adapter for defuse/php-encryption, enabled by default.
  */
-class PHPEncryptionAdapter implements EncryptionAdapterInterface
+class DefusePHPEncryptionAdapter implements EncryptionAdapterInterface
 {
     public function encrypt(string $plaintext, string $key): string
     {

@@ -3,4 +3,4 @@ Name: mfaencryption
 ---
 SilverStripe\Core\Injector\Injector:
   SilverStripe\MFA\Service\EncryptionAdapterInterface:
-    class: SilverStripe\MFA\Service\PHPEncryptionAdapter
+    class: SilverStripe\MFA\Service\DefusePHPEncryptionAdapter
