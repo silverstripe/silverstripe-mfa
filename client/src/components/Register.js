@@ -67,9 +67,9 @@ class Register extends Component {
   }
 
   /**
-   * Set the MFA method the user is registering for
+   * Set (or unset) the MFA method the user is registering for
    *
-   * @param {Object} method
+   * @param {object|null} method
    */
   handleSelectMethod(method) {
     this.setState({
@@ -202,6 +202,7 @@ class Register extends Component {
         <RegistrationComponent
           {...registerProps}
           method={selectedMethod}
+          onBack={() => this.handleSelectMethod(null)}
           onCompleteRegistration={this.handleCompleteRegistration}
         />
       </div>
