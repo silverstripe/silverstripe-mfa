@@ -63,7 +63,7 @@ describe('SelectMethod', () => {
         />
       );
 
-      const button = wrapper.find('.mfa-method-tile__action-next');
+      const button = wrapper.find('.mfa-method-tile__action--next');
       expect(button).toHaveLength(1);
       expect(button.text()).toBe('Next');
     });
@@ -76,7 +76,7 @@ describe('SelectMethod', () => {
         />
       );
 
-      const button = wrapper.find('.mfa-method-tile__action-next');
+      const button = wrapper.find('.mfa-method-tile__action--next');
       expect(button).toHaveLength(1);
       expect(button.props().disabled).toBe(true);
     });
@@ -90,7 +90,7 @@ describe('SelectMethod', () => {
       );
       wrapper.instance().handleClick(firstMethod);
 
-      const button = wrapper.find('.mfa-method-tile__action-next');
+      const button = wrapper.find('.mfa-method-tile__action--next');
       expect(button).toHaveLength(1);
       expect(button.props().disabled).toBe(false);
     });
@@ -103,7 +103,7 @@ describe('SelectMethod', () => {
         />
       );
 
-      const button = wrapper.find('.mfa-method-tile__action-back');
+      const button = wrapper.find('.mfa-method-tile__action--back');
       expect(button).toHaveLength(1);
       expect(button.text()).toBe('Back');
     });

@@ -56,9 +56,9 @@ class SelectMethod extends Component {
     const { highlightedMethod } = this.state;
 
     return (
-      <div className="mfa-method-tile__actions">
+      <div className="mfa-actions">
         <button
-          className="mfa-method-tile__action-next btn btn-success"
+          className="mfa-actions__action mfa-method-tile__action--next btn btn-success"
           disabled={highlightedMethod === null}
           onClick={this.handleGoToNext}
         >
@@ -66,7 +66,7 @@ class SelectMethod extends Component {
         </button>
 
         <button
-          className="mfa-method-tile__action-back btn"
+          className="mfa-actions__action mfa-method-tile__action--back btn"
           onClick={this.handleBack}
         >
           {i18n._t('MFARegister.BACK', 'Back')}

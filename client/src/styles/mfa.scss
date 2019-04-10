@@ -47,10 +47,19 @@ body.mfa {
   }
 }
 
-
 .mfa-app {
   width: 100%;
   margin: auto;
   max-width: $container-width;
   color: $color-grey-text;
+}
+
+.mfa-actions {
+  margin-top: $button-spacing;
+
+  &__action {
+    &--next {
+      margin-right: 1rem;
+    }
+  }
 }
