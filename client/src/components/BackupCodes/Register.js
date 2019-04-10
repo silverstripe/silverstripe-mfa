@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Printd from 'printd';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { formatCode } from 'lib/formatCode';
 
 /**
  * This component provides the user interface for registering backup codes with a user. This process
@@ -36,26 +37,7 @@ class Register extends Component {
   getFormattedCodes() {
     const { codes } = this.props;
 
-    return codes.map(code => {
-      // Can't nicely split anything less than 6 characters
-      if (code.length < 6) {
-        return code;
-      }
-
-      const numberOfSpaces = Math.floor(code.length / 3);
-      const extraCharacters = code.length % 3;
-
-      let formatted = '';
-      for (let i = numberOfSpaces; i > 0; i--) {
-        // Insert spaces every 3 characters. If that would leave 5 at the end it will instead do two
-        // sets of four characters at the end
-        const start = ((numberOfSpaces - i) * 3) + (i < extraCharacters ? 1 : 0);
-        const numberOfCharacters = i <= extraCharacters ? 4 : 3;
-        formatted += ` ${code.substring(start, start + numberOfCharacters)}`;
-      }
-
-      return formatted.trim();
-    });
+    return codes.map(code => formatCode(code));
   }
 
   /**

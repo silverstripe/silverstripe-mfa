@@ -20,23 +20,6 @@ const mockMethod = {
 };
 
 describe('Register - Recovery Codes', () => {
-  it('formats codes putting spaces every 3 (or 4) characters', () => {
-    const wrapper = shallow(
-      <Register
-        method={mockMethod}
-        codes={[
-          '123', '1234', '12345', '123456', '111222333444', '1112223334444', '11122233334444',
-          '111222333444555'
-        ]}
-      />
-    );
-
-    expect(wrapper.instance().getFormattedCodes()).toEqual([
-      '123', '1234', '12345', '123 456', '111 222 333 444', '111 222 333 4444', '111 222 3333 4444',
-      '111 222 333 444 555'
-    ]);
-  });
-
   it('will show a recently copied message when using the copy test button', () => {
     const preventDefault = jest.fn();
 
