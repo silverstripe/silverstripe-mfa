@@ -1,0 +1,6 @@
+---
+Name: mfastore
+---
+SilverStripe\Core\Injector\Injector:
+  SilverStripe\MFA\Store\StoreInterface:
+    class: SilverStripe\MFA\Store\SessionStore

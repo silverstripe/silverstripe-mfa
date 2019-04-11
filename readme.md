@@ -29,8 +29,38 @@ After installing this module _and_ a supported factor method module (e.g. TOTP),
 will be replaced with the MFA authenticator instead. This will provide no change in the steps taken to log in until
 an MFA Method has also been configured for the site:
 
-```yml
+```yaml
 SilverStripe\MFA\Service\MethodRegistry:
   methods:
     # register methods here
 ```
+
+## Configuring encryption providers
+
+By default this module uses defuse/php-encryption as its encryption adapter. You can add your own implementation if
+you would like to use something different, by implementing `EncryptionAdapterInterface` and configuring your service
+class with Injector. The interface is deliberately simple, and takes `encrypt()` and `decrypt()` methods with a
+payload and an encryption key argument.
+
+```yaml
+SilverStripe\Core\Injector\Injector:
+  SilverStripe\MFA\Service\EncryptionAdapterInterface:
+    class: App\MFA\ReallyStrongEncryptionAdapter
+
+```
+
+## Data store interfaces
+
+Since the MFA architecture is largely designed to be decoupled, we use a `StoreInterface` implementation to retain
+data between requests. The default implementation for this interface is `SessionStore` which stores data in PHP
+sessions. If you need to use a different storage mechanism (e.g. Redis, DynamoDB etc) you can implement and configure
+your own `StoreInterface`, and register it with Injector:
+
+```yaml
+SilverStripe\Core\Injector\Injector:
+  SilverStripe\MFA\Store\StoreInterface:
+    class: App\MFA\RedisStoreInterface
+```
+
+Please note that the store should always be treated as a server side implementation. It's not a good idea to implement
+a client store e.g. cookies.
