@@ -12,6 +12,13 @@ use SilverStripe\Security\Member;
 interface StoreInterface
 {
     /**
+     * Create a new StoreInterface, optionally given an HTTPRequest object
+     *
+     * @param HTTPRequest|null $request
+     */
+    public function __construct(HTTPRequest $request = null);
+
+    /**
      * Persist the stored state for the given request
      *
      * @param HTTPRequest $request
