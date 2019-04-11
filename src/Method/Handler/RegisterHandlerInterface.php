@@ -63,18 +63,4 @@ interface RegisterHandlerInterface
      * @return string
      */
     public function getComponent(): string;
-
-    /**
-     * Returns whether the method is available to be used from a backend perspective.
-     *
-     * @return bool
-     */
-    public function isAvailable(): bool;
-
-    /**
-     * If not available to be used, provide a message to display on the frontend to explain why.
-     *
-     * @return string
-     */
-    public function getUnavailableMessage(): string;
 }

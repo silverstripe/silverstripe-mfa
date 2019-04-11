@@ -1,6 +1,7 @@
 <?php
 namespace SilverStripe\MFA\Tests\Stub\BasicMath;
 
+use SilverStripe\Control\Director;
 use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\Dev\TestOnly;
 use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
@@ -48,13 +49,18 @@ class Method implements MethodInterface, TestOnly
             ->getURL();
     }
 
-    public function getDetails(): AvailableMethodDetailsInterface
-    {
-        return new AvailableMethodDetails($this);
-    }
-
     public function applyRequirements(): void
     {
-        // This authenticator bundles client requirements in the main bundle.
+        // noop
+    }
+
+    public function isAvailable(): bool
+    {
+        return Director::isDev();
+    }
+
+    public function getUnavailableMessage(): string
+    {
+        return 'This is a test authenticator, only available in dev mode for tests.';
     }
 }

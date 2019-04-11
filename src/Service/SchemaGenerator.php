@@ -36,7 +36,7 @@ class SchemaGenerator
 
         // Skip registration details if the user has already registered this method
         $exclude = array_map(function (RegisteredMethodDetailsInterface $methodDetails) {
-            return $methodDetails->getURLSegment();
+            return $methodDetails->jsonSerialize()['urlSegment'];
         }, $registeredMethods);
 
         $schema = [
@@ -65,7 +65,10 @@ class SchemaGenerator
     {
         $registeredMethodDetails = [];
         foreach ($member->RegisteredMFAMethods() as $registeredMethod) {
-            $registeredMethodDetails[] = $registeredMethod->getDetails();
+            $registeredMethodDetails[] = Injector::inst()->create(
+                RegisteredMethodDetailsInterface::class,
+                $registeredMethod->getMethod()
+            );
         }
         return $registeredMethodDetails;
     }
@@ -92,7 +95,7 @@ class SchemaGenerator
             if (in_array($method->getURLSegment(), $exclude) || $methodRegistry->isBackupMethod($method)) {
                 continue;
             }
-            $availableMethods[] = $method->getDetails();
+            $availableMethods[] = Injector::inst()->create(AvailableMethodDetailsInterface::class, $method);
         }
 
         return $availableMethods;
@@ -125,7 +128,7 @@ class SchemaGenerator
         /** @var MethodInterface $method */
         $method = Injector::inst()->create($methodClass);
 
-        return $method ? $method->getDetails() : null;
+        return $method ? Injector::inst()->create(AvailableMethodDetailsInterface::class, $method) : null;
     }
 
     /**

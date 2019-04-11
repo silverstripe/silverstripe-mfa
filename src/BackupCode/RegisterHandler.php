@@ -147,14 +147,4 @@ class RegisterHandler implements RegisterHandlerInterface
     {
         return 'BackupCodeRegister';
     }
-
-    public function isAvailable(): bool
-    {
-        return true;
-    }
-
-    public function getUnavailableMessage(): string
-    {
-        return '';
-    }
 }

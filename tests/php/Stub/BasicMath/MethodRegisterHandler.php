@@ -3,7 +3,6 @@
 namespace SilverStripe\MFA\Tests\Stub\BasicMath;
 
 use RuntimeException;
-use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Dev\TestOnly;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
@@ -87,15 +86,5 @@ class MethodRegisterHandler implements RegisterHandlerInterface, TestOnly
     public function getComponent(): string
     {
         return 'BasicMathRegister';
-    }
-
-    public function isAvailable(): bool
-    {
-        return Director::isDev();
-    }
-
-    public function getUnavailableMessage(): string
-    {
-        return 'This is a test authenticator, only available in dev mode for tests.';
     }
 }
