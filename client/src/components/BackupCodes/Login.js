@@ -11,8 +11,19 @@ class Login extends Component {
       value: '',
     };
 
+    this.codeInput = React.createRef();
+
     this.handleChange = this.handleChange.bind(this);
     this.handleCompleteLogin = this.handleCompleteLogin.bind(this);
+  }
+
+  /**
+   * Automatically set the focus to the code input field when the component is rendered
+   */
+  componentDidMount() {
+    if (this.codeInput.current) {
+      this.codeInput.current.focus();
+    }
   }
 
   /**
@@ -103,6 +114,7 @@ class Login extends Component {
           type="text"
           placeholder={label}
           id="backup-code"
+          ref={this.codeInput}
           onChange={this.handleChange}
         />
         {error && <div className="help-block">
