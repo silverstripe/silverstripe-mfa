@@ -7,7 +7,6 @@ use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
-use SilverStripe\MFA\State\AvailableMethodDetailsInterface;
 
 class Method implements MethodInterface
 {
@@ -66,13 +65,18 @@ class Method implements MethodInterface
             ->getURL();
     }
 
-    public function getDetails(): AvailableMethodDetailsInterface
-    {
-        return Injector::inst()->create(AvailableMethodDetailsInterface::class, $this);
-    }
-
     public function applyRequirements(): void
     {
         // This authenticator bundles client requirements in the main bundle.
+    }
+
+    public function isAvailable(): bool
+    {
+        return true;
+    }
+
+    public function getUnavailableMessage(): string
+    {
+        return '';
     }
 }

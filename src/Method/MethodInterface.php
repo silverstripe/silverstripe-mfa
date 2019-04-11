@@ -4,7 +4,6 @@ namespace SilverStripe\MFA\Method;
 
 use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
-use SilverStripe\MFA\State\AvailableMethodDetailsInterface;
 
 /**
  * Defines an Authentication Method, which serves as an additional factor for authentication beyond the standard
@@ -49,7 +48,16 @@ interface MethodInterface
     public function applyRequirements(): void;
 
     /**
-     * @return AvailableMethodDetailsInterface
+     * Returns whether the method is available to be used from a backend perspective.
+     *
+     * @return bool
      */
-    public function getDetails(): AvailableMethodDetailsInterface;
+    public function isAvailable(): bool;
+
+    /**
+     * If not available to be used, provide a message to display on the frontend to explain why.
+     *
+     * @return string
+     */
+    public function getUnavailableMessage(): string;
 }

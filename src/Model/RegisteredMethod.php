@@ -5,7 +5,6 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
-use SilverStripe\MFA\State\RegisteredMethodDetailsInterface;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
 
@@ -61,10 +60,5 @@ class RegisteredMethod extends DataObject
     public function getRegisterHandler()
     {
         return $this->getMethod()->getRegisterHandler();
-    }
-
-    public function getDetails()
-    {
-        return Injector::inst()->create(RegisteredMethodDetailsInterface::class, $this->getMethod());
     }
 }

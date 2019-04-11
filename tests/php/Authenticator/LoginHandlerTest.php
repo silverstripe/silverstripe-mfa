@@ -139,11 +139,12 @@ class LoginHandlerTest extends FunctionalTest
         $method = Injector::inst()->get(Method::class);
         $loginHandler = $method->getLoginHandler();
 
-        $this->assertSame([[
-            'urlSegment' => $method->getURLSegment(),
-            'leadInLabel' => $loginHandler->getLeadInLabel(),
-            'component' => 'BasicMathLogin',
-        ]], $response['registeredMethods']);
+        $result = $response['registeredMethods'][0];
+        $this->assertSame($method->getURLSegment(), $result['urlSegment']);
+        $this->assertSame($loginHandler->getLeadInLabel(), $result['leadInLabel']);
+        $this->assertSame('BasicMathLogin', $result['component']);
+        $this->assertSame('https://google.com', $result['supportLink']);
+        $this->assertContains('totp.svg', $result['thumbnail']);
     }
 
     public function testMFASchemaEndpointProvidesDefaultMethodIfSet()

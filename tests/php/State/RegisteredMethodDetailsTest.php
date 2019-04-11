@@ -37,16 +37,4 @@ class RegisteredMethodDetailsTest extends \PHPUnit_Framework_TestCase
         $result = json_encode($this->details);
         $this->assertContains('foo-bar', $result);
     }
-
-    public function testGetURLSegment()
-    {
-        $this->method->expects($this->once())->method('getURLSegment')->willReturn('foo-bar');
-        $this->assertSame('foo-bar', $this->details->getURLSegment());
-    }
-
-    public function testGetLeadInLabel()
-    {
-        $this->method->getLoginHandler()->expects($this->once())->method('getLeadInLabel')->willReturn('Hello');
-        $this->assertSame('Hello', $this->details->getLeadInLabel());
-    }
 }

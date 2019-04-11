@@ -51,7 +51,7 @@ class Login extends Component {
     return (
       <div className="mfa-login-backup-codes__controls mfa__controls">
         <button
-          className="btn btn-primary"
+          className="btn btn-success"
           disabled={this.state.value.length === 0}
           onClick={this.handleCompleteLogin}
         >
