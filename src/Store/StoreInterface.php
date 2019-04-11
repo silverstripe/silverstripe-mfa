@@ -16,7 +16,7 @@ interface StoreInterface
      *
      * @param HTTPRequest|null $request
      */
-    public function __construct(HTTPRequest $request = null);
+    public function __construct(?HTTPRequest $request = null);
 
     /**
      * Persist the stored state for the given request
