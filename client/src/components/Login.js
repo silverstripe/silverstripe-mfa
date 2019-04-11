@@ -220,7 +220,7 @@ class Login extends Component {
     return (
       <a
         href="#"
-        className="mfa-login__show-other-methods"
+        className="mfa-login__show-other-methods btn"
         onClick={this.handleShowOtherMethodsPane}
       >
         {i18n._t('MFALogin.MORE_OPTIONS', 'More options')}
