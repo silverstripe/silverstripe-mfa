@@ -159,7 +159,8 @@ class Login extends Component {
   }
 
   /**
-   * Handle a click on a "More options" link to show other methods that have been registered
+   * Handle a click on a "More options" link to show other methods that have been registered,
+   * and clear any login component validation errors.
    *
    * @param {Event} event
    */
@@ -168,6 +169,8 @@ class Login extends Component {
 
     this.setState({
       showOtherMethods: true,
+      // Reset error states
+      message: '',
     });
   }
 
