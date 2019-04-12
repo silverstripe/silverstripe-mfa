@@ -12,7 +12,7 @@ use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Service\SchemaGenerator;
-use SilverStripe\MFA\Store\SessionStore;
+use SilverStripe\MFA\Store\StoreInterface;
 use SilverStripe\ORM\ValidationException;
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\IdentityStore;
@@ -67,9 +67,9 @@ class LoginHandler extends BaseLoginHandler
     /**
      * A "session store" object that helps contain MFA specific session detail
      *
-     * @var SessionStore
+     * @var StoreInterface
      */
-    protected $sessionStore;
+    protected $store;
 
     /**
      * Override the parent "doLogin" to insert extra steps into the flow
@@ -89,7 +89,7 @@ class LoginHandler extends BaseLoginHandler
         }
 
         // Store a reference to the member in session
-        $this->getSessionStore()->setMember($member)->save($request);
+        $this->getStore()->setMember($member)->save($request);
 
         // Store the BackURL for use after the process is complete
         if (!empty($data)) {
@@ -120,7 +120,7 @@ class LoginHandler extends BaseLoginHandler
      */
     public function mfa()
     {
-        if (!$this->getSessionStore()->getMember()) {
+        if (!$this->getStore()->getMember()) {
             return $this->redirectBack();
         }
 
@@ -178,8 +178,8 @@ class LoginHandler extends BaseLoginHandler
      */
     public function startRegistration(HTTPRequest $request)
     {
-        $sessionStore = $this->getSessionStore();
-        $sessionMember = $sessionStore->getMember();
+        $store = $this->getStore();
+        $sessionMember = $store->getMember();
         $loggedInMember = Security::getCurrentUser();
 
         if (is_null($loggedInMember) && is_null($sessionMember)) {
@@ -232,11 +232,11 @@ class LoginHandler extends BaseLoginHandler
         }
 
         // Mark the given method as started within the session
-        $sessionStore->setMethod($method->getURLSegment());
+        $store->setMethod($method->getURLSegment());
         // Allow the registration handler to begin the process and generate some data to pass through to the front-end
-        $data = $method->getRegisterHandler()->start($sessionStore);
+        $data = $method->getRegisterHandler()->start($store);
         // Ensure details are saved to the session
-        $sessionStore->save($request);
+        $store->save($request);
 
         return $this->jsonResponse($data);
     }
@@ -249,8 +249,8 @@ class LoginHandler extends BaseLoginHandler
      */
     public function finishRegistration(HTTPRequest $request)
     {
-        $sessionStore = $this->getSessionStore();
-        $sessionMember = $sessionStore->getMember();
+        $store = $this->getStore();
+        $sessionMember = $store->getMember();
         $loggedInMember = Security::getCurrentUser();
 
         if (is_null($loggedInMember) && is_null($sessionMember)) {
@@ -260,7 +260,7 @@ class LoginHandler extends BaseLoginHandler
             );
         }
 
-        $storedMethodName = $sessionStore->getMethod();
+        $storedMethodName = $store->getMethod();
         $method = $this->getMethodRegistry()->getMethodByURLSegment($request->param('Method'));
 
         // If a registration process hasn't been initiated in a previous request, calling this method is invalid
@@ -285,7 +285,7 @@ class LoginHandler extends BaseLoginHandler
                 ->registerForMember(
                     $sessionMember,
                     $method,
-                    $registrationHandler->register($request, $sessionStore)
+                    $registrationHandler->register($request, $store)
                 );
         } catch (Exception $e) {
             return $this->jsonResponse(
@@ -360,8 +360,8 @@ class LoginHandler extends BaseLoginHandler
      */
     public function startLogin(HTTPRequest $request)
     {
-        $sessionStore = $this->getSessionStore();
-        $member = $sessionStore->getMember();
+        $store = $this->getStore();
+        $member = $store->getMember();
 
         // If we don't have a valid member we shouldn't be here...
         if (!$member) {
@@ -398,12 +398,12 @@ class LoginHandler extends BaseLoginHandler
             );
         }
 
-        // Mark the given method as started within the session
-        $sessionStore->setMethod($registeredMethod->getMethod()->getURLSegment());
+        // Mark the given method as started within the store
+        $store->setMethod($registeredMethod->getMethod()->getURLSegment());
         // Allow the authenticator to begin the process and generate some data to pass through to the front end
-        $data = $registeredMethod->getLoginHandler()->start($sessionStore, $registeredMethod);
-        // Ensure detail is saved to the session
-        $sessionStore->save($request);
+        $data = $registeredMethod->getLoginHandler()->start($store, $registeredMethod);
+        // Ensure detail is saved to the store
+        $store->save($request);
 
         // Respond with our method
         return $this->jsonResponse($data ?: []);
@@ -417,7 +417,7 @@ class LoginHandler extends BaseLoginHandler
      */
     public function verifyLogin(HTTPRequest $request)
     {
-        $method = $this->getSessionStore()->getMethod();
+        $method = $this->getStore()->getMethod();
         if ($method) {
             $methodInstance = $this->getMethodRegistry()->getMethodByURLSegment($method);
         }
@@ -428,11 +428,11 @@ class LoginHandler extends BaseLoginHandler
         }
 
         // Get the member and authenticator ready
-        $member = $this->getSessionStore()->getMember();
+        $member = $this->getStore()->getMember();
         $registeredMethod = $this->getRegisteredMethodManager()->getFromMember($member, $methodInstance);
         $authenticator = $registeredMethod->getLoginHandler();
 
-        if (!$authenticator->verify($request, $this->getSessionStore(), $registeredMethod)) {
+        if (!$authenticator->verify($request, $this->getStore(), $registeredMethod)) {
             return $this->jsonResponse([
                 'message' => 'Invalid credentials',
             ], 401);
@@ -452,7 +452,7 @@ class LoginHandler extends BaseLoginHandler
             $this->doPerformLogin($request, $member);
 
             // And also clear the session
-            SessionStore::clear($request);
+            $this->getStore()->clear($request);
             $request->getSession()->clear(static::SESSION_KEY . '.successfulMethods');
         }
 
@@ -507,7 +507,7 @@ class LoginHandler extends BaseLoginHandler
         }
 
         // Ensure any left over session state is cleaned up
-        SessionStore::clear($request);
+        $this->getStore()->clear($request);
         $request->getSession()->clear(static::SESSION_KEY . '.mustLogin');
         $request->getSession()->clear(static::SESSION_KEY . '.successfulMethods');
 
@@ -574,7 +574,7 @@ class LoginHandler extends BaseLoginHandler
      */
     public function getMember()
     {
-        $member = $this->getSessionStore()->getMember() ?: Security::getCurrentUser();
+        $member = $this->getStore()->getMember() ?: Security::getCurrentUser();
 
         // If we don't have a valid member we shouldn't be here...
         if (!$member) {
@@ -585,15 +585,15 @@ class LoginHandler extends BaseLoginHandler
     }
 
     /**
-     * @return SessionStore
+     * @return StoreInterface
      */
-    protected function getSessionStore()
+    protected function getStore()
     {
-        if (!$this->sessionStore) {
-            $this->sessionStore = SessionStore::create($this->getRequest());
+        if (!$this->store) {
+            $this->store = Injector::inst()->create(StoreInterface::class, $this->getRequest());
         }
 
-        return $this->sessionStore;
+        return $this->store;
     }
 
     /**

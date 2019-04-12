@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace SilverStripe\MFA\Store;
 
 use SilverStripe\Control\HTTPRequest;
@@ -38,42 +39,28 @@ class SessionStore implements StoreInterface
     protected $state = [];
 
     /**
-     * @param Member $member
-     */
-    public function __construct(Member $member = null)
-    {
-        if (!is_null($member)) {
-            $this->setMember($member);
-        }
-    }
-
-    /**
      * Attempt to create a store from the given request getting any existing state from the session of the request
      *
      * {@inheritdoc}
      */
-    public static function create(HTTPRequest $request)
+    public function __construct(HTTPRequest $request = null)
     {
-        $state = $request->getSession()->get(static::SESSION_KEY);
+        $state = $request ? $request->getSession()->get(static::SESSION_KEY) : null;
 
         if ($state && $state['member']) {
             /** @var Member $member */
             $member = DataObject::get_by_id(Member::class, $state['member']);
 
-            $new = new static($member);
-            $new->setMethod($state['method']);
-            $new->setState($state['state']);
-
-            return $new;
+            $this->setMember($member);
+            $this->setMethod($state['method']);
+            $this->setState($state['state']);
         }
-
-        return new static();
     }
 
     /**
-     * @return Member|MemberExtension
+     * @return Member&MemberExtension|null
      */
-    public function getMember()
+    public function getMember(): ?Member
     {
         return $this->member;
     }
@@ -82,7 +69,7 @@ class SessionStore implements StoreInterface
      * @param Member $member
      * @return $this
      */
-    public function setMember(Member $member)
+    public function setMember(Member $member): StoreInterface
     {
         // Early return if there's no change
         if ($this->member && $this->member->ID === $member->ID) {
@@ -98,9 +85,9 @@ class SessionStore implements StoreInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getMethod()
+    public function getMethod(): ?string
     {
         return $this->method;
     }
@@ -109,19 +96,19 @@ class SessionStore implements StoreInterface
      * @param string $method
      * @return $this
      */
-    public function setMethod($method)
+    public function setMethod($method): StoreInterface
     {
         $this->method = $method;
 
         return $this;
     }
 
-    public function getState()
+    public function getState(): array
     {
         return $this->state;
     }
 
-    public function setState(array $state)
+    public function setState(array $state): StoreInterface
     {
         $this->state = $state;
 
@@ -133,7 +120,7 @@ class SessionStore implements StoreInterface
      *
      * {@inheritdoc}
      */
-    public function save(HTTPRequest $request)
+    public function save(HTTPRequest $request): StoreInterface
     {
         $request->getSession()->set(static::SESSION_KEY, $this->build());
 
@@ -145,19 +132,19 @@ class SessionStore implements StoreInterface
      *
      * {@inheritdoc}
      */
-    public static function clear(HTTPRequest $request)
+    public static function clear(HTTPRequest $request): void
     {
         $request->getSession()->clear(static::SESSION_KEY);
     }
 
-    protected function resetMethod()
+    protected function resetMethod(): StoreInterface
     {
         $this->setMethod(null)->setState([]);
 
         return $this;
     }
 
-    protected function build()
+    protected function build(): array
     {
         return [
             'member' => $this->getMember() ? $this->getMember()->ID : null,

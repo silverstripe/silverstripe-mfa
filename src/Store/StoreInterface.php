@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace SilverStripe\MFA\Store;
 
@@ -12,12 +12,11 @@ use SilverStripe\Security\Member;
 interface StoreInterface
 {
     /**
-     * Create a store from the given request, using any initial state related to the request that has been persisted
+     * Create a new StoreInterface, optionally given an HTTPRequest object
      *
-     * @param HTTPRequest $request
-     * @return StoreInterface
+     * @param HTTPRequest|null $request
      */
-    public static function create(HTTPRequest $request);
+    public function __construct(?HTTPRequest $request = null);
 
     /**
      * Persist the stored state for the given request
@@ -25,7 +24,7 @@ interface StoreInterface
      * @param HTTPRequest $request
      * @return StoreInterface
      */
-    public function save(HTTPRequest $request);
+    public function save(HTTPRequest $request): StoreInterface;
 
     /**
      * Clear any stored state for the given request
@@ -33,14 +32,14 @@ interface StoreInterface
      * @param HTTPRequest $request
      * @return void
      */
-    public static function clear(HTTPRequest $request);
+    public static function clear(HTTPRequest $request): void;
 
     /**
      * Get the state from the store
      *
      * @return array
      */
-    public function getState();
+    public function getState(): array;
 
     /**
      * Update the state in the store
@@ -48,27 +47,27 @@ interface StoreInterface
      * @param array $state
      * @return StoreInterface
      */
-    public function setState(array $state);
+    public function setState(array $state): StoreInterface;
 
     /**
-     * @return Member|MemberExtension
+     * @return Member&MemberExtension|null
      */
-    public function getMember();
+    public function getMember(): ?Member;
 
     /**
      * @param Member $member
      * @return $this
      */
-    public function setMember(Member $member);
+    public function setMember(Member $member): StoreInterface;
 
     /**
      * @return string
      */
-    public function getMethod();
+    public function getMethod(): ?string;
 
     /**
      * @param string $method
      * @return $this
      */
-    public function setMethod($method);
+    public function setMethod($method): StoreInterface;
 }
