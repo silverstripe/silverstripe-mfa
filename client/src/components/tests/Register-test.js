@@ -53,18 +53,103 @@ describe('Register', () => {
     loadComponent.mockClear();
   });
 
-  it('renders the Introduction UI on first load', () => {
-    const wrapper = shallow(
-      <Register
-        canSkip
-        endpoints={endpoints}
-        availableMethods={mockAvailableMethods}
-        resources={{}}
-      />
-    );
+  describe('setupBackupMethod()', () => {
+    it('sets the selected method as the backup method', () => {
+      const wrapper = shallow(
+        <Register
+          endpoints={endpoints}
+          availableMethods={mockAvailableMethods}
+          registeredMethods={[]} // will cause "should set up backup methods" to be true
+          backupMethod={{
+            name: 'Test',
+          }}
+        />
+      );
 
-    const actionList = wrapper.find('Introduction');
-    expect(actionList).toHaveLength(1);
+      // Initially set the selected method as an actual method
+      wrapper.setState({ selectedMethod: firstMethod });
+
+      // Run the handler and check that it's changed to the backup method
+      wrapper.instance().setupBackupMethod();
+      expect(wrapper.instance().state.selectedMethod).toEqual({ name: 'Test' });
+    });
+
+    it('clears the selected method and sets to be completed', () => {
+      const wrapper = shallow(
+        <Register
+          endpoints={endpoints}
+          availableMethods={mockAvailableMethods}
+          registeredMethods={[]}
+          backupMethod={null}
+        />
+      );
+
+      // Initially set the selected method as an actual method
+      wrapper.setState({ selectedMethod: firstMethod });
+
+      // Run the handler and check that it's changed to the backup method
+      wrapper.instance().setupBackupMethod();
+      expect(wrapper.instance().state.selectedMethod).toBeNull();
+      expect(wrapper.instance().state.isComplete).toBeTruthy();
+    });
+  });
+
+  describe('clearRegistrationErrors()', () => {
+    it('clears registration errors, leaving existing registration props intact', () => {
+      const wrapper = shallow(
+        <Register
+          endpoints={endpoints}
+          availableMethods={mockAvailableMethods}
+          registeredMethods={[]}
+        />
+      );
+
+      wrapper.instance().setState({
+        registerProps: {
+          foo: 'bar',
+          error: 'I haven\'nt had my coffee yet!',
+        },
+      });
+      wrapper.instance().clearRegistrationErrors();
+      expect(wrapper.instance().state.registerProps.error).toBeNull();
+      expect(wrapper.instance().state.registerProps.foo).toBe('bar');
+    });
+  });
+
+  describe('handleBack()', () => {
+    it('clears registration errors', () => {
+      const wrapper = shallow(
+        <Register
+          endpoints={endpoints}
+          availableMethods={mockAvailableMethods}
+          registeredMethods={[]}
+        />
+      );
+
+      wrapper.instance().setState({
+        registerProps: {
+          error: 'I haven\'nt had my coffee yet!',
+        },
+      });
+      wrapper.instance().handleBack();
+      expect(wrapper.instance().state.registerProps.error).toBeNull();
+    });
+
+    it('unselects the selected method', () => {
+      const wrapper = shallow(
+        <Register
+          endpoints={endpoints}
+          availableMethods={mockAvailableMethods}
+          registeredMethods={[]}
+        />
+      );
+
+      wrapper.instance().setState({
+        selectedMethod: firstMethod,
+      });
+      wrapper.instance().handleBack();
+      expect(wrapper.instance().state.selectedMethod).toBeNull();
+    });
   });
 
   describe('handleCompleteRegistration()', () => {
@@ -73,7 +158,6 @@ describe('Register', () => {
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
-          resources={{}}
         />,
         { disableLifecycleMethods: true }
       );
@@ -91,13 +175,26 @@ describe('Register', () => {
     });
   });
 
+  describe('handleSelectMethod()', () => {
+    it('sets the selected method', () => {
+      const wrapper = shallow(
+        <Register
+          endpoints={endpoints}
+          availableMethods={mockAvailableMethods}
+        />
+      );
+
+      wrapper.instance().handleSelectMethod(firstMethod);
+      expect(wrapper.instance().state.selectedMethod).toBe(firstMethod);
+    });
+  });
+
   describe('renderMethod()', () => {
     it('will load the component for the chosen method', done => {
       const wrapper = shallow(
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
-          resources={{}}
         />
       );
 
@@ -122,7 +219,6 @@ describe('Register', () => {
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
-          resources={{}}
         />
       );
 
@@ -142,7 +238,6 @@ describe('Register', () => {
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
-          resources={{}}
         />
       );
 
@@ -161,7 +256,6 @@ describe('Register', () => {
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
-          resources={{}}
         />
       );
 
@@ -190,7 +284,6 @@ describe('Register', () => {
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
-          resources={{}}
         />
       );
 
@@ -202,6 +295,21 @@ describe('Register', () => {
       expect(methods).toHaveLength(2);
       expect(methods[0].description).toMatch(/Register using aye/);
       expect(methods[1].description).toMatch(/Register using bee/);
+    });
+  });
+
+  describe('render()', () => {
+    it('renders the Introduction UI on first load', () => {
+      const wrapper = shallow(
+        <Register
+          canSkip
+          endpoints={endpoints}
+          availableMethods={mockAvailableMethods}
+        />
+      );
+
+      const actionList = wrapper.find('Introduction');
+      expect(actionList).toHaveLength(1);
     });
   });
 });

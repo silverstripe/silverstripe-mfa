@@ -38,6 +38,7 @@ class Register extends Component {
       isStarted: false,
     };
 
+    this.handleBack = this.handleBack.bind(this);
     this.handleCompleteRegistration = this.handleCompleteRegistration.bind(this);
     this.handleCompleteProcess = this.handleCompleteProcess.bind(this);
     this.handleSelectMethod = this.handleSelectMethod.bind(this);
@@ -67,13 +68,25 @@ class Register extends Component {
   }
 
   /**
-   * Set (or unset) the MFA method the user is registering for
-   *
-   * @param {object|null} method
+   * If there's a backup method that's not registered then we initialise that
    */
-  handleSelectMethod(method) {
+  setupBackupMethod() {
+    const { backupMethod } = this.props;
+    const { selectedMethod } = this.state;
+
+    if (
+      this.shouldSetupBackupMethod()
+      && selectedMethod.urlSegment !== backupMethod.urlSegment
+    ) {
+      this.setState({
+        selectedMethod: backupMethod,
+      });
+      return;
+    }
+
     this.setState({
-      selectedMethod: method
+      selectedMethod: null,
+      isComplete: true,
     });
   }
 
@@ -95,6 +108,75 @@ class Register extends Component {
   }
 
   /**
+   * Send the user back to the registration method selection screen from inside one of the
+   * method registration components
+   */
+  handleBack() {
+    this.clearRegistrationErrors();
+    this.handleSelectMethod(null);
+  }
+
+  /**
+   * Set (or unset) the MFA method the user is registering for
+   *
+   * @param {object|null} method
+   */
+  handleSelectMethod(method) {
+    this.setState({
+      selectedMethod: method,
+    });
+  }
+
+  /**
+   * Provided to individual method components to be called when the registration process is
+   * completed
+   *
+   * @param {object} registrationData
+   */
+  handleCompleteRegistration(registrationData) {
+    // Send registration details to server
+    const { endpoints: { register } } = this.props;
+    const { selectedMethod } = this.state;
+
+    fetch(register.replace('{urlSegment}', selectedMethod.urlSegment), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(registrationData),
+    })
+      .then(response => {
+        switch (response.status) {
+          case 201:
+            // Clear out the register props now - any process that returns the user to the
+            // register screen will need a new "start" call
+            this.setState({
+              registerProps: null,
+            });
+
+            this.setupBackupMethod();
+            return null;
+          default:
+        }
+        return response.json();
+      })
+      .then(response => {
+        // Failure states are captured here
+
+        if (response && response.errors) {
+          const formattedErrors = response.errors.join(', ');
+
+          this.setState({
+            registerProps: {
+              ...this.state.registerProps,
+              error: formattedErrors,
+            },
+          });
+        }
+      });
+  }
+
+  /**
    * Inspects the props and returns whether a back-up method should also be set up for this
    * registration flow.
    *
@@ -111,48 +193,17 @@ class Register extends Component {
   }
 
   /**
-   * Provided to individual method components to be called when the registration process is
-   * completed
-   *
-   * @param {object} registrationData
+   * Clear any error messages when going back from a method's Register component to the
+   * Select Method screen. Note that this doesn't clear errors for components that manage their
+   * own internal state view transitions, which must be handled internally by those components.
    */
-  handleCompleteRegistration(registrationData) {
-    // Clear out the register props now - any process that returns the user to the register screen
-    // will need a new "start" call
+  clearRegistrationErrors() {
     this.setState({
-      registerProps: null,
+      registerProps: {
+        ...this.state.registerProps,
+        error: null,
+      }
     });
-
-    // Send registration details to server
-    const { endpoints: { register }, backupMethod } = this.props;
-    const { selectedMethod } = this.state;
-    fetch(register.replace('{urlSegment}', selectedMethod.urlSegment), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(registrationData),
-    })
-      .then(response => {
-        response.json();
-      })
-      .then(() => {
-        // If there's a backup method that's not registered then we initialise that
-        if (
-          this.shouldSetupBackupMethod()
-          && selectedMethod.urlSegment !== backupMethod.urlSegment
-        ) {
-          this.setState({
-            selectedMethod: backupMethod,
-          });
-          return;
-        }
-
-        this.setState({
-          selectedMethod: null,
-          isComplete: true,
-        });
-      });
   }
 
   /**
@@ -202,7 +253,7 @@ class Register extends Component {
         <RegistrationComponent
           {...registerProps}
           method={selectedMethod}
-          onBack={() => this.handleSelectMethod(null)}
+          onBack={this.handleBack}
           onCompleteRegistration={this.handleCompleteRegistration}
         />
       </div>
@@ -276,6 +327,10 @@ Register.propTypes = {
   }),
   registeredMethods: PropTypes.arrayOf(registeredMethodType),
   resources: PropTypes.object,
+};
+
+Register.defaultProps = {
+  resources: {},
 };
 
 export default Register;
