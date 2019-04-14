@@ -289,10 +289,7 @@ class LoginHandler extends BaseLoginHandler
                 );
         } catch (Exception $e) {
             return $this->jsonResponse(
-                ['errors' => [
-                    _t(__CLASS__ . '.REGISTER_FAILED', 'Registration failed'),
-                    $e->getMessage(),
-                ]],
+                ['errors' => [$e->getMessage()]],
                 400
             );
         }

@@ -180,7 +180,6 @@ class RegisterHandlerTest extends FunctionalTest
 
         $response = $this->post(self::URL, ['dummy' => 'data'], null, $this->session(), json_encode(['number' => 7]));
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertContains('Registration failed', $response->getBody());
         $this->assertContains('No. Bad user', $response->getBody());
     }
 

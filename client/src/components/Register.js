@@ -163,14 +163,13 @@ class Register extends Component {
       .then(response => {
         // Failure states are captured here
 
-        // Expected structure: ['Registration failed', 'Because you misspelled your password.']
-        if (response && response.errors && response.errors.length === 2) {
-          const error = response.errors[1];
+        if (response && response.errors) {
+          const formattedErrors = response.errors.join(', ');
 
           this.setState({
             registerProps: {
               ...this.state.registerProps,
-              error,
+              error: formattedErrors,
             },
           });
         }
