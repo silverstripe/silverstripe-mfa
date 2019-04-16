@@ -2,6 +2,7 @@
 
 namespace SilverStripe\MFA\Service;
 
+use PHPUnit_Framework_MockObject_MockObject;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\MFA\Tests\Service\BackupCodeGeneratorTest\MockHashExtension;
 
@@ -27,6 +28,26 @@ class BackupCodeGeneratorTest extends SapphireTest
         $generator = new BackupCodeGenerator();
         $result = $generator->hash('hello world');
         $this->assertSame('dlrow olleh', $result);
+    }
+
+    /**
+     * @expectedException \SilverStripe\MFA\Exception\HashFailedException
+     * @expectedExceptionMessage Hash must not equal the plaintext code!
+     */
+    public function testHashThrowsException()
+    {
+        /** @var BackupCodeGenerator|PHPUnit_Framework_MockObject_MockObject $generatorMock */
+        $generatorMock = $this->getMockBuilder(BackupCodeGenerator::class)
+            ->setMethods(['extend'])
+            ->getMock();
+
+        $generatorMock->expects($this->once())->method('extend')->with('updateHash')
+            // Somebody has defined an extension which sets the hash as the plain text value
+            ->willReturnCallback(function ($name, $code, &$hash) {
+                $hash = $code;
+            });
+
+        $generatorMock->hash('ABC123');
     }
 
     public function testGenerate()
