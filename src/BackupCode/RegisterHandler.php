@@ -4,12 +4,12 @@ namespace SilverStripe\MFA\BackupCode;
 
 use Exception;
 use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
+use SilverStripe\MFA\Service\BackupCodeGeneratorInterface;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Store\StoreInterface;
 
@@ -37,40 +37,21 @@ class RegisterHandler implements RegisterHandlerInterface
      */
     public function start(StoreInterface $store): array
     {
-        // Generate backup codes
-        $codeCount = (int) Config::inst()->get(Method::class, 'backup_code_count') ?: 9;
-        $codeLength = (int) Config::inst()->get(Method::class, 'backup_code_length') ?: 6;
-
-        $codes = [];
-
-        for ($i = 0; $i < $codeCount; $i++) {
-            // Wrap in a "do while" to ensure there are no duplicates
-            do {
-                $code = '';
-                // We can only generate 9 digits at a time on 32 bit systems
-                for ($j = 0; $j < $codeLength; $j++) {
-                    $code .= (string) random_int(0, 9);
-                }
-            } while (in_array($code, $codes));
-            $codes[] = $code;
-        }
-
-        $this->extend('updateBackupCodes', $codes);
-
-        // Create hashes for these codes
-        $hashedCodes = array_map([$this, 'hashCode'], $codes);
-
         // Create or update the RegisteredMethod on the member. This breaks the normal flow as it's created on "start"
         // instead of after receiving a response from the user
 
         /** @var MethodInterface $method */
         $method = Injector::inst()->get(Method::class);
 
-        RegisteredMethodManager::singleton()->registerForMember($store->getMember(), $method, $hashedCodes);
+        /** @var BackupCodeGeneratorInterface $generator */
+        $generator = Injector::inst()->get(BackupCodeGeneratorInterface::class);
+        $codes = $generator->generate();
 
-        // Return unhashed codes for the front-end UI
+        RegisteredMethodManager::singleton()->registerForMember($store->getMember(), $method, array_values($codes));
+
+        // Return un-hashed codes for the front-end UI
         return [
-            'codes' => $codes,
+            'codes' => array_keys($codes),
         ];
     }
 
@@ -124,18 +105,6 @@ class RegisterHandler implements RegisterHandlerInterface
     public function getSupportLink(): string
     {
         return (string) $this->config()->get('user_help_link');
-    }
-
-    /**
-     * Hash a back-up code for storage. This uses the native PHP password_hash API but can be extended to implement a
-     * custom hash requirement.
-     *
-     * @param string $code
-     * @return bool|string
-     */
-    protected function hashCode(string $code)
-    {
-        return password_hash($code, PASSWORD_DEFAULT);
     }
 
     /**
