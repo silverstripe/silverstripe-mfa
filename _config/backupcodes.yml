@@ -4,3 +4,7 @@ name: MFABackupCodeAuthenticator
 SilverStripe\MFA\Service\MethodRegistry:
   methods:
     backupCodes: SilverStripe\MFA\BackupCode\Method
+
+SilverStripe\Core\Injector\Injector:
+  SilverStripe\MFA\Service\BackupCodeGeneratorInterface:
+    class: SilverStripe\MFA\Service\BackupCodeGenerator

@@ -4,7 +4,6 @@ namespace SilverStripe\MFA\Tests\BackupCode;
 
 use PHPUnit_Framework_MockObject_MockObject;
 use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\MFA\BackupCode\Method;
 use SilverStripe\MFA\BackupCode\RegisterHandler;
@@ -30,32 +29,6 @@ class RegisterHandlerTest extends SapphireTest
 
         $this->assertArrayHasKey('codes', $props, 'Codes are returned from the start method');
         $this->assertGreaterThan(0, count($props['codes']), 'At least one code is provided');
-        $this->assertTrue(is_numeric(reset($props['codes'])), 'Codes produced are numeric');
-    }
-
-    public function testStartGeneratesCodesMatchingConfig()
-    {
-        Config::modify()->set(Method::class, 'backup_code_count', 5);
-        Config::modify()->set(Method::class, 'backup_code_length', 12); // Exceeds PHP_INT_MAX on 32 bit
-
-        /** @var StoreInterface|PHPUnit_Framework_MockObject_MockObject $store */
-        $store = $this->createMock(StoreInterface::class);
-        $store->expects($this->once())->method('getMember')->willReturn(Security::getCurrentUser());
-
-        $handler = new RegisterHandler();
-
-        $props = $handler->start($store);
-
-        $this->assertArrayHasKey('codes', $props, 'Codes are returned from the start method');
-
-        $codes = $props['codes'];
-
-        $this->assertCount(5, $codes, 'Only 5 codes are generated as configured');
-
-        foreach ($codes as $code) {
-            $this->assertSame(12, strlen($code), 'Codes are 12 characters long as configured');
-            $this->assertTrue(is_numeric($code), 'Codes generated are numeric');
-        }
     }
 
     public function testStartStoresHashesOfBackupCodesOnMember()
