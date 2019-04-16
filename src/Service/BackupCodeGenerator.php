@@ -5,6 +5,7 @@ namespace SilverStripe\MFA\Service;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
+use SilverStripe\MFA\Exception\HashFailedException;
 
 class BackupCodeGenerator implements BackupCodeGeneratorInterface
 {
@@ -66,6 +67,10 @@ class BackupCodeGenerator implements BackupCodeGeneratorInterface
         $hash = (string) password_hash($code, PASSWORD_DEFAULT);
 
         $this->extend('updateHash', $code, $hash);
+
+        if ($hash === $code) {
+            throw new HashFailedException('Hash must not equal the plaintext code!');
+        }
 
         return $hash;
     }

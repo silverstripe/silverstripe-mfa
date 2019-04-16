@@ -2,6 +2,8 @@
 
 namespace SilverStripe\MFA\Service;
 
+use SilverStripe\MFA\Exception\HashFailedException;
+
 /**
  * A service class implementation for generating and hashing backup codes.
  */
@@ -15,10 +17,12 @@ interface BackupCodeGeneratorInterface
     public function generate(): array;
 
     /**
-     * Hash the given backup code for storage.
+     * Hash the given backup code for storage. May throw an exception if hashing fails, or if the hash
+     * is the same as the input plaintext code.
      *
      * @param string $code
      * @return string
+     * @throws HashFailedException
      */
     public function hash(string $code): string;
 
