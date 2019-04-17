@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace SilverStripe\MFA\Service;
 
@@ -29,7 +29,7 @@ class EnforcementManager
      * @param Member&MemberExtension $member
      * @return bool
      */
-    public function canSkipMFA(Member $member)
+    public function canSkipMFA(Member $member): bool
     {
         if ($this->isMFARequired()) {
             return false;
@@ -50,6 +50,7 @@ class EnforcementManager
      * login.
      *
      * This is determined by a combination of:
+     *  - Whether MFA is enabled
      *  - Whether MFA is required or optional
      *  - Whether the user has registered MFA methods already
      *  - If the user doesn't have any registered MFA methods already, and MFA is optional, whether the user has opted
@@ -60,8 +61,12 @@ class EnforcementManager
      * @param Member&MemberExtension $member
      * @return bool
      */
-    public function shouldRedirectToMFA(Member $member)
+    public function shouldRedirectToMFA(Member $member): bool
     {
+        if (!$this->isMFAEnabled()) {
+            return false;
+        }
+
         if ($this->isMFARequired()) {
             return true;
         }
@@ -85,7 +90,7 @@ class EnforcementManager
      * @param Member&MemberExtension $member
      * @return bool
      */
-    public function hasCompletedRegistration(Member $member)
+    public function hasCompletedRegistration(Member $member): bool
     {
         $methodCount = $member->RegisteredMFAMethods()->count();
 
@@ -107,7 +112,7 @@ class EnforcementManager
      *
      * @return bool
      */
-    public function isMFARequired()
+    public function isMFARequired(): bool
     {
         $siteConfig = SiteConfig::current_site_config();
 
@@ -132,11 +137,21 @@ class EnforcementManager
     }
 
     /**
+     * Whether multi factor authentication is enabled
+     *
+     * @return bool
+     */
+    public function isMFAEnabled(): bool
+    {
+        return (bool) SiteConfig::current_site_config()->MFAEnabled;
+    }
+
+    /**
      * Specifically determines whether the MFA Grace Period is currently active.
      *
      * @return bool
      */
-    public function isGracePeriodInEffect()
+    public function isGracePeriodInEffect(): bool
     {
         /** @var SiteConfig&SiteConfigExtension $siteConfig */
         $siteConfig = SiteConfig::current_site_config();

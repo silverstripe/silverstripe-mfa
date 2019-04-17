@@ -29,6 +29,8 @@ class LoginHandlerTest extends FunctionalTest
         parent::setUp();
         Config::modify()->set(MethodRegistry::class, 'methods', [Method::class]);
 
+        SiteConfig::current_site_config()->update(['MFAEnabled' => true])->write();
+
         Injector::inst()->load([
             Security::class => [
                 'properties' => [

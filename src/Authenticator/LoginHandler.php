@@ -80,7 +80,7 @@ class LoginHandler extends BaseLoginHandler
     {
         /** @var Member&MemberExtension $member */
         $member = $this->checkLogin($data, $request, $result);
-        $enforcementManager = new EnforcementManager();
+        $enforcementManager = EnforcementManager::singleton();
 
         // If there's no member it's an invalid login. We'll delegate this to the parent
         // Additionally if there are no MFA methods registered then we will also delegate
@@ -102,7 +102,7 @@ class LoginHandler extends BaseLoginHandler
             $request->getSession()->set(static::SESSION_KEY . '.mustLogin', true);
         }
 
-        // Bypass the MFA UI if the user can and has skipped it
+        // Bypass the MFA UI if the user can and has skipped it or MFA is not enabled
         if (!$enforcementManager->shouldRedirectToMFA($member)) {
             $this->doPerformLogin($request, $member);
             return $this->redirectAfterSuccessfulLogin();
