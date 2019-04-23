@@ -217,10 +217,11 @@ class RegisterHandlerTest extends FunctionalTest
     {
         $this->logOut();
 
-        $this->session()->set(SessionStore::SESSION_KEY, [
-            'member' => $member->ID,
-            'method' => $method,
-            'state' => [],
-        ]);
+        $store = new SessionStore($member);
+        if ($method) {
+            $store->setMethod($method);
+        }
+
+        $this->session()->set(SessionStore::SESSION_KEY, $store);
     }
 }

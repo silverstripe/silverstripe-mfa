@@ -182,7 +182,7 @@ class LoginHandlerTest extends FunctionalTest
         $this->setSiteConfig(['MFARequired' => $mfaRequired]);
 
         if ($member) {
-            $this->logInAs($member);
+            $this->scaffoldPartialLogin($this->objFromFixture(Member::class, $member));
         }
 
         $response = $this->get('Security/login/default/mfa/skip');
@@ -195,7 +195,7 @@ class LoginHandlerTest extends FunctionalTest
     public function cannotSkipMFAProvider()
     {
         return [
-            'mfa is required' => [false],
+            'mfa is required' => [true],
             'mfa is not required, but user already has configured methods' => [false],
             'no member is available' => [false, null],
         ];
@@ -240,11 +240,7 @@ class LoginHandlerTest extends FunctionalTest
     {
         $this->logOut();
 
-        $this->session()->set(SessionStore::SESSION_KEY, [
-            'member' => $member->ID,
-            'method' => null,
-            'state' => [],
-        ]);
+        $this->session()->set(SessionStore::SESSION_KEY, new SessionStore($member));
     }
 
     /**

@@ -6,12 +6,12 @@ use Psr\Log\LoggerInterface;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\MFA\Exception\InvalidMethodException;
 use SilverStripe\MFA\Exception\MemberNotFoundException;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
+use SilverStripe\MFA\RequestHandler\LoginHandlerTrait;
 use SilverStripe\MFA\Service\EnforcementManager;
-use SilverStripe\MFA\Service\MethodRegistry;
-use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Service\SchemaGenerator;
 use SilverStripe\MFA\Store\StoreInterface;
 use SilverStripe\ORM\ValidationException;
@@ -25,6 +25,8 @@ use SilverStripe\View\Requirements;
 
 class LoginHandler extends BaseLoginHandler
 {
+    use LoginHandlerTrait;
+
     const SESSION_KEY = 'MFALogin';
 
     private static $url_handlers = [
@@ -50,20 +52,12 @@ class LoginHandler extends BaseLoginHandler
     ];
 
     /**
-     * Indicate how many MFA methods the user must authenticate with before they are considered logged in
-     *
-     * @config
-     * @var int
-     */
-    private static $required_mfa_methods = 1;
-
-    /**
      * Provide a user help link that will be available on the Introduction UI
      *
      * @config
      * @var string
      */
-    private static $user_help_link = 'nope';
+    private static $user_help_link = '';
 
     /**
      * @var string[]
@@ -102,7 +96,9 @@ class LoginHandler extends BaseLoginHandler
         }
 
         // Store a reference to the member in session
-        $this->getStore()->setMember($member)->save($request);
+        /** @var StoreInterface $store */
+        $store = Injector::inst()->create(StoreInterface::class, $member);
+        $store->save($request);
 
         // Store the BackURL for use after the process is complete
         if (!empty($data)) {
@@ -133,22 +129,12 @@ class LoginHandler extends BaseLoginHandler
      */
     public function mfa()
     {
-        if (!$this->getStore()->getMember()) {
+        $store = $this->getStore();
+        if (!$store || !$store->getMember()) {
             return $this->redirectBack();
         }
 
-        // Run through requirements
-        Requirements::javascript('silverstripe/mfa: client/dist/js/injector.js');
-        Requirements::javascript('silverstripe/admin: client/dist/js/i18n.js');
-        Requirements::javascript('silverstripe/mfa: client/dist/js/bundle.js');
-        Requirements::add_i18n_javascript('silverstripe/mfa: client/lang');
-        Requirements::css('silverstripe/mfa: client/dist/styles/bundle.css');
-
-        // Plugin module requirements
-        $registry = $this->getMethodRegistry();
-        foreach ($registry->getMethods() as $method) {
-            $method->applyRequirements();
-        }
+        $this->applyRequirements();
 
         return [
             'Form' => $this->renderWith($this->getViewerTemplates()),
@@ -192,7 +178,7 @@ class LoginHandler extends BaseLoginHandler
     public function startRegistration(HTTPRequest $request)
     {
         $store = $this->getStore();
-        $sessionMember = $store->getMember();
+        $sessionMember = $store ? $store->getMember() : null;
         $loggedInMember = Security::getCurrentUser();
 
         if (is_null($loggedInMember) && is_null($sessionMember)) {
@@ -379,48 +365,20 @@ class LoginHandler extends BaseLoginHandler
 
         // If we don't have a valid member we shouldn't be here...
         if (!$member) {
-            return $this->redirectBack();
+            return $this->jsonResponse(['message' => 'Forbidden'], 403);
         }
 
-        // Pull a method to use from the request...
-        $requestedMethod = $this->getMethodRegistry()->getMethodByURLSegment($request->param('Method'));
-        $registeredMethod = null;
-        if ($requestedMethod) {
-            $registeredMethod = $this->getRegisteredMethodManager()->getFromMember($member, $requestedMethod);
-        }
+        // Use the provided trait method for handling login
+        $response = $this->createStartLoginResponse(
+            $store,
+            $this->getMethodRegistry()->getMethodByURLSegment($request->param('Method'))
+        );
 
-        // ...Or use the default (TODO: Should we have the default as a fallback? Maybe just if no method is specified?)
-        if (!$registeredMethod) {
-            $registeredMethod = $member->DefaultRegisteredMethod;
-        }
-
-        // We can't proceed with login if the Member doesn't have this method registered
-        if (!$registeredMethod) {
-            // We can display a specific message if there was no method specified
-            if (!$requestedMethod) {
-                $message = _t(
-                    __CLASS__ . '.METHOD_NOT_PROVIDED',
-                    'No method was provided to login with and the Member has no default'
-                );
-            } else {
-                $message = _t(__CLASS__ . '.METHOD_NOT_REGISTERED', 'Member does not have this method registered');
-            }
-
-            $this->jsonResponse(
-                ['errors' => [$message]],
-                400
-            );
-        }
-
-        // Mark the given method as started within the store
-        $store->setMethod($registeredMethod->getMethod()->getURLSegment());
-        // Allow the authenticator to begin the process and generate some data to pass through to the front end
-        $data = $registeredMethod->getLoginHandler()->start($store, $registeredMethod);
         // Ensure detail is saved to the store
         $store->save($request);
 
         // Respond with our method
-        return $this->jsonResponse($data ?: []);
+        return $response;
     }
 
     /**
@@ -431,49 +389,38 @@ class LoginHandler extends BaseLoginHandler
      */
     public function verifyLogin(HTTPRequest $request)
     {
-        $method = $this->getStore()->getMethod();
-        if ($method) {
-            $methodInstance = $this->getMethodRegistry()->getMethodByURLSegment($method);
+        $store = $this->getStore();
+        try {
+            $result = $this->verifyLoginRequest($store, $request);
+        } catch (InvalidMethodException $e) {
+            // Invalid method usually means a timeout. A user might be trying to verify before "starting"
+            return $this->jsonResponse(['message' => 'Forbidden'], 403);
         }
 
-        // We must've been to a "start" and set the method being used in session here.
-        if (!$methodInstance) {
-            return $this->redirectBack();
-        }
-
-        // Get the member and authenticator ready
-        $member = $this->getStore()->getMember();
-        $registeredMethod = $this->getRegisteredMethodManager()->getFromMember($member, $methodInstance);
-        $authenticator = $registeredMethod->getLoginHandler();
-
-        if (!$authenticator->verify($request, $this->getStore(), $registeredMethod)) {
-            $member->registerFailedLogin();
-            $this->extend('onMethodVerificationFailure', $member, $methodInstance);
-
+        if (!$result) {
+            $store->getMember()->registerFailedLogin();
             return $this->jsonResponse([
                 'message' => 'Invalid credentials',
             ], 401);
         }
-        $this->extend('onMethodVerificationSuccess', $member, $methodInstance);
 
-        $this->addSuccessfulVerification($request, $method);
-
-        if (!$this->isLoginComplete($request)) {
+        if (!$this->isLoginComplete($store)) {
             return $this->jsonResponse([
                 'message' => 'Additional authentication required',
             ], 202);
         }
 
         // Actually log in the member if the registration is complete
-        $enforcementManager = EnforcementManager::create();
-        if ($enforcementManager->hasCompletedRegistration($member)) {
+        $member = $store->getMember();
+
+        if (EnforcementManager::create()->hasCompletedRegistration($member)) {
             $this->doPerformLogin($request, $member);
 
             // And also clear the session
-            $this->getStore()->clear($request);
-            $request->getSession()->clear(static::SESSION_KEY . '.successfulMethods');
+            $store->clear($request);
         }
 
+        // We still indicate login has been completed here. The finalisation of registration should take care of it
         return $this->jsonResponse([
             'message' => 'Login complete',
         ], 200);
@@ -525,65 +472,14 @@ class LoginHandler extends BaseLoginHandler
         }
 
         // Ensure any left over session state is cleaned up
-        $this->getStore()->clear($request);
+        $store = $this->getStore();
+        if ($store) {
+            $store->clear($request);
+        }
         $request->getSession()->clear(static::SESSION_KEY . '.mustLogin');
-        $request->getSession()->clear(static::SESSION_KEY . '.successfulMethods');
 
         // Delegate to parent logic
         return parent::redirectAfterSuccessfulLogin();
-    }
-
-    /**
-     * Respond with the given array as a JSON response
-     *
-     * @param array $response
-     * @return HTTPResponse
-     */
-    protected function jsonResponse(array $response, $code = 200)
-    {
-        return HTTPResponse::create(json_encode($response))
-            ->addHeader('Content-Type', 'application/json')
-            ->setStatusCode($code);
-    }
-
-    /**
-     * Indicate that the user has successfully verified the given authentication method
-     *
-     * @param HTTPRequest $request
-     * @param string $method The method class name
-     * @return LoginHandler
-     */
-    protected function addSuccessfulVerification(HTTPRequest $request, $method)
-    {
-        // Pull the prior sucesses from the session
-        $key = static::SESSION_KEY . '.successfulMethods';
-        $successfulMethods = $request->getSession()->get($key);
-
-        // Coalesce these methods
-        if (!$successfulMethods) {
-            $successfulMethods = [];
-        }
-
-        // Add our new success
-        $successfulMethods[] = $method;
-
-        // Ensure it's persisted in session
-        $request->getSession()->set($key, $successfulMethods);
-
-        return $this;
-    }
-
-    protected function isLoginComplete(HTTPRequest $request)
-    {
-        // Pull the successful methods from session
-        $successfulMethods = $request->getSession()->get(static::SESSION_KEY . '.successfulMethods');
-
-        // Zero is "not complete". There's different config for optional MFA
-        if (!is_array($successfulMethods) || !count($successfulMethods)) {
-            return false;
-        }
-
-        return count($successfulMethods) >= static::config()->get('required_mfa_methods');
     }
 
     /**
@@ -592,7 +488,13 @@ class LoginHandler extends BaseLoginHandler
      */
     public function getMember()
     {
-        $member = $this->getStore()->getMember() ?: Security::getCurrentUser();
+        $store = $this->getStore();
+
+        if ($store && $store->getMember()) {
+            return $store->getMember();
+        }
+
+        $member = Security::getCurrentUser();
 
         // If we don't have a valid member we shouldn't be here...
         if (!$member) {
@@ -620,32 +522,34 @@ class LoginHandler extends BaseLoginHandler
         return $this->logger;
     }
 
+    protected function applyRequirements(): void
+    {
+        // Run through requirements
+        Requirements::javascript('silverstripe/mfa: client/dist/js/injector.js');
+        Requirements::javascript('silverstripe/admin: client/dist/js/i18n.js');
+        Requirements::javascript('silverstripe/mfa: client/dist/js/bundle.js');
+        Requirements::add_i18n_javascript('silverstripe/mfa: client/lang');
+        Requirements::css('silverstripe/mfa: client/dist/styles/bundle.css');
+
+        // Plugin module requirements
+        $registry = $this->getMethodRegistry();
+        foreach ($registry->getMethods() as $method) {
+            $method->applyRequirements();
+        }
+    }
+
     /**
-     * @return StoreInterface
+     * @return StoreInterface|null
      */
-    protected function getStore()
+    protected function getStore(): ?StoreInterface
     {
         if (!$this->store) {
-            $this->store = Injector::inst()->create(StoreInterface::class, $this->getRequest());
+            $spec = Injector::inst()->getServiceSpec(StoreInterface::class);
+            $class = is_string($spec) ? $spec : $spec['class'];
+            $this->store = call_user_func([$class, 'load'], $this->getRequest());
         }
 
         return $this->store;
-    }
-
-    /**
-     * @return MethodRegistry
-     */
-    protected function getMethodRegistry()
-    {
-        return MethodRegistry::singleton();
-    }
-
-    /**
-     * @return RegisteredMethodManager
-     */
-    protected function getRegisteredMethodManager()
-    {
-        return RegisteredMethodManager::singleton();
     }
 
     /**
@@ -666,7 +570,7 @@ class LoginHandler extends BaseLoginHandler
             // These next two lines are pulled from "parent::doLogin()"
             $this->performLogin($member, $data, $request);
             // Allow operations on the member after successful login
-            $this->extend('onLoginSuccess', $member);
+            $this->extend('afterLogin', $member);
         }
     }
 }
