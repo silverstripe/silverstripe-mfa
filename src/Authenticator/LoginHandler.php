@@ -570,7 +570,7 @@ class LoginHandler extends BaseLoginHandler
             // These next two lines are pulled from "parent::doLogin()"
             $this->performLogin($member, $data, $request);
             // Allow operations on the member after successful login
-            $this->extend('afterLogin', $member);
+            parent::extend('afterLogin', $member);
         }
     }
 }
