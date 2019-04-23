@@ -13,6 +13,13 @@ use SilverStripe\View\Requirements;
 trait BaseHandlerTrait
 {
     /**
+     * A "session store" object that helps contain MFA specific session detail
+     *
+     * @var StoreInterface
+     */
+    protected $store;
+
+    /**
      * Perform the necessary "Requirements" calls to ensure client side scripts are available in the response
      */
     protected function applyRequirements(): void

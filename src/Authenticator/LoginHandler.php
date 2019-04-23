@@ -76,13 +76,6 @@ class LoginHandler extends BaseLoginHandler
     protected $logger;
 
     /**
-     * A "session store" object that helps contain MFA specific session detail
-     *
-     * @var StoreInterface
-     */
-    protected $store;
-
-    /**
      * Override the parent "doLogin" to insert extra steps into the flow
      *
      * @inheritdoc
@@ -130,7 +123,7 @@ class LoginHandler extends BaseLoginHandler
      *
      * @return array|HTTPResponse template variables {@see SilverStripe\Security\Security::renderWrappedController}
      */
-    public function mfa()
+    public function mfa(): array
     {
         $store = $this->getStore();
         if (!$store || !$store->getMember()) {
@@ -177,7 +170,7 @@ class LoginHandler extends BaseLoginHandler
      * @param HTTPRequest $request
      * @return HTTPResponse
      */
-    public function startRegistration(HTTPRequest $request)
+    public function startRegistration(HTTPRequest $request): HTTPResponse
     {
         $store = $this->getStore();
         $sessionMember = $store ? $store->getMember() : null;
@@ -233,7 +226,7 @@ class LoginHandler extends BaseLoginHandler
      * @param HTTPRequest $request
      * @return HTTPResponse
      */
-    public function finishRegistration(HTTPRequest $request)
+    public function finishRegistration(HTTPRequest $request): HTTPResponse
     {
         $store = $this->getStore();
         $sessionMember = $store ? $store->getMember() : null;
@@ -278,7 +271,7 @@ class LoginHandler extends BaseLoginHandler
      * @return HTTPResponse
      * @throws ValidationException
      */
-    public function skipRegistration(HTTPRequest $request)
+    public function skipRegistration(HTTPRequest $request): HTTPResponse
     {
         $loginUrl = Security::login_url();
 
@@ -315,7 +308,7 @@ class LoginHandler extends BaseLoginHandler
      * @param HTTPRequest $request
      * @return HTTPResponse
      */
-    public function startVerification(HTTPRequest $request)
+    public function startVerification(HTTPRequest $request): HTTPResponse
     {
         $store = $this->getStore();
         $member = $store->getMember();
@@ -344,7 +337,7 @@ class LoginHandler extends BaseLoginHandler
      * @param HTTPRequest $request
      * @return HTTPResponse
      */
-    public function finishVerification(HTTPRequest $request)
+    public function finishVerification(HTTPRequest $request): HTTPResponse
     {
         $store = $this->getStore();
         $member = $store->getMember();
@@ -395,7 +388,7 @@ class LoginHandler extends BaseLoginHandler
         ], 200);
     }
 
-    public function redirectAfterSuccessfulLogin()
+    public function redirectAfterSuccessfulLogin(): HTTPResponse
     {
         // Assert that we have a member logged in already. We explicitly don't use ->getMember as that will pull from
         // session during the MFA process

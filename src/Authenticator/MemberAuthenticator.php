@@ -9,4 +9,9 @@ class MemberAuthenticator extends BaseMemberAuthenticator
     {
         return LoginHandler::create($link, $this);
     }
+
+    public function getChangePasswordHandler($link)
+    {
+        return ChangePasswordHandler::create($link, $this);
+    }
 }
