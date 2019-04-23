@@ -99,6 +99,8 @@ class LoginHandler extends BaseLoginHandler
         /** @var StoreInterface $store */
         $store = Injector::inst()->create(StoreInterface::class, $member);
         $store->save($request);
+        // Ensure use of the getter returns the new store
+        $this->store = $store;
 
         // Store the BackURL for use after the process is complete
         if (!empty($data)) {

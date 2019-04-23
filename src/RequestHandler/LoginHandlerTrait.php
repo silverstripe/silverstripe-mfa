@@ -127,7 +127,7 @@ trait LoginHandlerTrait
      * @param StoreInterface $store
      * @return bool
      */
-    protected function isLoginComplete(StoreInterface $store)
+    protected function isLoginComplete(StoreInterface $store): bool
     {
         // Pull the successful methods from session
         $successfulMethods = $store->getVerifiedMethods();
@@ -144,9 +144,10 @@ trait LoginHandlerTrait
      * Respond with the given array as a JSON response
      *
      * @param array $response
+     * @param int $code The HTTP response code to set on the response
      * @return HTTPResponse
      */
-    protected function jsonResponse(array $response, $code = 200)
+    protected function jsonResponse(array $response, int $code = 200): HTTPResponse
     {
         return HTTPResponse::create(json_encode($response))
             ->addHeader('Content-Type', 'application/json')

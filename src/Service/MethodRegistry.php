@@ -39,7 +39,7 @@ class MethodRegistry
     /**
      * Request cache of instantiated method instances
      *
-     * @var array
+     * @var MethodInterface[]
      */
     protected $methodInstances;
 
