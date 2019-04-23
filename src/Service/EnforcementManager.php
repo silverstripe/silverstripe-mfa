@@ -19,6 +19,14 @@ class EnforcementManager
     use Injectable;
 
     /**
+     * Indicate how many MFA methods the user must authenticate with before they are considered logged in
+     *
+     * @config
+     * @var int
+     */
+    private static $required_mfa_methods = 1;
+
+    /**
      * Whether the current member can skip the multi factor authentication registration process.
      *
      * This is determined by a combination of:

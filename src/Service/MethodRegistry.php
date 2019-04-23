@@ -37,6 +37,13 @@ class MethodRegistry
     private static $default_backup_method = Method::class;
 
     /**
+     * Request cache of instantiated method instances
+     *
+     * @var MethodInterface[]
+     */
+    protected $methodInstances;
+
+    /**
      * Get implementations of all configured methods
      *
      * @return MethodInterface[]
@@ -44,6 +51,10 @@ class MethodRegistry
      */
     public function getMethods()
     {
+        if (is_array($this->methodInstances)) {
+            return $this->methodInstances;
+        }
+
         $configuredMethods = (array) $this->config()->get('methods');
 
         $allMethods = [];
@@ -62,7 +73,7 @@ class MethodRegistry
             $allMethods[] = $method;
         }
 
-        return $allMethods;
+        return $this->methodInstances = $allMethods;
     }
 
     /**

@@ -14,9 +14,9 @@ interface StoreInterface
     /**
      * Create a new StoreInterface, optionally given an HTTPRequest object
      *
-     * @param HTTPRequest|null $request
+     * @param Member $member
      */
-    public function __construct(?HTTPRequest $request = null);
+    public function __construct(Member $member);
 
     /**
      * Persist the stored state for the given request
@@ -25,6 +25,14 @@ interface StoreInterface
      * @return StoreInterface
      */
     public function save(HTTPRequest $request): StoreInterface;
+
+    /**
+     * Load a StoreInterface from the given request and return it if it exists
+     *
+     * @param HTTPRequest $request
+     * @return StoreInterface|null
+     */
+    public static function load(HTTPRequest $request): ?StoreInterface;
 
     /**
      * Clear any stored state for the given request
@@ -70,4 +78,19 @@ interface StoreInterface
      * @return $this
      */
     public function setMethod($method): StoreInterface;
+
+    /**
+     * Add and keep track of methods that have been verified
+     *
+     * @param string $method
+     * @return StoreInterface
+     */
+    public function addVerifiedMethod(string $method): StoreInterface;
+
+    /**
+     * Get the list of methods that have been verified
+     *
+     * @return string[]
+     */
+    public function getVerifiedMethods(): array;
 }

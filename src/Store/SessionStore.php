@@ -2,7 +2,9 @@
 
 namespace SilverStripe\MFA\Store;
 
+use Serializable;
 use SilverStripe\Control\HTTPRequest;
+use SilverStripe\MFA\Exception\InvalidMethodException;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
@@ -13,7 +15,7 @@ use SilverStripe\Security\Member;
  *
  * @package SilverStripe\MFA
  */
-class SessionStore implements StoreInterface
+class SessionStore implements StoreInterface, Serializable
 {
     const SESSION_KEY = 'MFASessionStore';
 
@@ -39,22 +41,20 @@ class SessionStore implements StoreInterface
     protected $state = [];
 
     /**
+     * The URL segment identifiers of methods that have been verified in this session
+     *
+     * @var string[]
+     */
+    protected $verifiedMethods = [];
+
+    /**
      * Attempt to create a store from the given request getting any existing state from the session of the request
      *
      * {@inheritdoc}
      */
-    public function __construct(HTTPRequest $request = null)
+    public function __construct(Member $member)
     {
-        $state = $request ? $request->getSession()->get(static::SESSION_KEY) : null;
-
-        if ($state && $state['member']) {
-            /** @var Member $member */
-            $member = DataObject::get_by_id(Member::class, $state['member']);
-
-            $this->setMember($member);
-            $this->setMethod($state['method']);
-            $this->setState($state['state']);
-        }
+        $this->setMember($member);
     }
 
     /**
@@ -81,6 +81,9 @@ class SessionStore implements StoreInterface
 
         $this->member = $member;
 
+        // When the member changes the list of verified methods should reset
+        $this->verifiedMethods = [];
+
         return $this;
     }
 
@@ -98,6 +101,10 @@ class SessionStore implements StoreInterface
      */
     public function setMethod($method): StoreInterface
     {
+        if (in_array($method, $this->getVerifiedMethods())) {
+            throw new InvalidMethodException('You cannot verify with a method you have already verified');
+        }
+
         $this->method = $method;
 
         return $this;
@@ -115,6 +122,20 @@ class SessionStore implements StoreInterface
         return $this;
     }
 
+    public function addVerifiedMethod(string $method): StoreInterface
+    {
+        if (!in_array($method, $this->verifiedMethods)) {
+            $this->verifiedMethods[] = $method;
+        }
+
+        return $this;
+    }
+
+    public function getVerifiedMethods(): array
+    {
+        return $this->verifiedMethods;
+    }
+
     /**
      * Save this store into the session of the given request
      *
@@ -122,9 +143,21 @@ class SessionStore implements StoreInterface
      */
     public function save(HTTPRequest $request): StoreInterface
     {
-        $request->getSession()->set(static::SESSION_KEY, $this->build());
+        $request->getSession()->set(static::SESSION_KEY, $this);
 
         return $this;
+    }
+
+    /**
+     * Load a StoreInterface from the given request and return it if it exists
+     *
+     * @param HTTPRequest $request
+     * @return StoreInterface|null
+     */
+    public static function load(HTTPRequest $request): ?StoreInterface
+    {
+        $store = $request->getSession()->get(static::SESSION_KEY);
+        return $store instanceof self ? $store : null;
     }
 
     /**
@@ -137,6 +170,11 @@ class SessionStore implements StoreInterface
         $request->getSession()->clear(static::SESSION_KEY);
     }
 
+    /**
+     * "Reset" the method currently in progress by clearing the identifier and state
+     *
+     * @return StoreInterface
+     */
     protected function resetMethod(): StoreInterface
     {
         $this->setMethod(null)->setState([]);
@@ -144,12 +182,33 @@ class SessionStore implements StoreInterface
         return $this;
     }
 
-    protected function build(): array
+    public function serialize(): string
     {
-        return [
+        $stuff = json_encode([
             'member' => $this->getMember() ? $this->getMember()->ID : null,
             'method' => $this->getMethod(),
             'state' => $this->getState(),
-        ];
+            'verifiedMethods' => $this->getVerifiedMethods(),
+        ]);
+
+        return $stuff;
+    }
+
+    public function unserialize($serialized): void
+    {
+        $state = json_decode($serialized, true);
+
+        if (is_array($state) && $state['member']) {
+            /** @var Member $member */
+            $member = DataObject::get_by_id(Member::class, $state['member']);
+
+            $this->setMember($member);
+            $this->setMethod($state['method']);
+            $this->setState($state['state']);
+
+            foreach ($state['verifiedMethods'] as $method) {
+                $this->addVerifiedMethod($method);
+            }
+        }
     }
 }
