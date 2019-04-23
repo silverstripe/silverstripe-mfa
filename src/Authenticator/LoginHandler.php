@@ -2,6 +2,7 @@
 namespace SilverStripe\MFA\Authenticator;
 
 use Exception;
+use Psr\Log\LoggerInterface;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Core\Injector\Injector;
@@ -63,6 +64,18 @@ class LoginHandler extends BaseLoginHandler
      * @var string
      */
     private static $user_help_link = 'nope';
+
+    /**
+     * @var string[]
+     */
+    private static $dependencies = [
+        'Logger' => '%$' . LoggerInterface::class . '.mfa',
+    ];
+
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
 
     /**
      * A "session store" object that helps contain MFA specific session detail
@@ -288,6 +301,8 @@ class LoginHandler extends BaseLoginHandler
                     $registrationHandler->register($request, $store)
                 );
         } catch (Exception $e) {
+            $this->getLogger()->debug('MFA registration failed: ' . $e->getMessage(), $e->getTrace());
+
             return $this->jsonResponse(
                 ['errors' => [$e->getMessage()]],
                 400
@@ -579,6 +594,24 @@ class LoginHandler extends BaseLoginHandler
         }
 
         return $member;
+    }
+
+    /**
+     * @param LoggerInterface $logger
+     * @return $this
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+        return $this;
+    }
+
+    /**
+     * @return LoggerInterface
+     */
+    public function getLogger()
+    {
+        return $this->logger;
     }
 
     /**
