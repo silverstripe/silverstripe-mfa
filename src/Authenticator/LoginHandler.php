@@ -302,6 +302,7 @@ class LoginHandler extends BaseLoginHandler
                 );
         } catch (Exception $e) {
             $this->getLogger()->debug('MFA registration failed: ' . $e->getMessage(), $e->getTrace());
+            $this->extend('onRegisterMethodFailure', $sessionMember, $method);
 
             return $this->jsonResponse(
                 ['errors' => [$e->getMessage()]],
@@ -351,6 +352,7 @@ class LoginHandler extends BaseLoginHandler
             }
 
             $member->update(['HasSkippedMFARegistration' => true])->write();
+            $this->extend('onSkipRegistration', $member);
             $this->doPerformLogin($request, $member);
 
             // Redirect the user back to wherever they originally came from when they started the login process
@@ -445,10 +447,14 @@ class LoginHandler extends BaseLoginHandler
         $authenticator = $registeredMethod->getLoginHandler();
 
         if (!$authenticator->verify($request, $this->getStore(), $registeredMethod)) {
+            $member->registerFailedLogin();
+            $this->extend('onMethodVerificationFailure', $member, $methodInstance);
+
             return $this->jsonResponse([
                 'message' => 'Invalid credentials',
             ], 401);
         }
+        $this->extend('onMethodVerificationSuccess', $member, $methodInstance);
 
         $this->addSuccessfulVerification($request, $method);
 
@@ -660,7 +666,7 @@ class LoginHandler extends BaseLoginHandler
             // These next two lines are pulled from "parent::doLogin()"
             $this->performLogin($member, $data, $request);
             // Allow operations on the member after successful login
-            $this->extend('afterLogin', $member);
+            $this->extend('onLoginSuccess', $member);
         }
     }
 }

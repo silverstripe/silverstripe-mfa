@@ -2,6 +2,7 @@
 
 namespace SilverStripe\MFA\Service;
 
+use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
@@ -14,6 +15,7 @@ use SilverStripe\Security\Member;
  */
 class RegisteredMethodManager
 {
+    use Extensible;
     use Injectable;
 
     /**
@@ -56,5 +58,7 @@ class RegisteredMethodManager
 
         // Add it to the member
         $member->RegisteredMFAMethods()->add($registeredMethod);
+
+        $this->extend('onRegisterMethod', $member, $method);
     }
 }
