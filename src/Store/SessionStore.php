@@ -2,6 +2,7 @@
 
 namespace SilverStripe\MFA\Store;
 
+use RuntimeException;
 use Serializable;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\MFA\Exception\InvalidMethodException;
@@ -190,6 +191,10 @@ class SessionStore implements StoreInterface, Serializable
             'state' => $this->getState(),
             'verifiedMethods' => $this->getVerifiedMethods(),
         ]);
+
+        if (!$stuff) {
+            throw new RuntimeException(json_last_error_msg());
+        }
 
         return $stuff;
     }
