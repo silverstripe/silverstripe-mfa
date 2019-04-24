@@ -259,6 +259,7 @@ class LoginHandlerTest extends FunctionalTest
     {
         /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'robbie');
+        $member->config()->set('lock_out_after_incorrect_logins', 5);
         $failedLogins = $member->FailedLoginCount;
 
         /** @var LoginHandler|PHPUnit_Framework_MockObject_MockObject $handler */
