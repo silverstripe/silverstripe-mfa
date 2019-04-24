@@ -1,11 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace SilverStripe\MFA\Method\Handler\Result;
+namespace SilverStripe\MFA\State;
 
 use SilverStripe\Core\Injector\Injectable;
 
 /**
- * An immutable result object detailing the result of a registration or validation completed by the respective handlers
+ * An immutable result object often detailing the result of a registration or validation completed by the
+ * respective handlers
  */
 class Result
 {
