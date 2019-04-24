@@ -119,7 +119,12 @@ class SessionStore implements StoreInterface, Serializable
     public function setState(array $state): StoreInterface
     {
         $this->state = $state;
+        return $this;
+    }
 
+    public function addState(array $state): StoreInterface
+    {
+        $this->state = array_merge($this->state, $state);
         return $this;
     }
 
