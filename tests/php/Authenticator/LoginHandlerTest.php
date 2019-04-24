@@ -16,6 +16,7 @@ use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
+use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 use SilverStripe\SiteConfig\SiteConfig;
@@ -229,6 +230,27 @@ class LoginHandlerTest extends FunctionalTest
         $handler->setRequest(new HTTPRequest('GET', '/'));
         $handler->getRequest()->setSession(new Session([]));
         $handler->getMember();
+    }
+
+    public function testVerifyLoginHandlesMembersLockedOut()
+    {
+        /** @var Member&MemberExtension $member */
+        $member = $this->objFromFixture(Member::class, 'robbie');
+        // Mock the member being locked out for fifteen minutes
+        $member->LockedOutUntil = date('Y-m-d H:i:s', DBDatetime::now()->getTimestamp() + 15 * 60);
+        $member->write();
+
+        $handler = new LoginHandler('mfa', $this->createMock(MemberAuthenticator::class));
+        $request = new HTTPRequest('GET', '/');
+        $request->setSession(new Session([]));
+
+        $store = new SessionStore($member);
+        $store->setMethod('basic-math');
+        $handler->setStore($store);
+
+        $response = $handler->verifyLogin($request);
+        $this->assertEquals(403, $response->getStatusCode());
+        $this->assertContains('Your account is temporarily locked', (string) $response->getBody());
     }
 
     /**

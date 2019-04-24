@@ -10,7 +10,9 @@ use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
+use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
+use SilverStripe\ORM\ValidationResult;
 
 /**
  * This trait encapsulates logic that can be added to a `RequestHandler` to work with logging in using MFA front-end
@@ -93,9 +95,10 @@ trait LoginHandlerTrait
      *
      * @param StoreInterface $store
      * @param HTTPRequest $request
-     * @return bool
+     * @return Result
+     * @throws InvalidMethodException
      */
-    protected function verifyLoginRequest(StoreInterface $store, HTTPRequest $request): bool
+    protected function verifyLoginRequest(StoreInterface $store, HTTPRequest $request): Result
     {
         $method = $store->getMethod();
         $methodInstance = $method ? $this->getMethodRegistry()->getMethodByURLSegment($method) : null;
@@ -110,15 +113,16 @@ trait LoginHandlerTrait
         $registeredMethod = $this->getRegisteredMethodManager()->getFromMember($member, $methodInstance);
         $authenticator = $registeredMethod->getLoginHandler();
 
-        if ($authenticator->verify($request, $store, $registeredMethod)) {
+        $result = $authenticator->verify($request, $store, $registeredMethod);
+        if ($result->isSuccessful()) {
             $store->addVerifiedMethod($method);
             $store->save($request);
             $this->extend('onMethodVerificationSuccess', $member, $methodInstance);
-            return true;
+            return $result;
         }
 
         $this->extend('onMethodVerificationFailure', $member, $methodInstance);
-        return false;
+        return $result;
     }
 
     /**

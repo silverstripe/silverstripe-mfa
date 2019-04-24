@@ -25,7 +25,7 @@ class LoginHandlerTest extends SapphireTest
 
         // Test a code with invalid characters
         list ($request, $store, $method) = $this->scaffoldVerifyParams($input);
-        $this->assertSame($expectedResult, $handler->verify($request, $store, $method), $message);
+        $this->assertSame($expectedResult, $handler->verify($request, $store, $method)->isSuccessful(), $message);
     }
 
     public function testVerifyInvalidatesCodesThatHaveBeenUsed()
@@ -34,7 +34,7 @@ class LoginHandlerTest extends SapphireTest
 
         // Test a code with invalid characters
         list ($request, $store, $method) = $this->scaffoldVerifyParams('123456');
-        $this->assertTrue($handler->verify($request, $store, $method));
+        $this->assertTrue($handler->verify($request, $store, $method)->isSuccessful());
 
         $method = DataObject::get_by_id(RegisteredMethod::class, $method->ID);
         $codes = json_decode($method->Data, true);
@@ -43,7 +43,7 @@ class LoginHandlerTest extends SapphireTest
 
         list ($request, $store, $method) = $this->scaffoldVerifyParams('123456');
         $this->assertFalse(
-            $handler->verify($request, $store, $method),
+            $handler->verify($request, $store, $method)->isSuccessful(),
             'Attempting to validate the previously used code now returns false'
         );
     }

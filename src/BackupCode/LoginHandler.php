@@ -7,6 +7,7 @@ use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
+use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
 
 class LoginHandler implements LoginHandlerInterface
@@ -35,10 +36,9 @@ class LoginHandler implements LoginHandlerInterface
      * @param HTTPRequest $request
      * @param StoreInterface $store
      * @param RegisteredMethod $registeredMethod The RegisteredMethod instance that is being verified
-     * @return bool
+     * @return Result
      */
-    public function verify(HTTPRequest $request, StoreInterface $store, RegisteredMethod $registeredMethod): bool
-    {
+    public function verify(HTTPRequest $request, StoreInterface $store, RegisteredMethod $registeredMethod): Result {
         $bodyJSON = json_decode($request->getBody(), true);
 
         if (!isset($bodyJSON['code'])) {
@@ -57,11 +57,11 @@ class LoginHandler implements LoginHandlerInterface
                 array_splice($candidates, $index, 1);
                 $registeredMethod->Data = json_encode($candidates);
                 $registeredMethod->write();
-                return true;
+                return Result::create();
             }
         }
 
-        return false;
+        return Result::create(false, _t(__CLASS__ . '.INVALID_CODE', 'Invalid code'));
     }
 
     /**

@@ -7,6 +7,7 @@ use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Dev\TestOnly;
 use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
+use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
 
 /**
@@ -50,19 +51,22 @@ class MethodLoginHandler implements LoginHandlerInterface, TestOnly
      *
      * @param HTTPRequest $request
      * @param StoreInterface $store
-     * @return bool
+     * @return Result
      */
-    public function verify(HTTPRequest $request, StoreInterface $store, RegisteredMethod $registeredMethod): bool
+    public function verify(HTTPRequest $request, StoreInterface $store, RegisteredMethod $registeredMethod): Result
     {
         $body = json_decode($request->getBody(), true);
 
         if (!$body['answer']) {
-            return false;
+            return Result::create(false, 'Answer was missing');
         }
 
         $state = $store->getState();
-
-        return hash_equals((string)$state['answer'], (string)$body['answer']);
+        $hashComparison = hash_equals((string)$state['answer'], (string)$body['answer']);
+        if (!$hashComparison) {
+            return Result::create(false, 'Answer was wrong');
+        }
+        return Result::create();
     }
 
     /**

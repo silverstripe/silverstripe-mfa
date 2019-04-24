@@ -1,4 +1,5 @@
 <?php
+
 namespace SilverStripe\MFA\Authenticator;
 
 use Exception;
@@ -392,6 +393,17 @@ class LoginHandler extends BaseLoginHandler
     public function verifyLogin(HTTPRequest $request)
     {
         $store = $this->getStore();
+        $member = $store->getMember();
+
+        if ($member->isLockedOut()) {
+            return $this->jsonResponse([
+                'message' => _t(
+                    __CLASS__ . '.LOCKED_OUT',
+                    'Your account is temporarily locked. Please try again later.'
+                ),
+            ], 403);
+        }
+
         try {
             $result = $this->verifyLoginRequest($store, $request);
         } catch (InvalidMethodException $e) {
@@ -399,10 +411,11 @@ class LoginHandler extends BaseLoginHandler
             return $this->jsonResponse(['message' => 'Forbidden'], 403);
         }
 
-        if (!$result) {
+        if (!$result->isSuccessful()) {
             $store->getMember()->registerFailedLogin();
+
             return $this->jsonResponse([
-                'message' => 'Invalid credentials',
+                'message' => $result->getMessage(),
             ], 401);
         }
 
@@ -552,6 +565,16 @@ class LoginHandler extends BaseLoginHandler
         }
 
         return $this->store;
+    }
+
+    /**
+     * @param StoreInterface $store
+     * @return $this
+     */
+    public function setStore(StoreInterface $store): LoginHandler
+    {
+        $this->store = $store;
+        return $this;
     }
 
     /**
