@@ -2,6 +2,7 @@
 
 namespace SilverStripe\MFA\Tests\Authenticator;
 
+use PHPUnit_Framework_MockObject_MockObject;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\Session;
@@ -14,6 +15,7 @@ use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\MethodRegistry;
+use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
 use SilverStripe\ORM\FieldType\DBDatetime;
@@ -251,6 +253,35 @@ class LoginHandlerTest extends FunctionalTest
         $response = $handler->verifyLogin($request);
         $this->assertEquals(403, $response->getStatusCode());
         $this->assertContains('Your account is temporarily locked', (string) $response->getBody());
+    }
+
+    public function testVerifyLoginPassesExceptionMessagesThroughFromMethodsWithValidationFailures()
+    {
+        /** @var Member&MemberExtension $member */
+        $member = $this->objFromFixture(Member::class, 'robbie');
+        $failedLogins = $member->FailedLoginCount;
+
+        /** @var LoginHandler|PHPUnit_Framework_MockObject_MockObject $handler */
+        $handler = $this->getMockBuilder(LoginHandler::class)
+            ->setMethods(['verifyLoginRequest'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $handler->expects($this->once())->method('verifyLoginRequest')->willReturn(
+            Result::create(false, 'It failed because it\'s mocked, obviously')
+        );
+
+        $request = new HTTPRequest('GET', '/');
+        $request->setSession(new Session([]));
+        $store = new SessionStore($member);
+        $store->setMethod('basic-math');
+        $handler->setStore($store);
+
+        $response = $handler->verifyLogin($request);
+
+        $this->assertEquals(401, $response->getStatusCode());
+        $this->assertContains('It failed because it\'s mocked', (string) $response->getBody());
+        $this->assertSame($failedLogins + 1, $member->FailedLoginCount, 'Failed login is registered');
     }
 
     /**
