@@ -38,7 +38,8 @@ class LoginHandler implements LoginHandlerInterface
      * @param RegisteredMethod $registeredMethod The RegisteredMethod instance that is being verified
      * @return Result
      */
-    public function verify(HTTPRequest $request, StoreInterface $store, RegisteredMethod $registeredMethod): Result {
+    public function verify(HTTPRequest $request, StoreInterface $store, RegisteredMethod $registeredMethod): Result
+    {
         $bodyJSON = json_decode($request->getBody(), true);
 
         if (!isset($bodyJSON['code'])) {
