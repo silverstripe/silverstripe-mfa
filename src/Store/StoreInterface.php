@@ -50,12 +50,20 @@ interface StoreInterface
     public function getState(): array;
 
     /**
-     * Update the state in the store
+     * Update the state in the store. Will override existing state. To add to the existing state use addState().
      *
      * @param array $state
      * @return StoreInterface
      */
     public function setState(array $state): StoreInterface;
+
+    /**
+     * Add to the state in the store
+     *
+     * @param array $state
+     * @return StoreInterface
+     */
+    public function addState(array $state): StoreInterface;
 
     /**
      * @return Member&MemberExtension|null

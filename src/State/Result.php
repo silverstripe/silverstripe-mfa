@@ -73,7 +73,7 @@ class Result
      * @param bool $success
      * @return Result
      */
-    public function setSuccess(bool $success): Result
+    public function setSuccessful(bool $success): Result
     {
         return new static($success, $this->getMessage(), $this->getContext());
     }

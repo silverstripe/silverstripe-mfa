@@ -4,6 +4,7 @@ namespace SilverStripe\MFA\Method\Handler;
 
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\MFA\Model\RegisteredMethod;
+use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
 
 /**
@@ -29,9 +30,9 @@ interface LoginHandlerInterface
      * @param HTTPRequest $request
      * @param StoreInterface $store
      * @param RegisteredMethod $registeredMethod The RegisteredMethod instance that is being verified
-     * @return bool
+     * @return Result
      */
-    public function verify(HTTPRequest $request, StoreInterface $store, RegisteredMethod $registeredMethod): bool;
+    public function verify(HTTPRequest $request, StoreInterface $store, RegisteredMethod $registeredMethod): Result;
 
     /**
      * Provide a localised string that serves as a lead in for choosing this option for authentication

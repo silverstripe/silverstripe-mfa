@@ -40,6 +40,6 @@ class MethodLoginHandlerTest extends SapphireTest
 
         $mockRegisteredMethod = RegisteredMethod::create();
 
-        $this->assertTrue($handler->verify($request, $store, $mockRegisteredMethod));
+        $this->assertTrue($handler->verify($request, $store, $mockRegisteredMethod)->isSuccessful());
     }
 }
