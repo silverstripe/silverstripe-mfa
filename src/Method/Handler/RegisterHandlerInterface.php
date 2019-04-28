@@ -3,6 +3,7 @@
 namespace SilverStripe\MFA\Method\Handler;
 
 use SilverStripe\Control\HTTPRequest;
+use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
 
 /**
@@ -21,16 +22,14 @@ interface RegisterHandlerInterface
     public function start(StoreInterface $store): array;
 
     /**
-     * Confirm that the provided details are valid, and return an array of "data" to store on the RegisteredMethod
-     * created for this registration.
-     *
-     * An Exception should be thrown if the registration could not be completed
+     * Confirm that the provided details are valid for a registration returning a Result describing the outcome of this
+     * validation. Detail to be persisted against the member should be set as context on the result.
      *
      * @param HTTPRequest $request
      * @param StoreInterface $store
-     * @return array Data to be stored against the created RegisteredMethod
+     * @return Result A result of this registration with context set as data to be stored against the RegisteredMethod
      */
-    public function register(HTTPRequest $request, StoreInterface $store): array;
+    public function register(HTTPRequest $request, StoreInterface $store): Result;
 
     /**
      * Provide a localised name for this MFA Method.

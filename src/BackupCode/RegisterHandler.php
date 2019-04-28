@@ -11,6 +11,7 @@ use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Service\BackupCodeGeneratorInterface;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
+use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
 
 class RegisterHandler implements RegisterHandlerInterface
@@ -62,10 +63,10 @@ class RegisterHandler implements RegisterHandlerInterface
      * @param StoreInterface $store
      * @return array
      */
-    public function register(HTTPRequest $request, StoreInterface $store): array
+    public function register(HTTPRequest $request, StoreInterface $store): Result
     {
         // Backup codes are unique where no confirmation or user input is required. The method is registered on "start"
-        return [];
+        return Result::create();
     }
 
     /**

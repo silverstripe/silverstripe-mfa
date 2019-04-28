@@ -12,7 +12,6 @@ use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
-use SilverStripe\ORM\ValidationResult;
 
 /**
  * This trait encapsulates logic that can be added to a `RequestHandler` to work with logging in using MFA front-end
@@ -22,22 +21,6 @@ use SilverStripe\ORM\ValidationResult;
  */
 trait LoginHandlerTrait
 {
-    /**
-     * @return MethodRegistry
-     */
-    protected function getMethodRegistry(): MethodRegistry
-    {
-        return MethodRegistry::singleton();
-    }
-
-    /**
-     * @return RegisteredMethodManager
-     */
-    protected function getRegisteredMethodManager(): RegisteredMethodManager
-    {
-        return RegisteredMethodManager::singleton();
-    }
-
     /**
      * Create an HTTPResponse that provides information to the client side React MFA app to prompt the user to login
      * with their configured MFA method
@@ -55,13 +38,16 @@ trait LoginHandlerTrait
 
         // Use a requested method if provided
         if ($requestedMethod) {
-            $registeredMethod = $this->getRegisteredMethodManager()->getFromMember($member, $requestedMethod);
+            $registeredMethod = RegisteredMethodManager::singleton()->getFromMember($member, $requestedMethod);
         }
 
         // ...Or use the default (TODO: Should we have the default as a fallback? Maybe just if no method is specified?)
         if (!$registeredMethod) {
             $registeredMethod = $member->DefaultRegisteredMethod;
         }
+
+        $response = HTTPResponse::create()
+            ->addHeader('Content-Type', 'application/json');
 
         // We can't proceed with login if the Member doesn't have this method registered
         if (!$registeredMethod) {
@@ -75,10 +61,7 @@ trait LoginHandlerTrait
                 $message = _t(__CLASS__ . '.METHOD_NOT_REGISTERED', 'Member does not have this method registered');
             }
 
-            return $this->jsonResponse(
-                ['errors' => [$message]],
-                400
-            );
+            return $response->setBody(json_encode(['errors' => [$message]]))->setStatusCode(400);
         }
 
         // Mark the given method as started within the store
@@ -87,7 +70,7 @@ trait LoginHandlerTrait
         $data = $registeredMethod->getLoginHandler()->start($store, $registeredMethod);
 
         // Respond with our method
-        return $this->jsonResponse($data ?: []);
+        return $response->setBody(json_encode($data ?: []));
     }
 
     /**
@@ -101,7 +84,7 @@ trait LoginHandlerTrait
     protected function verifyLoginRequest(StoreInterface $store, HTTPRequest $request): Result
     {
         $method = $store->getMethod();
-        $methodInstance = $method ? $this->getMethodRegistry()->getMethodByURLSegment($method) : null;
+        $methodInstance = $method ? MethodRegistry::singleton()->getMethodByURLSegment($method) : null;
 
         // The method must be tracked in session. If it's missing we can't continue
         if (!$methodInstance) {
@@ -110,7 +93,7 @@ trait LoginHandlerTrait
 
         // Get the member and authenticator ready
         $member = $store->getMember();
-        $registeredMethod = $this->getRegisteredMethodManager()->getFromMember($member, $methodInstance);
+        $registeredMethod = RegisteredMethodManager::singleton()->getFromMember($member, $methodInstance);
         $authenticator = $registeredMethod->getLoginHandler();
 
         $result = $authenticator->verify($request, $store, $registeredMethod);
@@ -142,19 +125,5 @@ trait LoginHandlerTrait
         }
 
         return count($successfulMethods) >= Config::inst()->get(EnforcementManager::class, 'required_mfa_methods');
-    }
-
-    /**
-     * Respond with the given array as a JSON response
-     *
-     * @param array $response
-     * @param int $code The HTTP response code to set on the response
-     * @return HTTPResponse
-     */
-    protected function jsonResponse(array $response, int $code = 200): HTTPResponse
-    {
-        return HTTPResponse::create(json_encode($response))
-            ->addHeader('Content-Type', 'application/json')
-            ->setStatusCode($code);
     }
 }
