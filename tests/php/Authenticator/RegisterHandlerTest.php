@@ -11,6 +11,7 @@ use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Service\MethodRegistry;
+use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
 use SilverStripe\Security\Member;
@@ -153,7 +154,7 @@ class RegisterHandlerTest extends FunctionalTest
         $registerHandlerMock
             ->expects($this->once())
             ->method('register')
-            ->willThrowException(new Exception('No. Bad user'));
+            ->willReturn(Result::create(false, 'No. Bad user'));
 
         $methodMock = $this->createMock(MethodInterface::class);
         $methodMock

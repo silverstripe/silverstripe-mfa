@@ -2,7 +2,6 @@
 
 namespace SilverStripe\MFA\Authenticator;
 
-use Exception;
 use Psr\Log\LoggerInterface;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
@@ -11,8 +10,11 @@ use SilverStripe\MFA\Exception\InvalidMethodException;
 use SilverStripe\MFA\Exception\MemberNotFoundException;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
+use SilverStripe\MFA\RequestHandler\BaseHandlerTrait;
 use SilverStripe\MFA\RequestHandler\LoginHandlerTrait;
+use SilverStripe\MFA\RequestHandler\RegistrationHandlerTrait;
 use SilverStripe\MFA\Service\EnforcementManager;
+use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\SchemaGenerator;
 use SilverStripe\MFA\Store\StoreInterface;
 use SilverStripe\ORM\ValidationException;
@@ -22,11 +24,12 @@ use SilverStripe\Security\Member;
 use SilverStripe\Security\MemberAuthenticator\LoginHandler as BaseLoginHandler;
 use SilverStripe\Security\MemberAuthenticator\MemberLoginForm;
 use SilverStripe\Security\Security;
-use SilverStripe\View\Requirements;
 
 class LoginHandler extends BaseLoginHandler
 {
+    use BaseHandlerTrait;
     use LoginHandlerTrait;
+    use RegistrationHandlerTrait;
 
     const SESSION_KEY = 'MFALogin';
 
@@ -96,12 +99,9 @@ class LoginHandler extends BaseLoginHandler
             return parent::doLogin($data, $form, $request);
         }
 
-        // Store a reference to the member in session
-        /** @var StoreInterface $store */
-        $store = Injector::inst()->create(StoreInterface::class, $member);
+        // Create a store for handling MFA for this member
+        $store = $this->createStore($member);
         $store->save($request);
-        // Ensure use of the getter returns the new store
-        $this->store = $store;
 
         // Store the BackURL for use after the process is complete
         if (!empty($data)) {
@@ -148,10 +148,9 @@ class LoginHandler extends BaseLoginHandler
     /**
      * Provides information about the current Member's MFA state
      *
-     * @param HTTPRequest $request
      * @return HTTPResponse
      */
-    public function getSchema(HTTPRequest $request)
+    public function getSchema()
     {
         try {
             $member = $this->getMember();
@@ -206,6 +205,7 @@ class LoginHandler extends BaseLoginHandler
             );
         }
 
+        // Handle the case where the request hasn't provided an appropriate method to register
         if ($method === null) {
             return $this->jsonResponse(
                 ['errors' => [_t(__CLASS__ . '.INVALID_METHOD', 'No such method is available')]],
@@ -213,34 +213,18 @@ class LoginHandler extends BaseLoginHandler
             );
         }
 
-        // Fall back to the logged in user at this point if not in the login process
-        $member = $sessionMember ?: $loggedInMember;
-
-        // Sanity check that the method hasn't already been registered
-        $existingRegisteredMethod = $this->getRegisteredMethodManager()->getFromMember($member, $method);
-
-        if ($existingRegisteredMethod) {
-            return $this->jsonResponse(
-                [
-                    'errors' => [
-                        _t(
-                            __CLASS__ . '.METHOD_ALREADY_REGISTERED',
-                            'That method has already been registered against this Member'
-                        )
-                    ]
-                ],
-                400
-            );
+        // Ensure a store is available using the logged in member if the store doesn't exist
+        if (!$store) {
+            $store = $this->createStore($loggedInMember);
         }
 
-        // Mark the given method as started within the session
-        $store->setMethod($method->getURLSegment());
-        // Allow the registration handler to begin the process and generate some data to pass through to the front-end
-        $data = $method->getRegisterHandler()->start($store);
+        // Delegate to the trait for common handling
+        $response = $this->createStartRegistrationResponse($store, $method);
+
         // Ensure details are saved to the session
         $store->save($request);
 
-        return $this->jsonResponse($data);
+        return $response;
     }
 
     /**
@@ -262,41 +246,11 @@ class LoginHandler extends BaseLoginHandler
             );
         }
 
-        $storedMethodName = $store->getMethod();
         $method = $this->getMethodRegistry()->getMethodByURLSegment($request->param('Method'));
+        $result = $this->completeRegistrationRequest($store, $method, $request);
 
-        // If a registration process hasn't been initiated in a previous request, calling this method is invalid
-        if (!$storedMethodName) {
-            return $this->jsonResponse(
-                ['errors' => [_t(__CLASS__ . '.NO_REGISTRATION_IN_PROGRESS', 'No registration in progress')]],
-                400
-            );
-        }
-
-        if ($storedMethodName !== $method->getURLSegment()) {
-            return $this->jsonResponse(
-                ['errors' => [_t(__CLASS__ . '.METHOD_MISMATCH', 'Method does not match registration in progress')]],
-                400
-            );
-        }
-
-        $registrationHandler = $method->getRegisterHandler();
-
-        try {
-            $this->getRegisteredMethodManager()
-                ->registerForMember(
-                    $sessionMember,
-                    $method,
-                    $registrationHandler->register($request, $store)
-                );
-        } catch (Exception $e) {
-            $this->getLogger()->debug('MFA registration failed: ' . $e->getMessage(), $e->getTrace());
-            $this->extend('onRegisterMethodFailure', $sessionMember, $method);
-
-            return $this->jsonResponse(
-                ['errors' => [$e->getMessage()]],
-                400
-            );
+        if (!$result->isSuccessful()) {
+            return $this->jsonResponse(['errors' => [$result->getMessage()]], 400);
         }
 
         // If we've completed registration and the member is not already logged in then we need to log them in
@@ -308,7 +262,7 @@ class LoginHandler extends BaseLoginHandler
         // required to log in though. The "mustLogin" flag is set at the beginning of the MFA process if they have at
         // least one method registered. They should always do that first. In that case we should assert
         // "isLoginComplete"
-        if ((!$mustLogin || $this->isLoginComplete($request))
+        if ((!$mustLogin || $this->isLoginComplete($store))
             && $enforcementManager->hasCompletedRegistration($sessionMember)
         ) {
             $this->doPerformLogin($request, $sessionMember);
@@ -537,34 +491,18 @@ class LoginHandler extends BaseLoginHandler
         return $this->logger;
     }
 
-    protected function applyRequirements(): void
-    {
-        // Run through requirements
-        Requirements::javascript('silverstripe/mfa: client/dist/js/injector.js');
-        Requirements::javascript('silverstripe/admin: client/dist/js/i18n.js');
-        Requirements::javascript('silverstripe/mfa: client/dist/js/bundle.js');
-        Requirements::add_i18n_javascript('silverstripe/mfa: client/lang');
-        Requirements::css('silverstripe/mfa: client/dist/styles/bundle.css');
-
-        // Plugin module requirements
-        $registry = $this->getMethodRegistry();
-        foreach ($registry->getMethods() as $method) {
-            $method->applyRequirements();
-        }
-    }
-
     /**
-     * @return StoreInterface|null
+     * Respond with the given array as a JSON response
+     *
+     * @param array $response
+     * @param int $code The HTTP response code to set on the response
+     * @return HTTPResponse
      */
-    protected function getStore(): ?StoreInterface
+    public function jsonResponse(array $response, int $code = 200): HTTPResponse
     {
-        if (!$this->store) {
-            $spec = Injector::inst()->getServiceSpec(StoreInterface::class);
-            $class = is_string($spec) ? $spec : $spec['class'];
-            $this->store = call_user_func([$class, 'load'], $this->getRequest());
-        }
-
-        return $this->store;
+        return HTTPResponse::create(json_encode($response))
+            ->addHeader('Content-Type', 'application/json')
+            ->setStatusCode($code);
     }
 
     /**
@@ -597,5 +535,13 @@ class LoginHandler extends BaseLoginHandler
             // Allow operations on the member after successful login
             parent::extend('afterLogin', $member);
         }
+    }
+
+    /**
+     * @return MethodRegistry
+     */
+    protected function getMethodRegistry(): MethodRegistry
+    {
+        return MethodRegistry::singleton();
     }
 }

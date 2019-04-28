@@ -71,7 +71,7 @@ class RegisterHandlerTest extends SapphireTest
         }
     }
 
-    public function testRegisterReturnsNothing()
+    public function testRegisterReturnsNoContext()
     {
         /** @var StoreInterface|PHPUnit_Framework_MockObject_MockObject $store */
         $store = $this->createMock(StoreInterface::class);
@@ -82,6 +82,7 @@ class RegisterHandlerTest extends SapphireTest
         $handler = new RegisterHandler();
         $result = $handler->register($request, $store);
 
-        $this->assertEmpty($result);
+        $this->assertTrue($result->isSuccessful());
+        $this->assertEmpty($result->getContext());
     }
 }
