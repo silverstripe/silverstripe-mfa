@@ -8,7 +8,13 @@ use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
+use SilverStripe\MFA\Service\MethodRegistry;
+use SilverStripe\MFA\Service\Notification\Event\AllMethodsRemoved;
+use SilverStripe\MFA\Service\Notification\Event\MethodAdded;
+use SilverStripe\MFA\Service\Notification\Event\MethodRemoved;
+use SilverStripe\MFA\Service\NotificationManager;
 use SilverStripe\Security\Member;
+use SilverStripe\SiteConfig\SiteConfig;
 
 /**
  * The RegisteredMethodManager service class facilitates the communication of Members and RegisteredMethod instances
@@ -60,6 +66,12 @@ class RegisteredMethodManager
         // Add it to the member
         $member->RegisteredMFAMethods()->add($registeredMethod);
 
+        if (!MethodRegistry::create()->isBackupMethod($method)) {
+            $data = ['MethodName' => $method->getRegisterHandler()->getName()];
+            $notificationEvent = MethodAdded::create($member, $data);
+            NotificationManager::create()->sendNotifications($member, $notificationEvent);
+        }
+
         $this->extend('onRegisterMethod', $member, $method);
     }
 
@@ -81,13 +93,19 @@ class RegisteredMethodManager
 
         $method->delete();
 
+        $data = ['MethodName' => $method->getRegisterHandler()->getName()];
+        $event = MethodRemoved::create($member, $data);
+
         // If there is only one method remaining, and that's the configured "backup" method - then delete that too
         if ($member->RegisteredMFAMethods()->count() === 1
             && ($method = $member->RegisteredMFAMethods()->first())->MethodClassName
                 === Config::inst()->get(MethodRegistry::class, 'default_backup_method')
         ) {
             $method->delete();
+            $event = AllMethodsRemoved::create($member);
         }
+
+        NotificationManager::create()->sendNotifications($member, $event);
 
         return true;
     }

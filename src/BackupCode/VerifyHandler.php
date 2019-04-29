@@ -7,8 +7,11 @@ use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
+use SilverStripe\MFA\Service\NotificationManager;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
+use SilverStripe\Security\Member;
+use SilverStripe\SiteConfig\SiteConfig;
 
 class VerifyHandler implements VerifyHandlerInterface
 {
@@ -58,6 +61,9 @@ class VerifyHandler implements VerifyHandlerInterface
                 array_splice($candidates, $index, 1);
                 $registeredMethod->Data = json_encode($candidates);
                 $registeredMethod->write();
+                $member = $registeredMethod->Member();
+                $event = UsedEvent::create($member, ['CodesLeft' => count($candidates)]);
+                NotificationManager::create()->sendNotifications($member, $event);
                 return Result::create();
             }
         }

@@ -2,11 +2,13 @@
 namespace SilverStripe\MFA\Model;
 
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
+use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
+use SilverStripe\MFA\Service\NotificationManager;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
+use SilverStripe\SiteConfig\SiteConfig;
 
 /**
  * @package SilverStripe\MFA\Model
