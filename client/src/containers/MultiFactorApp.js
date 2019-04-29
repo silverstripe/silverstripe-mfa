@@ -5,7 +5,15 @@ import PropTypes from 'prop-types';
 import Login from 'components/Login';
 import Register from 'components/Register';
 import LoadingIndicator from 'components/LoadingIndicator';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+import mfaRegisterReducer from 'state/mfaRegister/reducer';
+import { chooseMethod } from 'state/mfaRegister/actions';
 
+const store = createStore(
+  mfaRegisterReducer,
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+);
 
 class MultiFactorApp extends Component {
   constructor(props) {
@@ -36,7 +44,12 @@ class MultiFactorApp extends Component {
    * Handle an event indicating the login is complete
    */
   handleCompleteLogin() {
-    const { schema: { endpoints: { complete }, isFullyRegistered } } = this.state;
+    const { schema: {
+      endpoints: { complete },
+      isFullyRegistered,
+      backupMethod,
+      registeredMethods,
+    } } = this.state;
 
     // Mark login as being completed. The server side will validate any further request - this state
     // is just for controlling flow
@@ -50,6 +63,18 @@ class MultiFactorApp extends Component {
         loading: true,
       });
       window.location = complete;
+      return;
+    }
+
+    // Check if the backup method should be chosen for the register screen and update redux
+    if (
+      registeredMethods
+      && registeredMethods.length
+      && registeredMethods.filter(
+        method => method.urlSegment === backupMethod.urlSegment
+      ).length === 0
+    ) {
+      store.dispatch(chooseMethod(backupMethod));
     }
   }
 
@@ -107,7 +132,9 @@ class MultiFactorApp extends Component {
 
     return (
       <Fragment>
-        { this.renderRegister() }
+        <Provider store={store}>
+          { this.renderRegister() }
+        </Provider>
         { this.renderLogin() }
       </Fragment>
     );

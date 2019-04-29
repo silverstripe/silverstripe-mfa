@@ -2,6 +2,9 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import { showScreen } from 'state/mfaRegister/actions';
+import { SCREEN_REGISTER_METHOD } from '../Register';
+import { connect } from 'react-redux';
 
 const fallbacks = require('../../../lang/src/en.json');
 
@@ -126,4 +129,10 @@ Introduction.propTypes = {
   }).isRequired,
 };
 
-export default Introduction;
+export { Introduction as Component };
+
+const mapDispatchToProps = dispatch => ({
+  onContinue: () => dispatch(showScreen(SCREEN_REGISTER_METHOD)),
+});
+
+export default connect(null, mapDispatchToProps)(Introduction);

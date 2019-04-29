@@ -5,7 +5,7 @@ import fetch from 'isomorphic-fetch';
 import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import Introduction, { ActionList } from '../Introduction';
+import { Component as Introduction, ActionList } from '../Introduction';
 import { loadComponent } from 'lib/Injector'; // eslint-disable-line
 
 Enzyme.configure({ adapter: new Adapter() });
