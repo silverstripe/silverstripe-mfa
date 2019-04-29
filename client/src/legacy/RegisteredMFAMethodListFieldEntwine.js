@@ -1,7 +1,7 @@
 // Manages rendering RegisteredMFAMethodListFields in lieu of React support in ModelAdmin
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { loadComponent } from 'lib/Injector';
+import { loadComponent } from 'lib/Injector'; // eslint-disable-line
 
 const FIELD_SELECTOR = '.js-injector-boot [data-field-type="registered-mfa-method-list-field"]';
 

@@ -2,48 +2,59 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import methodShape from '../../../types/registeredMethod';
-import ReadOnlyView from './ReadOnlyView';
+import MethodListItem from './MethodListItem';
+
+const fallbacks = require('../../../../lang/src/en.json');
 
 class RegisteredMFAMethodListField extends Component {
   /**
    * The backup and default methods are rendered separately
-   * @returns {*}
+   * @returns {methodShape[]}
    */
   baseMethods() {
     const { backupMethod, defaultMethod } = this.props;
-    let methods = this.props.registeredMethods;
+    let { registeredMethods: methods } = this.props;
 
     if (backupMethod) {
-      methods = methods.filter(rM => rM.urlSegment !== backupMethod.urlSegment);
+      methods = methods.filter(method => method.urlSegment !== backupMethod.urlSegment);
     }
 
     if (defaultMethod) {
-      methods = methods.filter(rM => rM.urlSegment !== defaultMethod.urlSegment);
+      methods = methods.filter(method => method.urlSegment !== defaultMethod.urlSegment);
     }
 
     return methods;
   }
 
+  renderBaseMethods() {
+    return this.baseMethods()
+      .map(method => (<MethodListItem method={method} key={method.name} />));
+  }
+
   render() {
-    const { defaultMethod, readOnly } = this.props;
+    const { ss: { i18n } } = window;
+    const { defaultMethod } = this.props;
 
-    if (readOnly) {
-      return (
-        <ReadOnlyView
-          defaultMethod={defaultMethod}
-          methods={this.baseMethods()}
-        />
-      );
-    }
+    const tDefault = i18n._t(
+      'MultiFactorAuthentication.DEFAULT',
+      fallbacks['MultiFactorAuthentication.DEFAULT']
+    );
 
-    return (<h1>(EditableView)</h1>);
+    return (
+      <div className="registered-mfa-method-list-field registered-mfa-method-list-field--read-only">
+        <ul className="method-list">
+          { defaultMethod && (<MethodListItem method={defaultMethod} suffix={`(${tDefault})`} />) }
+          { this.renderBaseMethods() }
+        </ul>
+      </div>
+    );
   }
 }
 
 RegisteredMFAMethodListField.propTypes = {
   backupMethod: methodShape,
   defaultMethod: methodShape,
-  readOnly: PropTypes.bool,
+  // readOnly: PropTypes.bool,
   registeredMethods: PropTypes.arrayOf(methodShape).isRequired,
 };
 

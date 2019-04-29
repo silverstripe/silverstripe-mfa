@@ -1,7 +1,7 @@
 /* global jest, describe, it, expect */
 
 import React from 'react';
-import Enzyme, { render, shallow } from 'enzyme';
+import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import RegisteredMFAMethodListField from '../RegisteredMFAMethodListField';
 import { loadComponent } from 'lib/Injector'; // eslint-disable-line
@@ -37,7 +37,7 @@ describe('RegisteredMFAMethodListField', () => {
     it('renders the read-only view when readOnly is passed', () => {
       const registeredMethods = [altMethod];
 
-      const field = render(
+      const field = shallow(
         <RegisteredMFAMethodListField readOnly registeredMethods={registeredMethods} />
       );
 

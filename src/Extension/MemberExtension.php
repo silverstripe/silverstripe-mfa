@@ -50,9 +50,7 @@ class MemberExtension extends DataExtension
         Requirements::javascript('silverstripe/mfa: client/dist/js/bundle-cms.js');
         Requirements::css('silverstripe/mfa: client/dist/styles/bundle-cms.css');
 
-        $fields->removeByName('DefaultRegisteredMethodID');
-        $fields->removeByName('HasSkippedMFARegistration');
-        $fields->removeByName('RegisteredMFAMethods');
+        $fields->removeByName(['DefaultRegisteredMethodID', 'HasSkippedMFARegistration', 'RegisteredMFAMethods']);
 
         if (!Permission::check('MFA_VIEW_REGISTERED_METHODS') && Security::getCurrentUser()->ID !== $this->owner->ID) {
             return $fields;
