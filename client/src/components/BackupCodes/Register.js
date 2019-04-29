@@ -61,6 +61,7 @@ class Register extends Component {
    */
   handleCopy(event) {
     event.preventDefault();
+    const { copyFeedbackDuration } = this.props;
 
     this.setState({
       recentlyCopied: true,
@@ -76,7 +77,7 @@ class Register extends Component {
       this.setState({
         recentlyCopied: false,
       });
-    }, 3000);
+    }, copyFeedbackDuration || 3000);
   }
 
   /**
@@ -204,6 +205,7 @@ class Register extends Component {
 
 Register.propTypes = {
   codes: PropTypes.arrayOf(PropTypes.string),
+  copyFeedbackDuration: PropTypes.number,
 };
 
 export default Register;

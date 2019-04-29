@@ -27,6 +27,7 @@ describe('Register - Recovery Codes', () => {
       <Register
         method={mockMethod}
         codes={['123', '456']}
+        copyFeedbackDuration={30}
       />
     );
 
@@ -49,6 +50,7 @@ describe('Register - Recovery Codes', () => {
       <Register
         method={mockMethod}
         codes={['123', '456']}
+        copyFeedbackDuration={30}
       />
     );
 
@@ -67,7 +69,7 @@ describe('Register - Recovery Codes', () => {
       expect(wrapper.find('.mfa-register-backup-codes__copy-to-clipboard').text())
         .toBe('Copy codes');
       done();
-    }, 3000);
+    }, 30);
   });
 
   it('re-copying the codes will reset the recently copied timer', done => {
@@ -77,6 +79,7 @@ describe('Register - Recovery Codes', () => {
       <Register
         method={mockMethod}
         codes={['123', '456']}
+        copyFeedbackDuration={30}
       />
     );
 
@@ -97,13 +100,13 @@ describe('Register - Recovery Codes', () => {
       copyLink.simulate('click', { preventDefault });
       expect(preventDefault.mock.calls).toHaveLength(2);
       wrapper.update();
-    }, 1500);
+    }, 15);
 
     setTimeout(() => {
       expect(wrapper.find('.mfa-register-backup-codes__copy-to-clipboard').text())
         .toBe('Copied!');
       done();
-    }, 3000);
+    }, 30);
   });
 
   it('will call the given onComplete function when pressing the "finish" button', () => {
