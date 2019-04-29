@@ -8,7 +8,7 @@ use SilverStripe\Core\Injector\Injectable;
  * An immutable result object often detailing the result of a registration or validation completed by the
  * respective handlers
  *
- * @method static create(bool $success = true, string $message = '', array $context = [])
+ * @method static Result create(bool $success = true, string $message = '', array $context = [])
  */
 class Result
 {
