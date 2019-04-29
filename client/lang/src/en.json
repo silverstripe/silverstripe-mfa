@@ -9,5 +9,6 @@
   "MultiFactorAuthentication.UNIQUE_TITLE": "Unique to you",
   "MultiFactorAuthentication.UNIQUE_DESCRIPTION": "This verification is only available to you. Even if someone gets your password, they will not be able to access your account.",
   "MultiFactorAuthentication.GET_STARTED": "Get started",
-  "MultiFactorAuthentication.SETUP_LATER": "Setup later"
+  "MultiFactorAuthentication.SETUP_LATER": "Setup later",
+  "MultiFactorAuthentication.REGISTERED": "Registered"
 }
