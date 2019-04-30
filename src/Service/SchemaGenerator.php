@@ -31,8 +31,18 @@ class SchemaGenerator
     public function getSchema(Member $member)
     {
         $enforcementManager = EnforcementManager::singleton();
+        $registeredMethods = $this->getRegisteredMethods($member);
 
-        $schema = self::getMethodSchema($member) + [
+        // Skip registration details if the user has already registered this method
+        $exclude = array_map(function (RegisteredMethodDetailsInterface $methodDetails) {
+            return $methodDetails->jsonSerialize()['urlSegment'];
+        }, $registeredMethods);
+
+        $schema = [
+            'registeredMethods' => $registeredMethods,
+            'availableMethods' => $this->getAvailableMethods($exclude),
+            'defaultMethod' => $this->getDefaultMethod($member),
+            'backupMethod' => $this->getBackupMethod(),
             'canSkip' => $enforcementManager->canSkipMFA($member),
             'isFullyRegistered' => $enforcementManager->hasCompletedRegistration($member),
             'resources' => $this->getResources(),
@@ -42,29 +52,6 @@ class SchemaGenerator
         $this->extend('updateSchema', $schema);
 
         return $schema;
-    }
-
-    /**
-     * Provides schema related to MFA methods, using the current Member as context
-     *
-     * @param Member&MemberExtension $member
-     * @return array
-     */
-    public function getMethodSchema(Member $member)
-    {
-        $registeredMethods = $this->getRegisteredMethods($member);
-
-        // Skip registration details if the user has already registered this method
-        $exclude = array_map(function (RegisteredMethodDetailsInterface $methodDetails) {
-            return $methodDetails->jsonSerialize()['urlSegment'];
-        }, $registeredMethods);
-
-        return [
-            'registeredMethods' => $registeredMethods,
-            'availableMethods' => $this->getAvailableMethods($exclude),
-            'defaultMethod' => $this->getDefaultMethod($member),
-            'backupMethod' => $this->getBackupMethod(),
-        ];
     }
 
     /**

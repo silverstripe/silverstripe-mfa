@@ -83,7 +83,8 @@ class MemberExtension extends DataExtension implements PermissionProvider
      */
     public function currentUserCanViewMFAConfig()
     {
-        return (Permission::check(self::MFA_ADMINISTER_REGISTERED_METHODS) || Security::getCurrentUser()->ID === $this->owner->ID);
+        return (Permission::check(self::MFA_ADMINISTER_REGISTERED_METHODS)
+            || Security::getCurrentUser()->ID === $this->owner->ID);
     }
 
     /**
