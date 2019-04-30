@@ -11,7 +11,6 @@ use SilverStripe\Security\Member;
 use SilverStripe\Security\Permission;
 use SilverStripe\Security\PermissionProvider;
 use SilverStripe\Security\Security;
-use SilverStripe\View\Requirements;
 
 /**
  * Extend Member to add relationship to registered methods and track some specific preferences
@@ -50,9 +49,6 @@ class MemberExtension extends DataExtension implements PermissionProvider
 
     public function updateCMSFields(FieldList $fields)
     {
-        Requirements::javascript('silverstripe/mfa: client/dist/js/bundle-cms.js');
-        Requirements::css('silverstripe/mfa: client/dist/styles/bundle-cms.css');
-
         $fields->removeByName(['DefaultRegisteredMethodID', 'HasSkippedMFARegistration', 'RegisteredMFAMethods']);
 
         if (!$this->currentUserCanViewMFAConfig()) {

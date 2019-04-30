@@ -12,10 +12,9 @@ class MemberExtensionTest extends SapphireTest
 
     public function testAdminUserCanViewButNotEditOthersMFAConfig()
     {
-        $adminMember = $this->objFromFixture(Member::class, 'admin');
         $targetMember = $this->objFromFixture(Member::class, 'squib');
 
-        Security::setCurrentUser($adminMember);
+        $this->logInAs('admin');
 
         $this->assertTrue($targetMember->currentUserCanViewMFAConfig(), 'Can View');
         $this->assertFalse($targetMember->currentUserCanEditMFAConfig(), 'Can Edit');
@@ -23,10 +22,9 @@ class MemberExtensionTest extends SapphireTest
 
     public function testAdminUserCanViewAndEditTheirOwnMFAConfig()
     {
-        $adminMember = $this->objFromFixture(Member::class, 'admin');
-        $targetMember = $adminMember;
+        $targetMember = $this->objFromFixture(Member::class, 'admin');
 
-        Security::setCurrentUser($adminMember);
+        $this->logInAs($targetMember);
 
         $this->assertTrue($targetMember->currentUserCanViewMFAConfig(), 'Can View');
         $this->assertTrue($targetMember->currentUserCanEditMFAConfig(), 'Can Edit');
@@ -34,10 +32,9 @@ class MemberExtensionTest extends SapphireTest
 
     public function testStandardUserCannotViewOrEditOthersMFAConfig()
     {
-        $regularMember = $this->objFromFixture(Member::class, 'squib');
         $targetMember = $this->objFromFixture(Member::class, 'admin');
 
-        Security::setCurrentUser($regularMember);
+        $this->logInAs('squib');
 
         $this->assertFalse($targetMember->currentUserCanViewMFAConfig(), 'Can View');
         $this->assertFalse($targetMember->currentUserCanEditMFAConfig(), 'Can Edit');
@@ -45,10 +42,9 @@ class MemberExtensionTest extends SapphireTest
 
     public function testStandardUserCanViewAndEditTheirOwnMFAConfig()
     {
-        $regularMember = $this->objFromFixture(Member::class, 'squib');
-        $targetMember = $regularMember;
+        $targetMember = $this->objFromFixture(Member::class, 'squib');
 
-        Security::setCurrentUser($regularMember);
+        Security::setCurrentUser($targetMember);
 
         $this->assertTrue($targetMember->currentUserCanViewMFAConfig(), 'Can View');
         $this->assertTrue($targetMember->currentUserCanEditMFAConfig(), 'Can Edit');
