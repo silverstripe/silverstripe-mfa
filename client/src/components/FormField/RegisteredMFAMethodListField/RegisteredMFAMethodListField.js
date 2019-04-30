@@ -43,6 +43,7 @@ class RegisteredMFAMethodListField extends Component {
     return (
       <div className="registered-mfa-method-list-field registered-mfa-method-list-field--read-only">
         <ul className="method-list">
+          { !defaultMethod && this.baseMethods().length < 1 && <li>No methods registered</li> }
           { defaultMethod && (<MethodListItem method={defaultMethod} suffix={`(${tDefault})`} />) }
           { this.renderBaseMethods() }
         </ul>
