@@ -9,6 +9,7 @@ use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\HasManyList;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Permission;
+use SilverStripe\Security\PermissionProvider;
 use SilverStripe\Security\Security;
 use SilverStripe\View\Requirements;
 
@@ -21,8 +22,10 @@ use SilverStripe\View\Requirements;
  * @property bool HasSkippedMFARegistration
  * @property Member|MemberExtension owner
  */
-class MemberExtension extends DataExtension
+class MemberExtension extends DataExtension implements PermissionProvider
 {
+    const MFA_ADMINISTER_REGISTERED_METHODS = 'MFA_ADMINISTER_REGISTERED_METHODS';
+
     private static $has_many = [
         'RegisteredMFAMethods' => RegisteredMethod::class,
     ];
@@ -52,7 +55,7 @@ class MemberExtension extends DataExtension
 
         $fields->removeByName(['DefaultRegisteredMethodID', 'HasSkippedMFARegistration', 'RegisteredMFAMethods']);
 
-        if (!Permission::check('MFA_VIEW_REGISTERED_METHODS') && Security::getCurrentUser()->ID !== $this->owner->ID) {
+        if (!$this->currentUserCanViewMFAConfig()) {
             return $fields;
         }
 
@@ -66,10 +69,43 @@ class MemberExtension extends DataExtension
         );
 
         // Administrators can't modify registered method
-        if (Security::getCurrentUser()->ID !== $this->owner->ID) {
+        if ($this->currentUserCanEditMFAConfig()) {
             $methodListField->setReadonly(true);
         }
 
         return $fields;
+    }
+
+    /**
+     * Determines whether the logged in user has sufficient permission to see the MFA config for this Member.
+     *
+     * @return bool
+     */
+    public function currentUserCanViewMFAConfig()
+    {
+        return (Permission::check(self::MFA_ADMINISTER_REGISTERED_METHODS) || Security::getCurrentUser()->ID === $this->owner->ID);
+    }
+
+    /**
+     * Determines whether the logged in user has sufficient permission to modify the MFA config for this Member.
+     * Note that this is different from being able to _reset_ the config (which administrators can do).
+     * @return bool
+     */
+    public function currentUserCanEditMFAConfig()
+    {
+        return (Security::getCurrentUser()->ID === $this->owner->ID);
+    }
+
+    /**
+     * Return a map of permission codes to add to the dropdown shown in the Security section of the CMS.
+     * array(
+     *   'VIEW_SITE' => 'View the site',
+     * );
+     */
+    public function providePermissions()
+    {
+        return [
+            self::MFA_ADMINISTER_REGISTERED_METHODS => 'View / Reset MFA Configuration for other Members',
+        ];
     }
 }
