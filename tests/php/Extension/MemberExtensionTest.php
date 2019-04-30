@@ -3,16 +3,9 @@
 namespace SilverStripe\MFA\Tests\Extension;
 
 use SilverStripe\Dev\SapphireTest;
-use SilverStripe\Security\Group;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 
-/**
- * Class MemberExtensionTest
- *
- * @group wip
- * @package SilverStripe\MFA\Tests\Extension
- */
 class MemberExtensionTest extends SapphireTest
 {
     protected static $fixture_file = 'MemberExtensionTest.yml';

@@ -63,7 +63,7 @@ class MemberExtension extends DataExtension implements PermissionProvider
             'Root.Main',
             $methodListField = RegisteredMFAMethodListField::create(
                 'MFASettings',
-                'Multi-factor Authentication Settings (MFA)',
+                _t(__CLASS__ . '.MFA_SETTINGS_FIELD_LABEL', 'Multi-factor Authentication Settings (MFA)'),
                 $this->owner
             )
         );
@@ -84,7 +84,7 @@ class MemberExtension extends DataExtension implements PermissionProvider
     public function currentUserCanViewMFAConfig()
     {
         return (Permission::check(self::MFA_ADMINISTER_REGISTERED_METHODS)
-            || Security::getCurrentUser()->ID === $this->owner->ID);
+            || $this->currentUserCanEditMFAConfig());
     }
 
     /**
@@ -94,7 +94,7 @@ class MemberExtension extends DataExtension implements PermissionProvider
      */
     public function currentUserCanEditMFAConfig()
     {
-        return (Security::getCurrentUser()->ID === $this->owner->ID);
+        return (Security::getCurrentUser() && Security::getCurrentUser()->ID === $this->owner->ID);
     }
 
     /**
@@ -105,8 +105,13 @@ class MemberExtension extends DataExtension implements PermissionProvider
      */
     public function providePermissions()
     {
+        $label = _t(
+            __CLASS__ . '.MFA_PERMISSION_LABEL',
+            'View / Reset MFA Configuration for other Members'
+        );
+
         return [
-            self::MFA_ADMINISTER_REGISTERED_METHODS => 'View / Reset MFA Configuration for other Members',
+            self::MFA_ADMINISTER_REGISTERED_METHODS => $label,
         ];
     }
 }
