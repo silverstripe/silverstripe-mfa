@@ -6,9 +6,9 @@ const fallbacks = require('../../../../lang/src/en.json');
  * Renders a single Registered MFA Method for a Member
  *
  * @todo Add actions when not in read-only mode
- * @param method
- * @param suffix
- * @returns {*}
+ * @param {object} method
+ * @param {string} suffix
+ * @returns {HTMLElement}
  * @constructor
  */
 const MethodListItem = ({ method, suffix = '' }) => {
