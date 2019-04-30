@@ -4,7 +4,6 @@ namespace SilverStripe\MFA\Tests\Extension;
 
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\Security\Member;
-use SilverStripe\Security\Security;
 
 class MemberExtensionTest extends SapphireTest
 {
@@ -44,7 +43,7 @@ class MemberExtensionTest extends SapphireTest
     {
         $targetMember = $this->objFromFixture(Member::class, 'squib');
 
-        Security::setCurrentUser($targetMember);
+        $this->logInAs($targetMember);
 
         $this->assertTrue($targetMember->currentUserCanViewMFAConfig(), 'Can View');
         $this->assertTrue($targetMember->currentUserCanEditMFAConfig(), 'Can Edit');
