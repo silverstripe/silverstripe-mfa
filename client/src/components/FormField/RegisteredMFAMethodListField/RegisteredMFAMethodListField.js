@@ -35,6 +35,11 @@ class RegisteredMFAMethodListField extends Component {
     const { ss: { i18n } } = window;
     const { defaultMethod } = this.props;
 
+    const tEmpty = i18n._t(
+      'MultiFactorAuthentication.NO_METHODS_REGISTERED',
+      fallbacks['MultiFactorAuthentication.NO_METHODS_REGISTERED']
+    );
+
     const tDefault = i18n._t(
       'MultiFactorAuthentication.DEFAULT',
       fallbacks['MultiFactorAuthentication.DEFAULT']
@@ -43,7 +48,7 @@ class RegisteredMFAMethodListField extends Component {
     return (
       <div className="registered-mfa-method-list-field registered-mfa-method-list-field--read-only">
         <ul className="method-list">
-          { !defaultMethod && this.baseMethods().length < 1 && <li>No methods registered</li> }
+          { !defaultMethod && this.baseMethods().length < 1 && (<li>{tEmpty}</li>) }
           { defaultMethod && (<MethodListItem method={defaultMethod} suffix={`(${tDefault})`} />) }
           { this.renderBaseMethods() }
         </ul>

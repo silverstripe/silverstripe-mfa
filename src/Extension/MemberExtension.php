@@ -64,8 +64,7 @@ class MemberExtension extends DataExtension implements PermissionProvider
             )
         );
 
-        // Administrators can't modify registered method
-        if ($this->currentUserCanEditMFAConfig()) {
+        if (!$this->currentUserCanEditMFAConfig()) {
             $methodListField->setReadonly(true);
         }
 
@@ -86,6 +85,7 @@ class MemberExtension extends DataExtension implements PermissionProvider
     /**
      * Determines whether the logged in user has sufficient permission to modify the MFA config for this Member.
      * Note that this is different from being able to _reset_ the config (which administrators can do).
+     *
      * @return bool
      */
     public function currentUserCanEditMFAConfig()
@@ -94,10 +94,9 @@ class MemberExtension extends DataExtension implements PermissionProvider
     }
 
     /**
-     * Return a map of permission codes to add to the dropdown shown in the Security section of the CMS.
-     * array(
-     *   'VIEW_SITE' => 'View the site',
-     * );
+     * Provides the MFA view/reset permission for selection in the permission list in the CMS.
+     *
+     * @return array
      */
     public function providePermissions()
     {
@@ -106,8 +105,24 @@ class MemberExtension extends DataExtension implements PermissionProvider
             'View/reset MFA configuration for other members'
         );
 
+        $category = _t(
+            'SilverStripe\\Security\\Permission.PERMISSIONS_CATEGORY',
+            'Roles and access permissions'
+        );
+
+        $description = _t(
+            __CLASS__ . '.MFA_PERMISSION_DESCRIPTION',
+            'Ability to view and reset registered MFA methods for other members.'
+            . ' Requires the "Access to \'Security\' section" permission.'
+        );
+
         return [
-            self::MFA_ADMINISTER_REGISTERED_METHODS => $label,
+            self::MFA_ADMINISTER_REGISTERED_METHODS => [
+                'name' => $label,
+                'category' => $category,
+                'help' => $description,
+                'sort' => 200,
+            ],
         ];
     }
 }
