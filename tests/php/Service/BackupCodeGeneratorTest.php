@@ -4,6 +4,7 @@ namespace SilverStripe\MFA\Service;
 
 use PHPUnit_Framework_MockObject_MockObject;
 use SilverStripe\Dev\SapphireTest;
+use SilverStripe\MFA\State\BackupCode;
 use SilverStripe\MFA\Tests\Service\BackupCodeGeneratorTest\MockHashExtension;
 
 class BackupCodeGeneratorTest extends SapphireTest
@@ -53,12 +54,21 @@ class BackupCodeGeneratorTest extends SapphireTest
     public function testGenerate()
     {
         $generator = new BackupCodeGenerator();
+        /** @var BackupCode[] $result */
         $result = $generator->generate();
 
         $this->assertCount(3, $result, 'Expected number of codes are generated');
-        foreach ($result as $code => $hash) {
-            $this->assertSame(6, strlen($code), 'Generated codes are of configured length');
-            $this->assertSame(strrev($code), $hash, 'Mock hashing method is used and hash is returned');
+        foreach ($result as $backupCode) {
+            $this->assertSame(
+                6,
+                strlen($backupCode->getCode()),
+                'Generated codes are of configured length'
+            );
+            $this->assertSame(
+                strrev($backupCode->getCode()),
+                $backupCode->getHash(),
+                'Mock hashing method is used and hash is returned'
+            );
         }
     }
 }
