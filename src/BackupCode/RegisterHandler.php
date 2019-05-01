@@ -11,6 +11,7 @@ use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Service\BackupCodeGeneratorInterface;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
+use SilverStripe\MFA\State\BackupCode;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
 
@@ -48,11 +49,19 @@ class RegisterHandler implements RegisterHandlerInterface
         $generator = Injector::inst()->get(BackupCodeGeneratorInterface::class);
         $codes = $generator->generate();
 
-        RegisteredMethodManager::singleton()->registerForMember($store->getMember(), $method, array_values($codes));
+        RegisteredMethodManager::singleton()->registerForMember(
+            $store->getMember(),
+            $method,
+            array_map(function (BackupCode $backupCode) {
+                return $backupCode->getHash();
+            }, $codes)
+        );
 
         // Return un-hashed codes for the front-end UI
         return [
-            'codes' => array_keys($codes),
+            'codes' => array_map(function (BackupCode $backupCode) {
+                return $backupCode->getCode();
+            }, $codes),
         ];
     }
 

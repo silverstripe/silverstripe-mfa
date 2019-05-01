@@ -3,6 +3,7 @@
 namespace SilverStripe\MFA\Service;
 
 use SilverStripe\MFA\Exception\HashFailedException;
+use SilverStripe\MFA\State\BackupCode;
 
 /**
  * A service class implementation for generating and hashing backup codes.
@@ -10,9 +11,9 @@ use SilverStripe\MFA\Exception\HashFailedException;
 interface BackupCodeGeneratorInterface
 {
     /**
-     * Generate a list of backup codes and return them in a key -> value pair of plain text to hashed values.
+     * Generate a list of backup codes and return them in an array of state objects.
      *
-     * @return string[] Key value pairs of plaintext and hashes
+     * @return BackupCode[]
      */
     public function generate(): array;
 

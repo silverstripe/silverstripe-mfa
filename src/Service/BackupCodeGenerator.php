@@ -6,6 +6,7 @@ use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\MFA\Exception\HashFailedException;
+use SilverStripe\MFA\State\BackupCode;
 
 class BackupCodeGenerator implements BackupCodeGeneratorInterface
 {
@@ -46,14 +47,11 @@ class BackupCodeGenerator implements BackupCodeGeneratorInterface
         while (count($codes) < $codeCount) {
             $code = $this->generateCode($charset, $codeLength);
             if (!in_array($code, $codes)) {
-                $codes[] = $code;
+                $codes[] = BackupCode::create($code, $this->hash($code));
             }
         }
 
-        // Create hashes for the codes
-        $hashedCodes = array_map([$this, 'hash'], $codes);
-
-        return array_combine($codes, $hashedCodes);
+        return $codes;
     }
 
     /**
