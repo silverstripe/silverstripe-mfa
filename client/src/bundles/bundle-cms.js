@@ -1,1 +1,1 @@
-require('../legacy/SiteConfig');
+require('../legacy');

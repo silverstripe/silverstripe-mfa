@@ -23,7 +23,7 @@ class SchemaGenerator
     use Injectable;
 
     /**
-     * Gets the schema data for the multi factor authentication app, using the current Member as context
+     * Provides the full schema for the multi-factor authentication app, using the current Member as context
      *
      * @param Member&MemberExtension $member
      * @return array
@@ -31,7 +31,6 @@ class SchemaGenerator
     public function getSchema(Member $member)
     {
         $enforcementManager = EnforcementManager::singleton();
-
         $registeredMethods = $this->getRegisteredMethods($member);
 
         // Skip registration details if the user has already registered this method

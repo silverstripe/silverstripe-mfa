@@ -1,0 +1,6 @@
+SilverStripe\Admin\LeftAndMain:
+  extra_requirements_javascript:
+    - 'silverstripe/mfa: client/dist/js/bundle-cms.js'
+  extra_requirements_css:
+    'silverstripe/mfa:client/dist/styles/bundle-cms.css':
+      media: 'screen'

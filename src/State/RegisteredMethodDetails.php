@@ -22,6 +22,7 @@ class RegisteredMethodDetails implements RegisteredMethodDetailsInterface
     public function jsonSerialize()
     {
         return [
+            'name' => $this->method->getRegisterHandler()->getName(),
             'urlSegment' => $this->method->getURLSegment(),
             'leadInLabel' => $this->method->getLoginHandler()->getLeadInLabel(),
             'component' => $this->method->getLoginHandler()->getComponent(),
