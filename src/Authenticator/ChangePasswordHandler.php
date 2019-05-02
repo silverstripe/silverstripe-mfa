@@ -26,7 +26,7 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
     use BaseHandlerTrait;
     use LoginHandlerTrait;
 
-    const MultiFactorAuthenticated = 'MultiFactorAuthenticated';
+    const MULTIFACTORAUTHENTICATED = 'MultiFactorAuthenticated';
 
     private static $url_handlers = [
         'GET mfa/schema' => 'getSchema', // Provides details about existing registered methods, etc.
@@ -165,7 +165,7 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
             ], 202);
         }
 
-        $this->getRequest()->getSession()->set(self::MultiFactorAuthenticated, true);
+        $this->getRequest()->getSession()->set(self::MULTIFACTORAUTHENTICATED, true);
         $store->clear($request);
 
         return $this->jsonResponse([
@@ -181,11 +181,11 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
         if ($hash
             && $member
             && $member->RegisteredMFAMethods()->exists()
-            && !$session->get(self::MultiFactorAuthenticated)) {
+            && !$session->get(self::MULTIFACTORAUTHENTICATED)) {
             Injector::inst()->create(StoreInterface::class, $member)->save($this->getRequest());
             return $this->mfa();
         }
-        $session->clear(self::MultiFactorAuthenticated);
+        $session->clear(self::MULTIFACTORAUTHENTICATED);
         return parent::changepassword();
     }
 }
