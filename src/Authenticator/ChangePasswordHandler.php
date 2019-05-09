@@ -131,7 +131,6 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
         // Ensure detail is saved to the store
         $store->save($request);
 
-        // Respond with our method
         return $response;
     }
 
