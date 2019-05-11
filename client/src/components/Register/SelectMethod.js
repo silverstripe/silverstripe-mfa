@@ -5,6 +5,9 @@ import PropTypes from 'prop-types';
 import MethodTile from './MethodTile';
 import availableMethodType from 'types/availableMethod';
 import classnames from 'classnames';
+import { SCREEN_INTRODUCTION, SCREEN_REGISTER_METHOD } from '../Register';
+import { showScreen, chooseMethod } from 'state/mfaRegister/actions';
+import { connect } from 'react-redux';
 
 /**
  * Renders a list of authentication methods as MethodTile components
@@ -115,4 +118,14 @@ SelectMethod.propTypes = {
   onClickBack: PropTypes.func,
 };
 
-export default SelectMethod;
+const mapDispatchToProps = dispatch => ({
+  onClickBack: () => dispatch(showScreen(SCREEN_INTRODUCTION)),
+  onSelectMethod: (method) => {
+    dispatch(chooseMethod(method));
+    dispatch(showScreen(SCREEN_REGISTER_METHOD));
+  }
+});
+
+export { SelectMethod as Component };
+
+export default connect(null, mapDispatchToProps)(SelectMethod);

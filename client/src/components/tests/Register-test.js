@@ -8,7 +8,9 @@ import fetch from 'isomorphic-fetch';
 import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import Register from '../Register';
+import { Component as Register, SCREEN_REGISTER_METHOD, SCREEN_CHOOSE_METHOD } from '../Register';
+import SelectMethod from '../Register/SelectMethod';
+import Introduction from '../Register/Introduction';
 import { loadComponent } from 'lib/Injector'; // eslint-disable-line
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -55,42 +57,44 @@ describe('Register', () => {
 
   describe('setupBackupMethod()', () => {
     it('sets the selected method as the backup method', () => {
+      const onSelectMethod = jest.fn();
       const wrapper = shallow(
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
           registeredMethods={[]} // will cause "should set up backup methods" to be true
+          selectedMethod={firstMethod}
           backupMethod={{
             name: 'Test',
           }}
+          onSelectMethod={onSelectMethod}
         />
       );
 
-      // Initially set the selected method as an actual method
-      wrapper.setState({ selectedMethod: firstMethod });
-
       // Run the handler and check that it's changed to the backup method
       wrapper.instance().setupBackupMethod();
-      expect(wrapper.instance().state.selectedMethod).toEqual({ name: 'Test' });
+      expect(onSelectMethod).toHaveBeenCalledWith({ name: 'Test' });
     });
 
     it('clears the selected method and sets to be completed', () => {
+      const onSelectMethod = jest.fn();
+      const onShowComplete = jest.fn();
       const wrapper = shallow(
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
           registeredMethods={[]}
           backupMethod={null}
+          selectedMethod={firstMethod}
+          onSelectMethod={onSelectMethod}
+          onShowComplete={onShowComplete}
         />
       );
 
-      // Initially set the selected method as an actual method
-      wrapper.setState({ selectedMethod: firstMethod });
-
       // Run the handler and check that it's changed to the backup method
       wrapper.instance().setupBackupMethod();
-      expect(wrapper.instance().state.selectedMethod).toBeNull();
-      expect(wrapper.instance().state.isComplete).toBeTruthy();
+      expect(onSelectMethod).not.toHaveBeenCalled();
+      expect(onShowComplete).toHaveBeenCalled();
     });
   });
 
@@ -123,6 +127,7 @@ describe('Register', () => {
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
           registeredMethods={[]}
+          onShowChooseMethod={jest.fn()}
         />
       );
 
@@ -136,19 +141,19 @@ describe('Register', () => {
     });
 
     it('unselects the selected method', () => {
+      const onShowChooseMethod = jest.fn();
       const wrapper = shallow(
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
           registeredMethods={[]}
+          onShowChooseMethod={onShowChooseMethod}
+          selectedMethod={firstMethod}
         />
       );
 
-      wrapper.instance().setState({
-        selectedMethod: firstMethod,
-      });
       wrapper.instance().handleBack();
-      expect(wrapper.instance().state.selectedMethod).toBeNull();
+      expect(onShowChooseMethod).toHaveBeenCalled();
     });
   });
 
@@ -157,11 +162,11 @@ describe('Register', () => {
       const wrapper = shallow(
         <Register
           endpoints={endpoints}
+          selectedMethod={firstMethod}
           availableMethods={mockAvailableMethods}
         />,
         { disableLifecycleMethods: true }
       );
-      wrapper.setState({ isStarted: true, selectedMethod: firstMethod });
       wrapper.instance().handleCompleteRegistration({ myData: 'foo' });
 
       setTimeout(() => {
@@ -175,31 +180,16 @@ describe('Register', () => {
     });
   });
 
-  describe('handleSelectMethod()', () => {
-    it('sets the selected method', () => {
-      const wrapper = shallow(
-        <Register
-          endpoints={endpoints}
-          availableMethods={mockAvailableMethods}
-        />
-      );
-
-      wrapper.instance().handleSelectMethod(firstMethod);
-      expect(wrapper.instance().state.selectedMethod).toBe(firstMethod);
-    });
-  });
-
   describe('renderMethod()', () => {
     it('will load the component for the chosen method', done => {
       const wrapper = shallow(
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
+          selectedMethod={firstMethod}
+          screen={SCREEN_REGISTER_METHOD}
         />
       );
-
-      // Choose the first method
-      wrapper.setState({ isStarted: true, selectedMethod: firstMethod });
 
       setTimeout(() => {
         expect(wrapper.find('Test')).toHaveLength(1);
@@ -219,10 +209,10 @@ describe('Register', () => {
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
+          selectedMethod={firstMethod}
+          screen={SCREEN_REGISTER_METHOD}
         />
       );
-
-      wrapper.setState({ isStarted: true, selectedMethod: firstMethod });
 
       setTimeout(() => {
         expect(wrapper.find('Test').props()).toEqual(expect.objectContaining({
@@ -238,10 +228,10 @@ describe('Register', () => {
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
+          selectedMethod={firstMethod}
+          screen={SCREEN_REGISTER_METHOD}
         />
       );
-
-      wrapper.setState({ isStarted: true, selectedMethod: firstMethod });
 
       setTimeout(() => {
         expect(wrapper.find('Test').props()).toEqual(expect.objectContaining({
@@ -256,10 +246,10 @@ describe('Register', () => {
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
+          selectedMethod={firstMethod}
+          screen={SCREEN_REGISTER_METHOD}
         />
       );
-
-      wrapper.setState({ isStarted: true, selectedMethod: firstMethod });
 
       setTimeout(() => {
         expect(fetchMock.mock.calls).toHaveLength(1);
@@ -284,12 +274,11 @@ describe('Register', () => {
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
+          screen={SCREEN_CHOOSE_METHOD}
         />
       );
 
-      wrapper.setState({ isStarted: true });
-
-      const listItems = wrapper.find('SelectMethod');
+      const listItems = wrapper.find(SelectMethod);
       const methods = listItems.props().methods;
 
       expect(methods).toHaveLength(2);
@@ -308,7 +297,7 @@ describe('Register', () => {
         />
       );
 
-      const actionList = wrapper.find('Introduction');
+      const actionList = wrapper.find(Introduction);
       expect(actionList).toHaveLength(1);
     });
   });

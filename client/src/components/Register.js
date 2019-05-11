@@ -9,60 +9,52 @@ import LoadingIndicator from 'components/LoadingIndicator';
 import Introduction from 'components/Register/Introduction';
 import Complete from 'components/Register/Complete';
 import SelectMethod from 'components/Register/SelectMethod';
+import { connect } from 'react-redux';
+import { showScreen, chooseMethod } from 'state/mfaRegister/actions';
+
+const SCREEN_INTRODUCTION = 1;
+const SCREEN_REGISTER_METHOD = 2;
+const SCREEN_CHOOSE_METHOD = 3;
+const SCREEN_COMPLETE = 4;
+
+export {
+  SCREEN_INTRODUCTION,
+  SCREEN_REGISTER_METHOD,
+  SCREEN_CHOOSE_METHOD,
+  SCREEN_COMPLETE,
+};
 
 class Register extends Component {
   constructor(props) {
     super(props);
 
-    const { registeredMethods, backupMethod } = props;
-
-    // Set initial selected method value based on props...
-    let selectedMethod = null;
-
-    // Set the backup method as the "selected" method if there are methods already registered for
-    // the user but one of those isn't the backup method.
-    if (
-      registeredMethods
-      && registeredMethods.length
-      && registeredMethods.filter(
-          method => method.urlSegment === backupMethod.urlSegment
-        ).length === 0
-    ) {
-      selectedMethod = backupMethod;
-    }
-
     this.state = {
-      selectedMethod,
       registerProps: null,
-      isComplete: false,
-      isStarted: false,
     };
 
     this.handleBack = this.handleBack.bind(this);
     this.handleCompleteRegistration = this.handleCompleteRegistration.bind(this);
     this.handleCompleteProcess = this.handleCompleteProcess.bind(this);
-    this.handleSelectMethod = this.handleSelectMethod.bind(this);
     this.handleSkip = this.handleSkip.bind(this);
-    this.handleStart = this.handleStart.bind(this);
   }
 
   componentDidMount() {
-    const { selectedMethod } = this.state;
+    const { selectedMethod } = this.props;
 
     if (selectedMethod) {
       this.fetchStartRegistrationData();
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const { selectedMethod } = this.state;
+  componentDidUpdate(prevProps) {
+    const { selectedMethod } = this.props;
 
     if (!selectedMethod) {
       return;
     }
 
     // Trigger an async update of state if the selected method has changed
-    if (JSON.stringify(selectedMethod) !== JSON.stringify(prevState.selectedMethod)) {
+    if (JSON.stringify(selectedMethod) !== JSON.stringify(prevProps.selectedMethod)) {
       this.fetchStartRegistrationData();
     }
   }
@@ -71,31 +63,24 @@ class Register extends Component {
    * If there's a backup method that's not registered then we initialise that
    */
   setupBackupMethod() {
-    const { backupMethod } = this.props;
-    const { selectedMethod } = this.state;
+    const { backupMethod, selectedMethod, onShowComplete, onSelectMethod } = this.props;
 
     if (
       this.shouldSetupBackupMethod()
       && selectedMethod.urlSegment !== backupMethod.urlSegment
     ) {
-      this.setState({
-        selectedMethod: backupMethod,
-      });
+      onSelectMethod(backupMethod);
       return;
     }
 
-    this.setState({
-      selectedMethod: null,
-      isComplete: true,
-    });
+    onShowComplete();
   }
 
   /**
    * Trigger a "fetch" of state for starting a registration flow
    */
   fetchStartRegistrationData() {
-    const { endpoints: { register } } = this.props;
-    const { selectedMethod } = this.state;
+    const { endpoints: { register }, selectedMethod } = this.props;
 
     const endpoint = register.replace('{urlSegment}', selectedMethod.urlSegment);
 
@@ -113,18 +98,7 @@ class Register extends Component {
    */
   handleBack() {
     this.clearRegistrationErrors();
-    this.handleSelectMethod(null);
-  }
-
-  /**
-   * Set (or unset) the MFA method the user is registering for
-   *
-   * @param {object|null} method
-   */
-  handleSelectMethod(method) {
-    this.setState({
-      selectedMethod: method,
-    });
+    this.props.onShowChooseMethod();
   }
 
   /**
@@ -135,8 +109,7 @@ class Register extends Component {
    */
   handleCompleteRegistration(registrationData) {
     // Send registration details to server
-    const { endpoints: { register } } = this.props;
-    const { selectedMethod } = this.state;
+    const { endpoints: { register }, selectedMethod } = this.props;
 
     fetch(register.replace('{urlSegment}', selectedMethod.urlSegment), {
       method: 'POST',
@@ -214,17 +187,27 @@ class Register extends Component {
   }
 
   /**
-   * Handle an event triggered to start the registration process (move past the Introduction UI)
-   */
-  handleStart() {
-    this.setState({ isStarted: true });
-  }
-
-  /**
    * Handle an event triggered to skip the registration process
    */
   handleSkip() {
     window.location = this.props.endpoints.skip;
+  }
+
+  /**
+   * Render the introduction splash screen for registering MFA methods
+   *
+   * @return {Introduction}
+   */
+  renderIntroduction() {
+    const { canSkip, resources } = this.props;
+
+    return (
+      <Introduction
+        canSkip={canSkip}
+        onSkip={this.handleSkip}
+        resources={resources}
+      />
+    );
   }
 
   /**
@@ -233,7 +216,8 @@ class Register extends Component {
    * @return {HTMLElement|null}
    */
   renderMethod() {
-    const { selectedMethod, registerProps } = this.state;
+    const { selectedMethod } = this.props;
+    const { registerProps } = this.state;
 
     // Render nothing if there isn't a method chosen
     if (!selectedMethod) {
@@ -266,51 +250,46 @@ class Register extends Component {
    * @return {SelectMethod|null}
    */
   renderOptions() {
-    const { availableMethods } = this.props;
-    const { selectedMethod } = this.state;
-
-    // Don't render if there aren't methods or we already have a method registration in progress
-    if (!availableMethods || selectedMethod) {
-      return null;
-    }
+    const {
+      availableMethods,
+    } = this.props;
 
     return (
       <SelectMethod
         methods={availableMethods}
-        onSelectMethod={this.handleSelectMethod}
-        onClickBack={() => this.setState({ isStarted: false })}
       />
     );
   }
 
   render() {
-    const { canSkip, resources } = this.props;
-    const { isComplete, isStarted } = this.state;
+    const { screen } = this.props;
     const { ss: { i18n } } = window;
 
-    if (!isStarted) {
-      return (
-        <Fragment>
-          <h1 className="mfa-app-title">{i18n._t('MFARegister.TITLE', 'Multi-factor authentication')}</h1>
-          <Introduction
-            canSkip={canSkip}
-            onContinue={this.handleStart}
-            onSkip={this.handleSkip}
-            resources={resources}
-          />
-        </Fragment>
-      );
+    if (screen === SCREEN_COMPLETE) {
+      return <Complete onComplete={this.handleCompleteProcess} />;
     }
 
-    if (isComplete) {
-      return <Complete onComplete={this.handleCompleteProcess} />;
+    let content;
+
+    switch (screen) {
+      default:
+      case SCREEN_INTRODUCTION:
+        content = this.renderIntroduction();
+        break;
+      case SCREEN_CHOOSE_METHOD:
+        content = this.renderOptions();
+        break;
+      case SCREEN_REGISTER_METHOD:
+        content = this.renderMethod();
+        break;
     }
 
     return (
       <Fragment>
-        <h1 className="mfa-app-title">{i18n._t('MFARegister.TITLE', 'Multi-factor authentication')}</h1>
-        {this.renderMethod()}
-        {this.renderOptions()}
+        <h1 className="mfa-app-title">
+          {i18n._t('MFARegister.TITLE', 'Multi-factor authentication')}
+        </h1>
+        { content }
       </Fragment>
     );
   }
@@ -333,4 +312,17 @@ Register.defaultProps = {
   resources: {},
 };
 
-export default Register;
+const mapStateToProps = state => ({
+  screen: state.screen,
+  selectedMethod: state.method,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onShowComplete: () => dispatch(showScreen(SCREEN_COMPLETE)),
+  onSelectMethod: method => dispatch(chooseMethod(method)),
+  onShowChooseMethod: () => dispatch(showScreen(SCREEN_CHOOSE_METHOD)),
+});
+
+export { Register as Component };
+
+export default connect(mapStateToProps, mapDispatchToProps)(Register);
