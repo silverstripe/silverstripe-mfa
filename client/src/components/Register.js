@@ -1,6 +1,6 @@
 /* global window */
 
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { loadComponent } from 'lib/Injector'; // eslint-disable-line
 import availableMethodType from 'types/availableMethod';
@@ -285,17 +285,17 @@ class Register extends Component {
     }
 
     return (
-      <Fragment>
+      <div>
         <h1 className="mfa-app-title">
           {i18n._t('MFARegister.TITLE', 'Multi-factor authentication')}
         </h1>
         { content }
-      </Fragment>
+      </div>
     );
   }
 }
 
-Register.propTypes = {
+export const RegisterPropTypes = {
   availableMethods: PropTypes.arrayOf(availableMethodType),
   backupMethod: availableMethodType,
   canSkip: PropTypes.bool,
@@ -307,16 +307,21 @@ Register.propTypes = {
   registeredMethods: PropTypes.arrayOf(registeredMethodType),
   resources: PropTypes.object,
 };
+Register.propTypes = RegisterPropTypes;
 
 Register.defaultProps = {
   resources: {},
 };
 
-const mapStateToProps = state => ({
-  screen: state.screen,
-  selectedMethod: state.method,
-  availableMethods: state.availableMethods
-});
+const mapStateToProps = state => {
+  const source = state.mfaRegister || state;
+
+  return {
+    screen: source.screen,
+    selectedMethod: source.method,
+    availableMethods: source.availableMethods,
+  };
+};
 
 const mapDispatchToProps = dispatch => ({
   onShowComplete: () => dispatch(showScreen(SCREEN_COMPLETE)),
