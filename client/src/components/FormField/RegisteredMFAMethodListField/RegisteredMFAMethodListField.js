@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { inject } from 'lib/Injector';
 
 import methodShape from '../../../types/registeredMethod';
 import MethodListItem from './MethodListItem';
@@ -7,6 +9,22 @@ import MethodListItem from './MethodListItem';
 const fallbacks = require('../../../../lang/src/en.json');
 
 class RegisteredMFAMethodListField extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      modalOpen: false,
+    };
+
+    this.handleToggleModal = this.handleToggleModal.bind(this);
+  }
+
+  handleToggleModal() {
+    this.setState(state => ({
+      modalOpen: !state.modalOpen,
+    }));
+  }
+
   /**
    * The backup and default methods are rendered separately
    * @returns {methodShape[]}
@@ -31,6 +49,30 @@ class RegisteredMFAMethodListField extends Component {
       .map(method => (<MethodListItem method={method} key={method.name} />));
   }
 
+  renderModal() {
+    const {
+      availableMethods,
+      backupMethod,
+      registeredMethods,
+      resources,
+      RegisterComponent
+    } = this.props;
+
+    return (
+      <Modal isOpen={this.state.modalOpen} toggle={this.handleToggleModal}>
+        <ModalHeader toggle={this.handleToggleModal}>Test</ModalHeader>
+        <ModalBody>
+          <RegisterComponent
+            availableMethods={availableMethods}
+            backupMethod={backupMethod}
+            registeredMethods={registeredMethods}
+            resources={resources}
+          />
+        </ModalBody>
+      </Modal>
+    );
+  }
+
   render() {
     const { ss: { i18n } } = window;
     const { defaultMethod } = this.props;
@@ -52,6 +94,8 @@ class RegisteredMFAMethodListField extends Component {
           { defaultMethod && (<MethodListItem method={defaultMethod} suffix={`(${tDefault})`} />) }
           { this.renderBaseMethods() }
         </ul>
+        <Button outline onClick={this.handleToggleModal}>Add another MFA method</Button>
+        { this.renderModal() }
       </div>
     );
   }
@@ -64,4 +108,11 @@ RegisteredMFAMethodListField.propTypes = {
   registeredMethods: PropTypes.arrayOf(methodShape).isRequired,
 };
 
-export default RegisteredMFAMethodListField;
+
+export default inject(
+  ['MFARegister'],
+  (RegisterComponent) => ({
+    RegisterComponent,
+  }),
+  () => 'RegisteredMFAMethodListField'
+)(RegisteredMFAMethodListField);

@@ -19,18 +19,8 @@ class RegisteredMFAMethodListField extends FormField
     {
         $defaults = parent::getSchemaDataDefaults();
 
-        $fullSchema = (SchemaGenerator::create())->getSchema($this->value);
-
-        // Only pass down the parts of the schema that are relevant
-        $methodData = [
-            'registeredMethods' => $fullSchema['registeredMethods'],
-            'availableMethods' => $fullSchema['availableMethods'],
-            'defaultMethod' => $fullSchema['defaultMethod'],
-            'backupMethod' => $fullSchema['backupMethod'],
-        ];
-
         return array_merge($defaults, [
-            'methods' => $methodData,
+            'schema' => SchemaGenerator::create()->getSchema($this->value),
         ]);
     }
 }

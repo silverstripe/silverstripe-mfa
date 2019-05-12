@@ -13,10 +13,12 @@ window.jQuery.entwine('ss', ($) => {
 
       ReactDOM.render(
         <RegisteredMFAMethodListField
-          backupMethod={schemaData.methods.backupMethod}
-          defaultMethod={schemaData.methods.defaultMethod}
+          backupMethod={schemaData.schema.backupMethod}
+          defaultMethod={schemaData.schema.defaultMethod}
           readOnly={schemaData.readOnly}
-          registeredMethods={schemaData.methods.registeredMethods}
+          registeredMethods={schemaData.schema.registeredMethods}
+          availableMethods={schemaData.schema.availableMethods}
+          resources={schemaData.schema.resources}
         />,
         this[0]
       );
