@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace SilverStripe\MFA\Service;
 
@@ -49,7 +49,7 @@ class MethodRegistry
      * @return MethodInterface[]
      * @throws UnexpectedValueException When an invalid method is registered
      */
-    public function getMethods()
+    public function getMethods(): array
     {
         if (is_array($this->methodInstances)) {
             return $this->methodInstances;
@@ -81,7 +81,7 @@ class MethodRegistry
      *
      * @return bool
      */
-    public function hasMethods()
+    public function hasMethods(): bool
     {
         return count($this->getMethods()) > 0;
     }
@@ -92,7 +92,7 @@ class MethodRegistry
      * @param MethodInterface $method
      * @return bool
      */
-    public function isBackupMethod(MethodInterface $method)
+    public function isBackupMethod(MethodInterface $method): bool
     {
         return is_a($method, $this->config()->get('default_backup_method'));
     }
@@ -103,7 +103,7 @@ class MethodRegistry
      * @param string $segment
      * @return MethodInterface|null
      */
-    public function getMethodByURLSegment($segment)
+    public function getMethodByURLSegment(string $segment): ?MethodInterface
     {
         foreach ($this->getMethods() as $method) {
             if ($method->getURLSegment() === $segment) {
