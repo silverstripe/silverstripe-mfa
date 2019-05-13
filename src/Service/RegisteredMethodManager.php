@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace SilverStripe\MFA\Service;
 
@@ -27,7 +27,7 @@ class RegisteredMethodManager
      * @param MethodInterface $method
      * @return RegisteredMethod|null
      */
-    public function getFromMember(Member $member, MethodInterface $method)
+    public function getFromMember(Member $member, MethodInterface $method): ?RegisteredMethod
     {
         // Find the actual method registration data object from the member for the specified default authenticator
         foreach ($member->RegisteredMFAMethods() as $registeredMethod) {
@@ -35,6 +35,8 @@ class RegisteredMethodManager
                 return $registeredMethod;
             }
         }
+
+        return null;
     }
 
     /**
@@ -44,11 +46,13 @@ class RegisteredMethodManager
      * @param Member&MemberExtension $member
      * @param MethodInterface $method
      * @param mixed $data
+     * @return bool Whether the method was added/replace
+     * @throws \SilverStripe\ORM\ValidationException
      */
-    public function registerForMember(Member $member, MethodInterface $method, $data = null)
+    public function registerForMember(Member $member, MethodInterface $method, $data = null): bool
     {
         if (empty($data)) {
-            return;
+            return false;
         }
 
         $registeredMethod = $this->getFromMember($member, $method)
@@ -61,6 +65,8 @@ class RegisteredMethodManager
         $member->RegisteredMFAMethods()->add($registeredMethod);
 
         $this->extend('onRegisterMethod', $member, $method);
+
+        return true;
     }
 
     /**
