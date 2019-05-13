@@ -5,7 +5,7 @@ namespace SilverStripe\MFA\Tests\BackupCode;
 use PHPUnit_Framework_MockObject_MockObject;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Dev\SapphireTest;
-use SilverStripe\MFA\BackupCode\LoginHandler;
+use SilverStripe\MFA\BackupCode\VerifyHandler;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Store\StoreInterface;
@@ -21,7 +21,7 @@ class LoginHandlerTest extends SapphireTest
      */
     public function testVerifyValidatesCodes($expectedResult, $input, $message)
     {
-        $handler = new LoginHandler();
+        $handler = new VerifyHandler();
 
         // Test a code with invalid characters
         list ($request, $store, $method) = $this->scaffoldVerifyParams($input);
@@ -30,7 +30,7 @@ class LoginHandlerTest extends SapphireTest
 
     public function testVerifyInvalidatesCodesThatHaveBeenUsed()
     {
-        $handler = new LoginHandler();
+        $handler = new VerifyHandler();
 
         // Test a code with invalid characters
         list ($request, $store, $method) = $this->scaffoldVerifyParams('123456');

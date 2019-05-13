@@ -7,7 +7,7 @@ import fetch from 'isomorphic-fetch';
 import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import Login from '../Login';
+import Verify from '../Verify';
 import { loadComponent } from 'lib/Injector'; // eslint-disable-line
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -17,7 +17,7 @@ window.ss = {
 };
 
 const endpoints = {
-  login: '/fake/{urlSegment}',
+  verify: '/fake/{urlSegment}',
 };
 
 const mockRegisteredMethods = [
@@ -52,7 +52,7 @@ describe('Login', () => {
 
   it('chooses a default method if none is given', () => {
     const wrapper = shallow(
-      <Login
+      <Verify
         endpoints={endpoints}
         registeredMethods={mockRegisteredMethods}
       />
@@ -67,7 +67,7 @@ describe('Login', () => {
 
   it('respects a given default method', () => {
     const wrapper = shallow(
-      <Login
+      <Verify
         endpoints={endpoints}
         registeredMethods={mockRegisteredMethods}
         defaultMethod="bee"
@@ -83,7 +83,7 @@ describe('Login', () => {
 
   it('fetches schema from the given login endpoint', () => {
     shallow(
-      <Login
+      <Verify
         endpoints={endpoints}
         registeredMethods={mockRegisteredMethods}
       />
@@ -95,7 +95,7 @@ describe('Login', () => {
 
   it('loads the default method component', (done) => {
     const wrapper = shallow(
-      <Login
+      <Verify
         endpoints={endpoints}
         registeredMethods={mockRegisteredMethods}
       />
@@ -120,7 +120,7 @@ describe('Login', () => {
     }));
 
     const wrapper = shallow(
-      <Login
+      <Verify
         endpoints={endpoints}
         registeredMethods={mockRegisteredMethods}
       />
@@ -138,7 +138,7 @@ describe('Login', () => {
 
   it('provides a control to choose other methods to the injected component', (done) => {
     const wrapper = shallow(
-      <Login
+      <Verify
         endpoints={endpoints}
         registeredMethods={mockRegisteredMethods}
       />
@@ -155,7 +155,7 @@ describe('Login', () => {
 
   it('does not provides a control to choose other methods to the injected component when there are too few methods', (done) => {
     const wrapper = shallow(
-      <Login
+      <Verify
         endpoints={endpoints}
         registeredMethods={mockRegisteredMethods.slice(0, 1)}
       />
@@ -170,7 +170,7 @@ describe('Login', () => {
 
   it('handles a click event on the show other methods control', (done) => {
     const wrapper = shallow(
-      <Login
+      <Verify
         endpoints={endpoints}
         registeredMethods={mockRegisteredMethods}
       />
@@ -192,7 +192,7 @@ describe('Login', () => {
 
   it('shows a back button on the show other methods pane that takes you back', (done) => {
     const wrapper = shallow(
-      <Login
+      <Verify
         endpoints={endpoints}
         registeredMethods={mockRegisteredMethods}
       />
@@ -207,7 +207,7 @@ describe('Login', () => {
       expect(wrapper.find('SelectMethod')).toHaveLength(1);
       const chooseMethodWrapper = wrapper.find('SelectMethod').shallow();
 
-      const backButton = chooseMethodWrapper.find('.mfa-login-select-method__back');
+      const backButton = chooseMethodWrapper.find('.mfa-verify-select-method__back');
       expect(backButton).toHaveLength(1);
 
       backButton.simulate('click', { preventDefault });
@@ -222,7 +222,7 @@ describe('Login', () => {
 
   it('will trigger a load of a different method when clicked in the other methods pane', (done) => {
     const wrapper = shallow(
-      <Login
+      <Verify
         endpoints={endpoints}
         registeredMethods={mockRegisteredMethods}
       />
@@ -255,18 +255,18 @@ describe('Login', () => {
   });
 
   it('will use the login endpoint to verify a completed login', (done) => {
-    const onCompleteLogin = jest.fn();
+    const onCompleteVerification = jest.fn();
     const wrapper = shallow(
-      <Login
+      <Verify
         endpoints={endpoints}
         registeredMethods={mockRegisteredMethods}
-        onCompleteLogin={onCompleteLogin}
+        onCompleteVerification={onCompleteVerification}
       />
     );
 
     setTimeout(() => {
       expect(fetchMock.mock.calls).toHaveLength(1);
-      const completionFunction = wrapper.find('Test').prop('onCompleteLogin');
+      const completionFunction = wrapper.find('Test').prop('onCompleteVerification');
       completionFunction({ test: 1 });
       expect(fetchMock.mock.calls).toHaveLength(2);
       expect(fetchMock.mock.calls[1]).toEqual(['/fake/aye', {
@@ -277,19 +277,19 @@ describe('Login', () => {
         body: '{"test":1}',
       }]);
       setTimeout(() => {
-        expect(onCompleteLogin.mock.calls).toHaveLength(1);
+        expect(onCompleteVerification.mock.calls).toHaveLength(1);
         done();
       });
     });
   });
 
   it('will provide a message from any unverified login to the injected component', done => {
-    const onCompleteLogin = jest.fn();
+    const onCompleteVerification = jest.fn();
     const wrapper = shallow(
-      <Login
+      <Verify
         endpoints={endpoints}
         registeredMethods={mockRegisteredMethods}
-        onCompleteLogin={onCompleteLogin}
+        onCompleteVerification={onCompleteVerification}
       />
     );
 
@@ -304,7 +304,7 @@ describe('Login', () => {
       }));
       fetchMock.mockClear();
 
-      const completionFunction = wrapper.find('Test').prop('onCompleteLogin');
+      const completionFunction = wrapper.find('Test').prop('onCompleteVerification');
       completionFunction({ test: 1 });
       expect(fetchMock.mock.calls).toHaveLength(1);
       expect(fetchMock.mock.calls[0]).toEqual(['/fake/aye', {
@@ -315,7 +315,7 @@ describe('Login', () => {
         body: '{"test":1}',
       }]);
       setTimeout(() => {
-        expect(onCompleteLogin.mock.calls).toHaveLength(0);
+        expect(onCompleteVerification.mock.calls).toHaveLength(0);
         expect(wrapper.find('Test').props()).toEqual(expect.objectContaining({
           error: 'It was a failure',
         }));

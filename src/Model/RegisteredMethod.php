@@ -2,7 +2,7 @@
 namespace SilverStripe\MFA\Model;
 
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
+use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\ORM\DataObject;
@@ -47,11 +47,11 @@ class RegisteredMethod extends DataObject
     }
 
     /**
-     * @return LoginHandlerInterface
+     * @return VerifyHandlerInterface
      */
-    public function getLoginHandler()
+    public function getVerifyHandler()
     {
-        return $this->getMethod()->getLoginHandler();
+        return $this->getMethod()->getVerifyHandler();
     }
 
     /**

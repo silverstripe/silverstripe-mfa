@@ -13,9 +13,9 @@ class SelectMethod extends PureComponent {
     const { onClickBack } = this.props;
 
     return (
-      <div className="mfa-login-select-method__actions">
-        <a href="#" className="mfa-login-select-method__back" onClick={onClickBack}>
-          {i18n._t('MFALogin.BACK', 'Back')}
+      <div className="mfa-verify-select-method__actions">
+        <a href="#" className="mfa-verify-select-method__back" onClick={onClickBack}>
+          {i18n._t('MFAVerify.BACK', 'Back')}
         </a>
       </div>
     );
@@ -32,7 +32,7 @@ class SelectMethod extends PureComponent {
     return (
       <p>
         {i18n._t(
-          'MFALogin.LAST_RESORT_MESSAGE',
+          'MFAVerify.LAST_RESORT_MESSAGE',
           'Contact your site administrator if you require your multi-factor authentication to ' +
           'be reset'
         )}
@@ -67,7 +67,7 @@ class SelectMethod extends PureComponent {
     const { methods } = this.props;
 
     return (
-      <ul className="mfa-login-select-method__method-list">
+      <ul className="mfa-verify-select-method__method-list">
         { methods.map(this.renderMethod.bind(this)) }
       </ul>
     );
@@ -78,12 +78,12 @@ class SelectMethod extends PureComponent {
     const { resources } = this.props;
 
     return (
-      <div className="mfa-login-select-method">
+      <div className="mfa-verify-select-method">
         <h2 className="mfa-section-title">
-          {i18n._t('MFALogin.OTHER_METHODS_TITLE', 'Try another way to verify')}
+          {i18n._t('MFAVerify.OTHER_METHODS_TITLE', 'Try another way to verify')}
         </h2>
-        <div className="mfa-login-select-method__container">
-          <div className="mfa-login-select-method__content">
+        <div className="mfa-verify-select-method__container">
+          <div className="mfa-verify-select-method__content">
             { this.renderMethodList() }
             { this.renderLastResortMessage() }
             { this.renderControls() }
@@ -92,7 +92,7 @@ class SelectMethod extends PureComponent {
             resources && resources.more_options_image_url && <img
               alt={i18n._t('MultiFactorAuthentication.MORE_OPTIONS_IMAGE_ALT', 'Graphic depicting various MFA options')}
               aria-hidden="true"
-              className="mfa-login-select-method__image"
+              className="mfa-verify-select-method__image"
               src={resources.more_options_image_url}
             />
           }

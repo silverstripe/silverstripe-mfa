@@ -1,5 +1,5 @@
 import Register from 'components/BackupCodes/Register';
-import Login from 'components/BackupCodes/Login';
+import Verify from 'components/BackupCodes/Verify';
 import BasicMathRegister from 'components/BasicMath/Register';
 import BasicMathLogin from 'components/BasicMath/Login';
 import Injector from 'lib/Injector'; // eslint-disable-line
@@ -7,7 +7,7 @@ import Injector from 'lib/Injector'; // eslint-disable-line
 export default () => {
   Injector.component.registerMany({
     BackupCodeRegister: Register,
-    BackupCodeLogin: Login,
+    BackupCodeVerify: Verify,
     BasicMathRegister,
     BasicMathLogin,
   });

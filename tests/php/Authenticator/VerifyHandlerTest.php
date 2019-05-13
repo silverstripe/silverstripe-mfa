@@ -23,7 +23,7 @@ use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 use SilverStripe\SiteConfig\SiteConfig;
 
-class LoginHandlerTest extends FunctionalTest
+class VerifyHandlerTest extends FunctionalTest
 {
     protected static $fixture_file = 'LoginHandlerTest.yml';
 
@@ -142,7 +142,7 @@ class LoginHandlerTest extends FunctionalTest
 
         /** @var MethodInterface $method */
         $method = Injector::inst()->get(Method::class);
-        $loginHandler = $method->getLoginHandler();
+        $loginHandler = $method->getVerifyHandler();
 
         $result = $response['registeredMethods'][0];
         $this->assertSame($method->getURLSegment(), $result['urlSegment']);
@@ -250,7 +250,7 @@ class LoginHandlerTest extends FunctionalTest
         $store->setMethod('basic-math');
         $handler->setStore($store);
 
-        $response = $handler->verifyLogin($request);
+        $response = $handler->finishVerification($request);
         $this->assertEquals(403, $response->getStatusCode());
         $this->assertContains('Your account is temporarily locked', (string) $response->getBody());
     }
@@ -264,11 +264,11 @@ class LoginHandlerTest extends FunctionalTest
 
         /** @var LoginHandler|PHPUnit_Framework_MockObject_MockObject $handler */
         $handler = $this->getMockBuilder(LoginHandler::class)
-            ->setMethods(['verifyLoginRequest'])
+            ->setMethods(['completeVerificationRequest'])
             ->disableOriginalConstructor()
             ->getMock();
 
-        $handler->expects($this->once())->method('verifyLoginRequest')->willReturn(
+        $handler->expects($this->once())->method('completeVerificationRequest')->willReturn(
             Result::create(false, 'It failed because it\'s mocked, obviously')
         );
 
@@ -278,7 +278,7 @@ class LoginHandlerTest extends FunctionalTest
         $store->setMethod('basic-math');
         $handler->setStore($store);
 
-        $response = $handler->verifyLogin($request);
+        $response = $handler->finishVerification($request);
 
         $this->assertEquals(401, $response->getStatusCode());
         $this->assertContains('It failed because it\'s mocked', (string) $response->getBody());
