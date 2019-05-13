@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace SilverStripe\MFA\Authenticator;
 
@@ -11,8 +11,8 @@ use SilverStripe\MFA\Exception\MemberNotFoundException;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\RequestHandler\BaseHandlerTrait;
-use SilverStripe\MFA\RequestHandler\VerificationHandlerTrait;
 use SilverStripe\MFA\RequestHandler\RegistrationHandlerTrait;
+use SilverStripe\MFA\RequestHandler\VerificationHandlerTrait;
 use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\SchemaGenerator;
@@ -121,9 +121,9 @@ class LoginHandler extends BaseLoginHandler
      * Action handler for loading the MFA authentication React app
      * Template variables defined here will be used by the rendering controller's template - normally Page.ss
      *
-     * @return array|HTTPResponse template variables {@see SilverStripe\Security\Security::renderWrappedController}
+     * @return HTTPResponse|array
      */
-    public function mfa(): array
+    public function mfa()
     {
         $store = $this->getStore();
         if (!$store || !$store->getMember()) {
@@ -143,7 +143,7 @@ class LoginHandler extends BaseLoginHandler
      *
      * @return HTTPResponse
      */
-    public function getSchema()
+    public function getSchema(): HTTPResponse
     {
         try {
             $member = $this->getMember();

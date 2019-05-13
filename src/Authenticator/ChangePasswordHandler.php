@@ -6,13 +6,16 @@ use Psr\Log\LoggerInterface;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\MFA\Exception\InvalidMethodException;
+use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\RequestHandler\BaseHandlerTrait;
-use SilverStripe\MFA\RequestHandler\LoginHandlerTrait;
+use SilverStripe\MFA\RequestHandler\VerificationHandlerTrait;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\SchemaGenerator;
 use SilverStripe\MFA\Store\StoreInterface;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\MemberAuthenticator\ChangePasswordHandler as BaseChangePasswordHandler;
+use Throwable;
 
 /**
  * Extends the "MemberAuthenticator version of the ChangePasswordHandler in order to allow MFA to be
@@ -24,9 +27,14 @@ use SilverStripe\Security\MemberAuthenticator\ChangePasswordHandler as BaseChang
 class ChangePasswordHandler extends BaseChangePasswordHandler
 {
     use BaseHandlerTrait;
-    use LoginHandlerTrait;
+    use VerificationHandlerTrait;
 
-    const MULTIFACTORAUTHENTICATED = 'MultiFactorAuthenticated';
+    /**
+     * Session key used to track whether multi-factor authentication has been performed yet
+     *
+     * @var string
+     */
+    const MFA_AUTHENTICATED_SESSION_KEY = 'MultiFactorAuthenticated';
 
     private static $url_handlers = [
         'GET mfa/schema' => 'getSchema', // Provides details about existing registered methods, etc.
@@ -70,7 +78,7 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
             return $this->jsonResponse(
                 array_merge($schema, [
                     'endpoints' => [
-                        'login' => $this->Link('mfa/login/{urlSegment}'),
+                        'verify' => $this->Link('mfa/login/{urlSegment}'),
                         'complete' => $this->Link(),
                     ],
                     'shouldRedirect' => false,
@@ -86,9 +94,9 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
     /**
      * Render the JavaScript app responsible for initiating an MFA check
      *
-     * @return array
+     * @return HTTPResponse|array
      */
-    public function mfa(): array
+    public function mfa()
     {
         $store = $this->getStore();
         if (!$store || !$store->getMember()) {
@@ -124,7 +132,7 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
         }
 
         // Use the provided trait method for handling login
-        $response = $this->createStartLoginResponse(
+        $response = $this->createStartVerificationResponse(
             $store,
             Injector::inst()->get(MethodRegistry::class)->getMethodByURLSegment($request->param('Method'))
         );
@@ -146,7 +154,7 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
         $store = $this->getStore();
 
         try {
-            $result = $this->verifyLoginRequest($store, $request);
+            $result = $this->completeVerificationRequest($store, $request);
         } catch (InvalidMethodException $exception) {
             // Invalid method usually means a timeout. A user might be trying to verify before "starting"
             Injector::inst()->get(LoggerInterface::class . '.mfa')->info($exception->getMessage());
@@ -159,13 +167,13 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
             ], 401);
         }
 
-        if (!$this->isLoginComplete($store)) {
+        if (!$this->isVerificationComplete($store)) {
             return $this->jsonResponse([
                 'message' => 'Additional authentication required',
             ], 202);
         }
 
-        $this->getRequest()->getSession()->set(self::MULTIFACTORAUTHENTICATED, true);
+        $this->getRequest()->getSession()->set(self::MFA_AUTHENTICATED_SESSION_KEY, true);
         $store->clear($request);
 
         return $this->jsonResponse([
@@ -177,16 +185,19 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
     {
         $session = $this->getRequest()->getSession();
         $hash = $session->get('AutoLoginHash');
+        /** @var Member&MemberExtension $member */
         $member = Member::member_from_autologinhash($hash);
+
         if ($hash
             && $member
             && $member->RegisteredMFAMethods()->exists()
-            && !$session->get(self::MULTIFACTORAUTHENTICATED)
+            && !$session->get(self::MFA_AUTHENTICATED_SESSION_KEY)
         ) {
             Injector::inst()->create(StoreInterface::class, $member)->save($this->getRequest());
             return $this->mfa();
         }
-        $session->clear(self::MULTIFACTORAUTHENTICATED);
+
+        $session->clear(self::MFA_AUTHENTICATED_SESSION_KEY);
         return parent::changepassword();
     }
 }
