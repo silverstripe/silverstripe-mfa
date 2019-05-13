@@ -2,9 +2,12 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { inject } from 'lib/Injector';
-
-import methodShape from '../../../types/registeredMethod';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
+import methodShape from 'types/registeredMethod';
 import MethodListItem from './MethodListItem';
+import { showScreen, chooseMethod } from 'state/mfaRegister/actions';
+import { SCREEN_CHOOSE_METHOD, SCREEN_REGISTER_METHOD } from 'components/Register';
 
 const fallbacks = require('../../../../lang/src/en.json');
 
@@ -20,9 +23,16 @@ class RegisteredMFAMethodListField extends Component {
   }
 
   handleToggleModal() {
-    this.setState(state => ({
-      modalOpen: !state.modalOpen,
-    }));
+    const { modalOpen } = this.state;
+
+    this.setState({
+      modalOpen: !modalOpen,
+    });
+
+    if (!modalOpen) {
+      // Dispatch a redux action to reset the state of the Register app
+      this.props.onResetRegister();
+    }
   }
 
   /**
@@ -78,7 +88,7 @@ class RegisteredMFAMethodListField extends Component {
 
   render() {
     const { ss: { i18n } } = window;
-    const { defaultMethod } = this.props;
+    const { defaultMethod, availableMethods } = this.props;
 
     const tEmpty = i18n._t(
       'MultiFactorAuthentication.NO_METHODS_REGISTERED',
@@ -97,7 +107,10 @@ class RegisteredMFAMethodListField extends Component {
           { defaultMethod && (<MethodListItem method={defaultMethod} suffix={`(${tDefault})`} />) }
           { this.renderBaseMethods() }
         </ul>
-        <Button outline onClick={this.handleToggleModal}>Add another MFA method</Button>
+        {
+          availableMethods.length === 0 ||
+          <Button outline onClick={this.handleToggleModal}>Add another MFA method</Button>
+        }
         { this.renderModal() }
       </div>
     );
@@ -111,11 +124,20 @@ RegisteredMFAMethodListField.propTypes = {
   registeredMethods: PropTypes.arrayOf(methodShape).isRequired,
 };
 
+const mapDispatchToProps = dispatch => ({
+  onResetRegister: () => {
+    dispatch(chooseMethod(null));
+    dispatch(showScreen(SCREEN_CHOOSE_METHOD));
+  }
+});
 
-export default inject(
-  ['MFARegister'],
-  (RegisterComponent) => ({
-    RegisterComponent,
-  }),
-  () => 'RegisteredMFAMethodListField'
+export default compose(
+  inject(
+    ['MFARegister'],
+    (RegisterComponent) => ({
+      RegisterComponent,
+    }),
+    () => 'RegisteredMFAMethodListField'
+  ),
+  connect(null, mapDispatchToProps)
 )(RegisteredMFAMethodListField);
