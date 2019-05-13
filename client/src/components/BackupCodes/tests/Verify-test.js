@@ -3,7 +3,7 @@
 import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import Login from '../Login';
+import Verify from '../Verify';
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -13,13 +13,13 @@ window.ss = {
 
 describe('Login - Recovery Codes', () => {
   it('has a disabled button on load', () => {
-    const wrapper = shallow(<Login />);
+    const wrapper = shallow(<Verify />);
 
     expect(wrapper.find('button').prop('disabled')).toBe(true);
   });
 
   it('will un-disable the button when input is provided', () => {
-    const wrapper = shallow(<Login />);
+    const wrapper = shallow(<Verify />);
 
     wrapper.setState({
       value: 'something',
@@ -32,7 +32,7 @@ describe('Login - Recovery Codes', () => {
   it('renders the given "more options control"', () => {
     const moreOptions = <div>More options!</div>;
 
-    const wrapper = shallow(<Login moreOptionsControl={moreOptions} />);
+    const wrapper = shallow(<Verify moreOptionsControl={moreOptions} />);
 
     expect(wrapper.html()).toMatch(/<div>More options!<\/div>/);
   });
@@ -41,7 +41,7 @@ describe('Login - Recovery Codes', () => {
     const completeFunction = jest.fn();
     const preventDefault = jest.fn();
 
-    const wrapper = shallow(<Login onCompleteLogin={completeFunction} />);
+    const wrapper = shallow(<Verify onCompleteVerification={completeFunction} />);
 
     wrapper.setState({
       value: 'something',

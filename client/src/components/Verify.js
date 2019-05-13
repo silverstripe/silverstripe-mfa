@@ -5,20 +5,20 @@ import PropTypes from 'prop-types';
 import { loadComponent } from 'lib/Injector'; // eslint-disable-line
 import registeredMethodType from 'types/registeredMethod';
 import LoadingIndicator from 'components/LoadingIndicator';
-import SelectMethod from 'components/Login/SelectMethod';
+import SelectMethod from 'components/Verify/SelectMethod';
 
-class Login extends Component {
+class Verify extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       selectedMethod: null,
-      loginProps: null,
+      verifyProps: null,
       message: null,
       showOtherMethods: false,
     };
 
-    this.handleCompleteLogin = this.handleCompleteLogin.bind(this);
+    this.handleCompleteVerification = this.handleCompleteVerification.bind(this);
     this.handleShowOtherMethodsPane = this.handleShowOtherMethodsPane.bind(this);
     this.handleHideOtherMethodsPane = this.handleHideOtherMethodsPane.bind(this);
     this.handleClickOtherMethod = this.handleClickOtherMethod.bind(this);
@@ -27,7 +27,7 @@ class Login extends Component {
   componentDidMount() {
     const { defaultMethod, registeredMethods, backupMethod } = this.props;
 
-    // Choose either the default method or the first method in the list as the default login screen
+    // Choose either the default method or the first method in the list as the default verify screen
     const defaultMethodDefinition = defaultMethod && registeredMethods.find(
       method => method.urlSegment === defaultMethod
     );
@@ -56,7 +56,7 @@ class Login extends Component {
         && prevState.selectedMethod.urlSegment !== selectedMethod.urlSegment
       )
     ) {
-      this.fetchStartLoginData();
+      this.fetchStartVerifyData();
     }
   }
 
@@ -90,53 +90,53 @@ class Login extends Component {
   }
 
   /**
-   * Trigger a "fetch" of state for starting a login flow
+   * Trigger a "fetch" of state for starting a verification flow
    */
-  fetchStartLoginData() {
-    const { endpoints: { login } } = this.props;
+  fetchStartVerifyData() {
+    const { endpoints: { verify } } = this.props;
     const { selectedMethod } = this.state;
 
-    const endpoint = login.replace('{urlSegment}', selectedMethod.urlSegment);
+    const endpoint = verify.replace('{urlSegment}', selectedMethod.urlSegment);
 
     this.setState({
       loading: true,
     });
 
-    // "start" a login
+    // "start" a verification
     fetch(endpoint).then(response => response.json().then(result => {
       this.setState({
         loading: false,
-        loginProps: result,
+        verifyProps: result,
       });
     }));
   }
 
   /**
-   * Complete a login by verifying the given "loginData" with the "verify" endpoint
+   * Complete a verification by verifying the given "verifyData" with the "verify" endpoint
    *
-   * @param {Object} loginData
+   * @param {Object} verifyData
    */
-  handleCompleteLogin(loginData) {
-    const { endpoints: { login }, onCompleteLogin } = this.props;
+  handleCompleteVerification(verifyData) {
+    const { endpoints: { verify }, onCompleteVerification } = this.props;
     const { selectedMethod } = this.state;
-    const endpoint = login.replace('{urlSegment}', selectedMethod.urlSegment);
+    const endpoint = verify.replace('{urlSegment}', selectedMethod.urlSegment);
 
     this.setState({
       loading: true
     });
 
-    // "verify" a login
+    // "complete" a verification
     fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(loginData),
+      body: JSON.stringify(verifyData),
     })
       .then(response => {
         switch (response.status) {
           case 200:
-            onCompleteLogin();
+            onCompleteVerification();
             return null;
           case 202:
             // TODO 202 is returned if multiple MFA methods are required...
@@ -160,7 +160,7 @@ class Login extends Component {
 
   /**
    * Handle a click on a "More options" link to show other methods that have been registered,
-   * and clear any login component validation errors.
+   * and clear any verify component validation errors.
    *
    * @param {Event} event
    */
@@ -188,8 +188,9 @@ class Login extends Component {
   }
 
   /**
-   * Handle a click event on a button that will set the selected method of this login component. The
-   * method specified should be the value of the target of the event (ie. the value of the button)
+   * Handle a click event on a button that will set the selected method of this verify component.
+   * The method specified should be the value of the target of the event (ie. the value of the
+   * button)
    *
    * @param {Event} event
    * @param method
@@ -223,10 +224,10 @@ class Login extends Component {
     return (
       <a
         href="#"
-        className="mfa-login__show-other-methods btn"
+        className="mfa-verify__show-other-methods btn"
         onClick={this.handleShowOtherMethodsPane}
       >
-        {i18n._t('MFALogin.MORE_OPTIONS', 'More options')}
+        {i18n._t('MFAVerify.MORE_OPTIONS', 'More options')}
       </a>
     );
   }
@@ -262,7 +263,7 @@ class Login extends Component {
    * @return {HTMLElement|null}
    */
   renderSelectedMethod() {
-    const { selectedMethod, showOtherMethods, loginProps, message } = this.state;
+    const { selectedMethod, showOtherMethods, verifyProps, message } = this.state;
 
     if (!selectedMethod || showOtherMethods) {
       return null;
@@ -274,10 +275,10 @@ class Login extends Component {
       <div>
         <h2 className="mfa-section-title">{selectedMethod.leadInLabel}</h2>
         {MethodComponent && <MethodComponent
-          {...loginProps}
+          {...verifyProps}
           method={selectedMethod}
           error={message}
-          onCompleteLogin={this.handleCompleteLogin}
+          onCompleteVerification={this.handleCompleteVerification}
           moreOptionsControl={this.renderOtherMethodsControl()}
         />}
       </div>
@@ -294,7 +295,7 @@ class Login extends Component {
 
     return (
       <Fragment>
-        <h1 className="mfa-app-title">{i18n._t('MFALogin.TITLE', 'Log in')}</h1>
+        <h1 className="mfa-app-title">{i18n._t('MFAVerify.TITLE', 'Log in')}</h1>
         {this.renderSelectedMethod()}
         {this.renderOtherMethods()}
       </Fragment>
@@ -302,10 +303,10 @@ class Login extends Component {
   }
 }
 
-Login.propTypes = {
+Verify.propTypes = {
   // Endpoints that this app uses to communicate with the server
   endpoints: PropTypes.shape({
-    login: PropTypes.string.isRequired,
+    verify: PropTypes.string.isRequired,
     register: PropTypes.string,
   }),
   // An array of registered method definition objects
@@ -314,4 +315,4 @@ Login.propTypes = {
   defaultMethod: PropTypes.string,
 };
 
-export default Login;
+export default Verify;

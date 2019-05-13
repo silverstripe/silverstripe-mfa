@@ -5,7 +5,7 @@ namespace SilverStripe\MFA\Tests\Stub\BasicMath;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Dev\TestOnly;
-use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
+use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
@@ -13,7 +13,7 @@ use SilverStripe\MFA\Store\StoreInterface;
 /**
  * Handles login attempts for the Math Method
  */
-class MethodLoginHandler implements LoginHandlerInterface, TestOnly
+class MethodVerifyHandler implements VerifyHandlerInterface, TestOnly
 {
     use Configurable;
 

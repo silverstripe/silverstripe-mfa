@@ -2,7 +2,7 @@
 
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import Login from 'components/Login';
+import Verify from 'components/Verify';
 import Register from 'components/Register';
 import LoadingIndicator from 'components/LoadingIndicator';
 import { Provider } from 'react-redux';
@@ -15,18 +15,26 @@ const store = createStore(
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );
 
-class MultiFactorApp extends Component {
+/**
+ * Directs the flow of the log in process.
+ *
+ * All information comes from a JSON schema fetched on mount {@see componentDidMount}
+ *
+ * This component will either render a verification screen or a registration screen depending on
+ * whether the member has previously registered methods
+ */
+class Login extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       loading: false,
-      loginCompleted: false,
+      verificationCompleted: false,
       schema: null,
       schemaLoaded: false,
     };
 
-    this.handleCompleteLogin = this.handleCompleteLogin.bind(this);
+    this.handleCompleteVerify = this.handleCompleteVerify.bind(this);
   }
 
   componentDidMount() {
@@ -41,9 +49,9 @@ class MultiFactorApp extends Component {
   }
 
   /**
-   * Handle an event indicating the login is complete
+   * Handle an event indicating the Verification is complete
    */
-  handleCompleteLogin() {
+  handleCompleteVerify() {
     const { schema: {
       endpoints: { complete },
       isFullyRegistered,
@@ -51,10 +59,10 @@ class MultiFactorApp extends Component {
       registeredMethods,
     } } = this.state;
 
-    // Mark login as being completed. The server side will validate any further request - this state
-    // is just for controlling flow
+    // Mark verification as being completed. The server side will validate any further request -
+    // this state is just for controlling flow
     this.setState({
-      loginCompleted: true,
+      verificationCompleted: true,
     });
 
     // Redirect if the member is marked as having fully registered MFA
@@ -82,43 +90,34 @@ class MultiFactorApp extends Component {
    * @return {null|Register}
    */
   renderRegister() {
-    const { schema, loginCompleted } = this.state;
+    const { schema, verificationCompleted } = this.state;
 
-    if (!schema || (!loginCompleted && schema.registeredMethods.length)) {
-      return null;
-    }
-
-    return <Register {...schema} />;
-  }
-
-  /**
-   * @return {null|Login}
-   */
-  renderLogin() {
-    const { schema, loginCompleted } = this.state;
-
-    if (!schema || loginCompleted || !schema.registeredMethods.length) {
+    if (!schema || (!verificationCompleted && schema.registeredMethods.length)) {
       return null;
     }
 
     return (
-      <Login {...schema} onCompleteLogin={this.handleCompleteLogin} />
+      <Provider store={store}>
+        <Register {...schema} />
+      </Provider>
     );
   }
 
   /**
-   * Directs the flow of the log in process. Two factors play into this:
-   * - Schema: all information comes from a JSON schema fetched on mount {@see componentDidMount}
-   * - Login: boolean - true if member is logging in (show other factors)
-   *
-   * If Login is false, this indicates that a member is fully authenticated. We can show the log
-   * out button, and/or the ability to register for other authentication factor methods.
-   *
-   * flow proceeds as follows:
-   * 1. no schema: error.
-   * 2. schema, member, not login: register for a MFA method
-   * 3. schema, member, login: show more authentication factors
+   * @return {null|Verify}
    */
+  renderVerify() {
+    const { schema, verificationCompleted } = this.state;
+
+    if (!schema || verificationCompleted || !schema.registeredMethods.length) {
+      return null;
+    }
+
+    return (
+      <Verify {...schema} onCompleteVerification={this.handleCompleteVerify} />
+    );
+  }
+
   render() {
     const { schema, schemaLoaded, loading } = this.state;
 
@@ -132,17 +131,15 @@ class MultiFactorApp extends Component {
 
     return (
       <Fragment>
-        <Provider store={store}>
-          { this.renderRegister() }
-        </Provider>
-        { this.renderLogin() }
+        { this.renderRegister() }
+        { this.renderVerify() }
       </Fragment>
     );
   }
 }
 
-MultiFactorApp.propTypes = {
+Login.propTypes = {
   schemaURL: PropTypes.string
 };
 
-export default MultiFactorApp;
+export default Login;

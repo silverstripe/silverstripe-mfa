@@ -19,7 +19,7 @@ use SilverStripe\MFA\Store\StoreInterface;
  * app to prompt a login, and @see verifyLoginRequest - used to verify a request sent by the MFA app containing the
  * login attempt.
  */
-trait LoginHandlerTrait
+trait VerificationHandlerTrait
 {
     /**
      * Create an HTTPResponse that provides information to the client side React MFA app to prompt the user to login
@@ -29,7 +29,7 @@ trait LoginHandlerTrait
      * @param MethodInterface|null $requestedMethod
      * @return HTTPResponse
      */
-    protected function createStartLoginResponse(
+    protected function createStartVerificationResponse(
         StoreInterface $store,
         ?MethodInterface $requestedMethod = null
     ): HTTPResponse {
@@ -67,7 +67,7 @@ trait LoginHandlerTrait
         // Mark the given method as started within the store
         $store->setMethod($registeredMethod->getMethod()->getURLSegment());
         // Allow the authenticator to begin the process and generate some data to pass through to the front end
-        $data = $registeredMethod->getLoginHandler()->start($store, $registeredMethod);
+        $data = $registeredMethod->getVerifyHandler()->start($store, $registeredMethod);
 
         // Respond with our method
         return $response->setBody(json_encode($data ?: []));
@@ -81,7 +81,7 @@ trait LoginHandlerTrait
      * @return Result
      * @throws InvalidMethodException
      */
-    protected function verifyLoginRequest(StoreInterface $store, HTTPRequest $request): Result
+    protected function completeVerificationRequest(StoreInterface $store, HTTPRequest $request): Result
     {
         $method = $store->getMethod();
         $methodInstance = $method ? MethodRegistry::singleton()->getMethodByURLSegment($method) : null;
@@ -94,7 +94,7 @@ trait LoginHandlerTrait
         // Get the member and authenticator ready
         $member = $store->getMember();
         $registeredMethod = RegisteredMethodManager::singleton()->getFromMember($member, $methodInstance);
-        $authenticator = $registeredMethod->getLoginHandler();
+        $authenticator = $registeredMethod->getVerifyHandler();
 
         $result = $authenticator->verify($request, $store, $registeredMethod);
         if ($result->isSuccessful()) {
@@ -114,7 +114,7 @@ trait LoginHandlerTrait
      * @param StoreInterface $store
      * @return bool
      */
-    protected function isLoginComplete(StoreInterface $store): bool
+    protected function isVerificationComplete(StoreInterface $store): bool
     {
         // Pull the successful methods from session
         $successfulMethods = $store->getVerifiedMethods();

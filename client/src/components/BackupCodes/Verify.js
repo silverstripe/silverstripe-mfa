@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 import classnames from 'classnames';
 
-class Login extends Component {
+class Verify extends Component {
   constructor(props) {
     super(props);
 
@@ -14,7 +14,7 @@ class Login extends Component {
     this.codeInput = React.createRef();
 
     this.handleChange = this.handleChange.bind(this);
-    this.handleCompleteLogin = this.handleCompleteLogin.bind(this);
+    this.handleCompleteVerification = this.handleCompleteVerification.bind(this);
   }
 
   /**
@@ -42,12 +42,12 @@ class Login extends Component {
    *
    * @param {Event} event
    */
-  handleCompleteLogin(event) {
+  handleCompleteVerification(event) {
     event.preventDefault();
 
-    const { onCompleteLogin } = this.props;
+    const { onCompleteVerification } = this.props;
 
-    onCompleteLogin({ code: this.state.value });
+    onCompleteVerification({ code: this.state.value });
   }
 
   /**
@@ -60,13 +60,13 @@ class Login extends Component {
     const { ss: { i18n } } = window;
 
     return (
-      <div className="mfa-login-backup-codes__controls mfa__controls">
+      <div className="mfa-verify-backup-codes__controls mfa__controls">
         <button
           className="btn btn-success"
           disabled={this.state.value.length === 0}
-          onClick={this.handleCompleteLogin}
+          onClick={this.handleCompleteVerification}
         >
-          {i18n._t('MFABackupCodesLogin.NEXT', 'Next')}
+          {i18n._t('MFABackupCodesVerify.NEXT', 'Next')}
         </button>
         {moreOptionsControl}
       </div>
@@ -84,7 +84,7 @@ class Login extends Component {
     return (
       <p>
         {i18n._t(
-          'MFABackupCodesLogin.DESCRIPTION',
+          'MFABackupCodesVerify.DESCRIPTION',
           'Use one of the recovery codes you received'
         )}
       </p>
@@ -99,8 +99,8 @@ class Login extends Component {
   renderInput() {
     const { error } = this.props;
     const { ss: { i18n } } = window;
-    const label = i18n._t('MFABackupCodesLogin.LABEL', 'Enter recovery code');
-    const formGroupClasses = classnames('mfa-login-backup-codes__input-container form-group', {
+    const label = i18n._t('MFABackupCodesVerify.LABEL', 'Enter recovery code');
+    const formGroupClasses = classnames('mfa-verify-backup-codes__input-container form-group', {
       'has-error': !!error,
     });
 
@@ -110,7 +110,7 @@ class Login extends Component {
           { label }
         </label>
         <input
-          className="mfa-login-backup-codes__input form-control"
+          className="mfa-verify-backup-codes__input form-control"
           type="text"
           placeholder={label}
           id="backup-code"
@@ -118,7 +118,7 @@ class Login extends Component {
           onChange={this.handleChange}
         />
         {error && <div className="help-block">
-          {i18n._t('MFABackupCodesLogin.ERROR', 'Invalid recovery code')}
+          {i18n._t('MFABackupCodesVerify.ERROR', 'Invalid recovery code')}
         </div>}
       </div>
     );
@@ -128,13 +128,13 @@ class Login extends Component {
     const { graphic, leadInLabel } = this.props;
 
     return (
-      <form className="mfa-login-backup-codes__container">
-        <div className="mfa-login-backup-codes__content">
+      <form className="mfa-verify-backup-codes__container">
+        <div className="mfa-verify-backup-codes__content">
           {this.renderDescription()}
           {this.renderInput()}
         </div>
         <div>
-          <img className="mfa-login-backup-codes__image" src={graphic} alt={leadInLabel} />
+          <img className="mfa-verify-backup-codes__image" src={graphic} alt={leadInLabel} />
         </div>
         {this.renderControls()}
       </form>
@@ -142,4 +142,4 @@ class Login extends Component {
   }
 }
 
-export default Login;
+export default Verify;

@@ -3,7 +3,7 @@
 namespace SilverStripe\MFA\Tests\State;
 
 use PHPUnit_Framework_MockObject_MockObject;
-use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
+use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\State\RegisteredMethodDetails;
 
@@ -24,8 +24,8 @@ class RegisteredMethodDetailsTest extends \PHPUnit_Framework_TestCase
         parent::setUp();
 
         $this->method = $this->createMock(MethodInterface::class);
-        $this->method->method('getLoginHandler')->willReturn(
-            $this->createMock(LoginHandlerInterface::class)
+        $this->method->method('getVerifyHandler')->willReturn(
+            $this->createMock(VerifyHandlerInterface::class)
         );
 
         $this->details = new RegisteredMethodDetails($this->method);

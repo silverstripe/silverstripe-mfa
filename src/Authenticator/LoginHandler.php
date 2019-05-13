@@ -11,7 +11,7 @@ use SilverStripe\MFA\Exception\MemberNotFoundException;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\RequestHandler\BaseHandlerTrait;
-use SilverStripe\MFA\RequestHandler\LoginHandlerTrait;
+use SilverStripe\MFA\RequestHandler\VerificationHandlerTrait;
 use SilverStripe\MFA\RequestHandler\RegistrationHandlerTrait;
 use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\MFA\Service\MethodRegistry;
@@ -28,7 +28,7 @@ use SilverStripe\Security\Security;
 class LoginHandler extends BaseLoginHandler
 {
     use BaseHandlerTrait;
-    use LoginHandlerTrait;
+    use VerificationHandlerTrait;
     use RegistrationHandlerTrait;
 
     const SESSION_KEY = 'MFALogin';
@@ -38,8 +38,8 @@ class LoginHandler extends BaseLoginHandler
         'GET mfa/register/$Method' => 'startRegistration', // Initiates registration process for $Method
         'POST mfa/register/$Method' => 'finishRegistration', // Completes registration process for $Method
         'GET mfa/skip' => 'skipRegistration', // Allows the user to skip MFA registration
-        'GET mfa/login/$Method' => 'startLogin', // Initiates login process for $Method
-        'POST mfa/login/$Method' => 'verifyLogin', // Verifies login via $Method
+        'GET mfa/verify/$Method' => 'startVerification', // Initiates verify process for $Method
+        'POST mfa/verify/$Method' => 'finishVerification', // Verifies verify via $Method
         'GET mfa/complete' => 'redirectAfterSuccessfulLogin',
         'GET mfa' => 'mfa', // Renders the MFA Login Page to init the app
     ];
@@ -50,8 +50,8 @@ class LoginHandler extends BaseLoginHandler
         'startRegistration',
         'finishRegistration',
         'skipRegistration',
-        'startLogin',
-        'verifyLogin',
+        'startVerification',
+        'finishVerification',
         'redirectAfterSuccessfulLogin',
     ];
 
@@ -159,7 +159,7 @@ class LoginHandler extends BaseLoginHandler
                 $schema + [
                     'endpoints' => [
                         'register' => $this->Link('mfa/register/{urlSegment}'),
-                        'login' => $this->Link('mfa/login/{urlSegment}'),
+                        'verify' => $this->Link('mfa/verify/{urlSegment}'),
                         'complete' => $this->Link('mfa/complete'),
                         'skip' => $this->Link('mfa/skip'),
                     ],
@@ -262,7 +262,7 @@ class LoginHandler extends BaseLoginHandler
         // required to log in though. The "mustLogin" flag is set at the beginning of the MFA process if they have at
         // least one method registered. They should always do that first. In that case we should assert
         // "isLoginComplete"
-        if ((!$mustLogin || $this->isLoginComplete($store))
+        if ((!$mustLogin || $this->isVerificationComplete($store))
             && $enforcementManager->hasCompletedRegistration($sessionMember)
         ) {
             $this->doPerformLogin($request, $sessionMember);
@@ -315,7 +315,7 @@ class LoginHandler extends BaseLoginHandler
      * @param HTTPRequest $request
      * @return HTTPResponse
      */
-    public function startLogin(HTTPRequest $request)
+    public function startVerification(HTTPRequest $request)
     {
         $store = $this->getStore();
         $member = $store->getMember();
@@ -326,7 +326,7 @@ class LoginHandler extends BaseLoginHandler
         }
 
         // Use the provided trait method for handling login
-        $response = $this->createStartLoginResponse(
+        $response = $this->createStartVerificationResponse(
             $store,
             $this->getMethodRegistry()->getMethodByURLSegment($request->param('Method'))
         );
@@ -344,7 +344,7 @@ class LoginHandler extends BaseLoginHandler
      * @param HTTPRequest $request
      * @return HTTPResponse
      */
-    public function verifyLogin(HTTPRequest $request)
+    public function finishVerification(HTTPRequest $request)
     {
         $store = $this->getStore();
         $member = $store->getMember();
@@ -359,7 +359,7 @@ class LoginHandler extends BaseLoginHandler
         }
 
         try {
-            $result = $this->verifyLoginRequest($store, $request);
+            $result = $this->completeVerificationRequest($store, $request);
         } catch (InvalidMethodException $e) {
             // Invalid method usually means a timeout. A user might be trying to verify before "starting"
             return $this->jsonResponse(['message' => 'Forbidden'], 403);
@@ -373,7 +373,7 @@ class LoginHandler extends BaseLoginHandler
             ], 401);
         }
 
-        if (!$this->isLoginComplete($store)) {
+        if (!$this->isVerificationComplete($store)) {
             return $this->jsonResponse([
                 'message' => 'Additional authentication required',
             ], 202);

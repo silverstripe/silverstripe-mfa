@@ -2,7 +2,7 @@
 
 namespace SilverStripe\MFA\Method;
 
-use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
+use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 
 /**
@@ -21,9 +21,9 @@ interface MethodInterface
     /**
      * Return the LoginHandler that is used to start and verify login attempts with this method
      *
-     * @return LoginHandlerInterface
+     * @return VerifyHandlerInterface
      */
-    public function getLoginHandler(): LoginHandlerInterface;
+    public function getVerifyHandler(): VerifyHandlerInterface;
 
     /**
      * Return the RegisterHandler that is used to perform registrations with this method

@@ -31,7 +31,7 @@ class Login extends Component {
   }
 
   render() {
-    const { onCompleteLogin, moreOptionsControl, numbers } = this.props;
+    const { onCompleteVerification, moreOptionsControl, numbers } = this.props;
     const { ss: { i18n } } = window;
 
     if (!numbers) {
@@ -45,7 +45,7 @@ class Login extends Component {
         <div>
           <button
             className="btn btn-primary"
-            onClick={() => onCompleteLogin({ answer: this.state.answer })}
+            onClick={() => onCompleteVerification({ answer: this.state.answer })}
           >
             {i18n._t('BasicMathLogin.FINISH', 'Finish')}
           </button>

@@ -5,12 +5,12 @@ namespace SilverStripe\MFA\BackupCode;
 use RuntimeException;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Manifest\ModuleLoader;
-use SilverStripe\MFA\Method\Handler\LoginHandlerInterface;
+use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
 
-class LoginHandler implements LoginHandlerInterface
+class VerifyHandler implements VerifyHandlerInterface
 {
     /**
      * Stores any data required to handle a login process with a method, and returns relevant state to be applied to the
@@ -97,6 +97,6 @@ class LoginHandler implements LoginHandlerInterface
      */
     public function getComponent(): string
     {
-        return 'BackupCodeLogin';
+        return 'BackupCodeVerify';
     }
 }

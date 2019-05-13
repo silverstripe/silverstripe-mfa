@@ -9,8 +9,8 @@
 
 // Components
 @import '../components/LoadingIndicator';
-@import '../components/Login';
-@import '../components/Login/SelectMethod';
+@import '../components/Verify';
+@import '../components/Verify/SelectMethod';
 @import '../components/Register';
 @import '../components/Register/Introduction';
 @import '../components/Register/MethodTile';
@@ -18,4 +18,4 @@
 
 // Backup codes
 @import '../components/BackupCodes/Register';
-@import '../components/BackupCodes/Login';
+@import '../components/BackupCodes/Verify';
