@@ -3,7 +3,10 @@ Name: mfa-admin
 ---
 SilverStripe\Admin\SecurityAdmin:
   extensions:
-    - SilverStripe\MFA\Extension\SecurityAdminExtension
+    - SilverStripe\MFA\Extension\RequirementsExtension
+SilverStripe\Admin\CMSProfileController:
+  extensions:
+    - SilverStripe\MFA\Extension\RequirementsExtension
 
 SilverStripe\Admin\LeftAndMain:
   extra_requirements_javascript:
