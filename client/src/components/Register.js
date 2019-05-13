@@ -34,7 +34,6 @@ class Register extends Component {
 
     this.handleBack = this.handleBack.bind(this);
     this.handleCompleteRegistration = this.handleCompleteRegistration.bind(this);
-    this.handleCompleteProcess = this.handleCompleteProcess.bind(this);
     this.handleSkip = this.handleSkip.bind(this);
   }
 
@@ -180,13 +179,6 @@ class Register extends Component {
   }
 
   /**
-   * Handle an event triggered to complete the registration process
-   */
-  handleCompleteProcess() {
-    window.location = this.props.endpoints.complete;
-  }
-
-  /**
    * Handle an event triggered to skip the registration process
    */
   handleSkip() {
@@ -262,11 +254,11 @@ class Register extends Component {
   }
 
   render() {
-    const { screen } = this.props;
+    const { screen, onCompleteRegistration } = this.props;
     const { ss: { i18n } } = window;
 
     if (screen === SCREEN_COMPLETE) {
-      return <Complete onComplete={this.handleCompleteProcess} />;
+      return <Complete onComplete={onCompleteRegistration} />;
     }
 
     let content;
@@ -301,9 +293,9 @@ export const RegisterPropTypes = {
   canSkip: PropTypes.bool,
   endpoints: PropTypes.shape({
     register: PropTypes.string.isRequired,
-    complete: PropTypes.string.isRequired,
     skip: PropTypes.string.isRequired,
   }),
+  onCompleteRegistration: PropTypes.func.isRequired,
   registeredMethods: PropTypes.arrayOf(registeredMethodType),
   resources: PropTypes.object,
 };

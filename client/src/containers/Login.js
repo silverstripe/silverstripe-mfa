@@ -79,7 +79,6 @@ class Login extends Component {
    */
   handleCompleteVerify() {
     const { schema: {
-      endpoints: { complete },
       isFullyRegistered,
       backupMethod,
       registeredMethods,
@@ -93,10 +92,7 @@ class Login extends Component {
 
     // Redirect if the member is marked as having fully registered MFA
     if (isFullyRegistered) {
-      this.setState({
-        loading: true,
-      });
-      window.location = complete;
+      this.handleCompleteLogin();
       return;
     }
 
@@ -110,6 +106,19 @@ class Login extends Component {
     ) {
       store.dispatch(chooseMethod(backupMethod));
     }
+  }
+
+  /**
+   * Handle completion of login in it's entirety (all verification steps and any required
+   * registration steps)
+   */
+  handleCompleteLogin() {
+    const { complete } = this.state.schema.endpoints;
+
+    this.setState({
+      loading: true,
+    });
+    window.location = complete;
   }
 
   /**
@@ -128,7 +137,7 @@ class Login extends Component {
 
     return (
       <Provider store={store}>
-        <Register {...schema} />
+        <Register {...schema} onCompleteRegistration={this.handleCompleteLogin} />
       </Provider>
     );
   }
