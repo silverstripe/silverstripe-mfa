@@ -50,6 +50,16 @@ trait BaseHandlerTrait
     }
 
     /**
+     * @param StoreInterface $store
+     * @return $this
+     */
+    public function setStore(StoreInterface $store): self
+    {
+        $this->store = $store;
+        return $this;
+    }
+
+    /**
      * @param Member $member
      * @return StoreInterface
      */

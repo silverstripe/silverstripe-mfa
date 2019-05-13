@@ -499,16 +499,6 @@ class LoginHandler extends BaseLoginHandler
     }
 
     /**
-     * @param StoreInterface $store
-     * @return $this
-     */
-    public function setStore(StoreInterface $store): LoginHandler
-    {
-        $this->store = $store;
-        return $this;
-    }
-
-    /**
      * Complete the login process for the given member by calling "performLogin" on the parent class
      *
      * @param HTTPRequest $request
