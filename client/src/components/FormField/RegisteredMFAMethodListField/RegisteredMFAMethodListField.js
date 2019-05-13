@@ -53,6 +53,7 @@ class RegisteredMFAMethodListField extends Component {
     const {
       availableMethods,
       backupMethod,
+      endpoints,
       registeredMethods,
       resources,
       RegisterComponent
@@ -66,7 +67,9 @@ class RegisteredMFAMethodListField extends Component {
             availableMethods={availableMethods}
             backupMethod={backupMethod}
             registeredMethods={registeredMethods}
+            onCompleteRegistration={this.handleToggleModal}
             resources={resources}
+            endpoints={endpoints}
           />
         </ModalBody>
       </Modal>
