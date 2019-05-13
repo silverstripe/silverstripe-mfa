@@ -108,6 +108,7 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
      *
      * @param HTTPRequest $request
      * @return HTTPResponse
+     * @throws LogicException when no store is available
      */
     public function startMFACheck(HTTPRequest $request): HTTPResponse
     {
