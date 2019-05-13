@@ -181,7 +181,8 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
         if ($hash
             && $member
             && $member->RegisteredMFAMethods()->exists()
-            && !$session->get(self::MULTIFACTORAUTHENTICATED)) {
+            && !$session->get(self::MULTIFACTORAUTHENTICATED)
+        ) {
             Injector::inst()->create(StoreInterface::class, $member)->save($this->getRequest());
             return $this->mfa();
         }
