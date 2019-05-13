@@ -182,7 +182,11 @@ class Register extends Component {
    * Handle an event triggered to skip the registration process
    */
   handleSkip() {
-    window.location = this.props.endpoints.skip;
+    const { skip } = this.props.endpoints;
+
+    if (skip) {
+      window.location = this.props.endpoints.skip;
+    }
   }
 
   /**
@@ -191,11 +195,11 @@ class Register extends Component {
    * @return {Introduction}
    */
   renderIntroduction() {
-    const { canSkip, resources } = this.props;
+    const { canSkip, resources, endpoints: { skip } } = this.props;
 
     return (
       <Introduction
-        canSkip={canSkip}
+        canSkip={skip && canSkip}
         onSkip={this.handleSkip}
         resources={resources}
       />
@@ -293,7 +297,7 @@ export const RegisterPropTypes = {
   canSkip: PropTypes.bool,
   endpoints: PropTypes.shape({
     register: PropTypes.string.isRequired,
-    skip: PropTypes.string.isRequired,
+    skip: PropTypes.string,
   }),
   onCompleteRegistration: PropTypes.func.isRequired,
   registeredMethods: PropTypes.arrayOf(registeredMethodType),
