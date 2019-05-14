@@ -51,6 +51,15 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
         'verifyMFACheck',
     ];
 
+    private static $dependencies = [
+        'Logger' => LoggerInterface::class . '.mfa',
+    ];
+
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
     /**
      * Respond with the given array as a JSON response
      *
@@ -85,8 +94,8 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
                 ])
             );
         } catch (Throwable $exception) {
+            $this->logger->debug($exception->getMessage());
             // If we don't have a valid member we shouldn't be here...
-            Injector::inst()->get(LoggerInterface::class . '.mfa')->info($exception->getMessage());
             return $this->redirectBack();
         }
     }
@@ -157,7 +166,7 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
             $result = $this->completeVerificationRequest($store, $request);
         } catch (InvalidMethodException $exception) {
             // Invalid method usually means a timeout. A user might be trying to verify before "starting"
-            Injector::inst()->get(LoggerInterface::class . '.mfa')->info($exception->getMessage());
+            $this->logger->debug($exception->getMessage());
             return $this->jsonResponse(['message' => 'Forbidden'], 403);
         }
 
@@ -199,5 +208,15 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
 
         $session->clear(self::MFA_AUTHENTICATED_SESSION_KEY);
         return parent::changepassword();
+    }
+
+    /**
+     * @param LoggerInterface $logger
+     * @return $this
+     */
+    public function setLogger(LoggerInterface $logger): ChangePasswordHandler
+    {
+        $this->logger = $logger;
+        return $this;
     }
 }
