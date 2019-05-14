@@ -1,12 +1,38 @@
 SilverStripe\MFA\Model\RegisteredMethod:
   codes:
     MethodClassName: SilverStripe\MFA\BackupCode\Method
+  codes2:
+    MethodClassName: SilverStripe\MFA\BackupCode\Method
+  codes3:
+    MethodClassName: SilverStripe\MFA\BackupCode\Method
+  math:
+    MethodClassName: SilverStripe\MFA\Tests\Stub\BasicMath\Method
+  math2:
+    MethodClassName: SilverStripe\MFA\Tests\Stub\BasicMath\Method
+  'null':
+    MethodClassName: SilverStripe\MFA\Tests\Stub\Null\Method
 
 SilverStripe\Security\Member:
   sally_smith:
     FirstName: Sally
     Surname: Smith
-    Email: sally.smith@example.com
+    Email: 'sally.smith@example.com'
     RegisteredMFAMethods:
       - =>SilverStripe\MFA\Model\RegisteredMethod.codes
     DefaultRegisteredMethodID: =>SilverStripe\MFA\Model\RegisteredMethod.codes
+  jane_doe:
+    FirstName: Jane
+    Surname: Doe
+    Email: 'jane.doe@example.com'
+    RegisteredMFAMethods:
+      - =>SilverStripe\MFA\Model\RegisteredMethod.codes2
+      - =>SilverStripe\MFA\Model\RegisteredMethod.math
+  bob_jones:
+    FirstName: Bob
+    Surname: Jones
+    Email: 'bob.jones@example.com'
+    RegisteredMFAMethods:
+      - =>SilverStripe\MFA\Model\RegisteredMethod.codes3
+      - =>SilverStripe\MFA\Model\RegisteredMethod.math2
+      - =>SilverStripe\MFA\Model\RegisteredMethod.null
+
