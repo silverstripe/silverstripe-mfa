@@ -2,6 +2,7 @@
 
 namespace SilverStripe\MFA\Service;
 
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\MFA\Extension\MemberExtension;
@@ -60,5 +61,34 @@ class RegisteredMethodManager
         $member->RegisteredMFAMethods()->add($registeredMethod);
 
         $this->extend('onRegisterMethod', $member, $method);
+    }
+
+    /**
+     * Delete a registration for the given method from the given member, provided it exists. This will also remove a
+     * registered back-up method if it will leave the member with only the back-up method remaing
+     *
+     * @param Member&MemberExtension $member
+     * @param MethodInterface $method
+     * @return bool Returns false if the given method is not registered for the member
+     */
+    public function deleteFromMember(Member $member, MethodInterface $method): bool
+    {
+        $method = $this->getFromMember($member, $method);
+
+        if (!$method) {
+            return false;
+        }
+
+        $method->delete();
+
+        // If there is only one method remaining, and that's the configured "backup" method - then delete that too
+        if ($member->RegisteredMFAMethods()->count() === 1
+            && ($method = $member->RegisteredMFAMethods()->first())->MethodClassName
+                === Config::inst()->get(MethodRegistry::class, 'default_backup_method')
+        ) {
+            $method->delete();
+        }
+
+        return true;
     }
 }
