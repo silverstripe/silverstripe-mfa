@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 namespace SilverStripe\MFA\Authenticator;
+
 use LogicException;
 use Psr\Log\LoggerInterface;
 use SilverStripe\Control\HTTPRequest;
@@ -30,11 +31,12 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
     use VerificationHandlerTrait;
 
     /**
-     * Session key used to track whether multi-factor authentication has been performed yet
+     * Session key used to track whether multi-factor authentication has been verified during a change password
+     * request flow.
      *
      * @var string
      */
-    const MFA_AUTHENTICATED_SESSION_KEY = 'MultiFactorAuthenticated';
+    const MFA_VERIFIED_ON_CHANGE_PASSWORD = 'MultiFactorAuthenticated';
 
     private static $url_handlers = [
         'GET mfa/schema' => 'getSchema', // Provides details about existing registered methods, etc.
@@ -52,7 +54,7 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
     ];
 
     private static $dependencies = [
-        'Logger' => LoggerInterface::class . '.mfa',
+        'Logger' => '%$' . LoggerInterface::class . '.mfa',
     ];
 
     /**
@@ -182,7 +184,7 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
             ], 202);
         }
 
-        $this->getRequest()->getSession()->set(self::MFA_AUTHENTICATED_SESSION_KEY, true);
+        $this->getRequest()->getSession()->set(self::MFA_VERIFIED_ON_CHANGE_PASSWORD, true);
         $store->clear($request);
 
         return $this->jsonResponse([
@@ -200,13 +202,12 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
         if ($hash
             && $member
             && $member->RegisteredMFAMethods()->exists()
-            && !$session->get(self::MFA_AUTHENTICATED_SESSION_KEY)
+            && !$session->get(self::MFA_VERIFIED_ON_CHANGE_PASSWORD)
         ) {
             Injector::inst()->create(StoreInterface::class, $member)->save($this->getRequest());
             return $this->mfa();
         }
 
-        $session->clear(self::MFA_AUTHENTICATED_SESSION_KEY);
         return parent::changepassword();
     }
 

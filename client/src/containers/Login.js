@@ -118,7 +118,10 @@ class Login extends Component {
   renderRegister() {
     const { schema, verificationCompleted } = this.state;
 
-    if (!schema || (!verificationCompleted && schema.registeredMethods.length)) {
+    if (!schema
+      || !schema.register
+      || (!verificationCompleted && schema.registeredMethods.length)
+    ) {
       return null;
     }
 

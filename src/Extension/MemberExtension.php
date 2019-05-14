@@ -1,7 +1,10 @@
 <?php
+
 namespace SilverStripe\MFA\Extension;
 
+use SilverStripe\Control\Controller;
 use SilverStripe\Forms\FieldList;
+use SilverStripe\MFA\Authenticator\ChangePasswordHandler;
 use SilverStripe\MFA\FormField\RegisteredMFAMethodListField;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
@@ -124,5 +127,20 @@ class MemberExtension extends DataExtension implements PermissionProvider
                 'sort' => 200,
             ],
         ];
+    }
+
+    /**
+     * Clear any temporary multi-factor authentication related session keys when a member is successfully logged in.
+     */
+    public function afterMemberLoggedIn()
+    {
+        if (!Controller::has_curr()) {
+            return;
+        }
+
+        Controller::curr()
+            ->getRequest()
+            ->getSession()
+            ->clear(ChangePasswordHandler::MFA_VERIFIED_ON_CHANGE_PASSWORD);
     }
 }
