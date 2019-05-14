@@ -236,7 +236,7 @@ class LoginHandler extends BaseLoginHandler
     public function finishRegistration(HTTPRequest $request)
     {
         $store = $this->getStore();
-        $sessionMember = $store->getMember();
+        $sessionMember = $store ? $store->getMember() : null;
         $loggedInMember = Security::getCurrentUser();
 
         if (is_null($loggedInMember) && is_null($sessionMember)) {
