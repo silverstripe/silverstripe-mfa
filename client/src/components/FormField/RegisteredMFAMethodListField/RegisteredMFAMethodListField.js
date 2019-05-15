@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import methodShape from 'types/registeredMethod';
 import MethodListItem from './MethodListItem';
 import { showScreen, chooseMethod } from 'state/mfaRegister/actions';
-import { SCREEN_CHOOSE_METHOD, SCREEN_REGISTER_METHOD } from 'components/Register';
+import { SCREEN_CHOOSE_METHOD } from 'components/Register';
 
 const fallbacks = require('../../../../lang/src/en.json');
 
@@ -88,7 +88,7 @@ class RegisteredMFAMethodListField extends Component {
 
   render() {
     const { ss: { i18n } } = window;
-    const { defaultMethod, availableMethods } = this.props;
+    const { defaultMethod, availableMethods, registeredMethods } = this.props;
 
     const tEmpty = i18n._t(
       'MultiFactorAuthentication.NO_METHODS_REGISTERED',
@@ -100,6 +100,16 @@ class RegisteredMFAMethodListField extends Component {
       fallbacks['MultiFactorAuthentication.DEFAULT']
     );
 
+    const buttonLabel = registeredMethods.length
+      ? i18n._t(
+        'MultiFactorAuthentication.ADD_ANOTHER_METHOD',
+        fallbacks['MultiFactorAuthentication.ADD_ANOTHER_METHOD']
+      )
+      : i18n._t(
+        'MultiFactorAuthentication.ADD_FIRST_METHOD',
+        fallbacks['MultiFactorAuthentication.ADD_FIRST_METHOD']
+      );
+
     return (
       <div className="registered-mfa-method-list-field registered-mfa-method-list-field--read-only">
         <ul className="method-list">
@@ -109,7 +119,13 @@ class RegisteredMFAMethodListField extends Component {
         </ul>
         {
           availableMethods.length === 0 ||
-          <Button outline onClick={this.handleToggleModal}>Add another MFA method</Button>
+          <Button
+            className="registered-mfa-method-list-field__button"
+            outline
+            onClick={this.handleToggleModal}
+          >
+            { buttonLabel }
+          </Button>
         }
         { this.renderModal() }
       </div>
@@ -121,7 +137,15 @@ RegisteredMFAMethodListField.propTypes = {
   backupMethod: methodShape,
   defaultMethod: methodShape,
   // readOnly: PropTypes.bool,
+  availableMethods: PropTypes.arrayOf(methodShape),
   registeredMethods: PropTypes.arrayOf(methodShape).isRequired,
+
+  // Injected components
+  RegisterComponent: PropTypes.oneOfType([PropTypes.element, PropTypes.func]),
+};
+
+RegisteredMFAMethodListField.defaultProps = {
+  availableMethods: [],
 };
 
 const mapDispatchToProps = dispatch => ({
@@ -130,6 +154,8 @@ const mapDispatchToProps = dispatch => ({
     dispatch(showScreen(SCREEN_CHOOSE_METHOD));
   }
 });
+
+export { RegisteredMFAMethodListField as Component };
 
 export default compose(
   inject(

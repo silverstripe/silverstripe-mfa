@@ -44,6 +44,7 @@ const mockAvailableMethods = [
 ];
 
 const fetchMock = jest.spyOn(global, 'fetch');
+const onCompleteRegistration = jest.fn();
 
 describe('Register', () => {
   beforeEach(() => {
@@ -68,6 +69,7 @@ describe('Register', () => {
             name: 'Test',
           }}
           onSelectMethod={onSelectMethod}
+          onCompleteRegistration={onCompleteRegistration}
         />
       );
 
@@ -88,6 +90,7 @@ describe('Register', () => {
           selectedMethod={firstMethod}
           onSelectMethod={onSelectMethod}
           onShowComplete={onShowComplete}
+          onCompleteRegistration={onCompleteRegistration}
         />
       );
 
@@ -105,6 +108,7 @@ describe('Register', () => {
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
           registeredMethods={[]}
+          onCompleteRegistration={onCompleteRegistration}
         />
       );
 
@@ -128,6 +132,7 @@ describe('Register', () => {
           availableMethods={mockAvailableMethods}
           registeredMethods={[]}
           onShowChooseMethod={jest.fn()}
+          onCompleteRegistration={onCompleteRegistration}
         />
       );
 
@@ -149,6 +154,7 @@ describe('Register', () => {
           registeredMethods={[]}
           onShowChooseMethod={onShowChooseMethod}
           selectedMethod={firstMethod}
+          onCompleteRegistration={onCompleteRegistration}
         />
       );
 
@@ -164,6 +170,7 @@ describe('Register', () => {
           endpoints={endpoints}
           selectedMethod={firstMethod}
           availableMethods={mockAvailableMethods}
+          onCompleteRegistration={onCompleteRegistration}
         />,
         { disableLifecycleMethods: true }
       );
@@ -188,6 +195,7 @@ describe('Register', () => {
           availableMethods={mockAvailableMethods}
           selectedMethod={firstMethod}
           screen={SCREEN_REGISTER_METHOD}
+          onCompleteRegistration={onCompleteRegistration}
         />
       );
 
@@ -211,6 +219,7 @@ describe('Register', () => {
           availableMethods={mockAvailableMethods}
           selectedMethod={firstMethod}
           screen={SCREEN_REGISTER_METHOD}
+          onCompleteRegistration={onCompleteRegistration}
         />
       );
 
@@ -230,6 +239,7 @@ describe('Register', () => {
           availableMethods={mockAvailableMethods}
           selectedMethod={firstMethod}
           screen={SCREEN_REGISTER_METHOD}
+          onCompleteRegistration={onCompleteRegistration}
         />
       );
 
@@ -248,6 +258,7 @@ describe('Register', () => {
           availableMethods={mockAvailableMethods}
           selectedMethod={firstMethod}
           screen={SCREEN_REGISTER_METHOD}
+          onCompleteRegistration={onCompleteRegistration}
         />
       );
 
@@ -275,6 +286,7 @@ describe('Register', () => {
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
           screen={SCREEN_CHOOSE_METHOD}
+          onCompleteRegistration={onCompleteRegistration}
         />
       );
 
@@ -294,6 +306,7 @@ describe('Register', () => {
           canSkip
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
+          onCompleteRegistration={onCompleteRegistration}
         />
       );
 
