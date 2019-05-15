@@ -2,10 +2,8 @@
 
 namespace SilverStripe\MFA\RequestHandler;
 
-use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\MFA\Service\MethodRegistry;
-use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Store\StoreInterface;
 use SilverStripe\Security\Member;
 use SilverStripe\View\Requirements;

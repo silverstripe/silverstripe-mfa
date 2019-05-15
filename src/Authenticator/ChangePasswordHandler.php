@@ -184,7 +184,7 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
             ], 202);
         }
 
-        $this->getRequest()->getSession()->set(self::MFA_VERIFIED_ON_CHANGE_PASSWORD, true);
+        $request->getSession()->set(self::MFA_VERIFIED_ON_CHANGE_PASSWORD, true);
         $store->clear($request);
 
         return $this->jsonResponse([
