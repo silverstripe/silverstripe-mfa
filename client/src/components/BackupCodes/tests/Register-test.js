@@ -106,7 +106,7 @@ describe('Register - Recovery Codes', () => {
       expect(wrapper.find('.mfa-register-backup-codes__copy-to-clipboard').text())
         .toBe('Copied!');
       done();
-    }, 30);
+    }, 40);
   });
 
   it('will call the given onComplete function when pressing the "finish" button', () => {
