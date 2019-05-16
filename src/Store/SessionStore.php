@@ -97,10 +97,10 @@ class SessionStore implements StoreInterface, Serializable
     }
 
     /**
-     * @param string $method
+     * @param string|null $method
      * @return $this
      */
-    public function setMethod($method): StoreInterface
+    public function setMethod(?string $method): StoreInterface
     {
         if (in_array($method, $this->getVerifiedMethods())) {
             throw new InvalidMethodException('You cannot verify with a method you have already verified');

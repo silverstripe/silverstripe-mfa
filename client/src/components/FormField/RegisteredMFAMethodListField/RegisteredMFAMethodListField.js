@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { inject } from 'lib/Injector';
+import { inject } from 'lib/Injector'; // eslint-disable-line
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import methodShape from 'types/registeredMethod';

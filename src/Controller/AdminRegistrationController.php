@@ -75,6 +75,8 @@ class AdminRegistrationController extends LeftAndMain
             return $this->jsonResponse(['errors' => [$result->getMessage()]], 400);
         }
 
+        $store::clear($request);
+
         return $this->jsonResponse(['success' => true], 201);
     }
 
@@ -91,5 +93,4 @@ class AdminRegistrationController extends LeftAndMain
             ->addHeader('Content-Type', 'application/json')
             ->setStatusCode($code);
     }
-
 }

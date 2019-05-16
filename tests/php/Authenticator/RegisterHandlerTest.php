@@ -58,7 +58,7 @@ class RegisterHandlerTest extends FunctionalTest
      */
     public function testRegisterRouteIsPrivateWithPOSTMethod()
     {
-        $response = $this->post(self::URL, []);
+        $response = $this->post(self::URL, ['dummy' => 'data']);
         $this->assertEquals(403, $response->getStatusCode());
     }
 
