@@ -49,15 +49,22 @@ class Login extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (!this.state.schema || !prevState.schema) {
-      if (this.state.schema) {
-        store.dispatch(setAvailableMethods(this.state.schema.availableMethods));
-      }
+    // On initialisation the schema can be blank - @see componentDidMount
+    if (!this.state.schema) {
       return;
     }
 
-    const { availableMethods: prevAvailableMethods } = prevState.schema;
     const { availableMethods } = this.state.schema;
+
+    // If the schema was previously unset then we're updating from new schema.
+    if (!prevState.schema) {
+      store.dispatch(setAvailableMethods(availableMethods));
+      return;
+    }
+
+    // Otherwise there's some change to the schema - we need to update Redux if the available
+    // methods have changed
+    const { availableMethods: prevAvailableMethods } = prevState.schema;
 
     const oldList = prevAvailableMethods.map(method => method.urlSegment).sort().toString();
     const newList = availableMethods.map(method => method.urlSegment).sort().toString();

@@ -36,6 +36,19 @@ SilverStripe\MFA\Service\MethodRegistry:
     - Another\Method\Here
 ```
 
+After installing, an option in site configuration will enable MFA for users, which will automatically be added after 
+login and to member profiles.
+
+## Custom usage
+
+This module provides two distinct processes for MFA; verification and registration. This module provides a decoupled 
+architecture where front-end and back-end are separate. Provided with the module is a React app that interfaces with 
+default endpoints added by this module. Please refer to the docs for specific information about the included 
+functionality:
+
+- [Front-end React components](docs/en/react-components.md)
+- [Back-end controllers and traits](docs/en/controllers-and-handlers.md)
+
 ## Configuring encryption providers
 
 By default this module uses defuse/php-encryption as its encryption adapter. You can add your own implementation if
