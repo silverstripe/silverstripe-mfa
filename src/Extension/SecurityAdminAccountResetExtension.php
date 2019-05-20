@@ -14,6 +14,7 @@ use SilverStripe\ORM\ValidationException;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\PasswordEncryptor_NotFoundException;
 use SilverStripe\Security\Permission;
+use SilverStripe\Security\SecurityToken;
 
 /**
  * This extension is applied to SecurityAdmin to provide an additional endpoint
@@ -38,6 +39,20 @@ class SecurityAdminAccountResetExtension extends Extension
                 ->setBody(json_encode(
                     [
                         'error' => _t(__CLASS__ . '.BAD_REQUEST', 'Invalid request')
+                    ]
+                ));
+        }
+
+        $body = json_decode($request->getBody(), true);
+
+        if (!SecurityToken::inst()->check($body['csrf_token'] ?? null)) {
+            return $this->owner
+                ->getResponse()
+                ->setStatusCode(400)
+                ->addHeader('Content-Type', 'application/json')
+                ->setBody(json_encode(
+                    [
+                        'error' => _t(__CLASS__ . '.INVALID_CSRF_TOKEN', 'Invalid or missing CSRF token')
                     ]
                 ));
         }
@@ -109,7 +124,7 @@ class SecurityAdminAccountResetExtension extends Extension
      * @throws ValidationException
      * @throws PasswordEncryptor_NotFoundException
      */
-    private function sendResetEmail($member)
+    protected function sendResetEmail($member)
     {
         // Generate / store / obtain reset token
         $token = $member->generateAccountResetTokenAndStoreHash();
@@ -135,7 +150,7 @@ class SecurityAdminAccountResetExtension extends Extension
         }
     }
 
-    private function getAccountResetLink(Member $member, string $token)
+    protected function getAccountResetLink(Member $member, string $token)
     {
         return null;
     }
