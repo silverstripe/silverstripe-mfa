@@ -3,13 +3,18 @@
 namespace SilverStripe\MFA\Tests\Service;
 
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\MFA\BackupCode\Method as BackupCodeMethod;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\MethodRegistry;
+use SilverStripe\MFA\Service\NotificationInterface;
+use SilverStripe\MFA\Service\NotificationManager;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method as BasicMathMethod;
+use SilverStripe\MFA\Tests\Stub\Null\Method as NullMethod;
+use SilverStripe\MFA\Tests\Stub\Service\NotificationManagerExtension;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
 
@@ -20,6 +25,9 @@ class RegisteredMethodManagerTest extends SapphireTest
     protected static $required_extensions = [
         Member::class => [
             MemberExtension::class,
+        ],
+        NotificationManager::class => [
+            NotificationManagerExtension::class
         ],
     ];
 
@@ -76,6 +84,25 @@ class RegisteredMethodManagerTest extends SapphireTest
         $this->assertCount(0, $member->RegisteredMFAMethods());
         RegisteredMethodManager::singleton()->registerForMember($member, $method, []);
         $this->assertCount(0, $member->RegisteredMFAMethods());
+    }
+
+    public function testRegisterForMemberSendsOnlyOneNotification()
+    {
+        /** @var Member&MemberExtension $member */
+        $member = Member::create(['FirstName' => 'Jim']);
+        $member->write();
+        $method = new NullMethod();
+
+        Injector::inst()->registerService(
+            $this->getMock(NotificationInterface::class)
+                ->expects($this->once())
+                ->method('notify')
+                ->willReturn(true),
+            NotificationManagerExtension::mockHandlerInjectorName
+        )->get(NotificationManagerExtension::class)->setAddMock(true);
+
+        // Backup codes are also added when the very first method is registered
+        RegisteredMethodManager::singleton()->registerForMember($member, $method, []);
     }
 
     public function testDeleteFromMember()
