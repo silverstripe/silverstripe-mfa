@@ -7,7 +7,7 @@ use SilverStripe\Control\Email\Email;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\MFA\BackupCode\VerifyHandler;
-use SilverStripe\MFA\Extension\MemberExtension;
+use SilverStripe\MFA\Extension\MemberMFAExtension;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\Notification;
 use SilverStripe\MFA\Store\StoreInterface;
@@ -71,7 +71,7 @@ class VerifyHandlerTest extends SapphireTest
 
     protected function scaffoldVerifyParams($userInput)
     {
-        /** @var Member|MemberExtension $member */
+        /** @var Member|MemberMFAExtension $member */
         $member = $this->objFromFixture(Member::class, 'guy');
 
         /** @var HTTPRequest|PHPUnit_Framework_MockObject_MockObject $request */

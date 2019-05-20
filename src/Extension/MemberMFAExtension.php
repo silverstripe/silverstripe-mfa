@@ -22,9 +22,9 @@ use SilverStripe\Security\Security;
  * @property MethodInterface DefaultRegisteredMethod
  * @property string DefaultRegisteredMethodID
  * @property bool HasSkippedMFARegistration
- * @property Member|MemberExtension owner
+ * @property Member|MemberMFAExtension owner
  */
-class MemberExtension extends DataExtension implements PermissionProvider
+class MemberMFAExtension extends DataExtension implements PermissionProvider
 {
     const MFA_ADMINISTER_REGISTERED_METHODS = 'MFA_ADMINISTER_REGISTERED_METHODS';
 

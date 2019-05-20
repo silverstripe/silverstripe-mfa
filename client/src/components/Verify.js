@@ -290,7 +290,7 @@ class Verify extends Component {
     const { ss: { i18n } } = window;
 
     if (loading) {
-      return <LoadingIndicator />;
+      return <div className="mfa-loader"><LoadingIndicator /></div>;
     }
 
     return (

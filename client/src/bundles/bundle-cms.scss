@@ -8,6 +8,9 @@
 // Legacy styles
 @import '../legacy/SiteConfig';
 
+@import '../styles/mfa-variables';
+
 // Component styles
 @import '../components/FormField/RegisteredMFAMethodListField/RegisteredMFAMethodListField';
+@import '../components/LoadingIndicator';
 @import '../components/Register';

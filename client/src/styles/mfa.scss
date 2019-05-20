@@ -53,3 +53,9 @@ body.mfa {
   max-width: $container-width;
   color: $color-grey-text;
 }
+
+.mfa-loader {
+  display: flex;
+  justify-content: center;
+  margin: 60px auto;
+}

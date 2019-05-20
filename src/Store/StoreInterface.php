@@ -3,7 +3,7 @@
 namespace SilverStripe\MFA\Store;
 
 use SilverStripe\Control\HTTPRequest;
-use SilverStripe\MFA\Extension\MemberExtension;
+use SilverStripe\MFA\Extension\MemberMFAExtension;
 use SilverStripe\Security\Member;
 
 /**
@@ -66,7 +66,7 @@ interface StoreInterface
     public function addState(array $state): StoreInterface;
 
     /**
-     * @return Member&MemberExtension|null
+     * @return Member&MemberMFAExtension|null
      */
     public function getMember(): ?Member;
 

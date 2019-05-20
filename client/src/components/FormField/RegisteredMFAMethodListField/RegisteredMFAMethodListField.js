@@ -5,6 +5,8 @@ import { inject } from 'lib/Injector'; // eslint-disable-line
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import methodShape from 'types/registeredMethod';
+
+import AccountResetUI from './AccountResetUI';
 import MethodListItem from './MethodListItem';
 import { showScreen, chooseMethod, setAvailableMethods } from 'state/mfaRegister/actions';
 import { SCREEN_CHOOSE_METHOD } from 'components/Register';
@@ -109,7 +111,7 @@ class RegisteredMFAMethodListField extends Component {
 
   render() {
     const { ss: { i18n } } = window;
-    const { defaultMethod, availableMethods } = this.props;
+    const { availableMethods, defaultMethod, readOnly, resetEndpoint } = this.props;
 
     const tEmpty = i18n._t(
       'MultiFactorAuthentication.NO_METHODS_REGISTERED',
@@ -127,6 +129,10 @@ class RegisteredMFAMethodListField extends Component {
           { !defaultMethod && this.baseMethods().length < 1 && (<li>{tEmpty}</li>) }
           { defaultMethod && (<MethodListItem method={defaultMethod} suffix={`(${tDefault})`} />) }
           { this.renderBaseMethods() }
+
+          <hr />
+
+          { readOnly && <AccountResetUI resetEndpoint={resetEndpoint} /> }
         </ul>
         {
           availableMethods.length > 0 &&
@@ -147,9 +153,10 @@ class RegisteredMFAMethodListField extends Component {
 RegisteredMFAMethodListField.propTypes = {
   backupMethod: methodShape,
   defaultMethod: methodShape,
-  // readOnly: PropTypes.bool,
+  readOnly: PropTypes.bool,
   availableMethods: PropTypes.arrayOf(methodShape),
   registeredMethods: PropTypes.arrayOf(methodShape).isRequired,
+  resetEndpoint: PropTypes.string,
 
   // Injected components
   RegisterComponent: PropTypes.oneOfType([PropTypes.element, PropTypes.func]),

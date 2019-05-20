@@ -8,7 +8,7 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\MFA\BackupCode\Method;
 use SilverStripe\MFA\BackupCode\RegisterHandler;
-use SilverStripe\MFA\Extension\MemberExtension;
+use SilverStripe\MFA\Extension\MemberMFAExtension;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Store\StoreInterface;
 use SilverStripe\Security\Member;
@@ -37,7 +37,7 @@ class RegisterHandlerTest extends SapphireTest
         /** @var StoreInterface|PHPUnit_Framework_MockObject_MockObject $store */
         $store = $this->createMock(StoreInterface::class);
 
-        /** @var Member|MemberExtension $member */
+        /** @var Member|MemberMFAExtension $member */
         $member = $this->objFromFixture(Member::class, 'guy');
         $store->expects($this->once())->method('getMember')->willReturn($member);
 

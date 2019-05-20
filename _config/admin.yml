@@ -14,3 +14,7 @@ SilverStripe\Admin\LeftAndMain:
   extra_requirements_css:
     'silverstripe/mfa:client/dist/styles/bundle-cms.css':
       media: 'screen'
+
+SilverStripe\Admin\SecurityAdmin:
+  extensions:
+    accountResetExtension: SilverStripe\MFA\Extension\SecurityAdminAccountResetExtension

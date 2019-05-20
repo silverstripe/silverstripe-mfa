@@ -7,7 +7,7 @@ use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\FunctionalTest;
 use SilverStripe\MFA\Authenticator\MemberAuthenticator;
-use SilverStripe\MFA\Extension\MemberExtension;
+use SilverStripe\MFA\Extension\MemberMFAExtension;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Service\MethodRegistry;
@@ -190,7 +190,7 @@ class RegisterHandlerTest extends FunctionalTest
      */
     public function testFinishRegistrationSucceeds()
     {
-        /** @var Member|MemberExtension $freshMember */
+        /** @var Member|MemberMFAExtension $freshMember */
         $freshMember = $this->objFromFixture(Member::class, 'fresh-member');
 
         $this->scaffoldPartialLogin($freshMember, 'basic-math');

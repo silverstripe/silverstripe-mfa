@@ -224,7 +224,7 @@ class Register extends Component {
 
     // Render loading if we don't have props yet...
     if (!registerProps) {
-      return <LoadingIndicator />;
+      return <div className="mfa-loader"><LoadingIndicator /></div>;
     }
 
     const RegistrationComponent = loadComponent(selectedMethod.component);
