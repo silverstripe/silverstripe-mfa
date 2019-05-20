@@ -2,12 +2,13 @@ import MFA_REGISTER from './actionTypes';
 import {
   SCREEN_INTRODUCTION,
   SCREEN_CHOOSE_METHOD,
-  SCREEN_REGISTER_METHOD,
+  SCREEN_REGISTER_METHOD
 } from 'components/Register';
 
 const initialState = {
   screen: SCREEN_INTRODUCTION,
   method: null,
+  availableMethods: [],
 };
 
 export default function mfaRegisterReducer(state = initialState, { type, payload } = {}) {
@@ -32,6 +33,32 @@ export default function mfaRegisterReducer(state = initialState, { type, payload
       return {
         ...state,
         method: payload.method,
+      };
+    }
+
+    case MFA_REGISTER.SET_AVAILABLE_METHODS: {
+      return {
+        ...state,
+        availableMethods: payload.availableMethods,
+      };
+    }
+
+    case MFA_REGISTER.ADD_AVAILABLE_METHOD: {
+      return {
+        ...state,
+        availableMethods: [
+          ...state.availableMethods,
+          payload.method,
+        ],
+      };
+    }
+
+    case MFA_REGISTER.REMOVE_AVAILABLE_METHOD: {
+      return {
+        ...state,
+        availableMethods: state.availableMethods.filter(
+          method => method.urlSegment !== payload.method.urlSegment
+        ),
       };
     }
 

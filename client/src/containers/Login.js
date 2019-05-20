@@ -8,7 +8,7 @@ import LoadingIndicator from 'components/LoadingIndicator';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import mfaRegisterReducer from 'state/mfaRegister/reducer';
-import { chooseMethod } from 'state/mfaRegister/actions';
+import { chooseMethod, setAvailableMethods } from 'state/mfaRegister/actions';
 
 const store = createStore(
   mfaRegisterReducer,
@@ -46,6 +46,25 @@ class Login extends Component {
           schema: schemaData
         })
       );
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (!this.state.schema || !prevState.schema) {
+      if (this.state.schema) {
+        store.dispatch(setAvailableMethods(this.state.schema.availableMethods));
+      }
+      return;
+    }
+
+    const { availableMethods: prevAvailableMethods } = prevState.schema;
+    const { availableMethods } = this.state.schema;
+
+    const oldList = prevAvailableMethods.map(method => method.urlSegment).sort().toString();
+    const newList = availableMethods.map(method => method.urlSegment).sort().toString();
+
+    if (oldList !== newList) {
+      store.dispatch(setAvailableMethods(availableMethods));
+    }
   }
 
   /**
