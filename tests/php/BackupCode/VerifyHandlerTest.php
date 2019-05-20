@@ -4,17 +4,30 @@ namespace SilverStripe\MFA\Tests\BackupCode;
 
 use PHPUnit_Framework_MockObject_MockObject;
 use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\MFA\BackupCode\VerifyHandler;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Model\RegisteredMethod;
+use SilverStripe\MFA\Service\NotificationManager;
 use SilverStripe\MFA\Store\StoreInterface;
+use SilverStripe\MFA\Tests\Stub\Service\NotificationManager as NotificationManagerStub;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
 
-class LoginHandlerTest extends SapphireTest
+class VerifyHandlerTest extends SapphireTest
 {
-    protected static $fixture_file = 'LoginHandlerTest.yml';
+    protected static $fixture_file = 'VerifyHandlerTest.yml';
+
+    public function setUp()
+    {
+        parent::setUp();
+        Injector::inst()->load([
+            NotificationManager::class => [
+                'class' => NotificationManagerStub::class
+            ],
+        ]);
+    }
 
     /**
      * @dataProvider getVerifyTests

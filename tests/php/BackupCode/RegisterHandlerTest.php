@@ -4,18 +4,31 @@ namespace SilverStripe\MFA\Tests\BackupCode;
 
 use PHPUnit_Framework_MockObject_MockObject;
 use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\MFA\BackupCode\Method;
 use SilverStripe\MFA\BackupCode\RegisterHandler;
 use SilverStripe\MFA\Extension\MemberExtension;
+use SilverStripe\MFA\Service\NotificationManager;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Store\StoreInterface;
+use SilverStripe\MFA\Tests\Stub\Service\NotificationManager as NotificationManagerStub;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 
 class RegisterHandlerTest extends SapphireTest
 {
-    protected static $fixture_file = 'LoginHandlerTest.yml';
+    protected static $fixture_file = 'RegisterHandlerTest.yml';
+
+    public function setUp()
+    {
+        parent::setUp();
+        Injector::inst()->load([
+            NotificationManager::class => [
+                'class' => NotificationManagerStub::class
+            ],
+        ]);
+    }
 
     public function testStartReturnsPlainTextCodes()
     {
@@ -41,11 +54,6 @@ class RegisterHandlerTest extends SapphireTest
         $store->expects($this->once())->method('getMember')->willReturn($member);
 
         $handler = new RegisterHandler();
-
-        // Kill polluted test state :(
-        foreach ($member->RegisteredMFAMethods() as $method) {
-            $method->delete();
-        }
 
         // Ensure the "current" user has no existing backup codes
         $registeredMethod = RegisteredMethodManager::singleton()->getFromMember($member, new Method());

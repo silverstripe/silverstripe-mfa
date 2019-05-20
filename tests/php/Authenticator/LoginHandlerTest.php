@@ -23,7 +23,7 @@ use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 use SilverStripe\SiteConfig\SiteConfig;
 
-class VerifyHandlerTest extends FunctionalTest
+class LoginHandlerTest extends FunctionalTest
 {
     protected static $fixture_file = 'LoginHandlerTest.yml';
 
@@ -142,11 +142,11 @@ class VerifyHandlerTest extends FunctionalTest
 
         /** @var MethodInterface $method */
         $method = Injector::inst()->get(Method::class);
-        $loginHandler = $method->getVerifyHandler();
+        $verifyHandler = $method->getVerifyHandler();
 
         $result = $response['registeredMethods'][0];
         $this->assertSame($method->getURLSegment(), $result['urlSegment']);
-        $this->assertSame($loginHandler->getLeadInLabel(), $result['leadInLabel']);
+        $this->assertSame($verifyHandler->getLeadInLabel(), $result['leadInLabel']);
         $this->assertSame('BasicMathLogin', $result['component']);
         $this->assertSame('https://google.com', $result['supportLink']);
         $this->assertContains('totp.svg', $result['thumbnail']);

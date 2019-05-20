@@ -9,7 +9,7 @@ use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
 
 class MethodTest extends SapphireTest
 {
-    public function testGetLoginHandler()
+    public function testGetVerifyHandler()
     {
         $method = new Method();
         $this->assertInstanceOf(VerifyHandlerInterface::class, $method->getVerifyHandler());
