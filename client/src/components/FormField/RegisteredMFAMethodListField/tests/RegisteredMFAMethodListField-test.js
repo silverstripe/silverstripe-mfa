@@ -17,6 +17,7 @@ const backupMethod = { ...altMethod, name: 'Backup Method', urlSegment: 'backup'
 const defaultMethod = { ...altMethod, name: 'Default Method', urlSegment: 'default' };
 
 const RegisterComponent = () => <div />;
+const onUpdateAvailableMethods = jest.fn();
 
 const translationStrings = require('../../../../../lang/src/en.json');
 
@@ -31,6 +32,7 @@ describe('RegisteredMFAMethodListField', () => {
           defaultMethod={defaultMethod}
           registeredMethods={registeredMethods}
           RegisterComponent={RegisterComponent}
+          onUpdateAvailableMethods={onUpdateAvailableMethods}
         />
       );
 
@@ -47,6 +49,7 @@ describe('RegisteredMFAMethodListField', () => {
           readOnly
           registeredMethods={registeredMethods}
           RegisterComponent={RegisterComponent}
+          onUpdateAvailableMethods={onUpdateAvailableMethods}
         />
       );
 
@@ -65,6 +68,7 @@ describe('RegisteredMFAMethodListField', () => {
             availableMethods={availableMethods}
             registeredMethods={[]}
             RegisterComponent={RegisterComponent}
+            onUpdateAvailableMethods={onUpdateAvailableMethods}
           />
         );
 
@@ -77,6 +81,7 @@ describe('RegisteredMFAMethodListField', () => {
             defaultMethod={defaultMethod}
             registeredMethods={[]}
             RegisterComponent={RegisterComponent}
+            onUpdateAvailableMethods={onUpdateAvailableMethods}
           />
         );
 
@@ -94,6 +99,7 @@ describe('RegisteredMFAMethodListField', () => {
             availableMethods={availableMethods}
             registeredMethods={[]}
             RegisterComponent={RegisterComponent}
+            onUpdateAvailableMethods={onUpdateAvailableMethods}
           />
         );
 
@@ -110,6 +116,7 @@ describe('RegisteredMFAMethodListField', () => {
             availableMethods={availableMethods}
             registeredMethods={[defaultMethod]}
             RegisterComponent={RegisterComponent}
+            onUpdateAvailableMethods={onUpdateAvailableMethods}
           />
         );
 

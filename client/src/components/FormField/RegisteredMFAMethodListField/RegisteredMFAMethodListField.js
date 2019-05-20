@@ -6,7 +6,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import methodShape from 'types/registeredMethod';
 import MethodListItem from './MethodListItem';
-import { showScreen, chooseMethod } from 'state/mfaRegister/actions';
+import { showScreen, chooseMethod, setAvailableMethods } from 'state/mfaRegister/actions';
 import { SCREEN_CHOOSE_METHOD } from 'components/Register';
 
 const fallbacks = require('../../../../lang/src/en.json');
@@ -18,6 +18,8 @@ class RegisteredMFAMethodListField extends Component {
     this.state = {
       modalOpen: false,
     };
+
+    props.onUpdateAvailableMethods(props.availableMethods);
 
     this.handleToggleModal = this.handleToggleModal.bind(this);
   }
@@ -61,7 +63,6 @@ class RegisteredMFAMethodListField extends Component {
 
   renderModal() {
     const {
-      availableMethods,
       backupMethod,
       endpoints,
       registeredMethods,
@@ -74,7 +75,6 @@ class RegisteredMFAMethodListField extends Component {
         <ModalHeader toggle={this.handleToggleModal}>Test</ModalHeader>
         <ModalBody>
           <RegisterComponent
-            availableMethods={availableMethods}
             backupMethod={backupMethod}
             registeredMethods={registeredMethods}
             onCompleteRegistration={this.handleToggleModal}
@@ -152,7 +152,10 @@ const mapDispatchToProps = dispatch => ({
   onResetRegister: () => {
     dispatch(chooseMethod(null));
     dispatch(showScreen(SCREEN_CHOOSE_METHOD));
-  }
+  },
+  onUpdateAvailableMethods: methods => {
+    dispatch(setAvailableMethods(methods));
+  },
 });
 
 export { RegisteredMFAMethodListField as Component };
