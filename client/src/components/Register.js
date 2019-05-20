@@ -315,6 +315,7 @@ Register.defaultProps = {
 const mapStateToProps = state => ({
   screen: state.screen,
   selectedMethod: state.method,
+  availableMethods: state.availableMethods
 });
 
 const mapDispatchToProps = dispatch => ({

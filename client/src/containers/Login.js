@@ -8,7 +8,7 @@ import LoadingIndicator from 'components/LoadingIndicator';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import mfaRegisterReducer from 'state/mfaRegister/reducer';
-import { chooseMethod } from 'state/mfaRegister/actions';
+import { chooseMethod, setAvailableMethods } from 'state/mfaRegister/actions';
 
 const store = createStore(
   mfaRegisterReducer,
@@ -46,6 +46,32 @@ class Login extends Component {
           schema: schemaData
         })
       );
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    // On initialisation the schema can be blank - @see componentDidMount
+    if (!this.state.schema) {
+      return;
+    }
+
+    const { availableMethods } = this.state.schema;
+
+    // If the schema was previously unset then we're updating from new schema.
+    if (!prevState.schema) {
+      store.dispatch(setAvailableMethods(availableMethods));
+      return;
+    }
+
+    // Otherwise there's some change to the schema - we need to update Redux if the available
+    // methods have changed
+    const { availableMethods: prevAvailableMethods } = prevState.schema;
+
+    const oldList = prevAvailableMethods.map(method => method.urlSegment).sort().toString();
+    const newList = availableMethods.map(method => method.urlSegment).sort().toString();
+
+    if (oldList !== newList) {
+      store.dispatch(setAvailableMethods(availableMethods));
+    }
   }
 
   /**
