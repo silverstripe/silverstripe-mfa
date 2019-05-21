@@ -123,8 +123,14 @@ class RegisteredMFAMethodListField extends Component {
       fallbacks['MultiFactorAuthentication.DEFAULT']
     );
 
+    let className = 'registered-mfa-method-list-field';
+
+    if (readOnly) {
+      className += ' registered-mfa-method-list-field--read-only';
+    }
+
     return (
-      <div className="registered-mfa-method-list-field registered-mfa-method-list-field--read-only">
+      <div className={className}>
         <ul className="method-list">
           { !defaultMethod && this.baseMethods().length < 1 && (<li>{tEmpty}</li>) }
           { defaultMethod && (<MethodListItem method={defaultMethod} suffix={`(${tDefault})`} />) }

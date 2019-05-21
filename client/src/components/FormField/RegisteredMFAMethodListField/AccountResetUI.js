@@ -3,9 +3,14 @@ import React, { Component } from 'react';
 import Config from 'lib/Config';
 
 import LoadingIndicator from '../../LoadingIndicator';
+import CircleDash from '../../Icons/CircleDash';
+import CircleTick from '../../Icons/CircleTick';
 
 const fallbacks = require('../../../../lang/src/en.json');
 
+/**
+ * The AccountResetUI component is used to submit an Account Reset request.
+ */
 class AccountResetUI extends Component {
   constructor(props) {
     super(props);
@@ -39,11 +44,12 @@ class AccountResetUI extends Component {
 
   render() {
     const { ss: { i18n } } = window;
+    const { resetEndpoint } = this.props;
     const { complete, failure, submitting } = this.state;
 
     return (
-      <div className="account-reset-ui">
-        <h5>
+      <div className="account-reset">
+        <h5 className="account-reset__title">
           {
             i18n._t(
               'MultiFactorAuthentication.ACCOUNT_RESET_TITLE',
@@ -52,7 +58,7 @@ class AccountResetUI extends Component {
           }
         </h5>
 
-        <p>
+        <p className="account-reset__description">
           {
             i18n._t(
               'MultiFactorAuthentication.ACCOUNT_RESET_DESCRIPTION',
@@ -61,11 +67,11 @@ class AccountResetUI extends Component {
           }
         </p>
 
-        <p>
-          {!submitting && !complete &&
+        { !submitting && !complete &&
+          <p className="account-reset-action">
             <button
               className="btn btn-outline-secondary"
-              disabled={!this.props.resetEndpoint}
+              disabled={!resetEndpoint}
               onClick={this.onSendReset}
             >
               {
@@ -75,12 +81,15 @@ class AccountResetUI extends Component {
                 )
               }
             </button>
-          }
+          </p>
+        }
 
-          { submitting &&
-            <span style={{ display: 'flex', alignItems: 'center' }}>
-              <LoadingIndicator size="3em" />
-              &nbsp;
+        { submitting &&
+          <p className="account-reset-action account-reset-action--sending">
+            <span className="account-reset-action__icon">
+              <LoadingIndicator size="32px" />
+            </span>
+            <span className="account-reset-action__message">
               {
                 i18n._t(
                   'MultiFactorAuthentication.ACCOUNT_RESET_SENDING',
@@ -88,10 +97,15 @@ class AccountResetUI extends Component {
                 )
               }
             </span>
-          }
+          </p>
+        }
 
-          { complete && failure &&
-            <span>
+        { !submitting && complete && failure &&
+          <p className="account-reset-action account-reset-action--failure">
+            <span className="account-reset-action__icon">
+              <CircleDash size="32px" />
+            </span>
+            <span className="account-reset-action__message">
               {
                 i18n._t(
                   'MultiFactorAuthentication.ACCOUNT_RESET_SENDING',
@@ -99,10 +113,15 @@ class AccountResetUI extends Component {
                 )
               }
             </span>
-          }
+          </p>
+        }
 
-          { complete && !failure &&
-            <span>
+        { !submitting && complete && !failure &&
+          <p className="account-reset-action account-reset-action--success">
+            <span className="account-reset-action__icon">
+              <CircleTick size="32px" />
+            </span>
+            <span className="account-reset-action__message">
               {
                 i18n._t(
                   'MultiFactorAuthentication.ACCOUNT_RESET_SENDING',
@@ -110,8 +129,8 @@ class AccountResetUI extends Component {
                 )
               }
             </span>
-          }
-        </p>
+          </p>
+        }
       </div>
     );
   }

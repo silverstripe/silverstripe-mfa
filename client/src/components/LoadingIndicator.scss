@@ -9,7 +9,7 @@
   position: relative;
   text-indent: -9999em;
   border: $loading-indicator-border;
-  border-left: $loading-indicator-border-size solid $brand-primary;
+  border-left: $loading-indicator-border-size solid currentColor;
   -webkit-transform: translateZ(0);
   -ms-transform: translateZ(0);
   transform: translateZ(0);
