@@ -54,7 +54,7 @@ class MemberMFAExtension extends DataExtension implements PermissionProvider
     {
         $fields->removeByName(['DefaultRegisteredMethodID', 'HasSkippedMFARegistration', 'RegisteredMFAMethods']);
 
-        if (!$this->currentUserCanViewMFAConfig()) {
+        if (!$this->currentUserCanViewMFAConfig() || !$this->owner->exists()) {
             return $fields;
         }
 

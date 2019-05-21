@@ -2,6 +2,7 @@
 
 namespace SilverStripe\MFA\Extension;
 
+use SilverStripe\Forms\FieldList;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\FieldType\DBDatetime;
@@ -22,6 +23,13 @@ class MemberResetExtension extends DataExtension
         'AccountResetHash' => 'Varchar(160)',
         'AccountResetExpired' => 'Datetime',
     ];
+
+    public function updateCMSFields(FieldList $fields)
+    {
+        $fields->removeByName(['AccountResetHash', 'AccountResetExpired']);
+
+        return $fields;
+    }
 
     /**
      * Mirrors the implementation in Member::generateAutologinTokenAndStoreHash(),
