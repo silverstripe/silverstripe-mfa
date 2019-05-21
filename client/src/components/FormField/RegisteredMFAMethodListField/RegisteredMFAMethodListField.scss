@@ -1,9 +1,40 @@
 .registered-mfa-method-list-field {
   padding: $input-padding-y 0;
+
+  &__button, &__no-methods {
+    margin-bottom: $input-padding-y-lg;
+  }
 }
 
 .method-list {
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+.registered-method-list-item {
+  margin-bottom: $input-padding-y-lg;
+
+  &__control {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    background: none;
+    text-decoration: none;
+    color: $link-color;
+    cursor: pointer;
+
+    &:hover {
+      color: $link-hover-color;
+      text-decoration: underline;
+    }
+
+    & + & {
+      margin-left: $input-padding-x-lg;
+    }
+  }
+}
+
+.registered-mfa-method-list-field-register-modal {
+  height: initial;
 }

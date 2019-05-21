@@ -98,6 +98,22 @@ class MethodRegistry
     }
 
     /**
+     * Get the configured backup method
+     *
+     * @return MethodInterface|null
+     */
+    public function getBackupMethod(): ?MethodInterface
+    {
+        foreach ($this->getMethods() as $method) {
+            if ($this->isBackupMethod($method)) {
+                return $method;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Fetches a Method by its URL Segment
      *
      * @param string $segment

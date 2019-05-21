@@ -2,6 +2,7 @@
 @import "variables";
 
 @import '../styles/mfa-variables';
+@import '../styles/mfa';
 
 @import '../containers/Login';
 
@@ -11,7 +12,12 @@
 @import '../styles/mfa-variables';
 
 // Component styles
+@import '../components/LoadingIndicator';
 @import '../components/FormField/RegisteredMFAMethodListField/AccountResetUI';
 @import '../components/FormField/RegisteredMFAMethodListField/RegisteredMFAMethodListField';
 @import '../components/LoadingIndicator';
 @import '../components/Register';
+
+// Backup codes
+@import '../components/BackupCodes/Register';
+@import '../components/BackupCodes/Verify';

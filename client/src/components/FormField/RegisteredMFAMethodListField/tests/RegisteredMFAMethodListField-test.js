@@ -36,7 +36,7 @@ describe('RegisteredMFAMethodListField', () => {
         />
       );
 
-      expect(field.instance().baseMethods()).toHaveLength(1);
+      expect(field.instance().getBaseMethods()).toHaveLength(1);
     });
   });
 

@@ -14,6 +14,7 @@ window.jQuery.entwine('ss', ($) => {
         defaultMethod,
         registeredMethods,
         availableMethods,
+        allAvailableMethods,
         resources,
         endpoints,
         resetEndpoint,
@@ -25,7 +26,8 @@ window.jQuery.entwine('ss', ($) => {
           defaultMethod={defaultMethod}
           readOnly={readOnly}
           registeredMethods={registeredMethods}
-          availableMethods={availableMethods}
+          initialAvailableMethods={availableMethods}
+          allAvailableMethods={allAvailableMethods}
           resources={resources}
           endpoints={endpoints}
           resetEndpoint={resetEndpoint}

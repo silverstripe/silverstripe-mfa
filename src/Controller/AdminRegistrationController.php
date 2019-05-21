@@ -5,11 +5,23 @@ namespace SilverStripe\MFA\Controller;
 use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\RequestHandler\BaseHandlerTrait;
 use SilverStripe\MFA\RequestHandler\RegistrationHandlerTrait;
 use SilverStripe\MFA\Service\MethodRegistry;
+use SilverStripe\MFA\Service\RegisteredMethodManager;
+use SilverStripe\MFA\Service\SchemaGenerator;
+use SilverStripe\MFA\State\AvailableMethodDetailsInterface;
+use SilverStripe\MFA\State\RegisteredMethodDetailsInterface;
+use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
+use SilverStripe\Security\SecurityToken;
 
+/**
+ * This controller handles actions that a user may perform on MFA methods registered on their own account while logged
+ * in. This includes deleting methods, registering new methods and replacing (re-registering) existing methods.
+ */
 class AdminRegistrationController extends LeftAndMain
 {
     use RegistrationHandlerTrait;
@@ -20,13 +32,21 @@ class AdminRegistrationController extends LeftAndMain
     private static $url_handlers = [
         'GET register/$Method' => 'startRegistration',
         'POST register/$Method' => 'finishRegistration',
+        'GET remove/$Method' => 'removeRegisteredMethod',
     ];
 
     private static $allowed_actions = [
         'startRegistration',
         'finishRegistration',
+        'removeRegisteredMethod',
     ];
 
+    /**
+     * Start a registration for a method on the currently logged in user
+     *
+     * @param HTTPRequest $request
+     * @return HTTPResponse
+     */
     public function startRegistration(HTTPRequest $request): HTTPResponse
     {
         // Create a fresh store from the current logged in user
@@ -43,12 +63,18 @@ class AdminRegistrationController extends LeftAndMain
             );
         }
 
-        $response = $this->createStartRegistrationResponse($store, $method);
+        $response = $this->createStartRegistrationResponse($store, $method, true);
         $store->save($request);
 
         return $response;
     }
 
+    /**
+     * Complete a registration for a method for the currently logged in user
+     *
+     * @param HTTPRequest $request
+     * @return HTTPResponse
+     */
     public function finishRegistration(HTTPRequest $request): HTTPResponse
     {
         $store = $this->getStore();
@@ -77,7 +103,63 @@ class AdminRegistrationController extends LeftAndMain
 
         $store::clear($request);
 
-        return $this->jsonResponse(['success' => true], 201);
+        return $this->jsonResponse([
+            'success' => true,
+            'method' => $result->getContext()['registeredMethod'] ?? null,
+        ], 201);
+    }
+
+    /**
+     * Remove the specified method from the currently logged in user
+     *
+     * @param HTTPRequest $request
+     * @return HTTPResponse
+     */
+    public function removeRegisteredMethod(HTTPRequest $request): HTTPResponse
+    {
+        // Ensure CSRF protection
+        if (!SecurityToken::inst()->checkRequest($request)) {
+            return $this->jsonResponse(
+                ['errors' => [_t(__CLASS__ . '.CSRF_FAILURE', 'Request timed out, please try again')]],
+                400
+            );
+        }
+
+        // Get the specified method
+        $methodRegistry = MethodRegistry::singleton();
+        $method = $methodRegistry->getMethodByURLSegment($request->param('Method'));
+
+        if (!$method) {
+            return $this->jsonResponse(
+                ['errors' => [_t(__CLASS__ . '.INVALID_METHOD', 'No such method is available')]],
+                400
+            );
+        }
+
+        // Remove the method from the user
+        $member = Security::getCurrentUser();
+        $registeredMethodManager = RegisteredMethodManager::singleton();
+        $result = $registeredMethodManager->deleteFromMember($member, $method);
+
+        if (!$result) {
+            return $this->jsonResponse(
+                ['errors' => [_t(
+                    __CLASS__ . '.COULD_NOT_DELETE',
+                    'Could not delete the specified method from the user'
+                )]],
+                400
+            );
+        }
+
+        return $this->jsonResponse([
+            'success' => true,
+            'availableMethod' => Injector::inst()->create(AvailableMethodDetailsInterface::class, $method),
+            // Indicate if the user has a backup method registered to keep the UI up to date
+            'hasBackupMethod' => (bool) $registeredMethodManager->getFromMember(
+                $member,
+                $methodRegistry->getBackupMethod()
+            ),
+        ]);
     }
 
     /**

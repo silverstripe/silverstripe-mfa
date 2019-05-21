@@ -10,7 +10,7 @@ import Introduction from 'components/Register/Introduction';
 import Complete from 'components/Register/Complete';
 import SelectMethod from 'components/Register/SelectMethod';
 import { connect } from 'react-redux';
-import { showScreen, chooseMethod } from 'state/mfaRegister/actions';
+import { showScreen, chooseMethod, removeAvailableMethod } from 'state/mfaRegister/actions';
 import Title from 'components/Register/Title';
 
 const SCREEN_INTRODUCTION = 1;
@@ -109,7 +109,12 @@ class Register extends Component {
    */
   handleCompleteRegistration(registrationData) {
     // Send registration details to server
-    const { endpoints: { register }, selectedMethod } = this.props;
+    const {
+      endpoints: { register },
+      selectedMethod,
+      onRemoveAvailableMethod,
+      onRegister,
+    } = this.props;
 
     fetch(register.replace('{urlSegment}', selectedMethod.urlSegment), {
       method: 'POST',
@@ -127,7 +132,17 @@ class Register extends Component {
               registerProps: null,
             });
 
+            // Trigger a given callback if provided
+            if (typeof onRegister === 'function') {
+              onRegister(selectedMethod);
+            }
+
+            // Update redux state so this method is no longer available
+            onRemoveAvailableMethod(selectedMethod);
+
+            // Continue to setting up a backup method if required...
             this.setupBackupMethod();
+
             return null;
           default:
         }
@@ -302,6 +317,7 @@ Register.propTypes = {
     register: PropTypes.string.isRequired,
     skip: PropTypes.string,
   }),
+  onRegister: PropTypes.func,
   onCompleteRegistration: PropTypes.func.isRequired,
   registeredMethods: PropTypes.arrayOf(registeredMethodType),
   resources: PropTypes.object,
@@ -313,6 +329,7 @@ Register.defaultProps = {
   resources: {},
   showTitle: true,
   showSubTitle: true,
+  showIntroduction: true,
 };
 
 const mapStateToProps = state => {
@@ -329,6 +346,7 @@ const mapDispatchToProps = dispatch => ({
   onShowComplete: () => dispatch(showScreen(SCREEN_COMPLETE)),
   onSelectMethod: method => dispatch(chooseMethod(method)),
   onShowChooseMethod: () => dispatch(showScreen(SCREEN_CHOOSE_METHOD)),
+  onRemoveAvailableMethod: method => dispatch(removeAvailableMethod(method)),
 });
 
 export { Register as Component };

@@ -21,11 +21,17 @@ class RegisteredMFAMethodListField extends FormField
     {
         $defaults = parent::getSchemaDataDefaults();
 
+        $adminController = AdminRegistrationController::singleton();
+        $generator = SchemaGenerator::create();
+
         return array_merge($defaults, [
-            'schema' => SchemaGenerator::create()->getSchema($this->value) + [
+            'schema' => $generator->getSchema($this->value) + [
                 'endpoints' => [
-                    'register' => AdminRegistrationController::singleton()->Link('register/{urlSegment}'),
+                    'register' => $adminController->Link('register/{urlSegment}'),
+                    'remove' => $adminController->Link('remove/{urlSegment}'),
                 ],
+                // We need all available methods so we can re-register pre-existing methods
+                'allAvailableMethods' => $generator->getAvailableMethods(),
                 'resetEndpoint' => SecurityAdmin::singleton()->Link("reset/{$this->value->ID}"),
             ],
         ]);
