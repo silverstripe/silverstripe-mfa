@@ -12,7 +12,7 @@ use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\Notification\Event\AllMethodsRemoved;
 use SilverStripe\MFA\Service\Notification\Event\MethodAdded;
 use SilverStripe\MFA\Service\Notification\Event\MethodRemoved;
-use SilverStripe\MFA\Service\NotificationManager;
+use SilverStripe\MFA\Service\Notification\Service as NotificationService;
 use SilverStripe\Security\Member;
 use SilverStripe\SiteConfig\SiteConfig;
 
@@ -69,7 +69,7 @@ class RegisteredMethodManager
         if (!MethodRegistry::create()->isBackupMethod($method)) {
             $data = ['MethodName' => $method->getRegisterHandler()->getName()];
             $notificationEvent = MethodAdded::create($member, $data);
-            NotificationManager::create()->sendNotifications($member, $notificationEvent);
+            NotificationService::create()->dispatchNotifications($member, $notificationEvent);
         }
 
         $this->extend('onRegisterMethod', $member, $method);
@@ -105,7 +105,7 @@ class RegisteredMethodManager
             $event = AllMethodsRemoved::create($member);
         }
 
-        NotificationManager::create()->sendNotifications($member, $event);
+        NotificationService::create()->dispatchNotifications($member, $event);
 
         return true;
     }

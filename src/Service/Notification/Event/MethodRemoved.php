@@ -2,15 +2,10 @@
 
 namespace SilverStripe\MFA\Service\Notification\Event;
 
-use SilverStripe\MFA\Service\Notification\Email;
-use SilverStripe\MFA\Service\NotificationEvent;
+use SilverStripe\MFA\Service\Notification\Event;
 
-class MethodRemoved extends NotificationEvent
+class MethodRemoved extends Event
 {
-    private static $handlers = [
-        Email::class,
-    ];
-
     private static $title = 'MFA method removed';
 
     private static $description = 'An authentication method was removed from your account';

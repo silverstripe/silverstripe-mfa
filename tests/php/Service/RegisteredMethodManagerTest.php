@@ -9,12 +9,12 @@ use SilverStripe\MFA\BackupCode\Method as BackupCodeMethod;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\MethodRegistry;
-use SilverStripe\MFA\Service\NotificationInterface;
-use SilverStripe\MFA\Service\NotificationManager;
+use SilverStripe\MFA\Service\Notification\HandlerInterface;
+use SilverStripe\MFA\Service\Notification\Service as NotificationService;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method as BasicMathMethod;
 use SilverStripe\MFA\Tests\Stub\Null\Method as NullMethod;
-use SilverStripe\MFA\Tests\Stub\Service\NotificationManagerExtension;
+use SilverStripe\MFA\Tests\Stub\Service\Notification\ServiceExtension as NotificationServiceExtension;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
 
@@ -26,8 +26,8 @@ class RegisteredMethodManagerTest extends SapphireTest
         Member::class => [
             MemberExtension::class,
         ],
-        NotificationManager::class => [
-            NotificationManagerExtension::class
+        NotificationService::class => [
+            NotificationServiceExtension::class
         ],
     ];
 
@@ -93,15 +93,17 @@ class RegisteredMethodManagerTest extends SapphireTest
         $member->write();
         $method = new NullMethod();
 
-        Injector::inst()->registerService(
-            $this->getMock(NotificationInterface::class)
+        Config::modify()->set(MethodRegistry::class, 'default_backup_method', BackupCodeMethod::class);
+        /* Injector::inst()->registerService(
+            $this->getMock(HandlerInterface::class)
+                // Backup method is also added when the first registration is made
+                // but there should only be one notification (for the method actively registered by the user)
                 ->expects($this->once())
                 ->method('notify')
                 ->willReturn(true),
-            NotificationManagerExtension::mockHandlerInjectorName
-        )->get(NotificationManagerExtension::class)->setAddMock(true);
+            NotificationServiceExtension::HANDLER
+        ); */
 
-        // Backup codes are also added when the very first method is registered
         RegisteredMethodManager::singleton()->registerForMember($member, $method, []);
     }
 

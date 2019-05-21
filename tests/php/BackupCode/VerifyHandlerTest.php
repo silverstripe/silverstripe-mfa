@@ -9,9 +9,9 @@ use SilverStripe\Dev\SapphireTest;
 use SilverStripe\MFA\BackupCode\VerifyHandler;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Model\RegisteredMethod;
-use SilverStripe\MFA\Service\NotificationManager;
+use SilverStripe\MFA\Service\Notification\Service as NotificationService;
 use SilverStripe\MFA\Store\StoreInterface;
-use SilverStripe\MFA\Tests\Stub\Service\NotificationManager as NotificationManagerStub;
+use SilverStripe\MFA\Tests\Stub\Service\Notification\Service as NotificationServiceStub;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
 
@@ -23,8 +23,8 @@ class VerifyHandlerTest extends SapphireTest
     {
         parent::setUp();
         Injector::inst()->load([
-            NotificationManager::class => [
-                'class' => NotificationManagerStub::class
+            NotificationService::class => [
+                'class' => NotificationServiceStub::class
             ],
         ]);
     }

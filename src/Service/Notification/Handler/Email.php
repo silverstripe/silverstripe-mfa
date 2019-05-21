@@ -1,19 +1,19 @@
 <?php
 
-namespace SilverStripe\MFA\Service\Notification;
+namespace SilverStripe\MFA\Service\Notification\Handler;
 
 use SilverStripe\Control\Email\Email as EmailMessage;
 use SilverStripe\Core\Extensible;
-use SilverStripe\MFA\Service\NotificationEvent;
-use SilverStripe\MFA\Service\NotificationInterface;
+use SilverStripe\MFA\Service\Notification\Event;
+use SilverStripe\MFA\Service\Notification\HandlerInterface;
 use SilverStripe\Security\Member;
 use SilverStripe\View\SSViewer;
 
-class Email implements NotificationInterface
+class Email implements HandlerInterface
 {
     use Extensible;
 
-    public function notify(Member $recipient, NotificationEvent $event): bool
+    public function notify(Member $recipient, Event $event): bool
     {
         $data = $event->getData();
         $from = $event->getDatum('from');
@@ -28,7 +28,7 @@ class Email implements NotificationInterface
         if ($replyTo) {
             $email->setReplyTo($replyTo);
         }
-        $this->extend('onBeforeSend', $email);
+        $this->extend('onBeforeSend', $email, $event);
         return $email->send();
     }
 }

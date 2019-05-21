@@ -1,6 +1,6 @@
 <?php
 
-namespace SilverStripe\MFA\Service;
+namespace SilverStripe\MFA\Service\Notification;
 
 use SilverStripe\Control\Director;
 use SilverStripe\Security\Member;
@@ -11,18 +11,8 @@ use SilverStripe\View\ViewableData;
 /**
  * Represents an event that a user will be notified about, and also encapsulates any data associated with that event.
  */
-abstract class NotificationEvent extends ViewableData
+abstract class Event extends ViewableData
 {
-    /**
-     * Handlers configured to send notifications about this event
-     * Should be an array of {@see NotificationInterface} implementation class names
-     * But could also be a simple string (still a class name of the same interface).
-     *
-     * @config
-     * @var string[]
-     */
-    private static $handlers = [];
-
     /**
      * Default title for this event type.
      * Passed as the default value for {@see i18n::_t} via {@see self::getTitle}
