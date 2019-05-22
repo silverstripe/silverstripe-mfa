@@ -119,7 +119,8 @@ class Login extends Component {
     const { schema, verificationCompleted } = this.state;
 
     if (!schema
-      || !schema.register
+      || !schema.endpoints
+      || !schema.endpoints.register
       || (!verificationCompleted && schema.registeredMethods.length)
     ) {
       return null;
