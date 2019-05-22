@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+// eslint-disable-next-line import/no-unresolved import/extensions
 import Config from 'lib/Config';
 
 import LoadingIndicator from '../../LoadingIndicator';
