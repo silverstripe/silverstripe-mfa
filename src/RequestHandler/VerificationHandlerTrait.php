@@ -15,9 +15,9 @@ use SilverStripe\MFA\Store\StoreInterface;
 
 /**
  * This trait encapsulates logic that can be added to a `RequestHandler` to work with logging in using MFA front-end
- * app. It provides two main methods; @see createStartLoginResponse - a response that can be easily consumed by the MFA
- * app to prompt a login, and @see verifyLoginRequest - used to verify a request sent by the MFA app containing the
- * login attempt.
+ * app. It provides two main methods; @see createStartVerificationResponse - a response that can be easily consumed by
+ * the MFA app to prompt a login, and @see completeVerificationRequest - used to verify a request sent by the MFA app
+ * containing the login attempt.
  */
 trait VerificationHandlerTrait
 {

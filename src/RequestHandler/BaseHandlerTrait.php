@@ -2,16 +2,21 @@
 
 namespace SilverStripe\MFA\RequestHandler;
 
-use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\MFA\Service\MethodRegistry;
-use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Store\StoreInterface;
 use SilverStripe\Security\Member;
 use SilverStripe\View\Requirements;
 
 trait BaseHandlerTrait
 {
+    /**
+     * A "session store" object that helps contain MFA specific session detail
+     *
+     * @var StoreInterface
+     */
+    protected $store;
+
     /**
      * Perform the necessary "Requirements" calls to ensure client side scripts are available in the response
      */
