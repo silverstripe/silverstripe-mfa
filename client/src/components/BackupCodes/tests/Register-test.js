@@ -69,7 +69,7 @@ describe('Register - Recovery Codes', () => {
       expect(wrapper.find('.mfa-register-backup-codes__copy-to-clipboard').text())
         .toBe('Copy codes');
       done();
-    }, 30);
+    }, 40);
   });
 
   it('re-copying the codes will reset the recently copied timer', done => {
@@ -106,7 +106,7 @@ describe('Register - Recovery Codes', () => {
       expect(wrapper.find('.mfa-register-backup-codes__copy-to-clipboard').text())
         .toBe('Copied!');
       done();
-    }, 40);
+    }, 30);
   });
 
   it('will call the given onComplete function when pressing the "finish" button', () => {
