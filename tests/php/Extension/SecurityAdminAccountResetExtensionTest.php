@@ -60,7 +60,7 @@ class SecurityAdminAccountResetExtensionTest extends FunctionalTest
 
     public function testResetCannotBeInitiatedByStandardUser()
     {
-        $this->logInWithPermission('CMS_ACCESS_SecurityAdmin');
+        $this->logInAs('squib');
 
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'admin');
