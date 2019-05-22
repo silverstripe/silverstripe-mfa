@@ -4,6 +4,7 @@ namespace SilverStripe\MFA\Tests\BackupCode;
 
 use PHPUnit_Framework_MockObject_MockObject;
 use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\MFA\BackupCode\VerifyHandler;
 use SilverStripe\MFA\Extension\MemberExtension;
@@ -12,9 +13,9 @@ use SilverStripe\MFA\Store\StoreInterface;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
 
-class LoginHandlerTest extends SapphireTest
+class VerifyHandlerTest extends SapphireTest
 {
-    protected static $fixture_file = 'LoginHandlerTest.yml';
+    protected static $fixture_file = 'VerifyHandlerTest.yml';
 
     /**
      * @dataProvider getVerifyTests

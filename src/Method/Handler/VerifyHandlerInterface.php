@@ -8,8 +8,7 @@ use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
 
 /**
- * Represents the base requirements for implementing an MFA Method's LoginHandlerInterface, which has the responsibility
- * of initiating and verifying login attempts for the MFA Method in question.
+ * Define how MFA Methods will initiate and check verification attempts.
  */
 interface VerifyHandlerInterface
 {

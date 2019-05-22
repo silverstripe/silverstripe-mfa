@@ -19,7 +19,7 @@ interface MethodInterface
     public function getURLSegment(): string;
 
     /**
-     * Return the LoginHandler that is used to start and verify login attempts with this method
+     * Return the VerifyHandler that is used to start and check verification attempts with this method
      *
      * @return VerifyHandlerInterface
      */

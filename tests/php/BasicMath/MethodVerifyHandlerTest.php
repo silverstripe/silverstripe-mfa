@@ -9,7 +9,7 @@ use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Store\StoreInterface;
 use SilverStripe\MFA\Tests\Stub\BasicMath\MethodVerifyHandler;
 
-class MethodLoginHandlerTest extends SapphireTest
+class MethodVerifyHandlerTest extends SapphireTest
 {
     public function testStart()
     {
