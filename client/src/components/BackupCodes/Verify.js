@@ -60,16 +60,22 @@ class Verify extends Component {
     const { ss: { i18n } } = window;
 
     return (
-      <div className="mfa-verify-backup-codes__controls mfa__controls">
-        <button
-          className="btn btn-success"
-          disabled={this.state.value.length === 0}
-          onClick={this.handleCompleteVerification}
-        >
-          {i18n._t('MFABackupCodesVerify.NEXT', 'Next')}
-        </button>
-        {moreOptionsControl}
-      </div>
+      <ul className="mfa-action-list">
+        <li className="mfa-action-list__item">
+          <button
+            className="btn btn-success"
+            disabled={this.state.value.length === 0}
+            onClick={this.handleCompleteVerification}
+          >
+            {i18n._t('MFABackupCodesVerify.NEXT', 'Next')}
+          </button>
+        </li>
+        {moreOptionsControl && (
+          <li className="mfa-action-list__item">
+            {moreOptionsControl}
+          </li>
+        )}
+      </ul>
     );
   }
 

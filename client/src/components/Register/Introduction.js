@@ -14,7 +14,7 @@ export const ActionList = ({ canSkip, onContinue, onSkip }) => {
   return (
     <ul className="mfa-action-list">
       <li className="mfa-action-list__item">
-        <button className="mfa-action mfa-action--primary btn btn-primary" onClick={onContinue}>
+        <button className="btn btn-primary" onClick={onContinue}>
           { i18n._t('MultiFactorAuthentication.GET_STARTED', fallbacks['MultiFactorAuthentication.GET_STARTED']) }
         </button>
       </li>
