@@ -1,17 +1,3 @@
-SilverStripe\Security\PermissionRole:
-  mfa:
-    Title: 'MFA'
-  security:
-    Title: 'Security Admin'
-
-SilverStripe\Security\PermissionRoleCode:
-  mfa:
-    Role: =>SilverStripe\Security\PermissionRole.mfa
-    Code: 'MFA_Admin'
-  security:
-    Role: =>SilverStripe\Security\PermissionRole.security
-    Code: 'Security_Admin'
-
 SilverStripe\Security\Member:
   admin:
     FirstName: 'MFA Administrator'
@@ -21,22 +7,17 @@ SilverStripe\Security\Member:
     Email: 'squib@example.org'
 
 SilverStripe\Security\Group:
-  mfa-admin:
+  admin:
     Title: 'MFA Admins'
     Members: =>SilverStripe\Security\Member.admin
-    Roles:
-      - =>SilverStripe\Security\PermissionRole.mfa
-      - =>SilverStripe\Security\PermissionRole.security
   security-admin:
     Title: 'Security Admins'
     Members: =>SilverStripe\Security\Member.squib
-    Roles:
-      - =>SilverStripe\Security\PermissionRole.security
 
 SilverStripe\Security\Permission:
-  mfa:
-    Code: 'MFA_ADMINISTER_REGISTERED_METHODS'
-    Group: =>SilverStripe\Security\Group.mfa-admin
+  admin:
+    Code: ADMIN
+    Group: =>SilverStripe\Security\Group.admin
   security:
     Code: 'CMS_ACCESS_SecurityAdmin'
     Group: =>SilverStripe\Security\Group.security-admin
