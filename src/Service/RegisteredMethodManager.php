@@ -19,6 +19,21 @@ class RegisteredMethodManager
     use Extensible;
     use Injectable;
 
+    private static $dependencies = [
+        'NotificationService' => '%$' . Notification::class
+    ];
+
+    /**
+     * @var Notification
+     */
+    protected $notification;
+
+    public function setNotificationService(Notification $notification): self
+    {
+        $this->notification = $notification;
+        return $this;
+    }
+
     /**
      * Get an authentication method object matching the given method from the given member. Returns null if the given
      * method could not be found attached to the Member
@@ -60,6 +75,20 @@ class RegisteredMethodManager
         // Add it to the member
         $member->RegisteredMFAMethods()->add($registeredMethod);
 
+        if (!MethodRegistry::create()->isBackupMethod($method)) {
+            $this->notification->send(
+                $member,
+                'Email/MFA/Notification_register',
+                [
+                    'subject' => _t(
+                        self::class . '.MFAADDED',
+                        'A multi factor authentication method was added to your account'
+                    ),
+                    'MethodName' => $method->getRegisterHandler()->getName(),
+                ]
+            );
+        }
+
         $this->extend('onRegisterMethod', $member, $method);
     }
 
@@ -81,13 +110,29 @@ class RegisteredMethodManager
 
         $method->delete();
 
+        $backupRemovedToo = false;
+
         // If there is only one method remaining, and that's the configured "backup" method - then delete that too
         if ($member->RegisteredMFAMethods()->count() === 1
             && ($method = $member->RegisteredMFAMethods()->first())->MethodClassName
                 === Config::inst()->get(MethodRegistry::class, 'default_backup_method')
         ) {
             $method->delete();
+            $backupRemovedToo = true;
         }
+
+        $this->notification->send(
+            $member,
+            'Email/MFA/Notification_removed',
+            [
+                'subject' => _t(
+                    self::class . '.MFAREMOVED',
+                    'A multi factor authentication method was removed from your account'
+                ),
+                'MethodName' => $method->getRegisterHandler()->getName(),
+                'BackupAlsoRemoved' => $backupRemovedToo,
+            ]
+        );
 
         return true;
     }

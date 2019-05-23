@@ -7,11 +7,27 @@ use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
+use SilverStripe\MFA\Service\Notification;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
 
 class VerifyHandler implements VerifyHandlerInterface
 {
+    private static $dependencies = [
+        'NotificationService' => '%$' . Notification::class
+    ];
+
+    /**
+     * @var Notification
+     */
+    protected $notification;
+
+    public function setNotificationService(Notification $notification): self
+    {
+        $this->notification = $notification;
+        return $this;
+    }
+
     /**
      * Stores any data required to handle a login process with a method, and returns relevant state to be applied to the
      * front-end application managing the process.
@@ -58,6 +74,14 @@ class VerifyHandler implements VerifyHandlerInterface
                 array_splice($candidates, $index, 1);
                 $registeredMethod->Data = json_encode($candidates);
                 $registeredMethod->write();
+                $this->notification->send(
+                    $registeredMethod->Member(),
+                    'Email/MFA/Notification_backupcodeused',
+                    [
+                        'subject' => _t(self::class . '.MFAREMOVED', 'A recovery code was used to access your account'),
+                        'CodesRemaining' => count($candidates),
+                    ]
+                );
                 return Result::create();
             }
         }
