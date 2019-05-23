@@ -208,6 +208,7 @@ describe('Register', () => {
       );
 
       setTimeout(() => {
+        // "Test" is the name of the specified component, see the definition for "firstMethod"
         expect(wrapper.find('Test')).toHaveLength(1);
         done();
       });
@@ -232,6 +233,7 @@ describe('Register', () => {
       );
 
       setTimeout(() => {
+        // "Test" is the name of the specified component, see the definition for "firstMethod"
         expect(wrapper.find('Test').props()).toEqual(expect.objectContaining({
           myProp: 1,
           anotherProp: 'two',
@@ -252,6 +254,7 @@ describe('Register', () => {
       );
 
       setTimeout(() => {
+        // "Test" is the name of the specified component, see the definition for "firstMethod"
         expect(wrapper.find('Test').props()).toEqual(expect.objectContaining({
           method: firstMethod,
         }));
@@ -272,6 +275,7 @@ describe('Register', () => {
 
       setTimeout(() => {
         expect(fetchMock.mock.calls).toHaveLength(1);
+        // "Test" is the name of the specified component, see the definition for "firstMethod"
         const completeFunction = wrapper.find('Test').prop('onCompleteRegistration');
         completeFunction({ test: 1 });
         expect(fetchMock.mock.calls).toHaveLength(2);
@@ -311,6 +315,7 @@ describe('Register', () => {
         }));
 
         // Trigger a complete on the registration method component
+        // "Test" is the name of the specified component, see the definition for "firstMethod"
         const completeFunction = wrapper.find('Test').prop('onCompleteRegistration');
         completeFunction({ test: 1 });
         expect(fetchMock.mock.calls).toHaveLength(2);

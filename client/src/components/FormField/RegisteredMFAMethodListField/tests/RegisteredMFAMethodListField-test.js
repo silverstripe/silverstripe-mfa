@@ -40,6 +40,40 @@ describe('RegisteredMFAMethodListField', () => {
     });
   });
 
+  describe('getAddMethodButtonLabel', () => {
+    it('provides a contextual message depending on registered methods', () => {
+      const availableMethods = [altMethod];
+
+      const withoutRegisteredMethods = shallow(
+        <RegisteredMFAMethodListField
+          backupMethod={backupMethod}
+          defaultMethod={defaultMethod}
+          availableMethods={availableMethods}
+          registeredMethods={[]}
+          RegisterComponent={RegisterComponent}
+          onUpdateAvailableMethods={onUpdateAvailableMethods}
+        />
+      );
+
+      expect(withoutRegisteredMethods.instance().getAddMethodButtonLabel())
+        .toBe(translationStrings['MultiFactorAuthentication.ADD_FIRST_METHOD']);
+
+      const withRegisteredMethods = shallow(
+        <RegisteredMFAMethodListField
+          backupMethod={backupMethod}
+          defaultMethod={defaultMethod}
+          availableMethods={availableMethods}
+          registeredMethods={[defaultMethod]}
+          RegisterComponent={RegisterComponent}
+          onUpdateAvailableMethods={onUpdateAvailableMethods}
+        />
+      );
+
+      expect(withRegisteredMethods.instance().getAddMethodButtonLabel())
+        .toBe(translationStrings['MultiFactorAuthentication.ADD_ANOTHER_METHOD']);
+    });
+  });
+
   describe('render()', () => {
     it('renders the read-only view when readOnly is passed', () => {
       const registeredMethods = [altMethod];
@@ -57,75 +91,35 @@ describe('RegisteredMFAMethodListField', () => {
       expect(field.hasClass('registered-mfa-method-list-field--read-only')).toEqual(true);
     });
 
-    describe('renders a button', () => {
-      it('when there are registerable methods', () => {
-        const availableMethods = [altMethod];
+    it('renders a button when there are registerable methods', () => {
+      const availableMethods = [altMethod];
 
-        const withAvailableMethods = shallow(
-          <RegisteredMFAMethodListField
-            backupMethod={backupMethod}
-            defaultMethod={defaultMethod}
-            availableMethods={availableMethods}
-            registeredMethods={[]}
-            RegisterComponent={RegisterComponent}
-            onUpdateAvailableMethods={onUpdateAvailableMethods}
-          />
-        );
+      const withAvailableMethods = shallow(
+        <RegisteredMFAMethodListField
+          backupMethod={backupMethod}
+          defaultMethod={defaultMethod}
+          availableMethods={availableMethods}
+          registeredMethods={[]}
+          RegisterComponent={RegisterComponent}
+          onUpdateAvailableMethods={onUpdateAvailableMethods}
+        />
+      );
 
-        expect(withAvailableMethods.find('.registered-mfa-method-list-field__button'))
-          .toHaveLength(1);
+      expect(withAvailableMethods.find('.registered-mfa-method-list-field__button'))
+        .toHaveLength(1);
 
-        const withoutAvailableMethods = shallow(
-          <RegisteredMFAMethodListField
-            backupMethod={backupMethod}
-            defaultMethod={defaultMethod}
-            registeredMethods={[]}
-            RegisterComponent={RegisterComponent}
-            onUpdateAvailableMethods={onUpdateAvailableMethods}
-          />
-        );
+      const withoutAvailableMethods = shallow(
+        <RegisteredMFAMethodListField
+          backupMethod={backupMethod}
+          defaultMethod={defaultMethod}
+          registeredMethods={[]}
+          RegisterComponent={RegisterComponent}
+          onUpdateAvailableMethods={onUpdateAvailableMethods}
+        />
+      );
 
-        expect(withoutAvailableMethods.find('.registered-mfa-method-list-field__button'))
-          .toHaveLength(0);
-      });
-
-      it('with a contextual message depending on registered methods', () => {
-        const availableMethods = [altMethod];
-
-        const withoutRegisteredMethods = shallow(
-          <RegisteredMFAMethodListField
-            backupMethod={backupMethod}
-            defaultMethod={defaultMethod}
-            availableMethods={availableMethods}
-            registeredMethods={[]}
-            RegisterComponent={RegisterComponent}
-            onUpdateAvailableMethods={onUpdateAvailableMethods}
-          />
-        );
-
-        expect(withoutRegisteredMethods
-          .find('.registered-mfa-method-list-field__button')
-          .shallow()
-          .text()
-        ).toBe(translationStrings['MultiFactorAuthentication.ADD_FIRST_METHOD']);
-
-        const withRegisteredMethods = shallow(
-          <RegisteredMFAMethodListField
-            backupMethod={backupMethod}
-            defaultMethod={defaultMethod}
-            availableMethods={availableMethods}
-            registeredMethods={[defaultMethod]}
-            RegisterComponent={RegisterComponent}
-            onUpdateAvailableMethods={onUpdateAvailableMethods}
-          />
-        );
-
-        expect(withRegisteredMethods
-          .find('.registered-mfa-method-list-field__button')
-          .shallow()
-          .text()
-        ).toBe(translationStrings['MultiFactorAuthentication.ADD_ANOTHER_METHOD']);
-      });
+      expect(withoutAvailableMethods.find('.registered-mfa-method-list-field__button'))
+        .toHaveLength(0);
     });
   });
 });

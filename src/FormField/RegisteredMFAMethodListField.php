@@ -23,15 +23,10 @@ class RegisteredMFAMethodListField extends FormField
     {
         $defaults = parent::getSchemaDataDefaults();
 
-        $baseEndpoint = Controller::join_links(
-            AdminRootController::admin_url(),
-            Config::inst()->get(AdminRegistrationController::class, 'url_segment')
-        );
-
         return array_merge($defaults, [
             'schema' => SchemaGenerator::create()->getSchema($this->value) + [
                 'endpoints' => [
-                    'register' => Controller::join_links($baseEndpoint, 'register/{urlSegment}'),
+                    'register' => AdminRegistrationController::singleton()->Link('register/{urlSegment}'),
                 ],
             ],
         ]);

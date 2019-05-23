@@ -24,6 +24,24 @@ class RegisteredMFAMethodListField extends Component {
     this.handleToggleModal = this.handleToggleModal.bind(this);
   }
 
+  getAddMethodButtonLabel() {
+    const { ss: { i18n } } = window;
+    const { registeredMethods } = this.props;
+
+    return registeredMethods.length
+      ? i18n._t(
+        'MultiFactorAuthentication.ADD_ANOTHER_METHOD',
+        fallbacks['MultiFactorAuthentication.ADD_ANOTHER_METHOD']
+      )
+      : i18n._t(
+        'MultiFactorAuthentication.ADD_FIRST_METHOD',
+        fallbacks['MultiFactorAuthentication.ADD_FIRST_METHOD']
+      );
+  }
+
+  /**
+   * Handles an event/request to toggle the visibility of the register modal.
+   */
   handleToggleModal() {
     const { modalOpen } = this.state;
 
@@ -88,7 +106,7 @@ class RegisteredMFAMethodListField extends Component {
 
   render() {
     const { ss: { i18n } } = window;
-    const { defaultMethod, availableMethods, registeredMethods } = this.props;
+    const { defaultMethod, availableMethods } = this.props;
 
     const tEmpty = i18n._t(
       'MultiFactorAuthentication.NO_METHODS_REGISTERED',
@@ -100,16 +118,6 @@ class RegisteredMFAMethodListField extends Component {
       fallbacks['MultiFactorAuthentication.DEFAULT']
     );
 
-    const buttonLabel = registeredMethods.length
-      ? i18n._t(
-        'MultiFactorAuthentication.ADD_ANOTHER_METHOD',
-        fallbacks['MultiFactorAuthentication.ADD_ANOTHER_METHOD']
-      )
-      : i18n._t(
-        'MultiFactorAuthentication.ADD_FIRST_METHOD',
-        fallbacks['MultiFactorAuthentication.ADD_FIRST_METHOD']
-      );
-
     return (
       <div className="registered-mfa-method-list-field registered-mfa-method-list-field--read-only">
         <ul className="method-list">
@@ -118,13 +126,13 @@ class RegisteredMFAMethodListField extends Component {
           { this.renderBaseMethods() }
         </ul>
         {
-          availableMethods.length === 0 ||
+          availableMethods.length > 0 &&
           <Button
             className="registered-mfa-method-list-field__button"
             outline
             onClick={this.handleToggleModal}
           >
-            { buttonLabel }
+            { this.getAddMethodButtonLabel() }
           </Button>
         }
         { this.renderModal() }

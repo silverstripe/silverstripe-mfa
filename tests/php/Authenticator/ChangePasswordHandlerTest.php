@@ -165,7 +165,9 @@ class ChangePasswordHandlerTest extends FunctionalTest
         $expectedResponse = new HTTPResponse();
         $handler->expects($this->once())->method('createStartVerificationResponse')->willReturn($expectedResponse);
 
-        $response = $handler->startMFACheck($this->createMock(HTTPRequest::class));
+        $request = new HTTPRequest('GET', '');
+        $request->setRouteParams(['Method' => 'test']);
+        $response = $handler->startMFACheck($request);
         $this->assertSame($expectedResponse, $response);
     }
 
@@ -189,7 +191,7 @@ class ChangePasswordHandlerTest extends FunctionalTest
             new InvalidMethodException('foo')
         );
 
-        $response = $handler->verifyMFACheck($this->createMock(HTTPRequest::class));
+        $response = $handler->verifyMFACheck(new HTTPRequest('GET', ''));
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -208,7 +210,7 @@ class ChangePasswordHandlerTest extends FunctionalTest
             new Result(false, 'It is a test')
         );
 
-        $response = $handler->verifyMFACheck($this->createMock(HTTPRequest::class));
+        $response = $handler->verifyMFACheck(new HTTPRequest('GET', ''));
         $this->assertEquals(401, $response->getStatusCode());
         $this->assertContains('It is a test', $response->getBody());
     }
@@ -227,7 +229,7 @@ class ChangePasswordHandlerTest extends FunctionalTest
         $handler->expects($this->once())->method('completeVerificationRequest')->willReturn(new Result());
         $handler->expects($this->once())->method('isVerificationComplete')->willReturn(false);
 
-        $response = $handler->verifyMFACheck($this->createMock(HTTPRequest::class));
+        $response = $handler->verifyMFACheck(new HTTPRequest('GET', ''));
         $this->assertEquals(202, $response->getStatusCode());
         $this->assertContains('Additional authentication required', $response->getBody());
     }
