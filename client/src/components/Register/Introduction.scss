@@ -38,16 +38,3 @@ $feature-list-title-font-weight: bold;
     line-height: $feature-list-content-line-height;
   }
 }
-
-.mfa-action-list {
-  display: flex;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-
-  &__item:not(:first-child) {
-    margin-left: $button-spacing;
-  }
-}
-
-
