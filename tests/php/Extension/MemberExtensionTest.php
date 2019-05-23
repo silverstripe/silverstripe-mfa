@@ -5,9 +5,9 @@ namespace SilverStripe\MFA\Tests\Extension;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\Security\Member;
 
-class MemberMFAExtensionTest extends SapphireTest
+class MemberExtensionTest extends SapphireTest
 {
-    protected static $fixture_file = 'MemberMFAExtensionTest.yml';
+    protected static $fixture_file = 'MemberExtensionTest.yml';
 
     public function testAdminUserCanViewButNotEditOthersMFAConfig()
     {

@@ -6,7 +6,7 @@ use RuntimeException;
 use Serializable;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\MFA\Exception\InvalidMethodException;
-use SilverStripe\MFA\Extension\MemberMFAExtension;
+use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
 
@@ -59,7 +59,7 @@ class SessionStore implements StoreInterface, Serializable
     }
 
     /**
-     * @return Member&MemberMFAExtension|null
+     * @return Member&MemberExtension|null
      */
     public function getMember(): ?Member
     {

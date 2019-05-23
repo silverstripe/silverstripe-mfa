@@ -5,7 +5,7 @@ namespace SilverStripe\MFA\Service;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
-use SilverStripe\MFA\Extension\MemberMFAExtension;
+use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\Security\Member;
@@ -38,7 +38,7 @@ class RegisteredMethodManager
      * Get an authentication method object matching the given method from the given member. Returns null if the given
      * method could not be found attached to the Member
      *
-     * @param Member&MemberMFAExtension $member
+     * @param Member&MemberExtension $member
      * @param MethodInterface $method
      * @return RegisteredMethod|null
      */
@@ -58,7 +58,7 @@ class RegisteredMethodManager
      * Fetch an existing RegisteredMethod object from the Member or make a new one, and then ensure it's associated
      * to the given Member
      *
-     * @param Member&MemberMFAExtension $member
+     * @param Member&MemberExtension $member
      * @param MethodInterface $method
      * @param mixed $data
      * @return bool Whether the method was added/replace

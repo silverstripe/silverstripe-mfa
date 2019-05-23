@@ -3,7 +3,7 @@
 namespace SilverStripe\MFA\Tests\Service;
 
 use SilverStripe\Dev\SapphireTest;
-use SilverStripe\MFA\Extension\MemberMFAExtension;
+use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method as BasicMathMethod;
@@ -98,7 +98,7 @@ class EnforcementManagerTest extends SapphireTest
     {
         $this->setSiteConfig(['MFARequired' => false]);
 
-        /** @var Member|MemberMFAExtension $member */
+        /** @var Member|MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'sally_smith');
         $member->HasSkippedMFARegistration = false;
         $member->write();
@@ -111,7 +111,7 @@ class EnforcementManagerTest extends SapphireTest
     {
         $this->setSiteConfig(['MFARequired' => false]);
 
-        /** @var Member&MemberMFAExtension $member */
+        /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'sally_smith');
         $member->HasSkippedMFARegistration = true;
         $member->write();

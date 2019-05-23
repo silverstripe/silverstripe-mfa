@@ -53,11 +53,3 @@ body.mfa {
   max-width: $container-width;
   color: $color-grey-text;
 }
-
-// Wraps the LoadingIndicator with colouring and positioning
-.mfa-loader {
-  color: $brand-primary;
-  display: flex;
-  justify-content: center;
-  margin: 60px auto;
-}

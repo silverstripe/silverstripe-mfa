@@ -1,8 +1,12 @@
-.mfa__loader {
+.mfa-loading-indicator {
   &, &:after {
     border-radius: 50%;
     width: $loading-indicator-size;
     height: $loading-indicator-size;
+  }
+
+  &--block {
+    margin: 60px auto;
   }
 
   font-size: $font-size-small;

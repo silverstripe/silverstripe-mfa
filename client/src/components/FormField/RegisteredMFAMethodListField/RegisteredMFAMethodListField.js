@@ -4,6 +4,7 @@ import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { inject } from 'lib/Injector'; // eslint-disable-line
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import classnames from 'classnames';
 import methodShape from 'types/registeredMethod';
 
 import AccountResetUI from './AccountResetUI';
@@ -123,14 +124,13 @@ class RegisteredMFAMethodListField extends Component {
       fallbacks['MultiFactorAuthentication.DEFAULT']
     );
 
-    let className = 'registered-mfa-method-list-field';
-
-    if (readOnly) {
-      className += ' registered-mfa-method-list-field--read-only';
-    }
+    const classNames = classnames({
+      'registered-mfa-method-list-field': true,
+      'registered-mfa-method-list-field--read-only': readOnly,
+    });
 
     return (
-      <div className={className}>
+      <div className={classNames}>
         <ul className="method-list">
           { !defaultMethod && this.baseMethods().length < 1 && (<li>{tEmpty}</li>) }
           { defaultMethod && (<MethodListItem method={defaultMethod} suffix={`(${tDefault})`} />) }

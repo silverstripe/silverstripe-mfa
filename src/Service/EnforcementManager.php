@@ -4,7 +4,7 @@ namespace SilverStripe\MFA\Service;
 
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injectable;
-use SilverStripe\MFA\Extension\MemberMFAExtension;
+use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Extension\SiteConfigExtension;
 use SilverStripe\ORM\FieldType\DBDate;
 use SilverStripe\Security\Member;
@@ -34,7 +34,7 @@ class EnforcementManager
      *  - If MFA is required, whether there is a grace period
      *  - If MFA is required and there is a grace period, whether we're currently within that timeframe
      *
-     * @param Member&MemberMFAExtension $member
+     * @param Member&MemberExtension $member
      * @return bool
      */
     public function canSkipMFA(Member $member): bool
@@ -66,7 +66,7 @@ class EnforcementManager
      *
      * Note that in determining this, we ignore whether or not MFA is enabled for the site in general.
      *
-     * @param Member&MemberMFAExtension $member
+     * @param Member&MemberExtension $member
      * @return bool
      */
     public function shouldRedirectToMFA(Member $member): bool
@@ -95,7 +95,7 @@ class EnforcementManager
      * configuration plus at least one other method.
      * Note that this method returns true if there is no backup method registered (and they have one other method
      *
-     * @param Member&MemberMFAExtension $member
+     * @param Member&MemberExtension $member
      * @return bool
      */
     public function hasCompletedRegistration(Member $member): bool

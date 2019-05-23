@@ -57,7 +57,7 @@ class SecurityAdminAccountResetExtension extends Extension
                 ));
         }
 
-        if (!Permission::check(MemberMFAExtension::MFA_ADMINISTER_REGISTERED_METHODS)) {
+        if (!Permission::check(MemberExtension::MFA_ADMINISTER_REGISTERED_METHODS)) {
             return $this->owner
                 ->getResponse()
                 ->setStatusCode(403)

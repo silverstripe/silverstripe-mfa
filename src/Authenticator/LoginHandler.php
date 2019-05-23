@@ -8,7 +8,7 @@ use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\MFA\Exception\InvalidMethodException;
 use SilverStripe\MFA\Exception\MemberNotFoundException;
-use SilverStripe\MFA\Extension\MemberMFAExtension;
+use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\RequestHandler\BaseHandlerTrait;
 use SilverStripe\MFA\RequestHandler\RegistrationHandlerTrait;
@@ -82,7 +82,7 @@ class LoginHandler extends BaseLoginHandler
      */
     public function doLogin($data, MemberLoginForm $form, HTTPRequest $request)
     {
-        /** @var Member&MemberMFAExtension $member */
+        /** @var Member&MemberExtension $member */
         $member = $this->checkLogin($data, $request, $result);
         $enforcementManager = EnforcementManager::singleton();
 
@@ -445,7 +445,7 @@ class LoginHandler extends BaseLoginHandler
     }
 
     /**
-     * @return Member&MemberMFAExtension
+     * @return Member&MemberExtension
      * @throws MemberNotFoundException
      */
     public function getMember()
@@ -502,7 +502,7 @@ class LoginHandler extends BaseLoginHandler
      * Complete the login process for the given member by calling "performLogin" on the parent class
      *
      * @param HTTPRequest $request
-     * @param Member&MemberMFAExtension $member
+     * @param Member&MemberExtension $member
      */
     protected function doPerformLogin(HTTPRequest $request, Member $member)
     {

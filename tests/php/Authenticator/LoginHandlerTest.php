@@ -11,7 +11,7 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\FunctionalTest;
 use SilverStripe\MFA\Authenticator\LoginHandler;
 use SilverStripe\MFA\Authenticator\MemberAuthenticator;
-use SilverStripe\MFA\Extension\MemberMFAExtension;
+use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\MethodRegistry;
@@ -47,7 +47,7 @@ class LoginHandlerTest extends FunctionalTest
 
     public function testMFAStepIsAdded()
     {
-        /** @var Member&MemberMFAExtension $member */
+        /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'guy');
 
         $this->autoFollowRedirection = false;
@@ -62,7 +62,7 @@ class LoginHandlerTest extends FunctionalTest
     {
         Config::modify()->set(MethodRegistry::class, 'methods', []);
 
-        /** @var Member&MemberMFAExtension $member */
+        /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'guy');
 
         // Ensure a URL is set to redirect to after successful login
@@ -89,7 +89,7 @@ class LoginHandlerTest extends FunctionalTest
     public function testMFASchemaEndpointReturnsMethodDetails()
     {
         // "Guy" isn't very security conscious - he has no MFA methods set up
-        /** @var Member&MemberMFAExtension $member */
+        /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'guy');
         $this->scaffoldPartialLogin($member);
 
@@ -124,7 +124,7 @@ class LoginHandlerTest extends FunctionalTest
     public function testMFASchemaEndpointShowsRegisteredMethodsIfSetUp()
     {
         // "Simon" is security conscious - he uses the cutting edge MFA methods
-        /** @var Member&MemberMFAExtension $member */
+        /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'simon');
         $this->scaffoldPartialLogin($member);
 
@@ -155,7 +155,7 @@ class LoginHandlerTest extends FunctionalTest
     public function testMFASchemaEndpointProvidesDefaultMethodIfSet()
     {
         // "Robbie" is security conscious and is also a CMS expert! He set up MFA and set a default method :o
-        /** @var Member&MemberMFAExtension $member */
+        /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'robbie');
         $this->scaffoldPartialLogin($member);
 
@@ -236,7 +236,7 @@ class LoginHandlerTest extends FunctionalTest
 
     public function testVerifyLoginHandlesMembersLockedOut()
     {
-        /** @var Member&MemberMFAExtension $member */
+        /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'robbie');
         // Mock the member being locked out for fifteen minutes
         $member->LockedOutUntil = date('Y-m-d H:i:s', DBDatetime::now()->getTimestamp() + 15 * 60);
@@ -257,7 +257,7 @@ class LoginHandlerTest extends FunctionalTest
 
     public function testVerifyLoginPassesExceptionMessagesThroughFromMethodsWithValidationFailures()
     {
-        /** @var Member&MemberMFAExtension $member */
+        /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'robbie');
         $member->config()->set('lock_out_after_incorrect_logins', 5);
         $failedLogins = $member->FailedLoginCount;

@@ -6,7 +6,7 @@ use SilverStripe\Control\Email\Email;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\MFA\BackupCode\Method as BackupCodeMethod;
-use SilverStripe\MFA\Extension\MemberMFAExtension;
+use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
@@ -20,7 +20,7 @@ class RegisteredMethodManagerTest extends SapphireTest
 
     protected static $required_extensions = [
         Member::class => [
-            MemberMFAExtension::class,
+            MemberExtension::class,
         ],
     ];
 
@@ -44,7 +44,7 @@ class RegisteredMethodManagerTest extends SapphireTest
 
     public function testRegisterForMemberWritesToExistingRegisteredMethod()
     {
-        /** @var Member&MemberMFAExtension $member */
+        /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'sally_smith');
         $method = new BackupCodeMethod();
 
@@ -57,7 +57,7 @@ class RegisteredMethodManagerTest extends SapphireTest
 
     public function testRegisterForMemberCreatesNewMethod()
     {
-        /** @var Member&MemberMFAExtension $member */
+        /** @var Member&MemberExtension $member */
         $member = Member::create(['FirstName' => 'Mike']);
         $member->write();
         $method = new BackupCodeMethod();
@@ -96,7 +96,7 @@ class RegisteredMethodManagerTest extends SapphireTest
 
     public function testRegisterForMemberDoesNothingWithNoData()
     {
-        /** @var Member&MemberMFAExtension $member */
+        /** @var Member&MemberExtension $member */
         $member = Member::create(['FirstName' => 'Michelle']);
         $member->write();
         $method = new BackupCodeMethod();

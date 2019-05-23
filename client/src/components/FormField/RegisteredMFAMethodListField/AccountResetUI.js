@@ -22,10 +22,10 @@ class AccountResetUI extends Component {
       submitting: false,
     };
 
-    this.onSendReset = this.onSendReset.bind(this);
+    this.handleSendReset = this.handleSendReset.bind(this);
   }
 
-  onSendReset() {
+  handleSendReset() {
     this.setState({ submitting: true });
 
     const body = JSON.stringify({ csrf_token: Config.get('SecurityID') });
@@ -42,9 +42,90 @@ class AccountResetUI extends Component {
       });
   }
 
-  render() {
+  renderAction() {
     const { ss: { i18n } } = window;
     const { resetEndpoint } = this.props;
+
+    return (
+      <p className="account-reset-action">
+        <button
+          className="btn btn-outline-secondary"
+          disabled={!resetEndpoint}
+          onClick={this.handleSendReset}
+        >
+          {
+            i18n._t(
+              'MultiFactorAuthentication.ACCOUNT_RESET_ACTION',
+              fallbacks['MultiFactorAuthentication.ACCOUNT_RESET_ACTION']
+            )
+          }
+        </button>
+      </p>
+    );
+  }
+
+  renderSending() {
+    const { ss: { i18n } } = window;
+
+    return (
+      <p className="account-reset-action account-reset-action--sending">
+        <span className="account-reset-action__icon">
+          <LoadingIndicator size="32px" />
+        </span>
+        <span className="account-reset-action__message">
+          {
+            i18n._t(
+              'MultiFactorAuthentication.ACCOUNT_RESET_SENDING',
+              fallbacks['MultiFactorAuthentication.ACCOUNT_RESET_SENDING']
+            )
+          }
+        </span>
+      </p>
+    );
+  }
+
+  renderFailure() {
+    const { ss: { i18n } } = window;
+
+    return (
+      <p className="account-reset-action account-reset-action--failure">
+        <span className="account-reset-action__icon">
+          <CircleDash size="32px" />
+        </span>
+        <span className="account-reset-action__message">
+          {
+            i18n._t(
+              'MultiFactorAuthentication.ACCOUNT_RESET_SENDING',
+              fallbacks['MultiFactorAuthentication.ACCOUNT_RESET_SENDING_FAILURE']
+            )
+          }
+        </span>
+      </p>
+    );
+  }
+
+  renderSuccess() {
+    const { ss: { i18n } } = window;
+
+    return (
+      <p className="account-reset-action account-reset-action--success">
+        <span className="account-reset-action__icon">
+          <CircleTick size="32px" />
+        </span>
+        <span className="account-reset-action__message">
+          {
+            i18n._t(
+              'MultiFactorAuthentication.ACCOUNT_RESET_SENDING',
+              fallbacks['MultiFactorAuthentication.ACCOUNT_RESET_SENDING_SUCCESS']
+            )
+          }
+        </span>
+      </p>
+    );
+  }
+
+  render() {
+    const { ss: { i18n } } = window;
     const { complete, failure, submitting } = this.state;
 
     return (
@@ -67,70 +148,13 @@ class AccountResetUI extends Component {
           }
         </p>
 
-        { !submitting && !complete &&
-          <p className="account-reset-action">
-            <button
-              className="btn btn-outline-secondary"
-              disabled={!resetEndpoint}
-              onClick={this.onSendReset}
-            >
-              {
-                i18n._t(
-                  'MultiFactorAuthentication.ACCOUNT_RESET_ACTION',
-                  fallbacks['MultiFactorAuthentication.ACCOUNT_RESET_ACTION']
-                )
-              }
-            </button>
-          </p>
-        }
+        { !submitting && !complete && this.renderAction() }
 
-        { submitting &&
-          <p className="account-reset-action account-reset-action--sending">
-            <span className="account-reset-action__icon">
-              <LoadingIndicator size="32px" />
-            </span>
-            <span className="account-reset-action__message">
-              {
-                i18n._t(
-                  'MultiFactorAuthentication.ACCOUNT_RESET_SENDING',
-                  fallbacks['MultiFactorAuthentication.ACCOUNT_RESET_SENDING']
-                )
-              }
-            </span>
-          </p>
-        }
+        { submitting && this.renderSending() }
 
-        { !submitting && complete && failure &&
-          <p className="account-reset-action account-reset-action--failure">
-            <span className="account-reset-action__icon">
-              <CircleDash size="32px" />
-            </span>
-            <span className="account-reset-action__message">
-              {
-                i18n._t(
-                  'MultiFactorAuthentication.ACCOUNT_RESET_SENDING',
-                  fallbacks['MultiFactorAuthentication.ACCOUNT_RESET_SENDING_FAILURE']
-                )
-              }
-            </span>
-          </p>
-        }
+        { !submitting && complete && failure && this.renderFailure() }
 
-        { !submitting && complete && !failure &&
-          <p className="account-reset-action account-reset-action--success">
-            <span className="account-reset-action__icon">
-              <CircleTick size="32px" />
-            </span>
-            <span className="account-reset-action__message">
-              {
-                i18n._t(
-                  'MultiFactorAuthentication.ACCOUNT_RESET_SENDING',
-                  fallbacks['MultiFactorAuthentication.ACCOUNT_RESET_SENDING_SUCCESS']
-                )
-              }
-            </span>
-          </p>
-        }
+        { !submitting && complete && !failure && this.renderSuccess() }
       </div>
     );
   }

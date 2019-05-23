@@ -8,7 +8,7 @@ use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\MFA\Authenticator\LoginHandler;
-use SilverStripe\MFA\Extension\MemberMFAExtension;
+use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\State\AvailableMethodDetailsInterface;
 use SilverStripe\MFA\State\RegisteredMethodDetailsInterface;
@@ -25,7 +25,7 @@ class SchemaGenerator
     /**
      * Provides the full schema for the multi-factor authentication app, using the current Member as context
      *
-     * @param Member&MemberMFAExtension $member
+     * @param Member&MemberExtension $member
      * @return array
      */
     public function getSchema(Member $member)
@@ -57,7 +57,7 @@ class SchemaGenerator
     /**
      * Get a list of methods registered to the user
      *
-     * @param Member&MemberMFAExtension $member
+     * @param Member&MemberExtension $member
      * @return RegisteredMethodDetailsInterface[]
      */
     protected function getRegisteredMethods(Member $member)
@@ -103,7 +103,7 @@ class SchemaGenerator
     /**
      * Get the URL Segment for the configured default method on the current member, or null if none is configured
      *
-     * @param Member&MemberMFAExtension $member
+     * @param Member&MemberExtension $member
      * @return string|null
      */
     protected function getDefaultMethod(Member $member)

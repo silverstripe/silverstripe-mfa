@@ -165,7 +165,7 @@ class Login extends Component {
         throw new Error('Could not read configuration schema to load MFA interface');
       }
 
-      return <div className="mfa-loader"><LoadingIndicator /></div>;
+      return <LoadingIndicator block color="rgba(0,113,196,1)" />;
     }
 
     return (
