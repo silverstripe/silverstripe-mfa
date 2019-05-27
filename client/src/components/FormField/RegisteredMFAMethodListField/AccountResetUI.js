@@ -33,18 +33,23 @@ class AccountResetUI extends Component {
     fetch(this.props.resetEndpoint, { method: 'POST', body })
       .then(response => response.json())
       .then(output => {
-        const failure = !!output.error;
+        const failed = !!output.error;
 
-        this.setState({ complete: true, failure, submitting: false });
+        this.setState({ complete: true, failed, submitting: false });
       })
       .catch(() => {
-        this.setState({ complete: true, failure: true, submitting: false });
+        this.setState({ complete: true, failed: true, submitting: false });
       });
   }
 
   renderAction() {
     const { ss: { i18n } } = window;
     const { resetEndpoint } = this.props;
+    const { complete, submitting } = this.state;
+
+    if (complete || submitting) {
+      return null;
+    }
 
     return (
       <p className="account-reset-action">
@@ -124,9 +129,22 @@ class AccountResetUI extends Component {
     );
   }
 
+  renderStatusMessage() {
+    const { complete, failed, submitting } = this.state;
+
+    if (submitting) {
+      return this.renderSending();
+    }
+
+    if (!complete) {
+      return null;
+    }
+
+    return (failed) ? this.renderFailure() : this.renderSuccess();
+  }
+
   render() {
     const { ss: { i18n } } = window;
-    const { complete, failure, submitting } = this.state;
 
     return (
       <div className="account-reset">
@@ -148,13 +166,9 @@ class AccountResetUI extends Component {
           }
         </p>
 
-        { !submitting && !complete && this.renderAction() }
+        { this.renderAction() }
 
-        { submitting && this.renderSending() }
-
-        { !submitting && complete && failure && this.renderFailure() }
-
-        { !submitting && complete && !failure && this.renderSuccess() }
+        { this.renderStatusMessage() }
       </div>
     );
   }
