@@ -291,7 +291,7 @@ class Register extends Component {
   }
 }
 
-export const RegisterPropTypes = {
+Register.propTypes = {
   availableMethods: PropTypes.arrayOf(availableMethodType),
   backupMethod: availableMethodType,
   canSkip: PropTypes.bool,
@@ -303,7 +303,6 @@ export const RegisterPropTypes = {
   registeredMethods: PropTypes.arrayOf(registeredMethodType),
   resources: PropTypes.object,
 };
-Register.propTypes = RegisterPropTypes;
 
 Register.defaultProps = {
   resources: {},
