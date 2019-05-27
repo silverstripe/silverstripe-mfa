@@ -8,4 +8,12 @@
   &__item:not(:first-child) {
     margin-left: $button-spacing;
   }
+
+  // CMS only styles
+  .cms & {
+    .btn {
+      // Remove CMS initiated margin on .btn elements
+      margin-right: inherit;
+    }
+  }
 }
