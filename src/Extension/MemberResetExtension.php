@@ -42,9 +42,9 @@ class MemberResetExtension extends DataExtension
     public function generateAccountResetTokenAndStoreHash(): string
     {
         $lifetime = $this->owner->config()->auto_login_token_lifetime;
+        $generator = new RandomGenerator();
 
         do {
-            $generator = new RandomGenerator();
             $token = $generator->randomToken();
             $hash = $this->owner->encryptWithUserSettings($token);
         } while (DataObject::get_one(Member::class, [
