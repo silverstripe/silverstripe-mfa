@@ -15,7 +15,6 @@ class AccountResetUI extends Component {
   constructor(props) {
     super(props);
 
-    // Shift up into Redux if tidier
     this.state = {
       complete: false,
       failed: false,
@@ -25,6 +24,10 @@ class AccountResetUI extends Component {
     this.handleSendReset = this.handleSendReset.bind(this);
   }
 
+  /**
+   * Sends a reset request to the provided endpoint, and updates the component's state based on
+   * the contents of the response.
+   */
   handleSendReset() {
     this.setState({ submitting: true });
 
@@ -42,6 +45,11 @@ class AccountResetUI extends Component {
       });
   }
 
+  /**
+   * Renders the reset request button if necessary, disabling it if an endpoint is not specified.
+   *
+   * @returns {null|HTMLElement}
+   */
   renderAction() {
     const { ss: { i18n } } = window;
     const { resetEndpoint } = this.props;
@@ -69,6 +77,11 @@ class AccountResetUI extends Component {
     );
   }
 
+  /**
+   * Renders the 'request in progress' status message.
+   *
+   * @returns {HTMLElement}
+   */
   renderSending() {
     const { ss: { i18n } } = window;
 
@@ -89,6 +102,11 @@ class AccountResetUI extends Component {
     );
   }
 
+  /**
+   * Renders the 'request failed' status message.
+   *
+   * @returns {HTMLElement}
+   */
   renderFailure() {
     const { ss: { i18n } } = window;
 
@@ -109,6 +127,11 @@ class AccountResetUI extends Component {
     );
   }
 
+  /**
+   * Renders the 'request succeeded' status message.
+   *
+   * @returns {HTMLElement}
+   */
   renderSuccess() {
     const { ss: { i18n } } = window;
 
@@ -129,6 +152,11 @@ class AccountResetUI extends Component {
     );
   }
 
+  /**
+   * Checks whether a reset request has started / completed, and renders the current status if so.
+   *
+   * @returns {null|HTMLElement}
+   */
   renderStatusMessage() {
     const { complete, failed, submitting } = this.state;
 
@@ -143,6 +171,11 @@ class AccountResetUI extends Component {
     return (failed) ? this.renderFailure() : this.renderSuccess();
   }
 
+  /**
+   * Renders the full AccountResetUI component.
+   *
+   * @returns {HTMLElement}
+   */
   render() {
     const { ss: { i18n } } = window;
 
