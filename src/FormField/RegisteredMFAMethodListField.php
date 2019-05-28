@@ -2,7 +2,11 @@
 
 namespace SilverStripe\MFA\FormField;
 
+use SilverStripe\Admin\AdminRootController;
+use SilverStripe\Control\Controller;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\FormField;
+use SilverStripe\MFA\Controller\AdminRegistrationController;
 use SilverStripe\MFA\Service\SchemaGenerator;
 
 class RegisteredMFAMethodListField extends FormField
@@ -19,18 +23,12 @@ class RegisteredMFAMethodListField extends FormField
     {
         $defaults = parent::getSchemaDataDefaults();
 
-        $fullSchema = (SchemaGenerator::create())->getSchema($this->value);
-
-        // Only pass down the parts of the schema that are relevant
-        $methodData = [
-            'registeredMethods' => $fullSchema['registeredMethods'],
-            'availableMethods' => $fullSchema['availableMethods'],
-            'defaultMethod' => $fullSchema['defaultMethod'],
-            'backupMethod' => $fullSchema['backupMethod'],
-        ];
-
         return array_merge($defaults, [
-            'methods' => $methodData,
+            'schema' => SchemaGenerator::create()->getSchema($this->value) + [
+                'endpoints' => [
+                    'register' => AdminRegistrationController::singleton()->Link('register/{urlSegment}'),
+                ],
+            ],
         ]);
     }
 }

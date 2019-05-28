@@ -9,14 +9,24 @@ window.jQuery.entwine('ss', ($) => {
   $(FIELD_SELECTOR).entwine({
     onmatch() {
       const RegisteredMFAMethodListField = loadComponent('RegisteredMFAMethodListField');
-      const schemaData = this.data('schema');
+      const { readOnly, schema: {
+        backupMethod,
+        defaultMethod,
+        registeredMethods,
+        availableMethods,
+        resources,
+        endpoints,
+      } } = this.data('schema');
 
       ReactDOM.render(
         <RegisteredMFAMethodListField
-          backupMethod={schemaData.methods.backupMethod}
-          defaultMethod={schemaData.methods.defaultMethod}
-          readOnly={schemaData.readOnly}
-          registeredMethods={schemaData.methods.registeredMethods}
+          backupMethod={backupMethod}
+          defaultMethod={defaultMethod}
+          readOnly={readOnly}
+          registeredMethods={registeredMethods}
+          availableMethods={availableMethods}
+          resources={resources}
+          endpoints={endpoints}
         />,
         this[0]
       );

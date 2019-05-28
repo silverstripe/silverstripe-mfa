@@ -19,15 +19,22 @@ trait BaseHandlerTrait
 
     /**
      * Perform the necessary "Requirements" calls to ensure client side scripts are available in the response
+     *
+     * @param bool $frontEndRequirements Indicates dependencies usually provided by admin should also be required
      */
-    protected function applyRequirements(): void
+    protected function applyRequirements(bool $frontEndRequirements = true): void
     {
         // Run through requirements
-        Requirements::javascript('silverstripe/mfa: client/dist/js/injector.js');
-        Requirements::javascript('silverstripe/admin: client/dist/js/i18n.js');
-        Requirements::javascript('silverstripe/mfa: client/dist/js/bundle.js');
+        if ($frontEndRequirements) {
+            Requirements::javascript('silverstripe/mfa: client/dist/js/injector.js');
+            Requirements::javascript('silverstripe/admin: client/dist/js/i18n.js');
+        }
+
         Requirements::add_i18n_javascript('silverstripe/mfa: client/lang');
-        Requirements::css('silverstripe/mfa: client/dist/styles/bundle.css');
+
+        $suffix = $frontEndRequirements ? '' : '-cms';
+        Requirements::javascript("silverstripe/mfa: client/dist/js/bundle{$suffix}.js");
+        Requirements::css("silverstripe/mfa: client/dist/styles/bundle{$suffix}.css");
 
         // Plugin module requirements
         foreach (MethodRegistry::singleton()->getMethods() as $method) {
@@ -47,6 +54,16 @@ trait BaseHandlerTrait
         }
 
         return $this->store;
+    }
+
+    /**
+     * @param StoreInterface $store
+     * @return $this
+     */
+    public function setStore(StoreInterface $store): self
+    {
+        $this->store = $store;
+        return $this;
     }
 
     /**

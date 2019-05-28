@@ -1,6 +1,6 @@
 /* global window */
 
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { loadComponent } from 'lib/Injector'; // eslint-disable-line
 import availableMethodType from 'types/availableMethod';
@@ -11,6 +11,7 @@ import Complete from 'components/Register/Complete';
 import SelectMethod from 'components/Register/SelectMethod';
 import { connect } from 'react-redux';
 import { showScreen, chooseMethod } from 'state/mfaRegister/actions';
+import Title from 'components/Register/Title';
 
 const SCREEN_INTRODUCTION = 1;
 const SCREEN_REGISTER_METHOD = 2;
@@ -34,7 +35,6 @@ class Register extends Component {
 
     this.handleBack = this.handleBack.bind(this);
     this.handleCompleteRegistration = this.handleCompleteRegistration.bind(this);
-    this.handleCompleteProcess = this.handleCompleteProcess.bind(this);
     this.handleSkip = this.handleSkip.bind(this);
   }
 
@@ -180,17 +180,14 @@ class Register extends Component {
   }
 
   /**
-   * Handle an event triggered to complete the registration process
-   */
-  handleCompleteProcess() {
-    window.location = this.props.endpoints.complete;
-  }
-
-  /**
    * Handle an event triggered to skip the registration process
    */
   handleSkip() {
-    window.location = this.props.endpoints.skip;
+    const { skip } = this.props.endpoints;
+
+    if (skip) {
+      window.location = this.props.endpoints.skip;
+    }
   }
 
   /**
@@ -199,13 +196,14 @@ class Register extends Component {
    * @return {Introduction}
    */
   renderIntroduction() {
-    const { canSkip, resources } = this.props;
+    const { canSkip, resources, endpoints: { skip }, showSubTitle } = this.props;
 
     return (
       <Introduction
-        canSkip={canSkip}
+        canSkip={skip && canSkip}
         onSkip={this.handleSkip}
         resources={resources}
+        showTitle={showSubTitle}
       />
     );
   }
@@ -216,7 +214,7 @@ class Register extends Component {
    * @return {HTMLElement|null}
    */
   renderMethod() {
-    const { selectedMethod } = this.props;
+    const { selectedMethod, showSubTitle } = this.props;
     const { registerProps } = this.state;
 
     // Render nothing if there isn't a method chosen
@@ -233,7 +231,7 @@ class Register extends Component {
 
     return (
       <div>
-        <h2 className="mfa-section-title">{selectedMethod.name}</h2>
+        { showSubTitle && <Title /> }
         <RegistrationComponent
           {...registerProps}
           method={selectedMethod}
@@ -250,23 +248,22 @@ class Register extends Component {
    * @return {SelectMethod|null}
    */
   renderOptions() {
-    const {
-      availableMethods,
-    } = this.props;
+    const { availableMethods, showSubTitle } = this.props;
 
     return (
       <SelectMethod
         methods={availableMethods}
+        showTitle={showSubTitle}
       />
     );
   }
 
   render() {
-    const { screen } = this.props;
+    const { screen, onCompleteRegistration, showTitle, showSubTitle } = this.props;
     const { ss: { i18n } } = window;
 
     if (screen === SCREEN_COMPLETE) {
-      return <Complete onComplete={this.handleCompleteProcess} />;
+      return <Complete showTitle={showSubTitle} onComplete={onCompleteRegistration} />;
     }
 
     let content;
@@ -285,12 +282,14 @@ class Register extends Component {
     }
 
     return (
-      <Fragment>
-        <h1 className="mfa-app-title">
-          {i18n._t('MFARegister.TITLE', 'Multi-factor authentication')}
-        </h1>
+      <div>
+        {
+          showTitle && <h1 className="mfa-app-title">
+            {i18n._t('MFARegister.TITLE', 'Multi-factor authentication')}
+          </h1>
+        }
         { content }
-      </Fragment>
+      </div>
     );
   }
 }
@@ -301,22 +300,30 @@ Register.propTypes = {
   canSkip: PropTypes.bool,
   endpoints: PropTypes.shape({
     register: PropTypes.string.isRequired,
-    complete: PropTypes.string.isRequired,
-    skip: PropTypes.string.isRequired,
+    skip: PropTypes.string,
   }),
+  onCompleteRegistration: PropTypes.func.isRequired,
   registeredMethods: PropTypes.arrayOf(registeredMethodType),
   resources: PropTypes.object,
+  showTitle: PropTypes.bool,
+  showSubTitle: PropTypes.bool,
 };
 
 Register.defaultProps = {
   resources: {},
+  showTitle: true,
+  showSubTitle: true,
 };
 
-const mapStateToProps = state => ({
-  screen: state.screen,
-  selectedMethod: state.method,
-  availableMethods: state.availableMethods
-});
+const mapStateToProps = state => {
+  const source = state.mfaRegister || state;
+
+  return {
+    screen: source.screen,
+    selectedMethod: source.method,
+    availableMethods: source.availableMethods,
+  };
+};
 
 const mapDispatchToProps = dispatch => ({
   onShowComplete: () => dispatch(showScreen(SCREEN_COMPLETE)),

@@ -1,8 +1,13 @@
 // Core variables
 @import "variables";
 
+@import '../styles/mfa-variables';
+
+@import '../containers/Login';
+
 // Legacy styles
 @import '../legacy/SiteConfig';
 
 // Component styles
 @import '../components/FormField/RegisteredMFAMethodListField/RegisteredMFAMethodListField';
+@import '../components/Register';

@@ -1,18 +1,15 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import Title from './Title';
 
 /**
  * This component provides a registration confirmation screen to be shown once a member has
  * completed all steps that are part of the MFA registration process
  */
-export default ({ onComplete }) => (
+const Complete = ({ onComplete, showTitle }) => (
   <div className="mfa-register-confirmation">
     <i className="font-icon-check-mark mfa-register-confirmation__icon" />
-    <h2 className="mfa-register-confirmation__title">
-      {window.ss.i18n._t(
-        'MFARegister.SETUP_COMPLETE_TITLE',
-        'Multi-factor authentication is now set up'
-      )}
-    </h2>
+    { showTitle && <Title className="mfa-register-confirmation__title" /> }
     <p className="mfa-register-confirmation__description">
       {window.ss.i18n._t(
         'MFARegister.SETUP_COMPLETE_DESCRIPTION',
@@ -27,3 +24,14 @@ export default ({ onComplete }) => (
     </button>
   </div>
 );
+
+Complete.propTypes = {
+    onComplete: PropTypes.func.isRequired,
+    showTitle: PropTypes.bool,
+};
+
+Complete.defaultProps = {
+    showTitle: true,
+};
+
+export default Complete;

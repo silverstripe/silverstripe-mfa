@@ -8,6 +8,7 @@ import classnames from 'classnames';
 import { SCREEN_INTRODUCTION, SCREEN_REGISTER_METHOD } from '../Register';
 import { showScreen, chooseMethod } from 'state/mfaRegister/actions';
 import { connect } from 'react-redux';
+import Title from './Title';
 
 /**
  * Renders a list of authentication methods as MethodTile components
@@ -83,8 +84,7 @@ class SelectMethod extends Component {
   }
 
   render() {
-    const { ss: { i18n } } = window;
-    const { methods } = this.props;
+    const { methods, showTitle } = this.props;
     const { highlightedMethod } = this.state;
 
     const classes = classnames('mfa-method-tile__container', {
@@ -93,9 +93,7 @@ class SelectMethod extends Component {
 
     return (
       <div>
-        <h2 className="mfa-section-title">
-          {i18n._t('MFASelectMethod.SELECT_METHOD', 'Select a verification method')}
-        </h2>
+        {showTitle && <Title />}
 
         <ul className={classes}>
           {methods.map(method => (
@@ -120,6 +118,11 @@ SelectMethod.propTypes = {
   ),
   onSelectMethod: PropTypes.func,
   onClickBack: PropTypes.func,
+  showTitle: PropTypes.bool,
+};
+
+SelectMethod.defaultProps = {
+  showTitle: true,
 };
 
 const mapDispatchToProps = dispatch => ({

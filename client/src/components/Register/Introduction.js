@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { showScreen } from 'state/mfaRegister/actions';
 import { SCREEN_REGISTER_METHOD } from '../Register';
 import { connect } from 'react-redux';
+import Title from './Title';
 
 const fallbacks = require('../../../lang/src/en.json');
 
@@ -31,14 +32,12 @@ export const ActionList = ({ canSkip, onContinue, onSkip }) => {
   );
 };
 
-const Introduction = ({ canSkip, onContinue, onSkip, resources }) => {
+const Introduction = ({ canSkip, onContinue, onSkip, resources, showTitle }) => {
   const { ss: { i18n } } = window;
 
   return (
     <div>
-      <h2 className="mfa-section-title">
-        { i18n._t('MultiFactorAuthentication.TITLE', fallbacks['MultiFactorAuthentication.TITLE']) }
-      </h2>
+      { showTitle && <Title /> }
 
       <h4 className="mfa-feature-list-title">
         { i18n._t('MultiFactorAuthentication.HOW_IT_WORKS', fallbacks['MultiFactorAuthentication.HOW_IT_WORKS']) }
@@ -127,6 +126,11 @@ Introduction.propTypes = {
     extra_factor_image_url: PropTypes.string,
     unique_image_url: PropTypes.string,
   }).isRequired,
+  showTitle: PropTypes.bool,
+};
+
+Introduction.defaultProps = {
+  showTitle: true,
 };
 
 export { Introduction as Component };

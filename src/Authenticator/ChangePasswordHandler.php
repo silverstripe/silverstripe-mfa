@@ -142,10 +142,16 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
             return $this->jsonResponse(['message' => 'Forbidden'], 403);
         }
 
+        $method = $request->param('Method');
+
+        if (empty($method)) {
+            return $this->jsonResponse(['message' => 'Invalid request: method not present'], 400);
+        }
+
         // Use the provided trait method for handling login
         $response = $this->createStartVerificationResponse(
             $store,
-            Injector::inst()->get(MethodRegistry::class)->getMethodByURLSegment($request->param('Method'))
+            Injector::inst()->get(MethodRegistry::class)->getMethodByURLSegment($method)
         );
 
         // Ensure detail is saved to the store

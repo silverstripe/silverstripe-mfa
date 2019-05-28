@@ -82,10 +82,10 @@ interface StoreInterface
     public function getMethod(): ?string;
 
     /**
-     * @param string $method
+     * @param string|null $method
      * @return $this
      */
-    public function setMethod($method): StoreInterface;
+    public function setMethod(?string $method): StoreInterface;
 
     /**
      * Add and keep track of methods that have been verified

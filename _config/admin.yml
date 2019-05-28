@@ -1,3 +1,13 @@
+---
+Name: mfa-admin
+---
+SilverStripe\Admin\SecurityAdmin:
+  extensions:
+    - SilverStripe\MFA\Extension\RequirementsExtension
+SilverStripe\Admin\CMSProfileController:
+  extensions:
+    - SilverStripe\MFA\Extension\RequirementsExtension
+
 SilverStripe\Admin\LeftAndMain:
   extra_requirements_javascript:
     - 'silverstripe/mfa: client/dist/js/bundle-cms.js'

@@ -58,7 +58,8 @@ class RegisterHandlerTest extends FunctionalTest
      */
     public function testRegisterRouteIsPrivateWithPOSTMethod()
     {
-        $response = $this->post(self::URL, []);
+        // See https://github.com/silverstripe/silverstripe-framework/pull/8987 for why we have to provide $data.
+        $response = $this->post(self::URL, ['dummy' => 'data']);
         $this->assertEquals(403, $response->getStatusCode());
     }
 
