@@ -25,10 +25,9 @@ class RegisteredMFAMethodListField extends FormField
             'schema' => SchemaGenerator::create()->getSchema($this->value) + [
                 'endpoints' => [
                     'register' => AdminRegistrationController::singleton()->Link('register/{urlSegment}'),
-				],
-				'resetEndpoint' => SecurityAdmin::singleton()->Link("reset/{$this->value->ID}"),
+                ],
+                'resetEndpoint' => SecurityAdmin::singleton()->Link("reset/{$this->value->ID}"),
             ],
-
         ]);
     }
 }

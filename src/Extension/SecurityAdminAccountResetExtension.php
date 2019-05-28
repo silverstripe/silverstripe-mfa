@@ -153,6 +153,4 @@ class SecurityAdminAccountResetExtension extends Extension
     {
         return '';
     }
-
-
 }
