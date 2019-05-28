@@ -52,7 +52,7 @@ class MemberResetExtension extends DataExtension
         ]));
 
         $this->owner->AccountResetHash = $hash;
-        $this->owner->AccountResetExpired = date('Y-m-d H:i:s', time() + $lifetime);
+        $this->owner->AccountResetExpired = DBDatetime::create(DBDatetime::now() + $lifetime)-> Rfc2822();
 
         $this->owner->write();
 

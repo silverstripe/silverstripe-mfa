@@ -12,14 +12,14 @@ class SecurityAdminAccountResetExtensionTest extends FunctionalTest
 {
     protected static $fixture_file = 'SecurityAdminAccountResetExtensionTest.yml';
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
 
         SecurityToken::enable();
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         parent::tearDown();
 
