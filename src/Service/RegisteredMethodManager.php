@@ -82,7 +82,7 @@ class RegisteredMethodManager
         if (!MethodRegistry::create()->isBackupMethod($method)) {
             $this->notification->send(
                 $member,
-                'Email/MFA/Notification_register',
+                'SilverStripe/MFA/Email/Notification_register',
                 [
                     'subject' => _t(
                         self::class . '.MFAADDED',
@@ -129,7 +129,7 @@ class RegisteredMethodManager
 
         $this->notification->send(
             $member,
-            'Email/MFA/Notification_removed',
+            'SilverStripe/MFA/Email/Notification_removed',
             [
                 'subject' => _t(
                     self::class . '.MFAREMOVED',
