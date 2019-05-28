@@ -224,7 +224,7 @@ class Register extends Component {
 
     // Render loading if we don't have props yet...
     if (!registerProps) {
-      return <LoadingIndicator block color="rgba(0,113,196,1)" />;
+      return <LoadingIndicator block />;
     }
 
     const RegistrationComponent = loadComponent(selectedMethod.component);
