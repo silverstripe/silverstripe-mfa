@@ -8,6 +8,7 @@ import methodShape from 'types/registeredMethod';
 import MethodListItem from './MethodListItem';
 import { showScreen, chooseMethod, setAvailableMethods } from 'state/mfaRegister/actions';
 import { SCREEN_CHOOSE_METHOD } from 'components/Register';
+import Title from '../../Register/Title';
 
 const fallbacks = require('../../../../lang/src/en.json');
 
@@ -90,7 +91,7 @@ class RegisteredMFAMethodListField extends Component {
 
     return (
       <Modal isOpen={this.state.modalOpen} toggle={this.handleToggleModal}>
-        <ModalHeader toggle={this.handleToggleModal}>Test</ModalHeader>
+        <ModalHeader toggle={this.handleToggleModal}><Title Tag={null} /></ModalHeader>
         <ModalBody>
           <RegisterComponent
             backupMethod={backupMethod}
@@ -98,6 +99,8 @@ class RegisteredMFAMethodListField extends Component {
             onCompleteRegistration={this.handleToggleModal}
             resources={resources}
             endpoints={endpoints}
+            showTitle={false}
+            showSubTitle={false}
           />
         </ModalBody>
       </Modal>

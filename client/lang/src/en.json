@@ -12,5 +12,7 @@
   "MultiFactorAuthentication.SETUP_LATER": "Setup later",
   "MultiFactorAuthentication.REGISTERED": "Registered",
   "MultiFactorAuthentication.ADD_ANOTHER_METHOD": "Add another MFA method",
-  "MultiFactorAuthentication.ADD_FIRST_METHOD": "Add an MFA method"
+  "MultiFactorAuthentication.ADD_FIRST_METHOD": "Add an MFA method",
+  "MultiFactorAuthentication.SELECT_METHOD": "Select a verification method",
+  "MultiFactorAuthentication.SETUP_COMPLETE_TITLE": "Multi-factor authentication is now set up"
 }
