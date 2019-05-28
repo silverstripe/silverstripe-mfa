@@ -16,6 +16,7 @@ window.jQuery.entwine('ss', ($) => {
         availableMethods,
         resources,
         endpoints,
+        resetEndpoint,
       } } = this.data('schema');
 
       ReactDOM.render(
@@ -27,6 +28,7 @@ window.jQuery.entwine('ss', ($) => {
           availableMethods={availableMethods}
           resources={resources}
           endpoints={endpoints}
+          resetEndpoint={resetEndpoint}
         />,
         this[0]
       );

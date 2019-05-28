@@ -1,0 +1,20 @@
+.account-reset-action {
+  align-items: center;
+  display: flex;
+  height: 3em;
+}
+
+.account-reset-action__icon {
+  .account-reset-action--sending &,
+  .account-reset-action--success & {
+    color: $color-blue;
+  }
+
+  .account-reset-action--failure & {
+    color: $color-grey;
+  }
+}
+
+.account-reset-action__message {
+  margin-left: $icon-spacing;
+}

@@ -35,7 +35,7 @@ class Login extends Component {
     const { ss: { i18n } } = window;
 
     if (!numbers) {
-      return <LoadingIndicator />;
+      return <LoadingIndicator block />;
     }
 
     return (

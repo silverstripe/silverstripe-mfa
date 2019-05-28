@@ -1,0 +1,23 @@
+SilverStripe\Security\Member:
+  admin:
+    FirstName: 'MFA Administrator'
+    Email: 'admin@example.org'
+  squib:
+    FirstName: 'Squib'
+    Email: 'squib@example.org'
+
+SilverStripe\Security\Group:
+  admin:
+    Title: 'MFA Admins'
+    Members: =>SilverStripe\Security\Member.admin
+  security-admin:
+    Title: 'Security Admins'
+    Members: =>SilverStripe\Security\Member.squib
+
+SilverStripe\Security\Permission:
+  admin:
+    Code: ADMIN
+    Group: =>SilverStripe\Security\Group.admin
+  security:
+    Code: 'CMS_ACCESS_SecurityAdmin'
+    Group: =>SilverStripe\Security\Group.security-admin

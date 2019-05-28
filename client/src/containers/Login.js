@@ -165,7 +165,7 @@ class Login extends Component {
         throw new Error('Could not read configuration schema to load MFA interface');
       }
 
-      return <LoadingIndicator />;
+      return <LoadingIndicator block />;
     }
 
     return (

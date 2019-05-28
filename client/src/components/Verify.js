@@ -290,7 +290,7 @@ class Verify extends Component {
     const { ss: { i18n } } = window;
 
     if (loading) {
-      return <LoadingIndicator />;
+      return <LoadingIndicator block />;
     }
 
     return (

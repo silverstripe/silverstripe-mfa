@@ -2,9 +2,7 @@
 
 namespace SilverStripe\MFA\FormField;
 
-use SilverStripe\Admin\AdminRootController;
-use SilverStripe\Control\Controller;
-use SilverStripe\Core\Config\Config;
+use SilverStripe\Admin\SecurityAdmin;
 use SilverStripe\Forms\FormField;
 use SilverStripe\MFA\Controller\AdminRegistrationController;
 use SilverStripe\MFA\Service\SchemaGenerator;
@@ -28,6 +26,7 @@ class RegisteredMFAMethodListField extends FormField
                 'endpoints' => [
                     'register' => AdminRegistrationController::singleton()->Link('register/{urlSegment}'),
                 ],
+                'resetEndpoint' => SecurityAdmin::singleton()->Link("reset/{$this->value->ID}"),
             ],
         ]);
     }

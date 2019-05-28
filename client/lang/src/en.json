@@ -14,5 +14,11 @@
   "MultiFactorAuthentication.ADD_ANOTHER_METHOD": "Add another MFA method",
   "MultiFactorAuthentication.ADD_FIRST_METHOD": "Add an MFA method",
   "MultiFactorAuthentication.SELECT_METHOD": "Select a verification method",
-  "MultiFactorAuthentication.SETUP_COMPLETE_TITLE": "Multi-factor authentication is now set up"
+  "MultiFactorAuthentication.SETUP_COMPLETE_TITLE": "Multi-factor authentication is now set up",
+  "MultiFactorAuthentication.ACCOUNT_RESET_TITLE": "Help user reset account",
+  "MultiFactorAuthentication.ACCOUNT_RESET_DESCRIPTION": "Ensure that the person requesting a reset is the real person associated with this account before proceeding. An email will be sent to the member's address with a link to reset both their password and multi-factor authentication methods.",
+  "MultiFactorAuthentication.ACCOUNT_RESET_ACTION": "Send account reset email",
+  "MultiFactorAuthentication.ACCOUNT_RESET_SENDING": "Sending...",
+  "MultiFactorAuthentication.ACCOUNT_RESET_SENDING_SUCCESS": "An email has been sent.",
+  "MultiFactorAuthentication.ACCOUNT_RESET_SENDING_FAILURE": "We were unable to send an email, please try again later."
 }
