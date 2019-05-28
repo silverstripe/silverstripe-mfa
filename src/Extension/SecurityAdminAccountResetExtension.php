@@ -136,7 +136,7 @@ class SecurityAdminAccountResetExtension extends Extension
 
             return $email->send();
         } catch (Exception $e) {
-            $this->logger->info('WARNING: Account Reset Email failed to send');
+            $this->logger->info('WARNING: Account Reset Email failed to send: ' . $e->getMessage());
             return false;
         }
     }
