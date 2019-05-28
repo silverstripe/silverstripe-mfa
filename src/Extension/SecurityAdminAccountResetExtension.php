@@ -131,7 +131,7 @@ class SecurityAdminAccountResetExtension extends Extension
                 ))
                 ->addData('AccountResetLink', $this->getAccountResetLink($member, $token))
                 ->addData('Member', $member)
-                ->setFrom(Email::config()->admin_email)
+                ->setFrom(Email::config()->get('admin_email'))
                 ->setTo($member->Email);
 
             return $email->send();
