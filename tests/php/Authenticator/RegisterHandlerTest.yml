@@ -5,8 +5,8 @@ SilverStripe\MFA\Model\RegisteredMethod:
 
 SilverStripe\Security\Member:
   fresh-member:
-    Email: 'fresh.member'
+    Email: 'fresh.member@example.com'
   stale-member:
-    Email: 'stale.member'
+    Email: 'stale.member@example.com'
     RegisteredMFAMethods:
       - =>SilverStripe\MFA\Model\RegisteredMethod.math-method-for-stale-user

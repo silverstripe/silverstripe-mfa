@@ -3,12 +3,13 @@
 namespace SilverStripe\MFA\Tests\BackupCode;
 
 use PHPUnit_Framework_MockObject_MockObject;
+use SilverStripe\Control\Email\Email;
 use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\MFA\BackupCode\VerifyHandler;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Model\RegisteredMethod;
+use SilverStripe\MFA\Service\Notification;
 use SilverStripe\MFA\Store\StoreInterface;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
@@ -22,16 +23,24 @@ class VerifyHandlerTest extends SapphireTest
      */
     public function testVerifyValidatesCodes($expectedResult, $input, $message)
     {
-        $handler = new VerifyHandler();
+        $handler = (new VerifyHandler())->setNotificationService($this->createMock(Notification::class));
 
         // Test a code with invalid characters
         list ($request, $store, $method) = $this->scaffoldVerifyParams($input);
         $this->assertSame($expectedResult, $handler->verify($request, $store, $method)->isSuccessful(), $message);
     }
 
+    public function testVerifySendsNotification()
+    {
+        $handler = (new VerifyHandler())->setNotificationService((Notification::create()));
+        list ($request, $store, $method) = $this->scaffoldVerifyParams('123456');
+        $this->assertTrue($handler->verify($request, $store, $method)->isSuccessful());
+        $this->assertEmailSent($store->getMember()->Email, null, '/recovery code was used/');
+    }
+
     public function testVerifyInvalidatesCodesThatHaveBeenUsed()
     {
-        $handler = new VerifyHandler();
+        $handler = (new VerifyHandler())->setNotificationService($this->createMock(Notification::class));
 
         // Test a code with invalid characters
         list ($request, $store, $method) = $this->scaffoldVerifyParams('123456');

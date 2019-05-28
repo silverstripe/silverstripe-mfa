@@ -2,6 +2,7 @@
 
 namespace SilverStripe\MFA\Tests\Service;
 
+use SilverStripe\Control\Email\Email;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\MFA\BackupCode\Method as BackupCodeMethod;
@@ -66,6 +67,33 @@ class RegisteredMethodManagerTest extends SapphireTest
         $this->assertCount(1, $member->RegisteredMFAMethods());
     }
 
+    public function testRegisterForMemberSendsNotification()
+    {
+        /** @var Member&MemberExtension $member */
+        $member = Member::create(['FirstName' => 'Mike', 'Email' => 'test@example.com']);
+        $member->write();
+        $method = new BasicMathMethod();
+
+        $manager = RegisteredMethodManager::singleton();
+        RegisteredMethodManager::singleton()->registerForMember($member, $method, ['foo', 'bar']);
+
+        $this->assertEmailSent($member->Email, null, '/method was added to your account/');
+    }
+
+    public function testRegisterBackupMethodDoesNotSendEmail()
+    {
+        /** @var Member&MemberExtension $member */
+        $member = Member::create(['FirstName' => 'Mike', 'Email' => 'test@example.com']);
+        $member->write();
+        $method = new BackupCodeMethod();
+
+        $manager = RegisteredMethodManager::singleton();
+        RegisteredMethodManager::singleton()->registerForMember($member, $method, ['foo', 'bar']);
+
+        $this->assertNull($this->findEmail($member->Email));
+    }
+
+
     public function testRegisterForMemberDoesNothingWithNoData()
     {
         /** @var Member&MemberExtension $member */
@@ -91,6 +119,17 @@ class RegisteredMethodManagerTest extends SapphireTest
 
         $this->assertCount(2, $member->RegisteredMFAMethods());
         $this->assertNull($manager->getFromMember($member, new BasicMathMethod()));
+    }
+
+    public function testDeleteFromMemberSendsNotification()
+    {
+        /** @var Member&MemberExtension $member */
+        $member = $this->objFromFixture(Member::class, 'bob_jones');
+
+        $manager = RegisteredMethodManager::singleton();
+        $manager->deleteFromMember($member, new BasicMathMethod());
+
+        $this->assertEmailSent($member->Email, null, '/method was removed from your account/');
     }
 
     public function testDeletingLastMethodRemovesBackupCodes()
