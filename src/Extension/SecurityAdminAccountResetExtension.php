@@ -54,7 +54,7 @@ class SecurityAdminAccountResetExtension extends Extension
             );
         }
 
-        $body = json_decode($request->getBody(), true);
+        $body = json_decode($request->getBody() ?? '', true);
 
         if (!SecurityToken::inst()->check($body['csrf_token'] ?? null)) {
             return $this->jsonResponse(
