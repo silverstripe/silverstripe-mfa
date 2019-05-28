@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace SilverStripe\MFA\Extension;
 
@@ -36,8 +36,6 @@ class MemberResetExtension extends DataExtension
      * but against the AccountReset fields.
      *
      * @return string
-     * @throws PasswordEncryptor_NotFoundException
-     * @throws ValidationException
      */
     public function generateAccountResetTokenAndStoreHash(): string
     {
@@ -64,7 +62,6 @@ class MemberResetExtension extends DataExtension
      *
      * @param string $token
      * @return Member
-     * @throws PasswordEncryptor_NotFoundException
      */
     public function getMemberByAccountResetToken(string $token): ?Member
     {
