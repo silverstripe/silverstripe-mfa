@@ -6,7 +6,6 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import classnames from 'classnames';
 import methodShape from 'types/registeredMethod';
-
 import AccountResetUI from './AccountResetUI';
 import MethodListItem from './MethodListItem';
 import {
@@ -22,6 +21,7 @@ import {
 } from 'components/Register';
 import Title from '../../Register/Title';
 import Config from 'lib/Config';
+import confirm from 'lib/confirm';
 
 const fallbacks = require('../../../../lang/src/en.json');
 
@@ -56,21 +56,6 @@ class RegisteredMFAMethodListField extends Component {
     if (registrationScreen === SCREEN_INTRODUCTION && modalOpen) {
       this.handleToggleModal();
     }
-  }
-
-  getAddMethodButtonLabel() {
-    const { ss: { i18n } } = window;
-    const { registeredMethods } = this.props;
-
-    return registeredMethods.length
-      ? i18n._t(
-        'MultiFactorAuthentication.ADD_ANOTHER_METHOD',
-        fallbacks['MultiFactorAuthentication.ADD_ANOTHER_METHOD']
-      )
-      : i18n._t(
-        'MultiFactorAuthentication.ADD_FIRST_METHOD',
-        fallbacks['MultiFactorAuthentication.ADD_FIRST_METHOD']
-      );
   }
 
   /**
@@ -192,8 +177,9 @@ class RegisteredMFAMethodListField extends Component {
    *
    * @param {object} method
    */
-  handleClickRemove(method) {
+  async handleClickRemove(method) {
     const { endpoints: { remove } } = this.props;
+    const { ss: { i18n } } = window;
 
     // Can't remove if there's no endpoint. UI should prevent this from happening
     if (!remove) {
@@ -201,7 +187,20 @@ class RegisteredMFAMethodListField extends Component {
     }
 
     // Confirm with the user
-    if (!confirm('Are you sure you want to delete this method')) {
+    const confirmMessage = i18n._t(
+      'MultiFactorAuthentication.DELETE_CONFIRMATION',
+      fallbacks['MultiFactorAuthentication.DELETE_CONFIRMATION']
+    );
+    const confirmTitle = i18n._t(
+      'MultiFactorAuthentication.CONFIRMATION_TITLE',
+      fallbacks['MultiFactorAuthentication.CONFIRMATION_TITLE']
+    );
+    const buttonLabel = i18n._t(
+      'MultiFactorAuthentication.DELETE_CONFIRMATION_BUTTON',
+      fallbacks['MultiFactorAuthentication.DELETE_CONFIRMATION_BUTTON']
+    );
+
+    if (!await confirm(confirmMessage, { title: confirmTitle, confirmLabel: buttonLabel })) {
       return;
     }
 
@@ -254,14 +253,15 @@ class RegisteredMFAMethodListField extends Component {
       return null;
     }
 
+    const { readOnly } = this.props;
     const { ss: { i18n } } = window;
+    const messageKey = readOnly
+      ? 'MultiFactorAuthentication.NO_METHODS_REGISTERED_READONLY'
+      : 'MultiFactorAuthentication.NO_METHODS_REGISTERED';
 
     return (
       <div className="registered-mfa-method-list-field__no-methods">
-        {i18n._t(
-          'MultiFactorAuthentication.NO_METHODS_REGISTERED',
-          fallbacks['MultiFactorAuthentication.NO_METHODS_REGISTERED']
-        )}
+        {i18n._t(messageKey, fallbacks[messageKey])}
       </div>
     );
   }
@@ -272,8 +272,9 @@ class RegisteredMFAMethodListField extends Component {
    * @return {MethodListItem}
    */
   renderBackupMethod() {
-    const { backupMethod } = this.props;
+    const { backupMethod, backupCreatedDate } = this.props;
     const { registeredMethods } = this.state;
+    const { ss: { i18n } } = window;
 
     if (!backupMethod || !registeredMethods.find(
       candidate => candidate.urlSegment === backupMethod.urlSegment
@@ -281,10 +282,32 @@ class RegisteredMFAMethodListField extends Component {
       return '';
     }
 
+    // Overload onReset to confirm with user for backups only
+    const confirmMessage = i18n._t(
+      'MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION',
+      fallbacks['MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION']
+    );
+    const confirmTitle = i18n._t(
+      'MultiFactorAuthentication.CONFIRMATION_TITLE',
+      fallbacks['MultiFactorAuthentication.CONFIRMATION_TITLE']
+    );
+    const buttonLabel = i18n._t(
+      'MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION_BUTTON',
+      fallbacks['MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION_BUTTON']
+    );
+
+    const handleReset = async method => {
+      if (!await confirm(confirmMessage, { title: confirmTitle, confirmLabel: buttonLabel })) {
+        return;
+      }
+      this.handleResetMethod(method);
+    };
+
     return (
       <MethodListItem
         method={backupMethod}
-        onResetMethod={this.handleResetMethod}
+        onResetMethod={handleReset}
+        createdDate={backupCreatedDate}
         isReadOnly={false}
         isBackupMethod
         tag="div"
@@ -305,7 +328,7 @@ class RegisteredMFAMethodListField extends Component {
       return '';
     }
 
-    const { defaultMethod, endpoints: { remove } } = this.props;
+    const { defaultMethod, endpoints } = this.props;
 
     return baseMethods
       .map(method => {
@@ -314,7 +337,7 @@ class RegisteredMFAMethodListField extends Component {
           key: method.name,
           isDefaultMethod: defaultMethod && method.urlSegment === defaultMethod.urlSegment,
           isReadOnly: false,
-          onRemoveMethod: remove && this.handleClickRemove,
+          onRemoveMethod: endpoints && endpoints.remove && this.handleClickRemove,
           onResetMethod: this.handleResetMethod,
         };
 
@@ -338,6 +361,13 @@ class RegisteredMFAMethodListField extends Component {
     } = this.props;
 
     const { registeredMethods } = this.state;
+    const { ss: { i18n } } = window;
+
+    const completeMessage = i18n._t(
+      'MultiFactorAuthentication.ADMIN_SETUP_COMPLETE_CONTINUE',
+      fallbacks['MultiFactorAuthentication.ADMIN_SETUP_COMPLETE_CONTINUE']
+    );
+
 
     return (
       <Modal
@@ -356,16 +386,44 @@ class RegisteredMFAMethodListField extends Component {
             endpoints={endpoints}
             showTitle={false}
             showSubTitle={false}
+            completeMessage={completeMessage}
           />)}
         </ModalBody>
       </Modal>
     );
   }
 
-  render() {
-    const { ss: { i18n } } = window;
-    const { availableMethods, readOnly, resetEndpoint } = this.props;
+  renderAddButton() {
+    const { availableMethods, registeredMethods, readOnly } = this.props;
 
+    if (readOnly || !availableMethods || availableMethods.length === 0) {
+      return null;
+    }
+
+    const { ss: { i18n } } = window;
+    const label = registeredMethods.length
+      ? i18n._t(
+        'MultiFactorAuthentication.ADD_ANOTHER_METHOD',
+        fallbacks['MultiFactorAuthentication.ADD_ANOTHER_METHOD']
+      )
+      : i18n._t(
+        'MultiFactorAuthentication.ADD_FIRST_METHOD',
+        fallbacks['MultiFactorAuthentication.ADD_FIRST_METHOD']
+      );
+
+    return (
+      <Button
+        className="registered-mfa-method-list-field__button"
+        outline
+        onClick={this.handleToggleModal}
+      >
+        { label }
+      </Button>
+    );
+  }
+
+  render() {
+    const { readOnly, resetEndpoint } = this.props;
     const classNames = classnames({
       'registered-mfa-method-list-field': true,
       'registered-mfa-method-list-field--read-only': readOnly,
@@ -373,25 +431,14 @@ class RegisteredMFAMethodListField extends Component {
 
     return (
       <div className={classNames}>
-        { this.renderNoMethodsMessage() }
         <ul className="method-list">
           { this.renderBaseMethods() }
-
-          <hr />
-
-          { readOnly && <AccountResetUI resetEndpoint={resetEndpoint} /> }
         </ul>
-        {
-          availableMethods.length > 0 &&
-          <Button
-            className="registered-mfa-method-list-field__button"
-            outline
-            onClick={this.handleToggleModal}
-          >
-            { this.getAddMethodButtonLabel() }
-          </Button>
-        }
+        { this.renderNoMethodsMessage() }
+        { this.renderAddButton() }
         { this.renderBackupMethod() }
+        { readOnly && <hr /> }
+        { readOnly && <AccountResetUI resetEndpoint={resetEndpoint} /> }
         { this.renderModal() }
       </div>
     );

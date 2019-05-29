@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import methodShape from 'types/registeredMethod';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import moment from 'moment';
 
 const fallbacks = require('../../../../lang/src/en.json');
 
@@ -74,7 +75,7 @@ class MethodListItem extends PureComponent {
   }
 
   renderNameAndStatus() {
-    const { method, isBackupMethod } = this.props;
+    const { method, isBackupMethod, createdDate } = this.props;
     const { ss: { i18n } } = window;
 
     let statusMessage = i18n._t(
@@ -89,9 +90,11 @@ class MethodListItem extends PureComponent {
       );
     }
 
+    moment.locale(i18n.detectLocale());
+
     return i18n.inject(statusMessage, {
       method: `${method.name}${this.getNameSuffix()}`,
-      date: 'date' // TODO put date in here
+      date: moment(createdDate).format('L'),
     });
   }
 

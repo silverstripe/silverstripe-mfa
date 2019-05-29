@@ -274,11 +274,17 @@ class Register extends Component {
   }
 
   render() {
-    const { screen, onCompleteRegistration, showTitle, showSubTitle } = this.props;
+    const { screen, onCompleteRegistration, showTitle, showSubTitle, completeMessage } = this.props;
     const { ss: { i18n } } = window;
 
     if (screen === SCREEN_COMPLETE) {
-      return <Complete showTitle={showSubTitle} onComplete={onCompleteRegistration} />;
+      return (
+        <Complete
+          showTitle={showSubTitle}
+          onComplete={onCompleteRegistration}
+          message={completeMessage}
+        />
+      );
     }
 
     let content;

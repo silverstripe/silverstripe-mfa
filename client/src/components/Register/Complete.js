@@ -6,12 +6,12 @@ import Title from './Title';
  * This component provides a registration confirmation screen to be shown once a member has
  * completed all steps that are part of the MFA registration process
  */
-const Complete = ({ onComplete, showTitle }) => (
+const Complete = ({ onComplete, showTitle, message }) => (
   <div className="mfa-register-confirmation">
     <i className="font-icon-check-mark mfa-register-confirmation__icon" />
     { showTitle && <Title className="mfa-register-confirmation__title" /> }
     <p className="mfa-register-confirmation__description">
-      {window.ss.i18n._t(
+      {message || window.ss.i18n._t(
         'MFARegister.SETUP_COMPLETE_DESCRIPTION',
         'You can edit these settings from your profile area in the menu.'
       )}

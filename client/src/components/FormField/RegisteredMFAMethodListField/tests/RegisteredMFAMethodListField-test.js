@@ -40,7 +40,43 @@ describe('RegisteredMFAMethodListField', () => {
     });
   });
 
-  describe('getAddMethodButtonLabel', () => {
+  describe('renderAddButton', () => {
+    it('renders a button', () => {
+      const availableMethods = [altMethod];
+
+      const wrapper = shallow(
+        <RegisteredMFAMethodListField
+          backupMethod={backupMethod}
+          defaultMethod={defaultMethod}
+          availableMethods={availableMethods}
+          registeredMethods={[]}
+          RegisterComponent={RegisterComponent}
+          onUpdateAvailableMethods={onUpdateAvailableMethods}
+        />
+      );
+
+      expect(wrapper.find('.registered-mfa-method-list-field__button')).toHaveLength(1);
+    });
+
+    it('doesn\'t render a button in read-only mode', () => {
+      const availableMethods = [altMethod];
+
+      const wrapper = shallow(
+        <RegisteredMFAMethodListField
+          backupMethod={backupMethod}
+          defaultMethod={defaultMethod}
+          availableMethods={availableMethods}
+          registeredMethods={[]}
+          readOnly
+          RegisterComponent={RegisterComponent}
+          onUpdateAvailableMethods={onUpdateAvailableMethods}
+        />
+      );
+
+      expect(wrapper.find('.registered-mfa-method-list-field__button')).toHaveLength(0);
+    });
+
+
     it('provides a contextual message depending on registered methods', () => {
       const availableMethods = [altMethod];
 
@@ -55,8 +91,11 @@ describe('RegisteredMFAMethodListField', () => {
         />
       );
 
-      expect(withoutRegisteredMethods.instance().getAddMethodButtonLabel())
-        .toBe(translationStrings['MultiFactorAuthentication.ADD_FIRST_METHOD']);
+      expect(withoutRegisteredMethods
+        .find('.registered-mfa-method-list-field__button')
+        .shallow()
+        .text()
+      ).toBe(translationStrings['MultiFactorAuthentication.ADD_FIRST_METHOD']);
 
       const withRegisteredMethods = shallow(
         <RegisteredMFAMethodListField
@@ -69,8 +108,11 @@ describe('RegisteredMFAMethodListField', () => {
         />
       );
 
-      expect(withRegisteredMethods.instance().getAddMethodButtonLabel())
-        .toBe(translationStrings['MultiFactorAuthentication.ADD_ANOTHER_METHOD']);
+      expect(withRegisteredMethods
+        .find('.registered-mfa-method-list-field__button')
+        .shallow()
+        .text()
+      ).toBe(translationStrings['MultiFactorAuthentication.ADD_ANOTHER_METHOD']);
     });
   });
 

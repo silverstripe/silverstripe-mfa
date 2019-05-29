@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Config from 'lib/Config'; // eslint-disable-line
+import confirm from 'lib/confirm';
 
 import LoadingIndicator from '../../LoadingIndicator';
 import CircleDash from '../../Icons/CircleDash';
@@ -28,7 +29,26 @@ class AccountResetUI extends Component {
    * Sends a reset request to the provided endpoint, and updates the component's state based on
    * the contents of the response.
    */
-  handleSendReset() {
+  async handleSendReset() {
+    const { ss: { i18n } } = window;
+
+    // Confirm with the user
+    const confirmMessage = i18n._t(
+      'MultiFactorAuthentication.RESET_ACCOUNT_CONFIRMATION',
+      fallbacks['MultiFactorAuthentication.RESET_ACCOUNT_CONFIRMATION']
+    );
+    const confirmTitle = i18n._t(
+      'MultiFactorAuthentication.CONFIRMATION_TITLE',
+      fallbacks['MultiFactorAuthentication.CONFIRMATION_TITLE']
+    );
+    const buttonLabel = i18n._t(
+      'MultiFactorAuthentication.RESET_ACCOUNT_CONFIRMATION_BUTTON',
+      fallbacks['MultiFactorAuthentication.RESET_ACCOUNT_CONFIRMATION_BUTTON']
+    );
+    if (!await confirm(confirmMessage, { title: confirmTitle, confirmLabel: buttonLabel })) {
+      return;
+    }
+
     this.setState({ submitting: true });
 
     const body = JSON.stringify({ csrf_token: Config.get('SecurityID') });

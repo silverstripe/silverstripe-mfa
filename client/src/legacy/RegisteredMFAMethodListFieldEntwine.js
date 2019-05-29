@@ -17,6 +17,7 @@ window.jQuery.entwine('ss', ($) => {
         allAvailableMethods,
         resources,
         endpoints,
+        backupCreatedDate,
         resetEndpoint,
       } } = this.data('schema');
 
@@ -30,6 +31,7 @@ window.jQuery.entwine('ss', ($) => {
           allAvailableMethods={allAvailableMethods}
           resources={resources}
           endpoints={endpoints}
+          backupCreatedDate={backupCreatedDate}
           resetEndpoint={resetEndpoint}
         />,
         this[0]

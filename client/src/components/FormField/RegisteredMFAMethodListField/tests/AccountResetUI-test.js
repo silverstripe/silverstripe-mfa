@@ -48,14 +48,17 @@ describe('AccountResetUI', () => {
       expect(action.first().props().disabled).toBeFalsy();
     });
 
-    it('submits the reset request when clicked', () => {
+    it('submits the reset request when clicked', done => {
       const ui = shallow(
         <AccountResetUI resetEndpoint="/reset/1" />
       );
 
       ui.find('.account-reset-action .btn').first().simulate('click');
 
-      expect(fetchMock.mock.calls.length).toBe(1);
+      setTimeout(() => {
+        expect(fetchMock.mock.calls.length).toBe(1);
+        done();
+      });
     });
 
     it('is hidden when submitting or complete', () => {
