@@ -20,7 +20,7 @@ import {
   SCREEN_INTRODUCTION
 } from 'components/Register';
 import Title from '../../Register/Title';
-import Config from 'lib/Config';
+import Config from 'lib/Config'; // eslint-disable-line
 import confirm from '@silverstripe/reactstrap-confirm';
 
 const fallbacks = require('../../../../lang/src/en.json');
