@@ -21,7 +21,7 @@ import {
 } from 'components/Register';
 import Title from '../../Register/Title';
 import Config from 'lib/Config';
-import confirm from 'lib/confirm';
+import confirm from '@silverstripe/reactstrap-confirm';
 
 const fallbacks = require('../../../../lang/src/en.json');
 

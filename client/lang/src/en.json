@@ -27,6 +27,7 @@
   "MultiFactorAuthentication.ACCOUNT_RESET_SENDING_SUCCESS": "An email has been sent.",
   "MultiFactorAuthentication.ACCOUNT_RESET_SENDING_FAILURE": "We were unable to send an email, please try again later.",
   "MultiFactorAuthentication.DEFAULT_CONFIRM_BUTTON": "Confirm",
+  "MultiFactorAuthentication.DEFAULT_CONFIRM_DISMISS_BUTTON": "Cancel",
   "MultiFactorAuthentication.DELETE_CONFIRMATION": "Are you sure you want to remove this method",
   "MultiFactorAuthentication.CONFIRMATION_TITLE": "Are you sure?",
   "MultiFactorAuthentication.DELETE_CONFIRMATION_BUTTON": "Remove method",

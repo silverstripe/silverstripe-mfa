@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Config from 'lib/Config'; // eslint-disable-line
-import confirm from 'lib/confirm';
-
+import confirm from '@silverstripe/reactstrap-confirm';
 import LoadingIndicator from '../../LoadingIndicator';
 import CircleDash from '../../Icons/CircleDash';
 import CircleTick from '../../Icons/CircleTick';

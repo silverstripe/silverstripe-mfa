@@ -7,6 +7,12 @@ import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import AccountResetUI from '../AccountResetUI';
 
+import confirm from '@silverstripe/reactstrap-confirm';
+
+jest.mock('@silverstripe/reactstrap-confirm', () => jest.fn().mockImplementation(
+  () => Promise.resolve(true)
+));
+
 Enzyme.configure({ adapter: new Adapter() });
 
 window.ss = {
@@ -23,6 +29,7 @@ describe('AccountResetUI', () => {
     }));
 
     fetchMock.mockClear();
+    confirm.mockClear();
   });
 
   describe('renderAction()', () => {
