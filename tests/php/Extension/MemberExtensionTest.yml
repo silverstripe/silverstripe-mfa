@@ -8,7 +8,7 @@ SilverStripe\Security\PermissionRoleCode:
     Code: 'MFA_Admin'
 
 SilverStripe\Security\Member:
-  admin:
+  mfaadmin:
     FirstName: 'MFA Administrator'
     Email: 'admin@example.org'
   squib:
@@ -18,7 +18,7 @@ SilverStripe\Security\Member:
 SilverStripe\Security\Group:
   mfa-admin:
     Title: 'MFA Admins'
-    Members: =>SilverStripe\Security\Member.admin
+    Members: =>SilverStripe\Security\Member.mfaadmin
     Roles: =>SilverStripe\Security\PermissionRole.mfa
 
 SilverStripe\Security\Permission:
