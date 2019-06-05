@@ -21,6 +21,7 @@ use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
 use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
+use SilverStripe\SecurityExtensions\Service\SudoModeServiceInterface;
 use SilverStripe\SiteConfig\SiteConfig;
 
 class LoginHandlerTest extends FunctionalTest
@@ -43,6 +44,11 @@ class LoginHandlerTest extends FunctionalTest
                 ]
             ]
         ]);
+
+        /** @var SudoModeServiceInterface&PHPUnit_Framework_MockObject_MockObject $sudoModeService */
+        $sudoModeService = $this->createMock(SudoModeServiceInterface::class);
+        $sudoModeService->expects($this->any())->method('check')->willReturn(true);
+        Injector::inst()->registerService($sudoModeService, SudoModeServiceInterface::class);
     }
 
     public function testMFAStepIsAdded()
@@ -234,7 +240,7 @@ class LoginHandlerTest extends FunctionalTest
         $handler->getMember();
     }
 
-    public function testVerifyLoginHandlesMembersLockedOut()
+    public function testFinishVerificationHandlesMembersLockedOut()
     {
         /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'robbie');
@@ -255,7 +261,30 @@ class LoginHandlerTest extends FunctionalTest
         $this->assertContains('Your account is temporarily locked', (string) $response->getBody());
     }
 
-    public function testVerifyLoginPassesExceptionMessagesThroughFromMethodsWithValidationFailures()
+    public function testFinishVerificationChecksSudoModeIsActive()
+    {
+        /** @var Member&MemberExtension $member */
+        $member = $this->objFromFixture(Member::class, 'robbie');
+
+        $handler = new LoginHandler('mfa', $this->createMock(MemberAuthenticator::class));
+        $request = new HTTPRequest('GET', '/');
+        $request->setSession(new Session([]));
+
+        $store = new SessionStore($member);
+        $store->setMethod('basic-math');
+        $handler->setStore($store);
+
+        /** @var SudoModeServiceInterface&PHPUnit_Framework_MockObject_MockObject $sudoModeService */
+        $sudoModeService = $this->createMock(SudoModeServiceInterface::class);
+        $sudoModeService->method('check')->willReturn(false);
+        Injector::inst()->registerService($sudoModeService, SudoModeServiceInterface::class);
+
+        $response = $handler->finishVerification($request);
+        $this->assertEquals(403, $response->getStatusCode());
+        $this->assertContains('You need to re-verify your account before continuing', (string) $response->getBody());
+    }
+
+    public function testFinishVerificationPassesExceptionMessagesThroughFromMethodsWithValidationFailures()
     {
         /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'robbie');

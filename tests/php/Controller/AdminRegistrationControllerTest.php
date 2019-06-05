@@ -2,6 +2,7 @@
 
 namespace SilverStripe\MFA\Tests\Controller;
 
+use PHPUnit_Framework_MockObject_MockObject;
 use SilverStripe\Admin\AdminRootController;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
@@ -17,6 +18,7 @@ use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method as BasicMathMethod;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\SecurityToken;
+use SilverStripe\SecurityExtensions\Service\SudoModeServiceInterface;
 
 class AdminRegistrationControllerTest extends FunctionalTest
 {
@@ -29,6 +31,11 @@ class AdminRegistrationControllerTest extends FunctionalTest
         MethodRegistry::config()->set('methods', [
             BasicMathMethod::class,
         ]);
+
+        /** @var SudoModeServiceInterface&PHPUnit_Framework_MockObject_MockObject $sudoModeService */
+        $sudoModeService = $this->createMock(SudoModeServiceInterface::class);
+        $sudoModeService->expects($this->any())->method('check')->willReturn(true);
+        Injector::inst()->registerService($sudoModeService, SudoModeServiceInterface::class);
     }
 
     public function testStartRegistrationAssertsValidMethod()
@@ -273,5 +280,37 @@ class AdminRegistrationControllerTest extends FunctionalTest
         Injector::inst()->registerService($mock, RegisteredMethodManager::class);
 
         return $mock;
+    }
+
+    public function testEnforcesSudoMode()
+    {
+        $sudoModeService = $this->createMock(SudoModeServiceInterface::class);
+        $sudoModeService->expects($this->any())->method('check')->willReturn(false);
+        Injector::inst()->registerService($sudoModeService, SudoModeServiceInterface::class);
+
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, 'sally_smith');
+        $this->logInAs($member);
+        $method = new BasicMathMethod();
+
+        $store = new SessionStore($member);
+        $store->setMethod($method->getURLSegment());
+        $this->session()->set(SessionStore::SESSION_KEY, $store);
+
+        $result = $this->post(
+            Controller::join_links(
+                AdminRootController::admin_url(),
+                'mfa',
+                'register',
+                $method->getURLSegment()
+            ),
+            ['dummy' => 'data'],
+            null,
+            $this->session(),
+            json_encode(['number' => 7])
+        );
+
+        $this->assertSame(400, $result->getStatusCode());
+        $this->assertContains('Invalid session', $result->getBody());
     }
 }

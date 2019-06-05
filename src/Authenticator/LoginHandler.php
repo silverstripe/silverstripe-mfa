@@ -16,7 +16,6 @@ use SilverStripe\MFA\RequestHandler\VerificationHandlerTrait;
 use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\SchemaGenerator;
-use SilverStripe\MFA\Store\StoreInterface;
 use SilverStripe\ORM\ValidationException;
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\IdentityStore;
@@ -91,6 +90,9 @@ class LoginHandler extends BaseLoginHandler
         if (!$member || !$this->getMethodRegistry()->hasMethods()) {
             return parent::doLogin($data, $form, $request);
         }
+
+        // Enable sudo mode. This would usually be done by the default login handler's afterLogin() hook.
+        $this->getSudoModeService()->activate($request->getSession());
 
         // Create a store for handling MFA for this member
         $store = $this->createStore($member);
@@ -232,7 +234,9 @@ class LoginHandler extends BaseLoginHandler
         $sessionMember = $store ? $store->getMember() : null;
         $loggedInMember = Security::getCurrentUser();
 
-        if (is_null($loggedInMember) && is_null($sessionMember)) {
+        if ((is_null($loggedInMember) && is_null($sessionMember))
+            || !$this->getSudoModeService()->check($request->getSession())
+        ) {
             return $this->jsonResponse(
                 ['errors' => [_t(__CLASS__ . '.NOT_AUTHENTICATING', 'You must be logged or logging in')]],
                 403
@@ -347,6 +351,16 @@ class LoginHandler extends BaseLoginHandler
                 'message' => _t(
                     __CLASS__ . '.LOCKED_OUT',
                     'Your account is temporarily locked. Please try again later.'
+                ),
+            ], 403);
+        }
+
+        // Enforce sudo mode
+        if (!$this->getSudoModeService()->check($request->getSession())) {
+            return $this->jsonResponse([
+                'message' => _t(
+                    __CLASS__ . '.SUDO_MODE_REQUIRED',
+                    'You need to re-verify your account before continuing. Please reload and try again.'
                 ),
             ], 403);
         }
@@ -470,7 +484,7 @@ class LoginHandler extends BaseLoginHandler
      * @param LoggerInterface $logger
      * @return $this
      */
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): self
     {
         $this->logger = $logger;
         return $this;
@@ -479,7 +493,7 @@ class LoginHandler extends BaseLoginHandler
     /**
      * @return LoggerInterface
      */
-    public function getLogger()
+    public function getLogger(): ?LoggerInterface
     {
         return $this->logger;
     }

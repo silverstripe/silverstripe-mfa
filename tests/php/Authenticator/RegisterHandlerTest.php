@@ -2,7 +2,7 @@
 
 namespace SilverStripe\MFA\Tests\Authenticator;
 
-use Exception;
+use PHPUnit_Framework_MockObject_MockObject;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\FunctionalTest;
@@ -16,6 +16,7 @@ use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
+use SilverStripe\SecurityExtensions\Service\SudoModeServiceInterface;
 
 /**
  * Class RegisterHandlerTest
@@ -42,6 +43,11 @@ class RegisterHandlerTest extends FunctionalTest
                 ]
             ]
         ]);
+
+        /** @var SudoModeServiceInterface&PHPUnit_Framework_MockObject_MockObject $sudoModeService */
+        $sudoModeService = $this->createMock(SudoModeServiceInterface::class);
+        $sudoModeService->expects($this->any())->method('check')->willReturn(true);
+        Injector::inst()->registerService($sudoModeService, SudoModeServiceInterface::class);
     }
 
     /**
@@ -190,22 +196,33 @@ class RegisterHandlerTest extends FunctionalTest
      */
     public function testFinishRegistrationSucceeds()
     {
-        /** @var Member|MemberExtension $freshMember */
+        /** @var Member&MemberExtension $freshMember */
         $freshMember = $this->objFromFixture(Member::class, 'fresh-member');
 
         $this->scaffoldPartialLogin($freshMember, 'basic-math');
 
         $response = $this->post(self::URL, ['dummy' => 'data'], null, $this->session(), json_encode(['number' => 7]));
-        $this->assertEquals(201, $response->getStatusCode(), sprintf('Body: %s', $response->getBody()));
-
-        if ($response->getStatusCode() !== 201) {
-            var_dump($response->getBody());
-        }
+        $this->assertEquals(201, $response->getStatusCode());
 
         // Make sure the registration made it into the database
         $registeredMethod = $freshMember->RegisteredMFAMethods()->first();
         $this->assertNotNull($registeredMethod);
         $this->assertEquals('{"number":7}', $registeredMethod->Data);
+    }
+
+    public function testEnforcesSudoMode()
+    {
+        $sudoModeService = $this->createMock(SudoModeServiceInterface::class);
+        $sudoModeService->expects($this->any())->method('check')->willReturn(false);
+        Injector::inst()->registerService($sudoModeService, SudoModeServiceInterface::class);
+
+        /** @var Member&MemberExtension $freshMember */
+        $freshMember = $this->objFromFixture(Member::class, 'fresh-member');
+        $this->scaffoldPartialLogin($freshMember, 'basic-math');
+
+        $response = $this->post(self::URL, ['dummy' => 'data'], null, $this->session(), json_encode(['number' => 7]));
+        $this->assertSame(403, $response->getStatusCode());
+        $this->assertContains('You must be logged or logging in', (string) $response->getBody());
     }
 
     /**

@@ -6,6 +6,7 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Store\StoreInterface;
 use SilverStripe\Security\Member;
+use SilverStripe\SecurityExtensions\Service\SudoModeServiceInterface;
 use SilverStripe\View\Requirements;
 
 trait BaseHandlerTrait
@@ -76,5 +77,15 @@ trait BaseHandlerTrait
         // Ensure use of the getter returns the new store
         $this->store = $store;
         return $store;
+    }
+
+    /**
+     * Returns a sudo mode service instance
+     *
+     * @return SudoModeServiceInterface
+     */
+    protected function getSudoModeService(): SudoModeServiceInterface
+    {
+        return Injector::inst()->get(SudoModeServiceInterface::class);
     }
 }

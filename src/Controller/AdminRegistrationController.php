@@ -81,7 +81,7 @@ class AdminRegistrationController extends LeftAndMain
     {
         $store = $this->getStore();
 
-        if (!$store) {
+        if (!$store || !$this->getSudoModeService()->check($request->getSession())) {
             return $this->jsonResponse(
                 ['errors' => [_t(__CLASS__ . '.INVALID_SESSION', 'Invalid session. Please try again')]],
                 400
