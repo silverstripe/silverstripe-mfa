@@ -129,9 +129,9 @@ class AdminRegistrationController extends LeftAndMain
 
         // Get the specified method
         $methodRegistry = MethodRegistry::singleton();
-        $method = $request->param('Method');
+        $specifiedMethod = $request->param('Method');
 
-        if (!$method || !($method = $methodRegistry->getMethodByURLSegment($request->param('Method')))) {
+        if (!$specifiedMethod || !($method = $methodRegistry->getMethodByURLSegment($specifiedMethod))) {
             return $this->jsonResponse(
                 ['errors' => [_t(__CLASS__ . '.INVALID_METHOD', 'No such method is available')]],
                 400

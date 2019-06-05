@@ -90,7 +90,7 @@ class RegisteredMFAMethodListField extends Component {
       modalOpen: !modalOpen,
     });
 
-    if (!modalOpen && skipReset !== true) {
+    if (!modalOpen && !skipReset) {
       // Dispatch a redux action to reset the state of the Register app
       this.props.onResetRegister();
     }
@@ -450,6 +450,7 @@ RegisteredMFAMethodListField.propTypes = {
   defaultMethod: methodShape,
   readOnly: PropTypes.bool,
   initialAvailableMethods: PropTypes.arrayOf(methodShape),
+  allAvailableMethods: PropTypes.arrayOf(methodShape),
   registeredMethods: PropTypes.arrayOf(methodShape).isRequired,
   resetEndpoint: PropTypes.string,
 

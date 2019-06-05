@@ -48,6 +48,7 @@ class MethodListItem extends PureComponent {
       <button
         className="registered-method-list-item__control"
         key={text}
+        type="button"
         onClick={event => {
           event.preventDefault();
           action(method);

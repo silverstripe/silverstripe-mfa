@@ -1,7 +1,8 @@
 .registered-mfa-method-list-field {
   padding: $input-padding-y 0;
 
-  &__button, &__no-methods {
+  &__button,
+  &__no-methods {
     margin-bottom: $input-padding-y-lg;
   }
 }
@@ -29,12 +30,14 @@
       text-decoration: underline;
     }
 
+    // Ensure there's spacing between two controls
     & + & {
       margin-left: $input-padding-x-lg;
     }
   }
 }
 
+// Work around an issue with modals with lots of content overflowing it's bounds
 .registered-mfa-method-list-field-register-modal {
   height: initial;
 }

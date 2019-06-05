@@ -33,16 +33,16 @@ class AccountResetUI extends Component {
 
     // Confirm with the user
     const confirmMessage = i18n._t(
-      'MultiFactorAuthentication.RESET_ACCOUNT_CONFIRMATION',
-      fallbacks['MultiFactorAuthentication.RESET_ACCOUNT_CONFIRMATION']
+      'MultiFactorAuthentication.ACCOUNT_RESET_CONFIRMATION',
+      fallbacks['MultiFactorAuthentication.ACCOUNT_RESET_CONFIRMATION']
     );
     const confirmTitle = i18n._t(
       'MultiFactorAuthentication.CONFIRMATION_TITLE',
       fallbacks['MultiFactorAuthentication.CONFIRMATION_TITLE']
     );
     const buttonLabel = i18n._t(
-      'MultiFactorAuthentication.RESET_ACCOUNT_CONFIRMATION_BUTTON',
-      fallbacks['MultiFactorAuthentication.RESET_ACCOUNT_CONFIRMATION_BUTTON']
+      'MultiFactorAuthentication.ACCOUNT_RESET_CONFIRMATION_BUTTON',
+      fallbacks['MultiFactorAuthentication.ACCOUNT_RESET_CONFIRMATION_BUTTON']
     );
     if (!await confirm(confirmMessage, { title: confirmTitle, confirmLabel: buttonLabel })) {
       return;
