@@ -29,6 +29,8 @@ class AdminRegistrationController extends LeftAndMain
 
     private static $url_segment = 'mfa';
 
+    private static $ignore_menuitem = true;
+
     private static $url_handlers = [
         'GET register/$Method' => 'startRegistration',
         'POST register/$Method' => 'finishRegistration',
