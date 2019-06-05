@@ -48,12 +48,17 @@ class RegisteredMFAMethodListField extends Component {
     this.handleResetMethod = this.handleResetMethod.bind(this);
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState) {
     const { registrationScreen } = this.props;
     const { modalOpen } = this.state;
 
-    // Close the modal if the user returns to the introduction screen (ie. they click "back").
-    if (registrationScreen === SCREEN_INTRODUCTION && modalOpen) {
+    // Toggle the modal if the modal is open and the register screen has changed back to "intro"
+    if (
+      prevProps.registrationScreen !== registrationScreen
+      && registrationScreen === SCREEN_INTRODUCTION
+      && prevState.modalOpen
+      && modalOpen
+    ) {
       this.handleToggleModal();
     }
   }
@@ -78,22 +83,12 @@ class RegisteredMFAMethodListField extends Component {
   }
 
   /**
-   * Handle a request to toggle the modal. This method will also reset the modal provided it's being
-   * opened, unless `true` is provided as the parameter
-   *
-   * @param {boolean} skipReset
+   * Handle a request to toggle the modal
    */
-  handleToggleModal(skipReset = false) {
-    const { modalOpen } = this.state;
-
-    this.setState({
-      modalOpen: !modalOpen,
-    });
-
-    if (!modalOpen && !skipReset) {
-      // Dispatch a redux action to reset the state of the Register app
-      this.props.onResetRegister();
-    }
+  handleToggleModal() {
+    this.setState(state => ({
+      modalOpen: !state.modalOpen,
+    }));
   }
 
   /**
@@ -240,7 +235,7 @@ class RegisteredMFAMethodListField extends Component {
     }
 
     this.props.onResetMethod(registerableMethod);
-    this.handleToggleModal(true);
+    this.handleToggleModal();
   }
 
   /**
@@ -394,7 +389,7 @@ class RegisteredMFAMethodListField extends Component {
   }
 
   renderAddButton() {
-    const { availableMethods, registeredMethods, readOnly } = this.props;
+    const { availableMethods, registeredMethods, readOnly, onResetRegister } = this.props;
 
     if (readOnly || !availableMethods || availableMethods.length === 0) {
       return null;
@@ -415,7 +410,11 @@ class RegisteredMFAMethodListField extends Component {
       <Button
         className="registered-mfa-method-list-field__button"
         outline
-        onClick={this.handleToggleModal}
+        type="button"
+        onClick={() => {
+          this.handleToggleModal();
+          onResetRegister();
+        }}
       >
         { label }
       </Button>
