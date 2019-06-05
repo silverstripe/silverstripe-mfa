@@ -43,11 +43,9 @@ const Title = ({ screen, method, Tag = 'h2', className = 'mfa-section-title' }) 
     return null;
   }
 
-  if (!Tag) {
-    return content;
-  }
+  const ParsedTag = Tag || 'span';
 
-  return <Tag className={className}>{ content }</Tag>;
+  return <ParsedTag className={className}>{ content }</ParsedTag>;
 };
 
 export { Title as Component };
