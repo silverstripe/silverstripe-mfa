@@ -94,7 +94,8 @@ class MethodRegistry
      */
     public function isBackupMethod(MethodInterface $method): bool
     {
-        return is_a($method, $this->config()->get('default_backup_method'));
+        $configuredBackupMethod = $this->config()->get('default_backup_method');
+        return is_string($configuredBackupMethod) && is_a($method, $configuredBackupMethod);
     }
 
     /**

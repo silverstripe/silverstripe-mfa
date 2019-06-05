@@ -127,9 +127,9 @@ class AdminRegistrationController extends LeftAndMain
 
         // Get the specified method
         $methodRegistry = MethodRegistry::singleton();
-        $method = $methodRegistry->getMethodByURLSegment($request->param('Method'));
+        $method = $request->param('Method');
 
-        if (!$method) {
+        if (!$method || !($method = $methodRegistry->getMethodByURLSegment($request->param('Method')))) {
             return $this->jsonResponse(
                 ['errors' => [_t(__CLASS__ . '.INVALID_METHOD', 'No such method is available')]],
                 400
@@ -151,13 +151,15 @@ class AdminRegistrationController extends LeftAndMain
             );
         }
 
+        $backupMethod = $methodRegistry->getBackupMethod();
         return $this->jsonResponse([
             'success' => true,
             'availableMethod' => Injector::inst()->create(AvailableMethodDetailsInterface::class, $method),
             // Indicate if the user has a backup method registered to keep the UI up to date
-            'hasBackupMethod' => (bool) $registeredMethodManager->getFromMember(
+            // Deleting methods may remove the backup method if there are no other methods remaining.
+            'hasBackupMethod' => $backupMethod && $registeredMethodManager->getFromMember(
                 $member,
-                $methodRegistry->getBackupMethod()
+                $backupMethod
             ),
         ]);
     }
