@@ -62,7 +62,7 @@ RegisterModal.propTypes = {
   }),
 
   // Redux
-  registrationScreen: PropTypes.string,
+  registrationScreen: PropTypes.number,
   registeredMethods: PropTypes.arrayOf(registeredMethodShape),
   onAddRegisteredMethod: PropTypes.func,
 

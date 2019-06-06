@@ -43,7 +43,8 @@ export default function mfaAdministationReducer(state = initialState, { type, pa
 
       return {
         ...state,
-        registeredMethods,
+        // Ensure state is updated and not mutated
+        registeredMethods: [...registeredMethods],
       };
     }
 
