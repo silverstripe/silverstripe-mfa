@@ -123,9 +123,7 @@ class Verify extends Component {
           ref={this.codeInput}
           onChange={this.handleChange}
         />
-        {error && <div className="help-block">
-          {i18n._t('MFABackupCodesVerify.ERROR', 'Invalid recovery code')}
-        </div>}
+        {error && <div className="help-block">{error}</div>}
       </div>
     );
   }
