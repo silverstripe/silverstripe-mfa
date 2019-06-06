@@ -52,6 +52,7 @@ const mockAvailableMethods = [
 
 const fetchMock = jest.spyOn(global, 'fetch');
 const onCompleteRegistration = jest.fn();
+const onRemoveAvailableMethod = jest.fn();
 
 describe('Register', () => {
   beforeEach(() => {
@@ -301,6 +302,7 @@ describe('Register', () => {
           screen={SCREEN_REGISTER_METHOD}
           onCompleteRegistration={onCompleteRegistration}
           onShowComplete={onShowComplete}
+          onRemoveAvailableMethod={onRemoveAvailableMethod}
         />
       );
 

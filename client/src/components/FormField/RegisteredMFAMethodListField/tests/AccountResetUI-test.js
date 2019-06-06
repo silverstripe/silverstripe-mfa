@@ -7,6 +7,12 @@ import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import AccountResetUI from '../AccountResetUI';
 
+import confirm from '@silverstripe/reactstrap-confirm';
+
+jest.mock('@silverstripe/reactstrap-confirm', () => jest.fn().mockImplementation(
+  () => Promise.resolve(true)
+));
+
 Enzyme.configure({ adapter: new Adapter() });
 
 window.ss = {
@@ -23,6 +29,7 @@ describe('AccountResetUI', () => {
     }));
 
     fetchMock.mockClear();
+    confirm.mockClear();
   });
 
   describe('renderAction()', () => {
@@ -48,14 +55,17 @@ describe('AccountResetUI', () => {
       expect(action.first().props().disabled).toBeFalsy();
     });
 
-    it('submits the reset request when clicked', () => {
+    it('submits the reset request when clicked', done => {
       const ui = shallow(
         <AccountResetUI resetEndpoint="/reset/1" />
       );
 
       ui.find('.account-reset-action .btn').first().simulate('click');
 
-      expect(fetchMock.mock.calls.length).toBe(1);
+      setTimeout(() => {
+        expect(fetchMock.mock.calls.length).toBe(1);
+        done();
+      });
     });
 
     it('is hidden when submitting or complete', () => {

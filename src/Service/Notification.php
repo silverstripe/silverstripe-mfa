@@ -52,21 +52,22 @@ class Notification
      */
     public function send(Member $member, string $template, array $data = []): bool
     {
-        $email = Email::create()
-            ->setTo($member->Email)
-            ->setHTMLTemplate($template)
-            ->setData(array_merge(['Member' => $member], $data));
-
-        foreach (['to', 'from', 'subject'] as $header) {
-            if (isset($data[$header])) {
-                $method = 'set' . ucwords($header);
-                $email->$method($data[$header]);
-            }
-        }
-
-        $this->extend('onBeforeSend', $email);
-
+        // Catch exceptions with setting the "to" address and sending the email.
         try {
+            $email = Email::create()
+                ->setTo($member->Email)
+                ->setHTMLTemplate($template)
+                ->setData(array_merge(['Member' => $member], $data));
+
+            foreach (['to', 'from', 'subject'] as $header) {
+                if (isset($data[$header])) {
+                    $method = 'set' . ucwords($header);
+                    $email->$method($data[$header]);
+                }
+            }
+
+            $this->extend('onBeforeSend', $email);
+
             $sendResult = $email->send();
         } catch (Exception $e) {
             $this->logger->info($e->getMessage());

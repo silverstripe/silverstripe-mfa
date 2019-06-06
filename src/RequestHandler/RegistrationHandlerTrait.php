@@ -5,8 +5,10 @@ namespace SilverStripe\MFA\RequestHandler;
 use Exception;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
+use SilverStripe\MFA\State\RegisteredMethodDetailsInterface;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
 use SilverStripe\ORM\ValidationResult;
@@ -20,8 +22,20 @@ use SilverStripe\ORM\ValidationResult;
  */
 trait RegistrationHandlerTrait
 {
-    public function createStartRegistrationResponse(StoreInterface $store, MethodInterface $method): HTTPResponse
-    {
+    /**
+     * Create a response that can be consumed by a front-end for starting a registration
+     *
+     * @param StoreInterface $store
+     * @param MethodInterface $method
+     * @param bool $allowReregistration By default this method will return an error response when registering methods
+     *                                  that already have a registration.
+     * @return HTTPResponse
+     */
+    public function createStartRegistrationResponse(
+        StoreInterface $store,
+        MethodInterface $method,
+        bool $allowReregistration = false
+    ): HTTPResponse {
         $member = $store->getMember();
 
         // Sanity check that the method hasn't already been registered
@@ -30,7 +44,7 @@ trait RegistrationHandlerTrait
         $response = HTTPResponse::create()
             ->addHeader('Content-Type', 'application/json');
 
-        if ($existingRegisteredMethod) {
+        if (!$allowReregistration && $existingRegisteredMethod) {
             return $response->setBody(json_encode(['errors' => [_t(
                 __CLASS__ . '.METHOD_ALREADY_REGISTERED',
                 'That method has already been registered against this Member'
@@ -45,6 +59,16 @@ trait RegistrationHandlerTrait
         return $response->setBody(json_encode($data));
     }
 
+    /**
+     * Complete a registration request, returning a result object with a message and context for the result of the
+     * registration attempt.
+     *
+     * @param StoreInterface $store
+     * @param MethodInterface $method
+     * @param HTTPRequest $request
+     * @return Result
+     * @throws \SilverStripe\ORM\ValidationException
+     */
     public function completeRegistrationRequest(
         StoreInterface $store,
         MethodInterface $method,
@@ -76,6 +100,9 @@ trait RegistrationHandlerTrait
             $this->extend('onRegisterMethodFailure', $member, $method);
         }
 
-        return $result;
+        // Replace the context with detail of the registered method
+        return $result->setContext([
+            'registeredMethod' => Injector::inst()->create(RegisteredMethodDetailsInterface::class, $method)
+        ]);
     }
 }

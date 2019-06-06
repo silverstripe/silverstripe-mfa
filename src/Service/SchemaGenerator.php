@@ -38,6 +38,12 @@ class SchemaGenerator
             return $methodDetails->jsonSerialize()['urlSegment'];
         }, $registeredMethods);
 
+        // Also skip the backup method
+        $backupMethod = MethodRegistry::singleton()->getBackupMethod();
+        if ($backupMethod) {
+            $exclude = array_merge($exclude, [$backupMethod->getURLSegment()]);
+        }
+
         $schema = [
             'registeredMethods' => $registeredMethods,
             'availableMethods' => $this->getAvailableMethods($exclude),
@@ -52,6 +58,34 @@ class SchemaGenerator
         $this->extend('updateSchema', $schema);
 
         return $schema;
+    }
+
+    /**
+     * Get details in a list for all available methods, optionally excluding those with urlSegments provided in
+     * $exclude
+     *
+     * @param array $exclude
+     * @return AvailableMethodDetailsInterface[]
+     */
+    public function getAvailableMethods(array $exclude = [])
+    {
+        // Prepare an array to hold details for methods available to register
+        $availableMethods = [];
+
+        // Get all methods enabled on the site
+        $methodRegistry = MethodRegistry::singleton();
+        $allMethods = $methodRegistry->getMethods();
+
+        // Compile details for methods that aren't already registered to the user
+        foreach ($allMethods as $method) {
+            // Omit specified exclusions or methods that are configured as back-up methods
+            if (in_array($method->getURLSegment(), $exclude)) {
+                continue;
+            }
+            $availableMethods[] = Injector::inst()->create(AvailableMethodDetailsInterface::class, $method);
+        }
+
+        return $availableMethods;
     }
 
     /**
@@ -70,34 +104,6 @@ class SchemaGenerator
             );
         }
         return $registeredMethodDetails;
-    }
-
-    /**
-     * Get details in a list for all available methods, optionally excluding those with urlSegments provided in
-     * $exclude
-     *
-     * @param array $exclude
-     * @return AvailableMethodDetailsInterface[]
-     */
-    protected function getAvailableMethods(array $exclude = [])
-    {
-        // Prepare an array to hold details for methods available to register
-        $availableMethods = [];
-
-        // Get all methods enabled on the site
-        $methodRegistry = MethodRegistry::singleton();
-        $allMethods = $methodRegistry->getMethods();
-
-        // Compile details for methods that aren't already registered to the user
-        foreach ($allMethods as $method) {
-            // Omit specified exclusions or methods that are configured as back-up methods
-            if (in_array($method->getURLSegment(), $exclude) || $methodRegistry->isBackupMethod($method)) {
-                continue;
-            }
-            $availableMethods[] = Injector::inst()->create(AvailableMethodDetailsInterface::class, $method);
-        }
-
-        return $availableMethods;
     }
 
     /**

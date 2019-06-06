@@ -5,7 +5,11 @@ namespace SilverStripe\MFA\FormField;
 use SilverStripe\Admin\SecurityAdmin;
 use SilverStripe\Forms\FormField;
 use SilverStripe\MFA\Controller\AdminRegistrationController;
+use SilverStripe\MFA\Model\RegisteredMethod;
+use SilverStripe\MFA\Service\MethodRegistry;
+use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Service\SchemaGenerator;
+use SilverStripe\Security\Security;
 
 class RegisteredMFAMethodListField extends FormField
 {
@@ -21,13 +25,33 @@ class RegisteredMFAMethodListField extends FormField
     {
         $defaults = parent::getSchemaDataDefaults();
 
+        $adminController = AdminRegistrationController::singleton();
+        $generator = SchemaGenerator::create();
+
         return array_merge($defaults, [
-            'schema' => SchemaGenerator::create()->getSchema($this->value) + [
+            'schema' => $generator->getSchema($this->value) + [
                 'endpoints' => [
-                    'register' => AdminRegistrationController::singleton()->Link('register/{urlSegment}'),
+                    'register' => $adminController->Link('register/{urlSegment}'),
+                    'remove' => $adminController->Link('remove/{urlSegment}'),
                 ],
+                // We need all available methods so we can re-register pre-existing methods
+                'allAvailableMethods' => $generator->getAvailableMethods(),
+                'backupCreationDate' => $this->getBackupMethod()
+                    ? $this->getBackupMethod()->Created
+                    : null,
                 'resetEndpoint' => SecurityAdmin::singleton()->Link("reset/{$this->value->ID}"),
             ],
         ]);
+    }
+
+    /**
+     * Get the registered backup method (if any) from the currently logged in user.
+     *
+     * @return RegisteredMethod|null
+     */
+    protected function getBackupMethod(): ?RegisteredMethod
+    {
+        $backupMethod = MethodRegistry::singleton()->getBackupMethod();
+        return RegisteredMethodManager::singleton()->getFromMember(Security::getCurrentUser(), $backupMethod);
     }
 }

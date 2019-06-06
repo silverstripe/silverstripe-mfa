@@ -18,6 +18,7 @@ const defaultMethod = { ...altMethod, name: 'Default Method', urlSegment: 'defau
 
 const RegisterComponent = () => <div />;
 const onUpdateAvailableMethods = jest.fn();
+const onSetRegisteredMethods = jest.fn();
 
 const translationStrings = require('../../../../../lang/src/en.json');
 
@@ -33,14 +34,53 @@ describe('RegisteredMFAMethodListField', () => {
           registeredMethods={registeredMethods}
           RegisterComponent={RegisterComponent}
           onUpdateAvailableMethods={onUpdateAvailableMethods}
+          onSetRegisteredMethods={onSetRegisteredMethods}
         />
       );
 
-      expect(field.instance().baseMethods()).toHaveLength(1);
+      expect(field.instance().getBaseMethods()).toHaveLength(1);
     });
   });
 
-  describe('getAddMethodButtonLabel', () => {
+  describe('renderAddButton', () => {
+    it('renders a button', () => {
+      const availableMethods = [altMethod];
+
+      const wrapper = shallow(
+        <RegisteredMFAMethodListField
+          backupMethod={backupMethod}
+          defaultMethod={defaultMethod}
+          availableMethods={availableMethods}
+          registeredMethods={[]}
+          RegisterComponent={RegisterComponent}
+          onUpdateAvailableMethods={onUpdateAvailableMethods}
+          onSetRegisteredMethods={onSetRegisteredMethods}
+        />
+      );
+
+      expect(wrapper.find('.registered-mfa-method-list-field__button')).toHaveLength(1);
+    });
+
+    it('doesn\'t render a button in read-only mode', () => {
+      const availableMethods = [altMethod];
+
+      const wrapper = shallow(
+        <RegisteredMFAMethodListField
+          backupMethod={backupMethod}
+          defaultMethod={defaultMethod}
+          availableMethods={availableMethods}
+          registeredMethods={[]}
+          readOnly
+          RegisterComponent={RegisterComponent}
+          onUpdateAvailableMethods={onUpdateAvailableMethods}
+          onSetRegisteredMethods={onSetRegisteredMethods}
+        />
+      );
+
+      expect(wrapper.find('.registered-mfa-method-list-field__button')).toHaveLength(0);
+    });
+
+
     it('provides a contextual message depending on registered methods', () => {
       const availableMethods = [altMethod];
 
@@ -52,11 +92,15 @@ describe('RegisteredMFAMethodListField', () => {
           registeredMethods={[]}
           RegisterComponent={RegisterComponent}
           onUpdateAvailableMethods={onUpdateAvailableMethods}
+          onSetRegisteredMethods={onSetRegisteredMethods}
         />
       );
 
-      expect(withoutRegisteredMethods.instance().getAddMethodButtonLabel())
-        .toBe(translationStrings['MultiFactorAuthentication.ADD_FIRST_METHOD']);
+      expect(withoutRegisteredMethods
+        .find('.registered-mfa-method-list-field__button')
+        .shallow()
+        .text()
+      ).toBe(translationStrings['MultiFactorAuthentication.ADD_FIRST_METHOD']);
 
       const withRegisteredMethods = shallow(
         <RegisteredMFAMethodListField
@@ -66,11 +110,15 @@ describe('RegisteredMFAMethodListField', () => {
           registeredMethods={[defaultMethod]}
           RegisterComponent={RegisterComponent}
           onUpdateAvailableMethods={onUpdateAvailableMethods}
+          onSetRegisteredMethods={onSetRegisteredMethods}
         />
       );
 
-      expect(withRegisteredMethods.instance().getAddMethodButtonLabel())
-        .toBe(translationStrings['MultiFactorAuthentication.ADD_ANOTHER_METHOD']);
+      expect(withRegisteredMethods
+        .find('.registered-mfa-method-list-field__button')
+        .shallow()
+        .text()
+      ).toBe(translationStrings['MultiFactorAuthentication.ADD_ANOTHER_METHOD']);
     });
   });
 
@@ -84,6 +132,7 @@ describe('RegisteredMFAMethodListField', () => {
           registeredMethods={registeredMethods}
           RegisterComponent={RegisterComponent}
           onUpdateAvailableMethods={onUpdateAvailableMethods}
+          onSetRegisteredMethods={onSetRegisteredMethods}
         />
       );
 
@@ -102,6 +151,7 @@ describe('RegisteredMFAMethodListField', () => {
           registeredMethods={[]}
           RegisterComponent={RegisterComponent}
           onUpdateAvailableMethods={onUpdateAvailableMethods}
+          onSetRegisteredMethods={onSetRegisteredMethods}
         />
       );
 
@@ -115,6 +165,7 @@ describe('RegisteredMFAMethodListField', () => {
           registeredMethods={[]}
           RegisterComponent={RegisterComponent}
           onUpdateAvailableMethods={onUpdateAvailableMethods}
+          onSetRegisteredMethods={onSetRegisteredMethods}
         />
       );
 
