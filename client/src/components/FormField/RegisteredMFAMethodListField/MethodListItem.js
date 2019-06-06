@@ -1,8 +1,11 @@
 import React, { PureComponent } from 'react';
-import methodShape from 'types/registeredMethod';
+import confirm from '@silverstripe/reactstrap-confirm';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import moment from 'moment';
+import Remove from './MethodListItem/Remove';
+import Reset from './MethodListItem/Reset';
+import methodShape from 'types/registeredMethod';
 
 const fallbacks = require('../../../../lang/src/en.json');
 
@@ -35,44 +38,67 @@ class MethodListItem extends PureComponent {
     return suffix;
   }
 
+  renderRemove() {
+    const { canRemove, method } = this.props;
+
+    if (!canRemove) {
+      return null;
+    }
+
+    return <Remove method={method} />;
+  }
+
+  renderReset() {
+    const { canReset, isBackupMethod, method } = this.props;
+
+    if (!canReset) {
+      return null;
+    }
+
+    const props = {
+      method,
+    };
+
+    // Overload onReset to confirm with user for backups only
+    if (isBackupMethod) {
+      const { ss: { i18n } } = window;
+      const confirmMessage = i18n._t(
+        'MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION',
+        fallbacks['MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION']
+      );
+      const confirmTitle = i18n._t(
+        'MultiFactorAuthentication.CONFIRMATION_TITLE',
+        fallbacks['MultiFactorAuthentication.CONFIRMATION_TITLE']
+      );
+      const buttonLabel = i18n._t(
+        'MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION_BUTTON',
+        fallbacks['MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION_BUTTON']
+      );
+
+      props.onReset = async callback => {
+        if (!await confirm(confirmMessage, { title: confirmTitle, confirmLabel: buttonLabel })) {
+          return;
+        }
+        callback();
+      };
+    }
+
+    return <Reset {...props} />;
+  }
+
   renderControls() {
-    const { isReadOnly, method, onResetMethod, onRemoveMethod } = this.props;
-    if (isReadOnly) {
-      return '';
+    const { canRemove, canReset } = this.props;
+
+    if (!canRemove && !canReset) {
+      return null;
     }
 
-    const controls = [];
-    const { ss: { i18n } } = window;
-
-    const buildControl = (action, text) => ((
-      <button
-        className="registered-method-list-item__control"
-        key={text}
-        type="button"
-        onClick={event => {
-          event.preventDefault();
-          action(method);
-        }}
-      >
-        {text}
-      </button>
-    ));
-
-    if (onResetMethod) {
-      controls.push(buildControl(onResetMethod, i18n._t(
-        'MultiFactorAuthentication.RESET_METHOD',
-        fallbacks['MultiFactorAuthentication.RESET_METHOD']
-      )));
-    }
-
-    if (onRemoveMethod) {
-      controls.push(buildControl(onRemoveMethod, i18n._t(
-        'MultiFactorAuthentication.REMOVE_METHOD',
-        fallbacks['MultiFactorAuthentication.REMOVE_METHOD']
-      )));
-    }
-
-    return <div>{ controls }</div>;
+    return (
+      <div>
+        { this.renderRemove() }
+        { this.renderReset() }
+      </div>
+    );
   }
 
   renderNameAndStatus() {
@@ -115,18 +141,22 @@ class MethodListItem extends PureComponent {
 
 MethodListItem.propTypes = {
   method: methodShape.isRequired,
-  isReadOnly: PropTypes.bool.isRequired,
   isDefaultMethod: PropTypes.bool,
   isBackupMethod: PropTypes.bool,
-  onRemoveMethod: PropTypes.func,
-  onResetMethod: PropTypes.func,
+  canRemove: PropTypes.bool,
+  canReset: PropTypes.bool,
+  onRemove: PropTypes.func,
+  onReset: PropTypes.func,
+  createdDate: PropTypes.string,
   className: PropTypes.string,
-  tag: PropTypes.string
+  tag: PropTypes.string,
 };
 
 MethodListItem.defaultProps = {
   isDefaultMethod: false,
   isBackupMethod: false,
+  canRemove: false,
+  canReset: false,
   tag: 'li',
 };
 

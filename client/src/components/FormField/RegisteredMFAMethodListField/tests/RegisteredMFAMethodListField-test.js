@@ -18,6 +18,7 @@ const defaultMethod = { ...altMethod, name: 'Default Method', urlSegment: 'defau
 
 const RegisterComponent = () => <div />;
 const onUpdateAvailableMethods = jest.fn();
+const onSetRegisteredMethods = jest.fn();
 
 const translationStrings = require('../../../../../lang/src/en.json');
 
@@ -33,6 +34,7 @@ describe('RegisteredMFAMethodListField', () => {
           registeredMethods={registeredMethods}
           RegisterComponent={RegisterComponent}
           onUpdateAvailableMethods={onUpdateAvailableMethods}
+          onSetRegisteredMethods={onSetRegisteredMethods}
         />
       );
 
@@ -52,6 +54,7 @@ describe('RegisteredMFAMethodListField', () => {
           registeredMethods={[]}
           RegisterComponent={RegisterComponent}
           onUpdateAvailableMethods={onUpdateAvailableMethods}
+          onSetRegisteredMethods={onSetRegisteredMethods}
         />
       );
 
@@ -70,6 +73,7 @@ describe('RegisteredMFAMethodListField', () => {
           readOnly
           RegisterComponent={RegisterComponent}
           onUpdateAvailableMethods={onUpdateAvailableMethods}
+          onSetRegisteredMethods={onSetRegisteredMethods}
         />
       );
 
@@ -88,6 +92,7 @@ describe('RegisteredMFAMethodListField', () => {
           registeredMethods={[]}
           RegisterComponent={RegisterComponent}
           onUpdateAvailableMethods={onUpdateAvailableMethods}
+          onSetRegisteredMethods={onSetRegisteredMethods}
         />
       );
 
@@ -105,6 +110,7 @@ describe('RegisteredMFAMethodListField', () => {
           registeredMethods={[defaultMethod]}
           RegisterComponent={RegisterComponent}
           onUpdateAvailableMethods={onUpdateAvailableMethods}
+          onSetRegisteredMethods={onSetRegisteredMethods}
         />
       );
 
@@ -126,6 +132,7 @@ describe('RegisteredMFAMethodListField', () => {
           registeredMethods={registeredMethods}
           RegisterComponent={RegisterComponent}
           onUpdateAvailableMethods={onUpdateAvailableMethods}
+          onSetRegisteredMethods={onSetRegisteredMethods}
         />
       );
 
@@ -144,6 +151,7 @@ describe('RegisteredMFAMethodListField', () => {
           registeredMethods={[]}
           RegisterComponent={RegisterComponent}
           onUpdateAvailableMethods={onUpdateAvailableMethods}
+          onSetRegisteredMethods={onSetRegisteredMethods}
         />
       );
 
@@ -157,6 +165,7 @@ describe('RegisteredMFAMethodListField', () => {
           registeredMethods={[]}
           RegisterComponent={RegisterComponent}
           onUpdateAvailableMethods={onUpdateAvailableMethods}
+          onSetRegisteredMethods={onSetRegisteredMethods}
         />
       );
 
