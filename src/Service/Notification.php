@@ -5,16 +5,18 @@ namespace SilverStripe\MFA\Service;
 use Exception;
 use Psr\Log\LoggerInterface;
 use SilverStripe\Control\Email\Email;
+use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Security\Member;
 
 /**
- * Ecapsulates setting up an Email in order to allow for Dependency Injection and to avoid introducing a hard
+ * Encapsulates setting up an Email in order to allow for dependency injection and to avoid introducing a hard
  * coupling to the SilverStripe core Email class in code that consumes this class.
  */
 class Notification
 {
+    use Configurable;
     use Injectable;
     use Extensible;
 
@@ -25,6 +27,14 @@ class Notification
     private static $dependencies = [
         'Logger' => '%$' . LoggerInterface::class . '.mfa',
     ];
+
+    /**
+     * Whether sending emails is enabled for MFA changes
+     *
+     * @config
+     * @var bool
+     */
+    private static $enabled = true;
 
     /**
      * @var LoggerInterface
@@ -52,6 +62,10 @@ class Notification
      */
     public function send(Member $member, string $template, array $data = []): bool
     {
+        if (!$this->config()->get('enabled')) {
+            return false;
+        }
+
         // Catch exceptions with setting the "to" address and sending the email.
         try {
             $email = Email::create()
