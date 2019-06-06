@@ -30,7 +30,8 @@
         "silverstripe/admin": "^1",
         "silverstripe/siteconfig": "^4",
         "defuse/php-encryption": "^2.2",
-        "silverstripe/login-forms": "1.x-dev"
+        "silverstripe/login-forms": "1.x-dev",
+        "silverstripe/security-extensions": "1.x-dev"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.7",

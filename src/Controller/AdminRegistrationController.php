@@ -6,15 +6,11 @@ use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\RequestHandler\BaseHandlerTrait;
 use SilverStripe\MFA\RequestHandler\RegistrationHandlerTrait;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
-use SilverStripe\MFA\Service\SchemaGenerator;
 use SilverStripe\MFA\State\AvailableMethodDetailsInterface;
-use SilverStripe\MFA\State\RegisteredMethodDetailsInterface;
-use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 use SilverStripe\Security\SecurityToken;
 
@@ -55,6 +51,13 @@ class AdminRegistrationController extends LeftAndMain
         $member = Security::getCurrentUser();
         $store = $this->createStore($member);
 
+        if (!$this->getSudoModeService()->check($request->getSession())) {
+            return $this->jsonResponse(
+                ['errors' => [_t(__CLASS__ . '.INVALID_SESSION', 'Invalid session. Please refresh and try again.')]],
+                400
+            );
+        }
+
         // Get the specified method
         $method = MethodRegistry::singleton()->getMethodByURLSegment($request->param('Method'));
 
@@ -81,7 +84,7 @@ class AdminRegistrationController extends LeftAndMain
     {
         $store = $this->getStore();
 
-        if (!$store) {
+        if (!$store || !$this->getSudoModeService()->check($request->getSession())) {
             return $this->jsonResponse(
                 ['errors' => [_t(__CLASS__ . '.INVALID_SESSION', 'Invalid session. Please try again')]],
                 400
