@@ -17,6 +17,7 @@ use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\SessionStore;
+use SilverStripe\MFA\Store\StoreInterface;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
 use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverStripe\Security\Member;
@@ -238,6 +239,42 @@ class LoginHandlerTest extends FunctionalTest
         $handler->setRequest(new HTTPRequest('GET', '/'));
         $handler->getRequest()->setSession(new Session([]));
         $handler->getMember();
+    }
+
+    public function testStartVerificationReturnsForbiddenWithoutMember()
+    {
+        $this->logOut();
+
+        $handler = new LoginHandler('mfa', $this->createMock(MemberAuthenticator::class));
+        $handler->setRequest(new HTTPRequest('GET', '/'));
+        $handler->getRequest()->setSession(new Session([]));
+        $handler->setStore($this->createMock(StoreInterface::class));
+
+        $response = $handler->startVerification($handler->getRequest());
+        $this->assertSame(403, $response->getStatusCode());
+    }
+
+    public function testStartVerificationReturnsForbiddenWithoutSudoMode()
+    {
+        /** @var Member&MemberExtension $member */
+        $member = $this->objFromFixture(Member::class, 'robbie');
+        $this->scaffoldPartialLogin($member);
+
+        /** @var SudoModeServiceInterface&PHPUnit_Framework_MockObject_MockObject $sudoModeService */
+        $sudoModeService = $this->createMock(SudoModeServiceInterface::class);
+        $sudoModeService->method('check')->willReturn(false);
+        Injector::inst()->registerService($sudoModeService, SudoModeServiceInterface::class);
+
+        $handler = new LoginHandler('mfa', $this->createMock(MemberAuthenticator::class));
+        $handler->setRequest(new HTTPRequest('GET', '/'));
+        $handler->getRequest()->setSession(new Session([]));
+
+        $store = new SessionStore($member);
+        $store->setMethod('basic-math');
+        $handler->setStore($store);
+
+        $response = $handler->startVerification($handler->getRequest());
+        $this->assertSame(403, $response->getStatusCode());
     }
 
     public function testFinishVerificationHandlesMembersLockedOut()

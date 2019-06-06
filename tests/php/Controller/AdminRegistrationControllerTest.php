@@ -48,6 +48,21 @@ class AdminRegistrationControllerTest extends FunctionalTest
         $this->assertContains('No such method is available', $result->getBody());
     }
 
+    public function testStartRegistrationEnforcesSudoMode()
+    {
+        $this->logInAs($this->objFromFixture(Member::class, 'sally_smith'));
+
+        /** @var SudoModeServiceInterface&PHPUnit_Framework_MockObject_MockObject $sudoModeService */
+        $sudoModeService = $this->createMock(SudoModeServiceInterface::class);
+        $sudoModeService->expects($this->any())->method('check')->willReturn(false);
+        Injector::inst()->registerService($sudoModeService, SudoModeServiceInterface::class);
+
+        $result = $this->get(Controller::join_links(AdminRootController::admin_url(), 'mfa', 'register/foo'));
+
+        $this->assertSame(400, $result->getStatusCode());
+        $this->assertContains('Invalid session. Please refresh and try again.', (string) $result->getBody());
+    }
+
     public function testStartRegistrationReturns200Response()
     {
         $this->logInAs($this->objFromFixture(Member::class, 'sally_smith'));

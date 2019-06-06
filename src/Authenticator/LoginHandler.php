@@ -178,7 +178,9 @@ class LoginHandler extends BaseLoginHandler
         $sessionMember = $store ? $store->getMember() : null;
         $loggedInMember = Security::getCurrentUser();
 
-        if (is_null($loggedInMember) && is_null($sessionMember)) {
+        if ((is_null($loggedInMember) && is_null($sessionMember))
+            || !$this->getSudoModeService()->check($request->getSession())
+        ) {
             return $this->jsonResponse(
                 ['errors' => [_t(__CLASS__ . '.NOT_AUTHENTICATING', 'You must be logged or logging in')]],
                 403
@@ -317,8 +319,8 @@ class LoginHandler extends BaseLoginHandler
         $store = $this->getStore();
         $member = $store->getMember();
 
-        // If we don't have a valid member we shouldn't be here...
-        if (!$member) {
+        // If we don't have a valid member we shouldn't be here, or if sudo mode is not active yet.
+        if (!$member || !$this->getSudoModeService()->check($request->getSession())) {
             return $this->jsonResponse(['message' => 'Forbidden'], 403);
         }
 
