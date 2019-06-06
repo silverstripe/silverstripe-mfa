@@ -18,8 +18,11 @@ class Register extends Component {
       recentlyCopied: false
     };
 
-    // Prepare a ref to use for the DOM node that will be printed
-    this.printRef = React.createRef();
+    // Prepare a ref (in a React 15 compatible way) to use for the DOM node that will be printed
+    this.printRef = null;
+    this.setPrintRef = element => {
+      this.printRef = element;
+    };
     // Prepare a class member to store a timeout ref that provides feedback on copy to clipboard
     this.copyMessageTimeout = null;
 
@@ -87,7 +90,7 @@ class Register extends Component {
    */
   renderCodes() {
     return (
-      <div ref={this.printRef} className="mfa-register-backup-codes__code-grid">
+      <div ref={this.setPrintRef} className="mfa-register-backup-codes__code-grid">
         {this.getFormattedCodes().map(code => <div key={code}>{code}</div>)}
       </div>
     );

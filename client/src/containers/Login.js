@@ -34,6 +34,7 @@ class Login extends Component {
       schemaLoaded: false,
     };
 
+    this.handleCompleteLogin = this.handleCompleteLogin.bind(this);
     this.handleCompleteVerify = this.handleCompleteVerify.bind(this);
   }
 

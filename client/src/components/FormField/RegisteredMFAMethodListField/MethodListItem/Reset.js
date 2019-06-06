@@ -78,7 +78,7 @@ Reset.propTypes = {
 
 Reset.contextTypes = {
   allAvailableMethods: PropTypes.arrayOf(availableMethodShape),
-  backupMethod: PropTypes.arrayOf(availableMethodShape),
+  backupMethod: registeredMethodShape,
   endpoints: PropTypes.shape({
     register: PropTypes.string
   }),

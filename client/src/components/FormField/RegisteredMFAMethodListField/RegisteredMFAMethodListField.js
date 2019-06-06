@@ -25,16 +25,11 @@ class RegisteredMFAMethodListField extends Component {
   constructor(props) {
     super(props);
 
-    const { initialAvailableMethods, initialRegisteredMethods } = props;
-
     // Move registered methods into state as we might remove and add them during the lifetime of
     // this component.
     this.state = {
       modalOpen: false,
     };
-
-    props.onSetRegisteredMethods(initialRegisteredMethods);
-    props.onUpdateAvailableMethods(initialAvailableMethods);
 
     this.handleToggleModal = this.handleToggleModal.bind(this);
   }
@@ -43,6 +38,16 @@ class RegisteredMFAMethodListField extends Component {
     const { allAvailableMethods, backupMethod, endpoints, resources } = this.props;
 
     return { allAvailableMethods, backupMethod, endpoints, resources };
+  }
+
+  componentDidMount() {
+    const {
+      onSetRegisteredMethods, initialRegisteredMethods,
+      onUpdateAvailableMethods, initialAvailableMethods,
+    } = this.props;
+
+    onSetRegisteredMethods(initialRegisteredMethods);
+    onUpdateAvailableMethods(initialAvailableMethods);
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -118,21 +123,27 @@ class RegisteredMFAMethodListField extends Component {
   /**
    * Render a MethodListItem for the registered backup method
    *
-   * @return {MethodListItem}
+   * @return {MethodListItem|null}
    */
   renderBackupMethod() {
     const { backupMethod, backupCreatedDate, registeredMethods, readOnly } = this.props;
 
-    // Assert there is a backup method and it's registered
-    if (!backupMethod || !registeredMethods.find(
+    if (!backupMethod) {
+      return null;
+    }
+
+    const registeredBackupMethod = registeredMethods.find(
       candidate => candidate.urlSegment === backupMethod.urlSegment
-    )) {
-      return '';
+    );
+
+    // Assert there is a backup method and it's registered
+    if (!registeredBackupMethod) {
+      return null;
     }
 
     return (
       <MethodListItem
-        method={backupMethod}
+        method={registeredBackupMethod}
         createdDate={backupCreatedDate}
         canReset={!readOnly}
         isBackupMethod
