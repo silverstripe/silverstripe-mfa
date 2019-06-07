@@ -26,9 +26,9 @@
     ],
     "require": {
         "php": ">=7.1.0",
-        "silverstripe/framework": "^4",
-        "silverstripe/admin": "^1",
-        "silverstripe/siteconfig": "^4",
+        "silverstripe/framework": "^4.1",
+        "silverstripe/admin": "^1.1",
+        "silverstripe/siteconfig": "^4.1",
         "defuse/php-encryption": "^2.2",
         "silverstripe/login-forms": "1.x-dev",
         "silverstripe/security-extensions": "1.x-dev"

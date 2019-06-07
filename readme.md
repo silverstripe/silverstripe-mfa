@@ -8,7 +8,7 @@
 ## Requirements
 
 * PHP ^7.1
-* SilverStripe ^4.0
+* SilverStripe ^4.1
 * defuse/php-encryption ^2.2 and OpenSSL PHP extension
 
 ## Installation
