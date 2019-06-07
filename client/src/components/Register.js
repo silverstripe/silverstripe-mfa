@@ -31,6 +31,7 @@ class Register extends Component {
 
     this.state = {
       registerProps: null,
+      token: null,
     };
 
     this.handleBack = this.handleBack.bind(this);
@@ -86,9 +87,11 @@ class Register extends Component {
 
     // "start" a registration
     fetch(endpoint).then(response => response.json().then(result => {
-      this.setState(() => ({
-        registerProps: result,
-      }));
+      const { SecurityID: token, ...registerProps } = result;
+      this.setState({
+        registerProps,
+        token,
+      });
     }));
   }
 
@@ -116,13 +119,19 @@ class Register extends Component {
       onRegister,
     } = this.props;
 
-    fetch(register.replace('{urlSegment}', selectedMethod.urlSegment), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(registrationData),
-    })
+    const { token } = this.state;
+    const params = token ? `?SecurityID=${token}` : '';
+
+    fetch(
+      `${register.replace('{urlSegment}', selectedMethod.urlSegment)}${params}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(registrationData),
+      }
+    )
       .then(response => {
         switch (response.status) {
           case 201:

@@ -17,6 +17,7 @@ use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 use SilverStripe\SecurityExtensions\Service\SudoModeServiceInterface;
+use SilverStripe\Security\SecurityToken;
 
 /**
  * Class RegisterHandlerTest
@@ -125,6 +126,20 @@ class RegisterHandlerTest extends FunctionalTest
         $this->assertEquals(200, $response->getStatusCode(), sprintf('Body: %s', $response->getBody()));
     }
 
+    public function testStartRegistrationProvidesACSRFToken()
+    {
+        SecurityToken::enable();
+
+        /** @var Member $freshMember */
+        $freshMember = $this->objFromFixture(Member::class, 'fresh-member');
+
+        $this->scaffoldPartialLogin($freshMember);
+
+        $response = $this->get(self::URL);
+        $this->assertEquals(200, $response->getStatusCode(), sprintf('Body: %s', $response->getBody()));
+        $this->assertSame(SecurityToken::inst()->getValue(), json_decode($response->getBody())->SecurityID);
+    }
+
     /**
      * Tests that the start registration step must be called before the completion step
      */
@@ -208,6 +223,31 @@ class RegisterHandlerTest extends FunctionalTest
         $registeredMethod = $freshMember->RegisteredMFAMethods()->first();
         $this->assertNotNull($registeredMethod);
         $this->assertEquals('{"number":7}', $registeredMethod->Data);
+    }
+
+    public function testFinishRegistrationValidatesCSRF()
+    {
+        SecurityToken::enable();
+
+        /** @var Member $freshMember */
+        $freshMember = $this->objFromFixture(Member::class, 'fresh-member');
+
+        $this->scaffoldPartialLogin($freshMember);
+
+        $response = $this->post(self::URL, ['dummy' => 'data'], null, $this->session(), json_encode(['number' => 7]));
+        $this->assertEquals(403, $response->getStatusCode());
+        $this->assertContains('Your request timed out', $response->getBody());
+
+        $this->scaffoldPartialLogin($freshMember, 'basic-math');
+
+        $response = $this->post(
+            self::URL,
+            [SecurityToken::inst()->getName() => SecurityToken::inst()->getValue()],
+            null,
+            $this->session(),
+            json_encode(['number' => 7])
+        );
+        $this->assertEquals(201, $response->getStatusCode(), sprintf('Body: %s', $response->getBody()));
     }
 
     public function testEnforcesSudoMode()

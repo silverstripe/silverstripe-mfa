@@ -12,6 +12,7 @@ use SilverStripe\MFA\State\RegisteredMethodDetailsInterface;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
 use SilverStripe\ORM\ValidationResult;
+use SilverStripe\Security\SecurityToken;
 
 /**
  * This trait encapsulates logic that can be added to a `RequestHandler` to work with registering MFA authenticators
@@ -56,6 +57,11 @@ trait RegistrationHandlerTrait
         // Allow the registration handler to begin the process and generate some data to pass through to the front-end
         $data = $method->getRegisterHandler()->start($store);
 
+        // Add a CSRF token
+        $token = SecurityToken::inst();
+        $token->reset();
+        $data[$token->getName()] = $token->getValue();
+
         return $response->setBody(json_encode($data));
     }
 
@@ -74,6 +80,13 @@ trait RegistrationHandlerTrait
         MethodInterface $method,
         HTTPRequest $request
     ): Result {
+        if (!SecurityToken::inst()->checkRequest($request)) {
+            return Result::create(false, _t(
+                __CLASS__ . '.CSRF_FAILURE',
+                'Your request timed out. Please refresh and try again'
+            ), ['code' => 403]);
+        }
+
         $storedMethodName = $store->getMethod();
 
         // If a registration process hasn't been initiated in a previous request, calling this method is invalid

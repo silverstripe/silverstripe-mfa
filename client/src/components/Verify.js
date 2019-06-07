@@ -16,6 +16,7 @@ class Verify extends Component {
       verifyProps: null,
       message: null,
       showOtherMethods: false,
+      token: null,
     };
 
     this.handleCompleteVerification = this.handleCompleteVerification.bind(this);
@@ -104,9 +105,11 @@ class Verify extends Component {
 
     // "start" a verification
     fetch(endpoint).then(response => response.json().then(result => {
+      const { SecurityID: token, ...verifyProps } = result;
       this.setState({
         loading: false,
-        verifyProps: result,
+        verifyProps,
+        token,
       });
     }));
   }
@@ -118,8 +121,9 @@ class Verify extends Component {
    */
   handleCompleteVerification(verifyData) {
     const { endpoints: { verify }, onCompleteVerification } = this.props;
-    const { selectedMethod } = this.state;
-    const endpoint = verify.replace('{urlSegment}', selectedMethod.urlSegment);
+    const { selectedMethod, token } = this.state;
+    const params = token ? `?SecurityID=${token}` : '';
+    const endpoint = `${verify.replace('{urlSegment}', selectedMethod.urlSegment)}${params}`;
 
     this.setState({
       loading: true

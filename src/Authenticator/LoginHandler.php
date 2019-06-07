@@ -249,7 +249,10 @@ class LoginHandler extends BaseLoginHandler
         $result = $this->completeRegistrationRequest($store, $method, $request);
 
         if (!$result->isSuccessful()) {
-            return $this->jsonResponse(['errors' => [$result->getMessage()]], 400);
+            return $this->jsonResponse(
+                ['errors' => [$result->getMessage()]],
+                $result->getContext()['code'] ?? 400
+            );
         }
 
         // If we've completed registration and the member is not already logged in then we need to log them in
@@ -376,10 +379,11 @@ class LoginHandler extends BaseLoginHandler
 
         if (!$result->isSuccessful()) {
             $store->getMember()->registerFailedLogin();
+            $code = $result->getContext()['code'] ?? 401;
 
             return $this->jsonResponse([
                 'message' => $result->getMessage(),
-            ], 401);
+            ], $code);
         }
 
         if (!$this->isVerificationComplete($store)) {

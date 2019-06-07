@@ -12,6 +12,7 @@ use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
+use SilverStripe\Security\SecurityToken;
 
 /**
  * This trait encapsulates logic that can be added to a `RequestHandler` to work with logging in using MFA front-end
@@ -67,10 +68,15 @@ trait VerificationHandlerTrait
         // Mark the given method as started within the store
         $store->setMethod($registeredMethod->getMethod()->getURLSegment());
         // Allow the authenticator to begin the process and generate some data to pass through to the front end
-        $data = $registeredMethod->getVerifyHandler()->start($store, $registeredMethod);
+        $data = $registeredMethod->getVerifyHandler()->start($store, $registeredMethod) ?: [];
+
+        // Add a CSRF token
+        $token = SecurityToken::inst();
+        $token->reset();
+        $data[$token->getName()] = $token->getValue();
 
         // Respond with our method
-        return $response->setBody(json_encode($data ?: []));
+        return $response->setBody(json_encode($data));
     }
 
     /**
@@ -83,6 +89,13 @@ trait VerificationHandlerTrait
      */
     protected function completeVerificationRequest(StoreInterface $store, HTTPRequest $request): Result
     {
+        if (!SecurityToken::inst()->checkRequest($request)) {
+            return Result::create(false, _t(
+                __CLASS__ . '.CSRF_FAILURE',
+                'Your request timed out. Please refresh and try again'
+            ), ['code' => 403]);
+        }
+
         $method = $store->getMethod();
         $methodInstance = $method ? MethodRegistry::singleton()->getMethodByURLSegment($method) : null;
 
