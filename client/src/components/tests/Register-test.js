@@ -133,6 +133,80 @@ describe('Register', () => {
     });
   });
 
+  describe('fetchStartRegistrationData', () => {
+    it('is called when the selected method is changed', done => {
+      const wrapper = shallow(
+        <Register
+          endpoints={endpoints}
+          availableMethods={mockAvailableMethods}
+          registeredMethods={[]}
+          onCompleteRegistration={onCompleteRegistration}
+        />
+      );
+
+      expect(fetchMock.mock.calls).toHaveLength(0);
+
+      wrapper.setProps({
+        selectedMethod: firstMethod,
+      }, () => {
+        expect(fetchMock.mock.calls).toHaveLength(1);
+        expect(fetchMock.mock.calls[0][0]).toBe('/fake/aye');
+        done();
+      });
+    });
+
+    it('stores the response in state', done => {
+      const mockResponse = {
+        myProp: 1,
+        anotherProp: 'two',
+      };
+      fetchMock.mockImplementation(() => Promise.resolve({
+        json: () => Promise.resolve(mockResponse),
+      }));
+
+      const wrapper = shallow(
+        <Register
+          endpoints={endpoints}
+          availableMethods={mockAvailableMethods}
+          registeredMethods={[]}
+          selectedMethod={firstMethod}
+          onCompleteRegistration={onCompleteRegistration}
+        />
+      );
+
+      setTimeout(() => {
+        expect(wrapper.state('registerProps')).toEqual(mockResponse);
+        done();
+      });
+    });
+
+    it('stores a CSRF token separately', done => {
+      const mockResponse = {
+        myProp: 1,
+        anotherProp: 'two',
+      };
+      fetchMock.mockImplementation(() => Promise.resolve({
+        json: () => Promise.resolve({ ...mockResponse, SecurityID: 'test' }),
+      }));
+
+      const wrapper = shallow(
+        <Register
+          endpoints={endpoints}
+          availableMethods={mockAvailableMethods}
+          registeredMethods={[]}
+          selectedMethod={firstMethod}
+          onCompleteRegistration={onCompleteRegistration}
+        />
+      );
+
+      setTimeout(() => {
+        expect(wrapper.state('registerProps')).toEqual(mockResponse);
+        expect(wrapper.state('token')).toBe('test');
+        done();
+      });
+    });
+  });
+
   describe('handleBack()', () => {
     it('clears registration errors', () => {
       const wrapper = shallow(

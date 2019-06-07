@@ -12,9 +12,11 @@ use SilverStripe\Dev\FunctionalTest;
 use SilverStripe\MFA\Authenticator\LoginHandler;
 use SilverStripe\MFA\Authenticator\MemberAuthenticator;
 use SilverStripe\MFA\Extension\MemberExtension;
+use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\MethodRegistry;
+use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\MFA\Store\StoreInterface;
@@ -23,6 +25,7 @@ use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 use SilverStripe\SecurityExtensions\Service\SudoModeServiceInterface;
+use SilverStripe\Security\SecurityToken;
 use SilverStripe\SiteConfig\SiteConfig;
 
 class LoginHandlerTest extends FunctionalTest
@@ -239,6 +242,65 @@ class LoginHandlerTest extends FunctionalTest
         $handler->setRequest(new HTTPRequest('GET', '/'));
         $handler->getRequest()->setSession(new Session([]));
         $handler->getMember();
+    }
+
+    public function testStartVerificationIncludesACSRFToken()
+    {
+        SecurityToken::enable();
+
+        $handler = new LoginHandler('mfa', $this->createMock(MemberAuthenticator::class));
+        $member = $this->objFromFixture(Member::class, 'robbie');
+        $store = new SessionStore($member);
+        $handler->setStore($store);
+
+        $request = new HTTPRequest('GET', '/');
+        $request->setSession(new Session([]));
+        $request->setRouteParams(['Method' => 'basic-math']);
+        $response = json_decode($handler->startVerification($request)->getBody());
+
+        $this->assertNotNull($response->SecurityID);
+        $this->assertTrue(SecurityToken::inst()->check($response->SecurityID));
+    }
+
+    public function testVerifyAssertsValidCSRFToken()
+    {
+        SecurityToken::enable();
+
+        $handler = new LoginHandler('mfa', $this->createMock(MemberAuthenticator::class));
+        $member = $this->objFromFixture(Member::class, 'robbie');
+        $store = new SessionStore($member);
+        $store->setMethod('basic-math');
+        $handler->setStore($store);
+
+        $request = new HTTPRequest('GET', '/');
+        $request->setSession(new Session([]));
+
+        $response = $handler->finishVerification($request);
+
+        $this->assertSame(403, $response->getStatusCode());
+        $this->assertContains('Your request timed out', $response->getBody());
+
+        $request = new HTTPRequest('GET', '/', [
+            SecurityToken::inst()->getName() => SecurityToken::inst()->getValue()
+        ]);
+        $request->setSession(new Session([]));
+
+        // Mock the verification process...
+        $mockVerifyHandler = $this->createMock(VerifyHandlerInterface::class);
+        $mockRegisteredMethod = $this->createMock(RegisteredMethod::class);
+        $mockRegisteredMethodManager = $this->createMock(RegisteredMethodManager::class);
+
+        $mockRegisteredMethodManager
+            ->expects($this->once())->method('getFromMember')->willReturn($mockRegisteredMethod);
+        $mockRegisteredMethod->expects($this->once())->method('getVerifyHandler')->willReturn($mockVerifyHandler);
+        $mockVerifyHandler->expects($this->once())->method('verify')->willReturn(Result::create());
+
+        // Register our mock service
+        Injector::inst()->registerService($mockRegisteredMethodManager, RegisteredMethodManager::class);
+
+        $response = $handler->finishVerification($request);
+
+        $this->assertSame(200, $response->getStatusCode());
     }
 
     public function testStartVerificationReturnsForbiddenWithoutMember()

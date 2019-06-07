@@ -136,6 +136,33 @@ describe('Login', () => {
     });
   });
 
+  it('handles a csrf token provided with the props and adds it to state', (done) => {
+    fetchMock.mockImplementation(() => Promise.resolve({
+      json: () => Promise.resolve({
+        SecurityID: 'test',
+        myProp: 1,
+        anotherProp: 'two',
+      }),
+    }));
+
+    const wrapper = shallow(
+      <Verify
+        endpoints={endpoints}
+        registeredMethods={mockRegisteredMethods}
+      />
+    );
+
+    // Defer testing of final render state so that we don't inspect loading state
+    setTimeout(() => {
+      expect(wrapper.find('Test').props()).toEqual(expect.objectContaining({
+        myProp: 1,
+        anotherProp: 'two',
+      }));
+      expect(wrapper.state('token')).toBe('test');
+      done();
+    });
+  });
+
   it('provides a control to choose other methods to the injected component', (done) => {
     const wrapper = shallow(
       <Verify
@@ -280,6 +307,29 @@ describe('Login', () => {
         expect(onCompleteVerification.mock.calls).toHaveLength(1);
         done();
       });
+    });
+  });
+
+  it('will add a token from state when calling the verify endpoint', (done) => {
+    const onCompleteVerification = jest.fn();
+    const wrapper = shallow(
+      <Verify
+        endpoints={endpoints}
+        registeredMethods={mockRegisteredMethods}
+        onCompleteVerification={onCompleteVerification}
+      />
+    );
+
+    setTimeout(() => {
+      expect(fetchMock.mock.calls).toHaveLength(1);
+      wrapper.setState({
+        token: 'test',
+      });
+      const completionFunction = wrapper.find('Test').prop('onCompleteVerification');
+      completionFunction({ test: 1 });
+      expect(fetchMock.mock.calls).toHaveLength(2);
+      expect(fetchMock.mock.calls[1][0]).toEqual('/fake/aye?SecurityID=test');
+      done();
     });
   });
 
