@@ -152,6 +152,9 @@ class SecurityAdminExtension extends Extension
      */
     protected function getAccountResetLink(Member $member, string $token): string
     {
-        return Security::singleton()->Link('resetaccount') . "?m={$member->ID}&t={$token}";
+        return Controller::join_links(
+            Security::singleton()->Link('resetaccount'),
+            "?m={$member->ID}&t={$token}"
+        );
     }
 }
