@@ -28,11 +28,12 @@ use SilverStripe\Security\Security;
  */
 class SecurityExtension extends Extension
 {
-    use JSONResponse, BaseHandlerTrait, Extensible;
+    use BaseHandlerTrait;
+    use Extensible;
+    use JSONResponse;
 
     private static $url_handlers = [
         'GET reset-account' => 'resetaccount',
-        'ResetAccountForm' => 'ResetAccountForm',
     ];
 
     private static $allowed_actions = [

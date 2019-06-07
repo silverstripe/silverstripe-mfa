@@ -4,12 +4,13 @@ namespace SilverStripe\MFA\Extension\AccountReset;
 
 use Exception;
 use Psr\Log\LoggerInterface;
+use SilverStripe\Control\Controller;
 use SilverStripe\Control\Email\Email;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Core\Extension;
 use SilverStripe\Admin\SecurityAdmin;
-use SilverStripe\MFA\Extension\MemberExtension;
+use SilverStripe\MFA\Extension\MemberExtension as BaseMFAMemberExtension;
 use SilverStripe\MFA\JSONResponse;
 use SilverStripe\ORM\ValidationException;
 use SilverStripe\Security\Member;
@@ -67,7 +68,7 @@ class SecurityAdminExtension extends Extension
             );
         }
 
-        if (!Permission::check(MemberExtension::MFA_ADMINISTER_REGISTERED_METHODS)) {
+        if (!Permission::check(BaseMFAMemberExtension::MFA_ADMINISTER_REGISTERED_METHODS)) {
             return $this->jsonResponse(
                 [
                     'error' => _t(
@@ -112,10 +113,10 @@ class SecurityAdminExtension extends Extension
     }
 
     /**
-     * @param Member&MemberResetExtension $member
+     * Prepares and attempts to send the Account Reset request email.
+     *
+     * @param Member&MemberExtension $member
      * @return bool
-     * @throws ValidationException
-     * @throws PasswordEncryptor_NotFoundException
      */
     protected function sendResetEmail($member)
     {

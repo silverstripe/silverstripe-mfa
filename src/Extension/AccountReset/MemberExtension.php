@@ -13,7 +13,7 @@ use SilverStripe\Security\RandomGenerator;
  * Provides DB columns / methods for account resets on Members
  *
  * @package SilverStripe\MFA\Extension
- * @property Member owner
+ * @property Member&MemberExtension owner
  * @property string AccountResetHash
  * @property DBDatetime AccountResetExpired
  */
@@ -63,7 +63,7 @@ class MemberExtension extends DataExtension
      * Based on Member::validateAutoLoginToken() and Member::member_from_autologinhash().
      *
      * @param string $token
-     * @return Member
+     * @return bool
      */
     public function verifyAccountResetToken(string $token): bool
     {
