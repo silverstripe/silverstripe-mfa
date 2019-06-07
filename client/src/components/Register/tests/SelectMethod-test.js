@@ -24,6 +24,18 @@ const firstMethod = {
 };
 
 describe('SelectMethod', () => {
+  it('automatically selects the only available method', () => {
+    const mockNextHandler = jest.fn();
+    shallow(
+      <SelectMethod
+        methods={[firstMethod]}
+        onSelectMethod={mockNextHandler}
+      />
+    );
+
+    expect(mockNextHandler).toHaveBeenCalledTimes(1);
+  });
+
   describe('handleGoToNext()', () => {
     it('passes the highlighted method to the method selection handler', () => {
       const wrapper = shallow(

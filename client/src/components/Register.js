@@ -100,8 +100,16 @@ class Register extends Component {
    * method registration components
    */
   handleBack() {
+    const { availableMethods, onShowIntroduction, onShowChooseMethod } = this.props;
+
+    // If there's only one method installed, send the user back to the introduction screen
+    if (availableMethods.length === 1 && onShowIntroduction) {
+      return onShowIntroduction();
+    }
+
+    // Send the user back to the "choose method" screen
     this.clearRegistrationErrors();
-    this.props.onShowChooseMethod();
+    return onShowChooseMethod();
   }
 
   /**
@@ -358,6 +366,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
+  onShowIntroduction: () => dispatch(showScreen(SCREEN_INTRODUCTION)),
   onShowComplete: () => dispatch(showScreen(SCREEN_COMPLETE)),
   onSelectMethod: method => dispatch(chooseMethod(method)),
   onShowChooseMethod: () => dispatch(showScreen(SCREEN_CHOOSE_METHOD)),
