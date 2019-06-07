@@ -1,16 +1,21 @@
 <?php
 
-namespace SilverStripe\MFA\Tests\Extension;
+namespace SilverStripe\MFA\Tests\Extension\AccountReset;
 
 use SilverStripe\Admin\SecurityAdmin;
 use SilverStripe\Dev\FunctionalTest;
-use SilverStripe\MFA\Extension\SecurityAdminAccountResetExtension;
+use SilverStripe\MFA\Extension\AccountReset\SecurityAdminExtension;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\SecurityToken;
 
-class SecurityAdminAccountResetExtensionTest extends FunctionalTest
+/**
+ * Class SecurityAdminExtensionTest
+ *
+ * @see SecurityAdminExtension
+ */
+class SecurityAdminExtensionTest extends FunctionalTest
 {
-    protected static $fixture_file = 'SecurityAdminAccountResetExtensionTest.yml';
+    protected static $fixture_file = 'SecurityAdminExtensionTest.yml';
 
     protected function setUp()
     {

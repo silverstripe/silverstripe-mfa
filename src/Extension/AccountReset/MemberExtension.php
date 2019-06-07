@@ -1,14 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace SilverStripe\MFA\Extension;
+namespace SilverStripe\MFA\Extension\AccountReset;
 
 use SilverStripe\Forms\FieldList;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\FieldType\DBDatetime;
-use SilverStripe\ORM\ValidationException;
 use SilverStripe\Security\Member;
-use SilverStripe\Security\PasswordEncryptor_NotFoundException;
 use SilverStripe\Security\RandomGenerator;
 
 /**
@@ -16,8 +14,10 @@ use SilverStripe\Security\RandomGenerator;
  *
  * @package SilverStripe\MFA\Extension
  * @property Member owner
+ * @property string AccountResetHash
+ * @property DBDatetime AccountResetExpired
  */
-class MemberResetExtension extends DataExtension
+class MemberExtension extends DataExtension
 {
     private static $db = [
         'AccountResetHash' => 'Varchar(160)',
@@ -65,16 +65,17 @@ class MemberResetExtension extends DataExtension
      * @param string $token
      * @return Member
      */
-    public function getMemberByAccountResetToken(string $token): ?Member
+    public function verifyAccountResetToken(string $token): bool
     {
+        if (!$this->owner->exists()) {
+            return false;
+        }
+
         $hash = $this->owner->encryptWithUserSettings($token);
 
-        /** @var Member $member */
-        $member = Member::get()->filter([
-            'AutoLoginHash' => $hash,
-            'AutoLoginExpired:GreaterThan' => DBDatetime::now()->getValue(),
-        ])->first();
-
-        return $member;
+        return (
+            $this->owner->AccountResetHash === $hash &&
+            $this->owner->AccountResetExpired < DBDatetime::now()->getValue()
+        );
     }
 }

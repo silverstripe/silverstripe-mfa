@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace SilverStripe\MFA\Extension;
+namespace SilverStripe\MFA\Extension\AccountReset;
 
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -9,11 +9,13 @@ use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Core\Extension;
 use SilverStripe\Admin\SecurityAdmin;
+use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\JSONResponse;
 use SilverStripe\ORM\ValidationException;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\PasswordEncryptor_NotFoundException;
 use SilverStripe\Security\Permission;
+use SilverStripe\Security\Security;
 use SilverStripe\Security\SecurityToken;
 
 /**
@@ -23,7 +25,7 @@ use SilverStripe\Security\SecurityToken;
  * @package SilverStripe\MFA\Extension
  * @property SecurityAdmin $owner
  */
-class SecurityAdminAccountResetExtension extends Extension
+class SecurityAdminExtension extends Extension
 {
     use JSONResponse;
 
@@ -147,10 +149,9 @@ class SecurityAdminAccountResetExtension extends Extension
      * @param Member $member
      * @param string $token
      * @return string
-     * @todo Implement when Account Reset Handler is built
      */
     protected function getAccountResetLink(Member $member, string $token): string
     {
-        return '';
+        return Security::singleton()->Link('resetaccount') . "?m={$member->ID}&t={$token}";
     }
 }
