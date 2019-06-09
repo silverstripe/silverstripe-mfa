@@ -50,7 +50,7 @@ class MemberExtension extends DataExtension
         ]));
 
         $this->owner->AccountResetHash = $hash;
-        $this->owner->AccountResetExpired = DBDatetime::create(
+        $this->owner->AccountResetExpired = DBDatetime::create()->setValue(
             DBDatetime::now()->getTimestamp() + $lifetime
         )->Rfc2822();
 
@@ -75,7 +75,7 @@ class MemberExtension extends DataExtension
 
         return (
             $this->owner->AccountResetHash === $hash &&
-            $this->owner->AccountResetExpired < DBDatetime::now()->getValue()
+            $this->owner->AccountResetExpired >= DBDatetime::now()->getValue()
         );
     }
 }

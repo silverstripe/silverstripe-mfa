@@ -47,12 +47,12 @@ class SecurityExtension extends Extension
             return $this->jsonResponse(['error' => 'Already authenticated'], 400);
         }
 
-        ['m' => $memberID, 't' => $token] = $request->getVars();
+        $vars = $request->getVars();
 
         /** @var Member|MemberExtension $member */
-        $member = Member::get()->byID($memberID);
+        $member = Member::get()->byID(intval($vars['m'] ?? 0));
 
-        if (is_null($member) || $member->verifyAccountResetToken($token) === false) {
+        if (is_null($member) || $member->verifyAccountResetToken($vars['t'] ?? '') === false) {
             return $this->jsonResponse(['error' => 'Invalid member or token'], 400);
         }
 
