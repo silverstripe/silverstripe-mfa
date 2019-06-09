@@ -18,11 +18,23 @@ class SelectMethod extends Component {
     super(props);
 
     this.state = {
-      highlightedMethod: null,
+      // If only one method is available, automatically select it
+      highlightedMethod: props.methods.length === 1 ? props.methods[0] : null,
     };
 
     this.handleGoToNext = this.handleGoToNext.bind(this);
     this.handleBack = this.handleBack.bind(this);
+  }
+
+  /**
+   * If only one method is available, automatically select it
+   */
+  componentDidMount() {
+    const { highlightedMethod } = this.state;
+
+    if (highlightedMethod) {
+      this.handleGoToNext();
+    }
   }
 
   /**
