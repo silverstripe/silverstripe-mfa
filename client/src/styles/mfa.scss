@@ -1,11 +1,11 @@
+// Hide the template provided h1
+.login-form__title {
+  display: none;
+}
+
 body.mfa {
   .page-header {
     margin-bottom: 0;
-  }
-
-  // Hide the template provided h1
-  h1 {
-    display: none;
   }
 
   // Allow the h1 rendered by the React app to display
