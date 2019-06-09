@@ -73,7 +73,7 @@ class SecurityExtension extends Extension
                         'Invalid member or token'
                     ),
                     'Content' => _t(
-                        __CLASS__ .'.INVALIDTOKENBODY',
+                        __CLASS__ . '.INVALIDTOKENBODY',
                         'Your account reset token may have expired. Please contact an administrator.'
                     )
                 ]

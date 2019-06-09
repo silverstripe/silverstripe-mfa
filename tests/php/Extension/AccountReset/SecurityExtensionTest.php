@@ -12,7 +12,6 @@ use SilverStripe\Security\Member;
  * Class SecurityExtensionTest
  *
  * @package SilverStripe\MFA\Tests\Extension\AccountReset
- * @group wip
  */
 class SecurityExtensionTest extends FunctionalTest
 {
