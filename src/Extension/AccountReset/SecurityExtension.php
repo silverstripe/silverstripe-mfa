@@ -30,7 +30,6 @@ class SecurityExtension extends Extension
 {
     use BaseHandlerTrait;
     use Extensible;
-    use JSONResponse;
 
     private static $url_handlers = [
         'GET reset-account' => 'resetaccount',
@@ -41,10 +40,23 @@ class SecurityExtension extends Extension
         'ResetAccountForm',
     ];
 
-    public function resetaccount(HTTPRequest $request): HTTPResponse
+    public function resetaccount(HTTPRequest $request)
     {
         if (Security::getCurrentUser()) {
-            return $this->jsonResponse(['error' => 'Already authenticated'], 400);
+            $output = $this->owner->renderWith(
+                'Security',
+                [
+                    'Title' => _t(
+                        __CLASS__ . '.ALREADYAUTHENTICATEDTITLE',
+                        'Already authenticated'
+                    ),
+                    'Content' => _t(
+                        __CLASS__ . '.ALREADYAUTHENTICATEDBODY',
+                        'You must be logged out to reset your account.'
+                    ),
+                ]
+            );
+            return $this->owner->getResponse()->setBody($output)->setStatusCode(400);
         }
 
         $vars = $request->getVars();
@@ -53,7 +65,20 @@ class SecurityExtension extends Extension
         $member = Member::get()->byID(intval($vars['m'] ?? 0));
 
         if (is_null($member) || $member->verifyAccountResetToken($vars['t'] ?? '') === false) {
-            return $this->jsonResponse(['error' => 'Invalid member or token'], 400);
+            $output = $this->owner->renderWith(
+                'Security',
+                [
+                    'Title' => _t(
+                        __CLASS__ . '.INVALIDTOKENTITLE',
+                        'Invalid member or token'
+                    ),
+                    'Content' => _t(
+                        __CLASS__ .'.INVALIDTOKENBODY',
+                        'Your account reset token may have expired. Please contact an administrator.'
+                    )
+                ]
+            );
+            return $this->owner->getResponse()->setBody($output)->setStatusCode(400);
         }
 
         $request->getSession()->set('MemberID', $member->ID);
