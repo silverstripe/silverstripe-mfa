@@ -2,6 +2,7 @@
 
 namespace SilverStripe\MFA\Tests\Extension\AccountReset;
 
+use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Dev\FunctionalTest;
 use SilverStripe\MFA\Extension\AccountReset\MemberExtension;
 use SilverStripe\MFA\Extension\AccountReset\SecurityAdminExtension;
@@ -73,8 +74,8 @@ class SecurityExtensionTest extends FunctionalTest
 
         $this->assertEquals(200, $response->getStatusCode(), $response->getBody());
 
-        // Simulate expired session
-        $this->session()->destroy(true);
+        // Simulate expired session (can't call destroy() due to issue in SilverStripe 4.1
+        $this->session()->restart(new HTTPRequest('GET', '/'));
 
         $response = $this->submitForm(
             'Form_ResetAccountForm',
