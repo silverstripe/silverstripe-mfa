@@ -88,7 +88,7 @@ class SecurityExtension extends Extension
             [
                 'Title' => _t(
                     __CLASS__ . '.ACCOUNT_RESET_TITLE',
-                    'Reset Account'
+                    'Reset account'
                 ),
                 'Message' => _t(
                     __CLASS__ . '.ACCOUNT_RESET_DESCRIPTION',
@@ -106,20 +106,20 @@ class SecurityExtension extends Extension
                 'NewPassword1',
                 _t(
                     'SilverStripe\\Security\\Member.NEWPASSWORD',
-                    'New Password'
+                    'New password'
                 )
             ),
             PasswordField::create(
                 'NewPassword2',
                 _t(
                     'SilverStripe\\Security\\Member.CONFIRMNEWPASSWORD',
-                    'Confirm New Password'
+                    'Confirm new password'
                 )
             ),
         ]);
 
         $actions = FieldList::create([
-            FormAction::create('doResetAccount', 'Reset Account'),
+            FormAction::create('doResetAccount', 'Reset account'),
         ]);
 
         $validation = RequiredFields::create(['NewPassword1', 'NewPassword2']);
@@ -156,7 +156,7 @@ class SecurityExtension extends Extension
         }
 
         /** @var Member&MemberExtension $member */
-        $member = Member::get()->byID(intval($memberID));
+        $member = Member::get()->byID((int) $memberID);
 
         // Fail if passwords do not match
         if ($data['NewPassword1'] !== $data['NewPassword2']) {
