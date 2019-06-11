@@ -14,4 +14,10 @@ name: mfa-memberextension
 SilverStripe\Security\Member:
   extensions:
     mfaExtension: SilverStripe\MFA\Extension\MemberExtension
-    accountResetExtension: SilverStripe\MFA\Extension\MemberResetExtension
+    accountResetExtension: SilverStripe\MFA\Extension\AccountReset\MemberExtension
+SilverStripe\Security\Security:
+  extensions:
+    accountResetExtension: SilverStripe\MFA\Extension\AccountReset\SecurityExtension
+SilverStripe\MFA\Extension\AccountReset\SecurityExtension:
+  extensions:
+    mfaResetExtension: SilverStripe\MFA\Extension\AccountReset\MFAResetExtension

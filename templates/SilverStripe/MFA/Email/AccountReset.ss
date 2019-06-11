@@ -2,4 +2,4 @@
 
 <p><%t SilverStripe\\MFA\\Email\\AccountReset.DESCRIPTION 'An account reset has been initiated for your account.' %></p>
 
-<p><a href="$ResetLink"><%t SilverStripe\\MFA\\Email\\AccountReset.ACTION 'Click here to reset your account' %></a></p>
+<p><a href="$AccountResetLink"><%t SilverStripe\\MFA\\Email\\AccountReset.ACTION 'Click here to reset your account' %></a></p>
