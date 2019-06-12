@@ -32,8 +32,6 @@ class ChangePasswordHandlerTest extends FunctionalTest
         Config::modify()
             ->set(MethodRegistry::class, 'methods', [Method::class])
             ->set(Member::class, 'auto_login_token_lifetime', 10);
-
-        SiteConfig::current_site_config()->update(['MFAEnabled' => true])->write();
     }
 
     /**

@@ -12,7 +12,7 @@ use SilverStripe\SiteConfig\SiteConfig;
 
 /**
  * The EnforcementManager class is responsible for making decisions regarding multi factor authentication app flow,
- * e.g. "is MFA required", "should we redirect to the MFA section", "can the user skip MFA registration" etc.
+ * e.g. "should we redirect to the MFA section", "can the user skip MFA registration" etc.
  */
 class EnforcementManager
 {
@@ -71,10 +71,6 @@ class EnforcementManager
      */
     public function shouldRedirectToMFA(Member $member): bool
     {
-        if (!$this->isMFAEnabled()) {
-            return false;
-        }
-
         if ($this->isMFARequired()) {
             return true;
         }
@@ -122,6 +118,7 @@ class EnforcementManager
      */
     public function isMFARequired(): bool
     {
+        /** @var SiteConfig&SiteConfigExtension $siteConfig */
         $siteConfig = SiteConfig::current_site_config();
 
         $isRequired = $siteConfig->MFARequired;
@@ -142,16 +139,6 @@ class EnforcementManager
 
         // MFA is required, a grace period is set, and it's in the future
         return false;
-    }
-
-    /**
-     * Whether multi factor authentication is enabled
-     *
-     * @return bool
-     */
-    public function isMFAEnabled(): bool
-    {
-        return (bool) SiteConfig::current_site_config()->MFAEnabled;
     }
 
     /**

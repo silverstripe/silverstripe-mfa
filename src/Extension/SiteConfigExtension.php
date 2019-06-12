@@ -14,7 +14,6 @@ use SilverStripe\View\Requirements;
 /**
  * Adds multi factor authentication related settings to the SiteConfig "Access" tab
  *
- * @property bool MFAEnabled
  * @property bool MFARequired
  * @property string MFAGracePeriodExpires
  */
@@ -29,7 +28,6 @@ class SiteConfigExtension extends DataExtension
     private static $mfa_help_link = 'https://userhelp.silverstripe.org/en/4/';
 
     private static $db = [
-        'MFAEnabled' => 'Boolean',
         'MFARequired' => 'Boolean',
         'MFAGracePeriodExpires' => 'Date',
     ];
@@ -43,30 +41,27 @@ class SiteConfigExtension extends DataExtension
         Requirements::javascript('silverstripe/mfa: client/dist/js/bundle-cms.js');
         Requirements::css('silverstripe/mfa: client/dist/styles/bundle-cms.css');
 
-        $mfaEnabled = CheckboxField::create(
-            'MFAEnabled',
-            _t(__CLASS__ . '.MFA_ENABLED', 'Enable MFA for CMS access')
-        );
-        $mfaEnabled->addExtraClass('mfa-settings__enabled');
-
         $mfaOptions = OptionsetField::create(
             'MFARequired',
             '',
             [
                 false => _t(__CLASS__ . '.MFA_OPTIONAL', 'MFA is optional for everyone'),
                 true => _t(__CLASS__ . '.MFA_REQUIRED', 'MFA is required for everyone'),
-
             ]
         );
-        $mfaOptions->addExtraClass('mfa-settings__required mfa-settings--hidden');
+        $mfaOptions->addExtraClass('mfa-settings__required');
 
         $mfaGraceEnd = DateField::create(
             'MFAGracePeriodExpires',
-            'Optional: grace period end date when MFA is enforced'
+            _t(__CLASS__ . '.MFA_GRACE_TITLE', 'MFA will be required from (optional)')
         );
+        $mfaGraceEnd->setDescription(_t(
+            __CLASS__ . '.MFA_GRACE_DESCRIPTION',
+            'MFA setup will be optional prior to this date'
+        ));
         $mfaGraceEnd->addExtraClass('mfa-settings__grace-period');
 
-        $mfaOptions = CompositeField::create($mfaEnabled, $mfaOptions, $mfaGraceEnd)
+        $mfaOptions = CompositeField::create($mfaOptions, $mfaGraceEnd)
             ->setTitle(DBField::create_field(
                 'HTMLFragment',
                 _t(__CLASS__ . '.MULTI_FACTOR_AUTHENTICATION', 'Multi Factor Authentication (MFA)')
@@ -91,7 +86,7 @@ class SiteConfigExtension extends DataExtension
         return sprintf(
             '<a class="d-block mfa-settings__help-link" target="blank" rel="noopener" href="%s">%s</a>',
             $link,
-            _t(__CLASS__ . '.FIND_OUT_MORE', 'Find out more')
+            _t(__CLASS__ . '.MFA_LEARN_MORE', 'Learn about MFA')
         );
     }
 }
