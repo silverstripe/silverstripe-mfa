@@ -148,10 +148,14 @@ class Register extends Component {
    */
   renderDownloadAction() {
     const { codes, method } = this.props;
-    const { ss: { i18n } } = window;
+    const { Blob, URL, ss: { i18n } } = window;
+
+    const codesText = codes.join('\r\n');
+    const codesBlob = new Blob([codesText]);
+    const codesURL = URL.createObjectURL(codesBlob);
 
     return (
-      <a download={`${method.name}.txt`} href={`data:application/octet-stream,${codes.join('\n')}`}>
+      <a download={`${method.name}.txt`} href={codesURL}>
         {i18n._t('MFABackupCodesRegister.DOWNLOAD', 'Download')}
       </a>
     );
