@@ -21,8 +21,6 @@ class EnforcementManagerTest extends SapphireTest
 
         DBDatetime::set_mock_now('2019-01-25 12:00:00');
 
-        $this->setSiteConfig(['MFAEnabled' => true]);
-
         MethodRegistry::config()->set('methods', [
             BasicMathMethod::class,
         ]);
@@ -74,16 +72,6 @@ class EnforcementManagerTest extends SapphireTest
         $this->assertTrue(EnforcementManager::create()->canSkipMFA($member));
     }
 
-    public function testShouldNotRedirectToMFAWhenMFAIsNotEnabled()
-    {
-        $this->setSiteConfig(['MFAEnabled' => false]);
-        /** @var Member $member */
-        $member = $this->objFromFixture(Member::class, 'sally_smith');
-        $this->logInAs($member);
-
-        $this->assertFalse(EnforcementManager::create()->shouldRedirectToMFA($member));
-    }
-
     public function testShouldRedirectToMFAWhenMFAIsRequired()
     {
         $this->setSiteConfig(['MFARequired' => true]);
@@ -127,10 +115,6 @@ class EnforcementManagerTest extends SapphireTest
      */
     protected function setSiteConfig(array $data)
     {
-        if (!isset($data['MFAEnabled'])) {
-            // Default to enabling MFA for fixture
-            $data['MFAEnabled'] = true;
-        }
         $siteConfig = SiteConfig::current_site_config();
         $siteConfig->update($data);
         $siteConfig->write();
