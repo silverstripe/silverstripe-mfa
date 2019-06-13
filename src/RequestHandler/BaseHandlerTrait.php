@@ -31,16 +31,16 @@ trait BaseHandlerTrait
             Requirements::javascript('silverstripe/admin: client/dist/js/i18n.js');
         }
 
+        // Plugin module requirements
+        foreach (MethodRegistry::singleton()->getMethods() as $method) {
+            $method->applyRequirements();
+        }
+
         Requirements::add_i18n_javascript('silverstripe/mfa: client/lang');
 
         $suffix = $frontEndRequirements ? '' : '-cms';
         Requirements::javascript("silverstripe/mfa: client/dist/js/bundle{$suffix}.js");
         Requirements::css("silverstripe/mfa: client/dist/styles/bundle{$suffix}.css");
-
-        // Plugin module requirements
-        foreach (MethodRegistry::singleton()->getMethods() as $method) {
-            $method->applyRequirements();
-        }
     }
 
     /**

@@ -24,6 +24,7 @@ class RegisteredMethodDetails implements RegisteredMethodDetailsInterface
         return [
             'name' => $this->method->getRegisterHandler()->getName(),
             'urlSegment' => $this->method->getURLSegment(),
+            'isAvailable' => $this->method->isAvailable(),
             'leadInLabel' => $this->method->getVerifyHandler()->getLeadInLabel(),
             'component' => $this->method->getVerifyHandler()->getComponent(),
             'supportLink' => $this->method->getRegisterHandler()->getSupportLink(),

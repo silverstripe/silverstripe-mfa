@@ -3,7 +3,7 @@
 import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import MethodTile from '../MethodTile';
+import { Component as MethodTile } from '../MethodTile';
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -21,6 +21,8 @@ const firstMethod = {
 };
 
 const clickHandlerMock = jest.fn();
+const isAvailableMock = () => true;
+const getUnavailableMessageMock = () => 'Testing';
 
 describe('MethodTile', () => {
   beforeEach(() => {
@@ -34,6 +36,8 @@ describe('MethodTile', () => {
         <MethodTile
           method={firstMethod}
           onClick={clickHandlerMock}
+          isAvailable={isAvailableMock}
+          getUnavailableMessage={getUnavailableMessageMock}
         />
       );
       wrapper.instance().handleClick({});
@@ -46,6 +50,8 @@ describe('MethodTile', () => {
         <MethodTile
           method={firstMethod}
           onClick={clickHandlerMock}
+          isAvailable={isAvailableMock}
+          getUnavailableMessage={getUnavailableMessageMock}
         />
       );
       wrapper.instance().handleClick({});
@@ -60,18 +66,20 @@ describe('MethodTile', () => {
         <MethodTile
           method={firstMethod}
           onClick={clickHandlerMock}
+          isAvailable={isAvailableMock}
+          getUnavailableMessage={getUnavailableMessageMock}
         />
       );
       expect(wrapper.find('.mfa-method-tile__unavailable-mask')).toHaveLength(0);
     });
 
     it('renders a mask with message via props when unavailable', () => {
-      firstMethod.isAvailable = false;
-      firstMethod.unavailableMessage = 'Test message here';
       const wrapper = shallow(
         <MethodTile
           method={firstMethod}
           onClick={clickHandlerMock}
+          isAvailable={() => false}
+          getUnavailableMessage={() => 'Test message here'}
         />
       );
       const mask = wrapper.find('.mfa-method-tile__unavailable-mask');
@@ -87,6 +95,8 @@ describe('MethodTile', () => {
         <MethodTile
           method={firstMethod}
           onClick={clickHandlerMock}
+          isAvailable={isAvailableMock}
+          getUnavailableMessage={getUnavailableMessageMock}
         />
       );
       wrapper.find('.mfa-method-tile__content').simulate('click');
@@ -99,6 +109,8 @@ describe('MethodTile', () => {
         <MethodTile
           method={firstMethod}
           onClick={clickHandlerMock}
+          isAvailable={isAvailableMock}
+          getUnavailableMessage={getUnavailableMessageMock}
         />
       );
       wrapper.find('.mfa-method-tile__content').simulate('keyUp', { keyCode: 13 });
@@ -111,6 +123,8 @@ describe('MethodTile', () => {
           isActive
           method={firstMethod}
           onClick={clickHandlerMock}
+          isAvailable={isAvailableMock}
+          getUnavailableMessage={getUnavailableMessageMock}
         />
       );
       expect(wrapper.find('.mfa-method-tile--active')).toHaveLength(1);

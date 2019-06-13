@@ -126,7 +126,8 @@ describe('SelectMethod', () => {
         />
       );
 
-      expect(wrapper.find('MethodTile')).toHaveLength(1);
+      expect(wrapper.find('.mfa-method-tile__container')).toHaveLength(1);
+      expect(wrapper.find('.mfa-method-tile__container').children()).toHaveLength(1);
     });
   });
 });
