@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import registeredMethodType from 'types/registeredMethod';
-import withMethodAvailability from 'state/methodAvailability/withMethodAvailbility';
+import withMethodAvailability from 'state/methodAvailability/withMethodAvailability';
 
 class SelectMethod extends PureComponent {
   /**

@@ -310,4 +310,29 @@ describe('Verify', () => {
       });
     });
   });
+
+  describe('renderSelectedMethod()', () => {
+    it('renders an unavailable screen when the selected method is unavailable', done => {
+      const wrapper = shallow(
+        <Verify
+          endpoints={endpoints}
+          registeredMethods={mockRegisteredMethods}
+          isAvailable={() => false}
+          getUnavailableMessage={() => 'There is no spoon'}
+        />
+      );
+
+      // Defer testing of final render state so that we don't inspect loading state
+      setTimeout(() => {
+        // Enable a selected method
+        wrapper.instance().setState({
+          selectedMethod: mockRegisteredMethods[0],
+        });
+
+        expect(wrapper.find('.mfa-method--unavailable')).toHaveLength(1);
+        expect(wrapper.text()).toContain('There is no spoon');
+        done();
+      });
+    });
+  });
 });

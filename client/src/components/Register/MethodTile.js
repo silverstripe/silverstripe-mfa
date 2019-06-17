@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import availableMethodType from 'types/availableMethod';
-import withMethodAvailbility from 'state/methodAvailability/withMethodAvailbility';
+import withMethodAvailability from 'state/methodAvailability/withMethodAvailability';
 
 /**
  * A centralised wrapper component to render a single MFA method tile for use
@@ -143,4 +143,4 @@ MethodTile.defaultProps = {
 
 export { MethodTile as Component };
 
-export default withMethodAvailbility(MethodTile);
+export default withMethodAvailability(MethodTile);

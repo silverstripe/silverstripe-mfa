@@ -2,3 +2,19 @@
   color: $color-message-error;
   margin: 0.2em 0;
 }
+
+.mfa-method {
+  text-align: center;
+}
+
+.mfa-method-icon {
+  margin-bottom: $content-spacing;
+
+  &--unavailable {
+    color: $color-blue;
+  }
+}
+
+.mfa-method-options {
+  margin-top: $content-spacing;
+}

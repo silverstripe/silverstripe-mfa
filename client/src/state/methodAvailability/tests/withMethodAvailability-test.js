@@ -4,7 +4,7 @@
 import React from 'react';
 import Enzyme, { shallow, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import withMethodAvailability, { hoc } from '../withMethodAvailbility';
+import withMethodAvailability, { hoc } from '../withMethodAvailability';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 
