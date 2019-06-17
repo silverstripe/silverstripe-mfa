@@ -65,7 +65,10 @@
     ],
     "transform": {
       ".*": "babel-jest"
-    }
+    },
+    "setupFiles": [
+      "<rootDir>/tests/js/bootstrap.js"
+    ]
   },
   "babel": {
     "presets": [
