@@ -71,6 +71,10 @@ class EnforcementManager
      */
     public function shouldRedirectToMFA(Member $member): bool
     {
+        if ($member->RegisteredMFAMethods()->exists()) {
+            return true;
+        }
+
         if ($this->isMFARequired()) {
             return true;
         }

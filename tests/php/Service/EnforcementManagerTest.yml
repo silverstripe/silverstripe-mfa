@@ -10,3 +10,7 @@ SilverStripe\Security\Member:
     RegisteredMFAMethods:
       - =>SilverStripe\MFA\Model\RegisteredMethod.codes
     DefaultRegisteredMethodID: =>SilverStripe\MFA\Model\RegisteredMethod.codes
+  sammy_smith:
+    FirstName: Sammy
+    Surname: Smith
+    Email: sammy.smith@example.com
