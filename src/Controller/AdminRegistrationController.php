@@ -39,6 +39,8 @@ class AdminRegistrationController extends LeftAndMain
         'removeRegisteredMethod',
     ];
 
+    private static $required_permission_codes = false;
+
     /**
      * Start a registration for a method on the currently logged in user
      *
