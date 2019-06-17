@@ -72,6 +72,13 @@ class EnforcementManagerTest extends SapphireTest
         $this->assertTrue(EnforcementManager::create()->canSkipMFA($member));
     }
 
+    public function testShouldRedirectToMFAWhenUserHasRegisteredMFAMethod()
+    {
+        $member = $this->objFromFixture(Member::class, 'sally_smith');
+        $shouldRedirect = EnforcementManager::create()->shouldRedirectToMFA($member);
+        $this->assertTrue($shouldRedirect);
+    }
+
     public function testShouldRedirectToMFAWhenMFAIsRequired()
     {
         $this->setSiteConfig(['MFARequired' => true]);
@@ -100,7 +107,7 @@ class EnforcementManagerTest extends SapphireTest
         $this->setSiteConfig(['MFARequired' => false]);
 
         /** @var Member&MemberExtension $member */
-        $member = $this->objFromFixture(Member::class, 'sally_smith');
+        $member = $this->objFromFixture(Member::class, 'sammy_smith');
         $member->HasSkippedMFARegistration = true;
         $member->write();
         $this->logInAs($member);
