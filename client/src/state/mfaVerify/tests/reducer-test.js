@@ -3,7 +3,7 @@
 import reducer from '../reducer';
 import MFA_VERIFY from '../actionTypes';
 
-describe('MFARegister reducer', () => {
+describe('MFAVerify reducer', () => {
   it('should return the initial state', () => {
     expect(reducer(undefined, {})).toEqual({
       allMethods: [],
