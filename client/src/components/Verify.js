@@ -11,7 +11,7 @@ import LoadingIndicator from 'components/LoadingIndicator';
 import SelectMethod from 'components/Verify/SelectMethod';
 import { setAllMethods } from 'state/mfaVerify/actions';
 import withMethodAvailability from 'state/methodAvailability/withMethodAvailability';
-import ExclamationMark from 'components/Icons/ExclamationMark';
+import CircleWarning from 'components/Icons/CircleWarning';
 
 class Verify extends Component {
   constructor(props) {
@@ -306,7 +306,7 @@ class Verify extends Component {
       return (
         <div className="mfa-method mfa-method--unavailable">
           <div className="mfa-method-icon mfa-method-icon--unavailable">
-            <ExclamationMark size="80px" />
+            <CircleWarning size="80px" />
           </div>
 
           <h2 className="mfa-method-title mfa-method-title--unavailable">
