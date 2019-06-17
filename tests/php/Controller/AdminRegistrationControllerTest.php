@@ -328,4 +328,15 @@ class AdminRegistrationControllerTest extends FunctionalTest
         $this->assertSame(400, $result->getStatusCode());
         $this->assertContains('Invalid session', $result->getBody());
     }
+
+    /**
+     * This controller allows any logged in user to access it, since its methods have their own permission
+     * check validation already.
+     *
+     * See: https://github.com/silverstripe/silverstripe-mfa/issues/171
+     */
+    public function testAnyUserCanView()
+    {
+        $this->assertFalse(AdminRegistrationController::getRequiredPermissions());
+    }
 }
