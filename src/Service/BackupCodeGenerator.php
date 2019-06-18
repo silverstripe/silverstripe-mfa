@@ -5,8 +5,8 @@ namespace SilverStripe\MFA\Service;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
-use SilverStripe\MFA\Exception\HashFailedException;
 use SilverStripe\MFA\State\BackupCode;
+use SilverStripe\Security\Security;
 
 class BackupCodeGenerator implements BackupCodeGeneratorInterface
 {
@@ -46,31 +46,14 @@ class BackupCodeGenerator implements BackupCodeGeneratorInterface
         $codes = [];
         while (count($codes) < $codeCount) {
             $code = $this->generateCode($charset, $codeLength);
+
             if (!in_array($code, $codes)) {
-                $codes[] = BackupCode::create($code, $this->hash($code));
+                $hashData = Security::encrypt_password($code);
+                $codes[] = BackupCode::create($code, $hashData['password'], $hashData['algorithm'], $hashData['salt']);
             }
         }
 
         return $codes;
-    }
-
-    /**
-     * Hash a back-up code for storage. This uses the native PHP password_hash API by default, but can be extended to
-     * implement a custom hash requirement callback.
-     *
-     * {@inheritDoc}
-     */
-    public function hash(string $code): string
-    {
-        $hash = (string) password_hash($code, PASSWORD_DEFAULT);
-
-        $this->extend('updateHash', $code, $hash);
-
-        if ($hash === $code) {
-            throw new HashFailedException('Hash must not equal the plaintext code!');
-        }
-
-        return $hash;
     }
 
     public function getCharacterSet(): array
