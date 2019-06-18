@@ -8,6 +8,7 @@ use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\Notification;
+use SilverStripe\MFA\State\BackupCode;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
 
@@ -69,21 +70,31 @@ class VerifyHandler implements VerifyHandlerInterface
         $candidates = json_decode($registeredMethod->Data, true);
 
         foreach ($candidates as $index => $candidate) {
-            if ($this->verifyCode($code, $candidate)) {
-                // Remove the verified code from the valid list of codes
-                array_splice($candidates, $index, 1);
-                $registeredMethod->Data = json_encode($candidates);
-                $registeredMethod->write();
-                $this->notification->send(
-                    $registeredMethod->Member(),
-                    'SilverStripe/MFA/Email/Notification_backupcodeused',
-                    [
-                        'subject' => _t(self::class . '.MFAREMOVED', 'A recovery code was used to access your account'),
-                        'CodesRemaining' => count($candidates),
-                    ]
-                );
-                return Result::create();
+            $candidateData = json_decode($candidate, true) ?? [];
+            $backupCode = BackupCode::create(
+                $code,
+                $candidateData['hash'] ?? '',
+                $candidateData['algorithm'] ?? '',
+                $candidateData['salt'] ?? ''
+            );
+            if (!$backupCode->isValid()) {
+                continue;
             }
+
+
+            // Remove the verified code from the valid list of codes
+            array_splice($candidates, $index, 1);
+            $registeredMethod->Data = json_encode($candidates);
+            $registeredMethod->write();
+            $this->notification->send(
+                $registeredMethod->Member(),
+                'SilverStripe/MFA/Email/Notification_backupcodeused',
+                [
+                    'subject' => _t(self::class . '.MFAREMOVED', 'A recovery code was used to access your account'),
+                    'CodesRemaining' => count($candidates),
+                ]
+            );
+            return Result::create();
         }
 
         return Result::create(false, _t(__CLASS__ . '.INVALID_CODE', 'Invalid code'));
@@ -99,19 +110,6 @@ class VerifyHandler implements VerifyHandlerInterface
     public function getLeadInLabel(): string
     {
         return _t(__CLASS__ . '.LEAD_IN', 'Verify with recovery code');
-    }
-
-    /**
-     * Verifies the given code (user input) against the given hash. This uses the PHP password_hash API by default but
-     * can be extended to handle a custom hash implementation
-     *
-     * @param string $code
-     * @param string $hash
-     * @return bool
-     */
-    protected function verifyCode($code, $hash): bool
-    {
-        return password_verify($code, $hash);
     }
 
     /**

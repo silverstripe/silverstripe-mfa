@@ -53,7 +53,7 @@ class RegisterHandler implements RegisterHandlerInterface
             $store->getMember(),
             $method,
             array_map(function (BackupCode $backupCode) {
-                return $backupCode->getHash();
+                return json_encode($backupCode);
             }, $codes)
         );
 
