@@ -4,12 +4,9 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { loadComponent } from 'lib/Injector'; // eslint-disable-line
-import { compose } from 'redux';
-import { connect } from 'react-redux';
 import registeredMethodType from 'types/registeredMethod';
 import LoadingIndicator from 'components/LoadingIndicator';
 import SelectMethod from 'components/Verify/SelectMethod';
-import { setAllMethods } from 'state/mfaVerify/actions';
 import withMethodAvailability from 'state/methodAvailability/withMethodAvailability';
 import CircleWarning from 'components/Icons/CircleWarning';
 
@@ -33,11 +30,9 @@ class Verify extends Component {
 
   componentDidMount() {
     const {
-      availableMethods,
       defaultMethod,
       registeredMethods,
       backupMethod,
-      onSetAllMethods,
     } = this.props;
 
     // Choose either the default method or the first method in the list as the default verify screen
@@ -54,14 +49,6 @@ class Verify extends Component {
         ? registeredMethods.find(method => method.urlSegment !== backupMethod.urlSegment)
         : registeredMethods[0]
       );
-    }
-
-    // "All methods" is the combination of registered and available methods
-    if (onSetAllMethods) {
-      this.props.onSetAllMethods([
-        ...registeredMethods || {},
-        ...availableMethods || {},
-      ]);
     }
   }
 
@@ -379,21 +366,6 @@ Verify.propTypes = {
   defaultMethod: PropTypes.string,
 };
 
-const mapStateToProps = state => {
-  const source = state.mfaVerify || state;
-
-  return {
-    allMethods: source.allMethods,
-  };
-};
-
-const mapDispatchToProps = dispatch => ({
-  onSetAllMethods: methods => dispatch(setAllMethods(methods)),
-});
-
 export { Verify as Component };
 
-export default compose(
-  connect(mapStateToProps, mapDispatchToProps),
-  withMethodAvailability
-)(Verify);
+export default withMethodAvailability(Verify);

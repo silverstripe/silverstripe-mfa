@@ -47,6 +47,7 @@ class SchemaGenerator
         $schema = [
             'registeredMethods' => $registeredMethods,
             'availableMethods' => $this->getAvailableMethods($exclude),
+            'allMethods' => $this->getAvailableMethods(),
             'defaultMethod' => $this->getDefaultMethod($member),
             'backupMethod' => $this->getBackupMethod(),
             'canSkip' => $enforcementManager->canSkipMFA($member),

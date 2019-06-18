@@ -6,6 +6,7 @@ import Verify from 'components/Verify';
 import Register from 'components/Register';
 import LoadingIndicator from 'components/LoadingIndicator';
 import { chooseMethod, setAvailableMethods } from 'state/mfaRegister/actions';
+import { setAllMethods } from 'state/mfaVerify/actions';
 import { connect } from 'react-redux';
 
 /**
@@ -33,15 +34,16 @@ class Login extends Component {
   }
 
   componentDidMount() {
-    const { schemaURL } = this.props;
+    const { schemaURL, onSetAllMethods } = this.props;
 
     return fetch(schemaURL)
       .then(response => response.json())
-      .then(schemaData =>
+      .then(schemaData => {
         this.setState({
           schema: schemaData
-        })
-      );
+        });
+        onSetAllMethods(schemaData.allMethods);
+      });
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -179,12 +181,9 @@ Login.propTypes = {
 };
 
 const mapDispatchToProps = dispatch => ({
-  onChooseMethod: method => {
-    dispatch(chooseMethod(method));
-  },
-  onSetAvailableMethods: methods => {
-    dispatch(setAvailableMethods(methods));
-  },
+  onChooseMethod: method => dispatch(chooseMethod(method)),
+  onSetAvailableMethods: methods => dispatch(setAvailableMethods(methods)),
+  onSetAllMethods: methods => dispatch(setAllMethods(methods)),
 });
 
 export { Login as Component };
