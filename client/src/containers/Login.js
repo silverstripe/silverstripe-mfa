@@ -5,15 +5,9 @@ import PropTypes from 'prop-types';
 import Verify from 'components/Verify';
 import Register from 'components/Register';
 import LoadingIndicator from 'components/LoadingIndicator';
-import { Provider } from 'react-redux';
-import { createStore } from 'redux';
-import mfaRegisterReducer from 'state/mfaRegister/reducer';
 import { chooseMethod, setAvailableMethods } from 'state/mfaRegister/actions';
-
-const store = createStore(
-  mfaRegisterReducer,
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-);
+import { setAllMethods } from 'state/mfaVerify/actions';
+import { connect } from 'react-redux';
 
 /**
  * Directs the flow of the log in process.
@@ -34,19 +28,22 @@ class Login extends Component {
       schemaLoaded: false,
     };
 
+
     this.handleCompleteLogin = this.handleCompleteLogin.bind(this);
     this.handleCompleteVerify = this.handleCompleteVerify.bind(this);
   }
 
   componentDidMount() {
-    const { schemaURL } = this.props;
+    const { schemaURL, onSetAllMethods } = this.props;
+
     return fetch(schemaURL)
       .then(response => response.json())
-      .then(schemaData =>
+      .then(schemaData => {
         this.setState({
           schema: schemaData
-        })
-      );
+        });
+        onSetAllMethods(schemaData.allMethods);
+      });
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -59,7 +56,7 @@ class Login extends Component {
 
     // If the schema was previously unset then we're updating from new schema.
     if (!prevState.schema) {
-      store.dispatch(setAvailableMethods(availableMethods));
+      this.props.onSetAvailableMethods(availableMethods);
       return;
     }
 
@@ -71,7 +68,7 @@ class Login extends Component {
     const newList = availableMethods.map(method => method.urlSegment).sort().toString();
 
     if (oldList !== newList) {
-      store.dispatch(setAvailableMethods(availableMethods));
+      this.props.onSetAvailableMethods(availableMethods);
     }
   }
 
@@ -105,7 +102,7 @@ class Login extends Component {
         method => method.urlSegment === backupMethod.urlSegment
       ).length === 0
     ) {
-      store.dispatch(chooseMethod(backupMethod));
+      this.props.onChooseMethod(backupMethod);
     }
   }
 
@@ -137,9 +134,10 @@ class Login extends Component {
     }
 
     return (
-      <Provider store={store}>
-        <Register {...schema} onCompleteRegistration={this.handleCompleteLogin} />
-      </Provider>
+      <Register
+        {...schema}
+        onCompleteRegistration={this.handleCompleteLogin}
+      />
     );
   }
 
@@ -182,4 +180,12 @@ Login.propTypes = {
   schemaURL: PropTypes.string
 };
 
-export default Login;
+const mapDispatchToProps = dispatch => ({
+  onChooseMethod: method => dispatch(chooseMethod(method)),
+  onSetAvailableMethods: methods => dispatch(setAvailableMethods(methods)),
+  onSetAllMethods: methods => dispatch(setAllMethods(methods)),
+});
+
+export { Login as Component };
+
+export default connect(null, mapDispatchToProps)(Login);

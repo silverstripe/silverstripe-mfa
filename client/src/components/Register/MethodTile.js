@@ -4,7 +4,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import availableMethodType from 'types/availableMethod';
+import withMethodAvailability from 'state/methodAvailability/withMethodAvailability';
 
+/**
+ * A centralised wrapper component to render a single MFA method tile for use
+ * during the MFA registration process.
+ */
 class MethodTile extends Component {
   constructor(props) {
     super(props);
@@ -69,21 +74,22 @@ class MethodTile extends Component {
    * @returns {HTMLElement|null}
    */
   renderUnavailableMask() {
-    const { method: { isAvailable, unavailableMessage } } = this.props;
     const { ss: { i18n } } = window;
+    const { isAvailable, getUnavailableMessage } = this.props;
 
-    if (isAvailable) {
+    if (isAvailable()) {
       return null;
     }
+    const message = getUnavailableMessage();
 
     return (
       <div className="mfa-method-tile__unavailable-mask">
         <h3 className="mfa-method-tile__unavailable-title">
           {i18n._t('MFAMethodTile.UNAVAILABLE', 'Unsupported')}
         </h3>
-        {unavailableMessage && (
+        {message && (
           <p className="mfa-method-tile__unavailable-text">
-            {unavailableMessage}
+            {message}
           </p>
         )}
       </div>
@@ -124,7 +130,9 @@ class MethodTile extends Component {
 }
 
 MethodTile.propTypes = {
+  getUnavailableMessage: PropTypes.func.isRequired,
   isActive: PropTypes.bool,
+  isAvailable: PropTypes.func.isRequired,
   method: availableMethodType.isRequired,
   onClick: PropTypes.func.isRequired,
 };
@@ -133,4 +141,6 @@ MethodTile.defaultProps = {
   isActive: false,
 };
 
-export default MethodTile;
+export { MethodTile as Component };
+
+export default withMethodAvailability(MethodTile);

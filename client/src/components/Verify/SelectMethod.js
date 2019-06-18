@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import registeredMethodType from 'types/registeredMethod';
+import withMethodAvailability from 'state/methodAvailability/withMethodAvailability';
 
 class SelectMethod extends PureComponent {
   /**
@@ -48,6 +49,16 @@ class SelectMethod extends PureComponent {
    */
   renderMethod(method) {
     const { onSelectMethod } = this.props;
+
+    // Unavailable state, e.g. if unsupported in the current browser
+    if (!this.props.isAvailable(method)) {
+      return (
+        <li key={method.urlSegment}>
+          {/* todo implement designs for this */}
+          {method.leadInLabel} ({this.props.getUnavailableMessage(method)})
+        </li>
+      );
+    }
 
     return (
       <li key={method.urlSegment}>
@@ -104,9 +115,13 @@ class SelectMethod extends PureComponent {
 
 SelectMethod.propTypes = {
   methods: PropTypes.arrayOf(registeredMethodType),
+  getUnavailableMessage: PropTypes.func.isRequired,
+  isAvailable: PropTypes.func.isRequired,
   onSelectMethod: PropTypes.func,
   onClickBack: PropTypes.func,
   resources: PropTypes.object,
 };
 
-export default SelectMethod;
+export { SelectMethod as Component };
+
+export default withMethodAvailability(SelectMethod);

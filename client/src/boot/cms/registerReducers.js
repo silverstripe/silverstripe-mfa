@@ -1,9 +1,9 @@
 import Injector from 'lib/Injector'; // eslint-disable-line
-import mfaRegisterReducer from 'state/mfaRegister/reducer';
+import baseRegisterReducers from '../registerReducers';
 import mfaAdministrationReducer from 'state/mfaAdministration/reducer';
 
 export default () => {
-  Injector.reducer.register('mfaRegister', mfaRegisterReducer);
+  baseRegisterReducers();
+
   Injector.reducer.register('mfaAdministration', mfaAdministrationReducer);
 };
-

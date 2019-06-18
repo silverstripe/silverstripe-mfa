@@ -7,7 +7,8 @@ import fetch from 'isomorphic-fetch';
 import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import Verify from '../Verify';
+import { Component as Verify } from '../Verify';
+import SelectMethod from '../Verify/SelectMethod';
 import { loadComponent } from 'lib/Injector'; // eslint-disable-line
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -35,7 +36,7 @@ const mockRegisteredMethods = [
 
 const fetchMock = jest.spyOn(global, 'fetch');
 
-describe('Login', () => {
+describe('Verify', () => {
   beforeEach(() => {
     fetchMock.mockImplementation(() => Promise.resolve({
       status: 200,
@@ -212,72 +213,8 @@ describe('Login', () => {
 
       expect(preventDefault.mock.calls).toHaveLength(1);
       expect(wrapper.state('showOtherMethods')).toBe(true);
-      expect(wrapper.find('SelectMethod')).toHaveLength(1);
+      expect(wrapper.find(SelectMethod)).toHaveLength(1);
       done();
-    });
-  });
-
-  it('shows a back button on the show other methods pane that takes you back', (done) => {
-    const wrapper = shallow(
-      <Verify
-        endpoints={endpoints}
-        registeredMethods={mockRegisteredMethods}
-      />
-    );
-    const preventDefault = jest.fn();
-
-    wrapper.setState({
-      showOtherMethods: true,
-    });
-
-    setTimeout(() => {
-      expect(wrapper.find('SelectMethod')).toHaveLength(1);
-      const chooseMethodWrapper = wrapper.find('SelectMethod').shallow();
-
-      const backButton = chooseMethodWrapper.find('.mfa-verify-select-method__back');
-      expect(backButton).toHaveLength(1);
-
-      backButton.simulate('click', { preventDefault });
-      expect(preventDefault.mock.calls).toHaveLength(1);
-
-      setTimeout(() => {
-        expect(wrapper.find('SelectMethod')).toHaveLength(0);
-        done();
-      });
-    });
-  });
-
-  it('will trigger a load of a different method when clicked in the other methods pane', (done) => {
-    const wrapper = shallow(
-      <Verify
-        endpoints={endpoints}
-        registeredMethods={mockRegisteredMethods}
-      />
-    );
-    const preventDefault = jest.fn();
-
-    wrapper.setState({
-      showOtherMethods: true,
-    });
-
-    setTimeout(() => {
-      expect(fetchMock.mock.calls).toHaveLength(1);
-      const chooseMethodWrapper = wrapper.find('SelectMethod').shallow();
-
-      const otherMethod = chooseMethodWrapper.find('li a');
-      expect(otherMethod).toHaveLength(1);
-
-      otherMethod.simulate('click', { preventDefault });
-      expect(preventDefault.mock.calls).toHaveLength(1);
-      expect(fetchMock.mock.calls).toHaveLength(2);
-
-      expect(fetchMock.mock.calls).toEqual([['/fake/aye'], ['/fake/bee']]);
-
-      setTimeout(() => {
-        expect(wrapper.find('SelectMethod')).toHaveLength(0);
-        expect(wrapper.find('h2').text()).toBe('Login with bee');
-        done();
-      });
     });
   });
 
@@ -369,6 +306,31 @@ describe('Login', () => {
         expect(wrapper.find('Test').props()).toEqual(expect.objectContaining({
           error: 'It was a failure',
         }));
+        done();
+      });
+    });
+  });
+
+  describe('renderSelectedMethod()', () => {
+    it('renders an unavailable screen when the selected method is unavailable', done => {
+      const wrapper = shallow(
+        <Verify
+          endpoints={endpoints}
+          registeredMethods={mockRegisteredMethods}
+          isAvailable={() => false}
+          getUnavailableMessage={() => 'There is no spoon'}
+        />
+      );
+
+      // Defer testing of final render state so that we don't inspect loading state
+      setTimeout(() => {
+        // Enable a selected method
+        wrapper.instance().setState({
+          selectedMethod: mockRegisteredMethods[0],
+        });
+
+        expect(wrapper.find('.mfa-method--unavailable')).toHaveLength(1);
+        expect(wrapper.text()).toContain('There is no spoon');
         done();
       });
     });

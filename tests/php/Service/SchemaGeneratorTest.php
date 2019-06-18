@@ -45,6 +45,9 @@ class SchemaGeneratorTest extends SapphireTest
         $this->assertContainsOnlyInstancesOf(RegisteredMethodDetailsInterface::class, $schema['registeredMethods']);
         $this->assertSame('basic-math', $schema['availableMethods'][0]->jsonSerialize()['urlSegment']);
 
+        $this->assertArrayHasKey('allMethods', $schema);
+        $this->assertCount(1, $schema['allMethods'], 'Only BasicMath is registered; allMethods was wrong');
+
         $this->assertArrayHasKey('defaultMethod', $schema);
         $this->assertNotEmpty($schema['defaultMethod']);
         $this->assertSame('backup-codes', $schema['defaultMethod']);

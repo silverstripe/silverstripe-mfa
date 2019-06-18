@@ -2,10 +2,13 @@
 
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 import { loadComponent } from 'lib/Injector'; // eslint-disable-line
 import registeredMethodType from 'types/registeredMethod';
 import LoadingIndicator from 'components/LoadingIndicator';
 import SelectMethod from 'components/Verify/SelectMethod';
+import withMethodAvailability from 'state/methodAvailability/withMethodAvailability';
+import CircleWarning from 'components/Icons/CircleWarning';
 
 class Verify extends Component {
   constructor(props) {
@@ -26,7 +29,11 @@ class Verify extends Component {
   }
 
   componentDidMount() {
-    const { defaultMethod, registeredMethods, backupMethod } = this.props;
+    const {
+      defaultMethod,
+      registeredMethods,
+      backupMethod,
+    } = this.props;
 
     // Choose either the default method or the first method in the list as the default verify screen
     const defaultMethodDefinition = defaultMethod && registeredMethods.find(
@@ -214,9 +221,10 @@ class Verify extends Component {
    * Render a control that will allow a user to display the "other methods" pane if the currently
    * selected method is not suitable
    *
+   * @param {string|null} extraClass Will be added to the button
    * @return {HTMLElement|null}
    */
-  renderOtherMethodsControl() {
+  renderOtherMethodsControl(extraClass = '') {
     const otherMethods = this.getOtherMethods();
     const { ss: { i18n } } = window;
 
@@ -228,7 +236,7 @@ class Verify extends Component {
     return (
       <a
         href="#"
-        className="btn btn-secondary"
+        className={classnames('btn btn-secondary', extraClass)}
         onClick={this.handleShowOtherMethodsPane}
       >
         {i18n._t('MFAVerify.MORE_OPTIONS', 'More options')}
@@ -252,12 +260,15 @@ class Verify extends Component {
     }
 
     return (
-      <SelectMethod
-        resources={resources}
-        methods={otherMethods}
-        onClickBack={this.handleHideOtherMethodsPane}
-        onSelectMethod={method => event => this.handleClickOtherMethod(event, method)}
-      />
+      <Fragment>
+        {this.renderTitle()}
+        <SelectMethod
+          resources={resources}
+          methods={otherMethods}
+          onClickBack={this.handleHideOtherMethodsPane}
+          onSelectMethod={method => event => this.handleClickOtherMethod(event, method)}
+        />
+      </Fragment>
     );
   }
 
@@ -267,16 +278,41 @@ class Verify extends Component {
    * @return {HTMLElement|null}
    */
   renderSelectedMethod() {
+    const { isAvailable, getUnavailableMessage } = this.props;
     const { selectedMethod, showOtherMethods, verifyProps, message } = this.state;
+    const { ss: { i18n } } = window;
 
     if (!selectedMethod || showOtherMethods) {
       return null;
     }
 
-    const MethodComponent = loadComponent(selectedMethod.component);
+    // Handle state where the method is not available to be used, e.g. if the browser
+    // is incompatible or HTTPS is not enabled.
+    if (isAvailable && !isAvailable(selectedMethod)) {
+      const unavailableMessage = getUnavailableMessage(selectedMethod);
+      return (
+        <div className="mfa-method mfa-method--unavailable">
+          <div className="mfa-method-icon mfa-method-icon--unavailable">
+            <CircleWarning size="80px" />
+          </div>
 
+          <h2 className="mfa-method-title mfa-method-title--unavailable">
+            { i18n._t('MFAVerify.METHOD_UNAVAILABLE', 'This authentication method is unavailable') }
+          </h2>
+          {unavailableMessage && <p>{unavailableMessage}</p>}
+
+          <div className="mfa-method-options">
+            {this.renderOtherMethodsControl('btn-outline-secondary')}
+          </div>
+        </div>
+      );
+    }
+
+    const MethodComponent = loadComponent(selectedMethod.component);
     return (
-      <div>
+      <Fragment>
+        {this.renderTitle()}
+
         <h2 className="mfa-section-title">{selectedMethod.leadInLabel}</h2>
         {MethodComponent && <MethodComponent
           {...verifyProps}
@@ -285,13 +321,25 @@ class Verify extends Component {
           onCompleteVerification={this.handleCompleteVerification}
           moreOptionsControl={this.renderOtherMethodsControl()}
         />}
-      </div>
+      </Fragment>
+    );
+  }
+
+  /**
+   * @returns {HTMLElement}
+   */
+  renderTitle() {
+    const { ss: { i18n } } = window;
+
+    return (
+      <h1 className="mfa-app-title">
+        {i18n._t('MFAVerify.TITLE', 'Log in')}
+      </h1>
     );
   }
 
   render() {
     const { loading } = this.state;
-    const { ss: { i18n } } = window;
 
     if (loading) {
       return <LoadingIndicator block />;
@@ -299,7 +347,6 @@ class Verify extends Component {
 
     return (
       <Fragment>
-        <h1 className="mfa-app-title">{i18n._t('MFAVerify.TITLE', 'Log in')}</h1>
         {this.renderSelectedMethod()}
         {this.renderOtherMethods()}
       </Fragment>
@@ -319,4 +366,6 @@ Verify.propTypes = {
   defaultMethod: PropTypes.string,
 };
 
-export default Verify;
+export { Verify as Component };
+
+export default withMethodAvailability(Verify);
