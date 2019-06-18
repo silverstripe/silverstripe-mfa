@@ -4,12 +4,10 @@ Name: mfa-admin
 SilverStripe\Admin\SecurityAdmin:
   extensions:
     accountResetExtension: SilverStripe\MFA\Extension\AccountReset\SecurityAdminExtension
-    mfaRequirementsExtension: SilverStripe\MFA\Extension\RequirementsExtension
-SilverStripe\Admin\CMSProfileController:
-  extensions:
-    mfaRequirementsExtension: SilverStripe\MFA\Extension\RequirementsExtension
 
 SilverStripe\Admin\LeftAndMain:
+  extensions:
+    mfaRequirementsExtension: SilverStripe\MFA\Extension\RequirementsExtension
   extra_requirements_javascript:
     - 'silverstripe/mfa: client/dist/js/bundle-cms.js'
   extra_requirements_css:
