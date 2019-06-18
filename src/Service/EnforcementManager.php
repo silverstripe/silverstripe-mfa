@@ -3,12 +3,14 @@
 namespace SilverStripe\MFA\Service;
 
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Extension\SiteConfigExtension;
 use SilverStripe\ORM\FieldType\DBDate;
 use SilverStripe\Security\Member;
 use SilverStripe\SiteConfig\SiteConfig;
+use SilverStripe\SiteConfig\SiteConfigLeftAndMain;
 
 /**
  * The EnforcementManager class is responsible for making decisions regarding multi factor authentication app flow,
@@ -16,6 +18,7 @@ use SilverStripe\SiteConfig\SiteConfig;
  */
 class EnforcementManager
 {
+    use Configurable;
     use Injectable;
 
     /**
@@ -25,6 +28,15 @@ class EnforcementManager
      * @var int
      */
     private static $required_mfa_methods = 1;
+
+    /**
+     * If true, redirects to MFA will only provided when the current user has access to some part of the CMS or
+     * administration area.
+     *
+     * @config
+     * @var bool
+     */
+    private static $requires_admin_access = true;
 
     /**
      * Whether the current member can skip the multi factor authentication registration process.
@@ -71,6 +83,10 @@ class EnforcementManager
      */
     public function shouldRedirectToMFA(Member $member): bool
     {
+        if ($this->config()->get('requires_admin_access') && !$this->hasAdminAccess($member)) {
+            return false;
+        }
+
         if ($member->RegisteredMFAMethods()->exists()) {
             return true;
         }
@@ -172,5 +188,38 @@ class EnforcementManager
         }
 
         return true;
+    }
+
+    /**
+     * Decides whether the current user has access to any LeftAndMain controller, which indicates some level
+     * of access to the CMS.
+     *
+     * See LeftAndMain::init().
+     *
+     * @param Member $member
+     * @return bool
+     */
+    protected function hasAdminAccess(Member $member): bool
+    {
+        // We need to use an actual LeftAndMain implementation, otherwise LeftAndMain::canView() returns true
+        // because no required permission codes are declared
+        $leftAndMain = SiteConfigLeftAndMain::singleton();
+        if ($leftAndMain->canView($member)) {
+            return true;
+        }
+
+        // Look through all LeftAndMain subclasses to find if one permits the member to view
+        $menu = $leftAndMain->MainMenu();
+        foreach ($menu as $candidate) {
+            if ($candidate->Link
+                && $candidate->Link != $leftAndMain->Link()
+                && $candidate->MenuItem->controller
+                && singleton($candidate->MenuItem->controller)->canView($member)
+            ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
