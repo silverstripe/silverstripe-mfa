@@ -111,13 +111,14 @@ describe('Register', () => {
   });
 
   describe('clearRegistrationErrors()', () => {
-    it('clears registration errors, leaving existing registration props intact', () => {
+    it('clears registration errors and registration props', () => {
       const wrapper = shallow(
         <Register
           endpoints={endpoints}
           availableMethods={mockAvailableMethods}
           registeredMethods={[]}
           onCompleteRegistration={onCompleteRegistration}
+          onShowChooseMethod={() => {}}
         />
       );
 
@@ -127,9 +128,8 @@ describe('Register', () => {
           error: 'I haven\'nt had my coffee yet!',
         },
       });
-      wrapper.instance().clearRegistrationErrors();
-      expect(wrapper.instance().state.registerProps.error).toBeNull();
-      expect(wrapper.instance().state.registerProps.foo).toBe('bar');
+      wrapper.instance().handleBack();
+      expect(wrapper.instance().state.registerProps).toBeNull();
     });
   });
 
@@ -208,26 +208,6 @@ describe('Register', () => {
   });
 
   describe('handleBack()', () => {
-    it('clears registration errors', () => {
-      const wrapper = shallow(
-        <Register
-          endpoints={endpoints}
-          availableMethods={mockAvailableMethods}
-          registeredMethods={[]}
-          onShowChooseMethod={jest.fn()}
-          onCompleteRegistration={onCompleteRegistration}
-        />
-      );
-
-      wrapper.instance().setState({
-        registerProps: {
-          error: 'I haven\'nt had my coffee yet!',
-        },
-      });
-      wrapper.instance().handleBack();
-      expect(wrapper.instance().state.registerProps.error).toBeNull();
-    });
-
     it('unselects the selected method', () => {
       const onShowChooseMethod = jest.fn();
       const wrapper = shallow(
