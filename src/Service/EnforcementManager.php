@@ -39,6 +39,15 @@ class EnforcementManager
     private static $requires_admin_access = true;
 
     /**
+     * Whether enforcement of MFA is enabled. If this is disabled, users will not be redirected to MFA registration
+     * or verification on login flows.
+     *
+     * @config
+     * @var bool
+     */
+    private static $enabled = true;
+
+    /**
      * Whether the current member can skip the multi factor authentication registration process.
      *
      * This is determined by a combination of:
@@ -83,6 +92,10 @@ class EnforcementManager
      */
     public function shouldRedirectToMFA(Member $member): bool
     {
+        if (!$this->isEnabled()) {
+            return false;
+        }
+
         if ($this->config()->get('requires_admin_access') && !$this->hasAdminAccess($member)) {
             return false;
         }
@@ -221,5 +234,13 @@ class EnforcementManager
         }
 
         return false;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isEnabled(): bool
+    {
+        return (bool) $this->config()->get('enabled');
     }
 }

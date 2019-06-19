@@ -144,6 +144,15 @@ class EnforcementManagerTest extends SapphireTest
         $this->assertFalse(EnforcementManager::create()->shouldRedirectToMFA($member));
     }
 
+    public function testShouldNotRedirectToMFAWhenConfigIsDisabled()
+    {
+        EnforcementManager::config()->set('enabled', false);
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, 'sally_smith');
+        $shouldRedirect = EnforcementManager::create()->shouldRedirectToMFA($member);
+        $this->assertFalse($shouldRedirect);
+    }
+
     /**
      * Helper method for changing the current SiteConfig values
      *

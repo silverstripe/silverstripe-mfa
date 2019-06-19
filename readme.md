@@ -22,7 +22,7 @@ composer require silverstripe/mfa ^4.0
 You should also install one of the additional multi factor authenticator modules:
 
 * [silverstripe/totp-authenticator](https://github.com/silverstripe/silverstripe-totp-authenticator)
-* More coming soon.
+* [silverstripe/webauthn-authenticator](https://github.com/silverstripe/silverstripe-webauthn-authenticator)
 
 ## Setup
 
@@ -40,89 +40,35 @@ SilverStripe\MFA\Service\MethodRegistry:
 After installing, an option in site configuration will enable MFA for users, which will automatically be added after 
 login and to member profiles.
 
-## Custom usage
+## Documentation
 
 This module provides two distinct processes for MFA; verification and registration. This module provides a decoupled 
 architecture where front-end and back-end are separate. Provided with the module is a React app that interfaces with 
 default endpoints added by this module. Please refer to the docs for specific information about the included 
 functionality:
 
+- [Debugging](docs/en/debugging.md)
 - [Front-end React components](docs/en/react-components.md)
 - [Back-end controllers and traits](docs/en/controllers-and-handlers.md)
+- [Local development](docs/en/local-development.md)
+- [Encryption providers](docs/en/encryption.md)
+- [Data store interfaces](docs/en/datastores.md)
 
-## Configuring encryption providers
+## License
 
-By default this module uses defuse/php-encryption as its encryption adapter. You can add your own implementation if
-you would like to use something different, by implementing `EncryptionAdapterInterface` and configuring your service
-class with Injector. The interface is deliberately simple, and takes `encrypt()` and `decrypt()` methods with a
-payload and an encryption key argument.
+See [license](LICENSE.md).
 
-```yaml
-SilverStripe\Core\Injector\Injector:
-  SilverStripe\MFA\Service\EncryptionAdapterInterface:
-    class: App\MFA\ReallyStrongEncryptionAdapter
+## Versioning
 
-```
+This library follows [Semver](http://semver.org). According to Semver, you will be able to upgrade to any minor or
+patch version of this library without any breaking changes to the public API. Semver also requires that we clearly
+define the public API for this library.
 
-## Data store interfaces
+All methods, with `public` visibility, are part of the public API. All other methods are not part of the public API.
+Where possible, we'll try to keep `protected` methods backwards-compatible in minor/patch versions, but if you're
+overriding methods then please test your work before upgrading.
 
-Since the MFA architecture is largely designed to be decoupled, we use a `StoreInterface` implementation to retain
-data between requests. The default implementation for this interface is `SessionStore` which stores data in PHP
-sessions. If you need to use a different storage mechanism (e.g. Redis, DynamoDB etc) you can implement and configure
-your own `StoreInterface`, and register it with Injector:
+## Reporting issues
 
-```yaml
-SilverStripe\Core\Injector\Injector:
-  SilverStripe\MFA\Store\StoreInterface:
-    class: App\MFA\RedisStoreInterface
-```
-
-Please note that the store should always be treated as a server side implementation. It's not a good idea to implement
-a client store e.g. cookies.
-
-## Debugging
-
-The MFA module ships with a PSR-3 logger configured by default (a [Monolog](https://github.com/Seldaek/monolog/)
-implementation), however no Monolog handlers are attached by default. To enable developer logging, you can
-[attach a handler](https://docs.silverstripe.org/en/4/developer_guides/debugging/error_handling/#configuring-error-logging).
-An example that will log to a `mfa.log` file in the project root:
-
-```yaml
-SilverStripe\Core\Injector\Injector:
-  Psr\Log\LoggerInterface.mfa:
-    calls:
-      pushFileLogHandler: [ pushHandler, [ '%$MFAFileLogHandler' ] ]
-  MFAFileLogHandler:
-    class: Monolog\Handler\StreamHandler
-    constructor:
-      - '../mfa.log'
-      - 'debug'
-```
-
-You can inject this logger into any MFA authenticator module, or custom app code, by using dependency injection:
-
-```php
-class MyCustomLoginHandler implements LoginHandlerInterface
-{
-    private static $dependencies = [
-        'Logger' => '%$' . \Psr\Log\LoggerInterface::class . '.mfa',
-    ];
-    
-    protected $logger;
-    
-    public function setLogger(LoggerInterface $logger): self
-    {
-        $this->logger = $logger;
-        return $this;
-    }
-
-    public function start(StoreInterface $store, RegisteredMethod $method): array
-    {
-        try {
-            $method->doSomething();
-        } catch (\Exception $ex) {
-            $this->logger->debug('Something went wrong! ' . $ex->getMessage(), $ex->getTrace());
-        }
-    }
-}
-```
+Please [create an issue](http://github.com/silverstripe/silverstripe-mfa/issues) for any bugs you've found, or
+features you're missing.
