@@ -172,7 +172,7 @@ class RegisteredMFAMethodListField extends Component {
         const props = {
           method,
           key: method.urlSegment,
-          isDefaultMethod: defaultMethod && method.urlSegment === defaultMethod.urlSegment,
+          isDefaultMethod: defaultMethod && method.urlSegment === defaultMethod,
           canRemove: !readOnly,
           canReset: !readOnly,
         };

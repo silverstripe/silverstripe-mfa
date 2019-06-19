@@ -13,6 +13,7 @@
   "MultiFactorAuthentication.ADD_ANOTHER_METHOD": "Add another MFA method",
   "MultiFactorAuthentication.ADD_FIRST_METHOD": "Add an MFA method",
   "MultiFactorAuthentication.REGISTERED": "{method}: Registered",
+  "MultiFactorAuthentication.DEFAULT_REGISTERED": "{method} (default): Registered",
   "MultiFactorAuthentication.BACKUP_REGISTERED": "{method}: Created {date}",
   "MultiFactorAuthentication.RESET_METHOD": "Reset",
   "MultiFactorAuthentication.REMOVE_METHOD": "Remove",
