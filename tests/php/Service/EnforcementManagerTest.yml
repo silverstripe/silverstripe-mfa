@@ -2,6 +2,22 @@ SilverStripe\MFA\Model\RegisteredMethod:
   codes:
     MethodClassName: SilverStripe\MFA\BackupCode\Method
 
+SilverStripe\Security\Permission:
+  cmsmain1:
+    Code: CMS_ACCESS_CMSMain
+  reports:
+    Code: CMS_ACCESS_ReportAdmin
+
+SilverStripe\Security\Group:
+  admingroup:
+    Title: Create, edit and delete pages
+    Code: admingroup
+    Permissions: =>SilverStripe\Security\Permission.cmsmain1
+  reportsgroup:
+    Title: View reports
+    Code: reportsgroup
+    Permissions: =>SilverStripe\Security\Permission.reports
+
 SilverStripe\Security\Member:
   sally_smith:
     FirstName: Sally
@@ -10,7 +26,13 @@ SilverStripe\Security\Member:
     RegisteredMFAMethods:
       - =>SilverStripe\MFA\Model\RegisteredMethod.codes
     DefaultRegisteredMethodID: =>SilverStripe\MFA\Model\RegisteredMethod.codes
+    Groups: =>SilverStripe\Security\Group.admingroup
   sammy_smith:
     FirstName: Sammy
     Surname: Smith
     Email: sammy.smith@example.com
+  reports_user:
+    FirstName: Reports
+    Surname: User
+    Email: reports@example.com
+    Groups: =>SilverStripe\Security\Group.reportsgroup
