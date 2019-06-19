@@ -107,8 +107,10 @@ class Register extends Component {
       return onShowIntroduction();
     }
 
-    // Send the user back to the "choose method" screen
-    this.clearRegistrationErrors();
+    // Send the user back to the "choose method" screen, clearing any selected method props
+    // and errors from the state
+    this.setState({ registerProps: null });
+
     return onShowChooseMethod();
   }
 
@@ -195,20 +197,6 @@ class Register extends Component {
     }
 
     return !registeredMethods.find(method => method.urlSegment === backupMethod.urlSegment);
-  }
-
-  /**
-   * Clear any error messages when going back from a method's Register component to the
-   * Select Method screen. Note that this doesn't clear errors for components that manage their
-   * own internal state view transitions, which must be handled internally by those components.
-   */
-  clearRegistrationErrors() {
-    this.setState({
-      registerProps: {
-        ...this.state.registerProps,
-        error: null,
-      }
-    });
   }
 
   /**
@@ -369,7 +357,11 @@ const mapDispatchToProps = dispatch => ({
   onShowIntroduction: () => dispatch(showScreen(SCREEN_INTRODUCTION)),
   onShowComplete: () => dispatch(showScreen(SCREEN_COMPLETE)),
   onSelectMethod: method => dispatch(chooseMethod(method)),
-  onShowChooseMethod: () => dispatch(showScreen(SCREEN_CHOOSE_METHOD)),
+  onShowChooseMethod: () => {
+    // clear any existing methods from state
+    dispatch(chooseMethod(null));
+    dispatch(showScreen(SCREEN_CHOOSE_METHOD));
+  },
   onRemoveAvailableMethod: method => dispatch(removeAvailableMethod(method)),
 });
 

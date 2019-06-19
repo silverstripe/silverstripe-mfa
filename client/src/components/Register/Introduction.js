@@ -2,7 +2,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { showScreen } from 'state/mfaRegister/actions';
+import { showScreen, chooseMethod } from 'state/mfaRegister/actions';
 import { SCREEN_REGISTER_METHOD } from '../Register';
 import { connect } from 'react-redux';
 import Title from './Title';
@@ -136,7 +136,11 @@ Introduction.defaultProps = {
 export { Introduction as Component };
 
 const mapDispatchToProps = dispatch => ({
-  onContinue: () => dispatch(showScreen(SCREEN_REGISTER_METHOD)),
+  onContinue: () => {
+    // clear any existing methods from state
+    dispatch(chooseMethod(null));
+    dispatch(showScreen(SCREEN_REGISTER_METHOD));
+  },
 });
 
 export default connect(null, mapDispatchToProps)(Introduction);
