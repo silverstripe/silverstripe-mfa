@@ -79,6 +79,12 @@ class RegisteredMethodManager
         // Add it to the member
         $member->RegisteredMFAMethods()->add($registeredMethod);
 
+        // Define as the default, if none exists yet
+        if (!$member->getDefaultRegisteredMethod()) {
+            $member->setDefaultRegisteredMethod($registeredMethod);
+            $member->write();
+        }
+
         if (!MethodRegistry::create()->isBackupMethod($method)) {
             $this->notification->send(
                 $member,
