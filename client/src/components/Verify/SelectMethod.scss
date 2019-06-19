@@ -25,10 +25,17 @@
     list-style: none;
     margin-bottom: $content-spacing;
     padding-left: 0;
+  }
 
-    li+li {
+  &__method {
+    &:not(:first-child) {
       margin-top: $content-spacing / 2;
     }
+  }
+
+  &__method-message {
+    display: block;
+    font-style: italic;
   }
 
   &__actions {

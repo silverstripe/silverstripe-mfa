@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 import registeredMethodType from 'types/registeredMethod';
 import withMethodAvailability from 'state/methodAvailability/withMethodAvailability';
 
@@ -35,7 +36,7 @@ class SelectMethod extends PureComponent {
         {i18n._t(
           'MFAVerify.LAST_RESORT_MESSAGE',
           'Contact your site administrator if you require your multi-factor authentication to ' +
-          'be reset'
+          'be reset.'
         )}
       </p>
     );
@@ -48,20 +49,34 @@ class SelectMethod extends PureComponent {
    * @return {HTMLElement}
    */
   renderMethod(method) {
-    const { onSelectMethod } = this.props;
+    const { isAvailable, getUnavailableMessage, onSelectMethod } = this.props;
+    const { ss: { i18n } } = window;
 
     // Unavailable state, e.g. if unsupported in the current browser
-    if (!this.props.isAvailable(method)) {
+    if (!isAvailable(method)) {
+      const helpLink = method.supportLink && (
+        <span>
+          (<a href={method.supportLink} target="_blank" rel="noreferrer noopener">{
+            i18n._t('MFASelectMethod.UNAVAILABLE', 'unavailable')
+          }</a>)
+        </span>
+      );
+      const message = getUnavailableMessage(method);
+      const className = classnames(
+        'mfa-verify-select-method__method',
+        'mfa-verify-select-method__method--unavailable'
+      );
+
       return (
-        <li key={method.urlSegment}>
-          {/* todo implement designs for this */}
-          {method.leadInLabel} ({this.props.getUnavailableMessage(method)})
+        <li key={method.urlSegment} className={className}>
+          {method.leadInLabel} {helpLink}
+          {message && <span className="mfa-verify-select-method__method-message">{message}</span>}
         </li>
       );
     }
 
     return (
-      <li key={method.urlSegment}>
+      <li key={method.urlSegment} className="mfa-verify-select-method__method">
         <a href="#" onClick={onSelectMethod(method)}>
           {method.leadInLabel}
         </a>
