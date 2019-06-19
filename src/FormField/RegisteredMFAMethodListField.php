@@ -33,6 +33,7 @@ class RegisteredMFAMethodListField extends FormField
                 'endpoints' => [
                     'register' => $adminController->Link('register/{urlSegment}'),
                     'remove' => $adminController->Link('remove/{urlSegment}'),
+                    'setDefault' => $adminController->Link('setDefault/{urlSegment}'),
                 ],
                 // We need all available methods so we can re-register pre-existing methods
                 'allAvailableMethods' => $generator->getAvailableMethods(),

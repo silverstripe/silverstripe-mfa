@@ -17,6 +17,7 @@
   "MultiFactorAuthentication.BACKUP_REGISTERED": "{method}: Created {date}",
   "MultiFactorAuthentication.RESET_METHOD": "Reset",
   "MultiFactorAuthentication.REMOVE_METHOD": "Remove",
+  "MultiFactorAuthentication.SET_AS_DEFAULT": "Set as default method",
   "MultiFactorAuthentication.NO_METHODS_REGISTERED": "No MFA methods have been registered. Add one using the button below",
   "MultiFactorAuthentication.NO_METHODS_REGISTERED_READONLY": "This member has not registered any MFA methods yet",
   "MultiFactorAuthentication.SELECT_METHOD": "Select a verification method",

@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import moment from 'moment';
 import Remove from './MethodListItem/Remove';
 import Reset from './MethodListItem/Reset';
+import SetDefault from './MethodListItem/SetDefault';
 import methodShape from 'types/registeredMethod';
 
 const fallbacks = require('../../../../lang/src/en.json');
@@ -97,6 +98,22 @@ class MethodListItem extends PureComponent {
     return <Reset {...props} />;
   }
 
+  /**
+   * Renders a button to make the current method the default registered method
+   *
+   * @returns {SetDefault}
+   */
+  renderSetAsDefault() {
+    const { isDefaultMethod, isBackupMethod, method } = this.props;
+
+    if (isDefaultMethod || isBackupMethod) {
+      return null;
+    }
+
+    return <SetDefault method={method} />;
+  }
+
+
   renderControls() {
     const { canRemove, canReset } = this.props;
 
@@ -108,6 +125,7 @@ class MethodListItem extends PureComponent {
       <div>
         { this.renderRemove() }
         { this.renderReset() }
+        { this.renderSetAsDefault() }
       </div>
     );
   }
