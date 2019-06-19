@@ -1,9 +1,11 @@
 # Data store interfaces
 
 Since the MFA architecture is largely designed to be decoupled, we use a `StoreInterface` implementation to retain
-data between requests. The default implementation for this interface is `SessionStore` which stores data in PHP
-sessions. If you need to use a different storage mechanism (e.g. Redis, DynamoDB etc) you can implement and configure
-your own `StoreInterface`, and register it with Injector:
+data between requests. The default implementation for this interface is `SessionStore` which stores data using the
+SilverStripe `Session` API provided by silverstripe/framework.
+
+If you need to use a different storage mechanism (e.g. Redis, DynamoDB etc) you can implement and configure your
+own `StoreInterface`, and register it with Injector:
 
 ```yaml
 SilverStripe\Core\Injector\Injector:
