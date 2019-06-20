@@ -140,7 +140,8 @@ class AdminRegistrationController extends LeftAndMain
     public function removeRegisteredMethod(HTTPRequest $request): HTTPResponse
     {
         if (!$request->isDELETE()) {
-            return $this->jsonResponse(['errors' => [_t(__CLASS__ . '.WRONG_METHOD', 'Wrong HTTP request method used')]],
+            return $this->jsonResponse(
+                ['errors' => [_t(__CLASS__ . '.WRONG_METHOD', 'Wrong HTTP request method used')]],
                 400
             );
         }
