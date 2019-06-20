@@ -3,6 +3,7 @@
 namespace SilverStripe\MFA\Tests\Controller;
 
 use PHPUnit_Framework_MockObject_MockObject;
+use Psr\Log\LoggerInterface;
 use SilverStripe\Admin\AdminRootController;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
@@ -10,13 +11,16 @@ use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\FunctionalTest;
 use SilverStripe\MFA\Controller\AdminRegistrationController;
+use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\State\AvailableMethodDetails;
 use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method as BasicMathMethod;
+use SilverStripe\ORM\ValidationException;
 use SilverStripe\Security\Member;
+use SilverStripe\Security\Security;
 use SilverStripe\Security\SecurityToken;
 use SilverStripe\SecurityExtensions\Service\SudoModeServiceInterface;
 
@@ -168,6 +172,18 @@ class AdminRegistrationControllerTest extends FunctionalTest
         $response = $controller->removeRegisteredMethod($request);
 
         $this->assertNotContains('Request timed out', $response->getBody());
+    }
+
+    public function testRemoveRegistrationRequiresDeleteHTTPMethod()
+    {
+        $controller = new AdminRegistrationController();
+
+        // Method not even provided
+        $request = new HTTPRequest('POST', '');
+        $response = $controller->removeRegisteredMethod($request);
+
+        $this->assertSame(400, $response->getStatusCode());
+        $this->assertContains('Wrong HTTP request method used', $response->getBody());
     }
 
     public function testRemoveRegistrationRequiresMethod()
@@ -338,5 +354,106 @@ class AdminRegistrationControllerTest extends FunctionalTest
     public function testAnyUserCanView()
     {
         $this->assertFalse(AdminRegistrationController::getRequiredPermissions());
+    }
+
+    public function testSetDefaultRegisteredMethodChecksCSRF()
+    {
+        SecurityToken::enable();
+
+        $request = new HTTPRequest('POST', '');
+        $request->setSession($this->session());
+        $controller = new AdminRegistrationController();
+
+        $response = $controller->setDefaultRegisteredMethod($request);
+
+        $this->assertSame(400, $response->getStatusCode());
+        $this->assertContains('Request timed out', $response->getBody());
+
+        $token = SecurityToken::inst();
+        $request = new HTTPRequest('POST', '', [$token->getName() => $token->getValue()]);
+        $request->setSession($this->session());
+
+        $response = $controller->setDefaultRegisteredMethod($request);
+        $this->assertNotContains('Request timed out', $response->getBody());
+    }
+
+    public function testSetDefaultRegisteredMethodFailsWhenMethodWasNotFound()
+    {
+        $request = new HTTPRequest('POST', '');
+        $request->setRouteParams(['Method' => 'doesnotexist']);
+        $request->setSession($this->session());
+        $controller = new AdminRegistrationController();
+
+        $response = $controller->setDefaultRegisteredMethod($request);
+
+        $this->assertSame(400, $response->getStatusCode());
+        $this->assertContains('No such method is available', $response->getBody());
+    }
+
+    public function testSetDefaultRegisteredMethodFailsWhenRegisteredMethodWasNotFoundForUser()
+    {
+        // Arbitrary user, no MFA configured for it
+        $this->logInWithPermission();
+
+        $request = new HTTPRequest('POST', '');
+        $basicMathMethod = new BasicMathMethod();
+        $request->setRouteParams(['Method' => $basicMathMethod->getURLSegment()]);
+        $request->setSession($this->session());
+        $controller = new AdminRegistrationController();
+
+        $response = $controller->setDefaultRegisteredMethod($request);
+
+        $this->assertSame(400, $response->getStatusCode());
+        $this->assertContains('No such registered method is available', $response->getBody());
+    }
+
+    public function testSetDefaultRegisteredMethodHandlesExceptionsOnWrite()
+    {
+        $registeredMethodManager = $this->scaffoldRegisteredMethodManagerMock();
+
+        $controller = new AdminRegistrationController();
+        /** @var LoggerInterface&PHPUnit_Framework_MockObject_MockObject $loggerMock */
+        $loggerMock = $this->createMock(LoggerInterface::class);
+        $controller->setLogger($loggerMock);
+
+        $request = new HTTPRequest('POST', '');
+        $request->setSession($this->session());
+        $basicMathMethod = new BasicMathMethod();
+        $request->setRouteParams(['Method' => $basicMathMethod->getURLSegment()]);
+
+        $registeredMethodManager
+            ->expects($this->once())
+            ->method('getFromMember')
+            ->willReturn(new RegisteredMethod());
+
+        /** @var Member&PHPUnit_Framework_MockObject_MockObject $memberMock */
+        $memberMock = $this->createMock(Member::class);
+        $memberMock->method('write')->willThrowException(new ValidationException());
+        Security::setCurrentUser($memberMock);
+
+        $loggerMock->expects($this->once())->method('debug');
+        $response = $controller->setDefaultRegisteredMethod($request);
+        $this->assertSame(400, $response->getStatusCode());
+        $this->assertContains('Could not set the default method for the user', $response->getBody());
+    }
+
+    public function testSetDefaultRegisteredMethod()
+    {
+        /** @var Member&MemberExtension $member */
+        $member = $this->objFromFixture(Member::class, 'sally_smith');
+        $this->logInAs($member);
+        // Give Sally basic math
+        $basicMathMethod = new BasicMathMethod();
+        RegisteredMethodManager::singleton()->registerForMember($member, $basicMathMethod, ['foo' => 'bar']);
+
+        // Set basic math as the default method
+        $controller = new AdminRegistrationController();
+        $request = new HTTPRequest('POST', '');
+        $request->setSession($this->session());
+        $request->setRouteParams(['Method' => $basicMathMethod->getURLSegment()]);
+
+        $response = $controller->setDefaultRegisteredMethod($request);
+        print_r($response->getBody());
+        $this->assertSame(200, $response->getStatusCode());
     }
 }
