@@ -34,8 +34,8 @@ class AdminRegistrationController extends LeftAndMain
     private static $url_handlers = [
         'GET register/$Method' => 'startRegistration',
         'POST register/$Method' => 'finishRegistration',
-        'DELETE remove/$Method' => 'removeRegisteredMethod',
-        'POST setDefault/$Method' => 'setDefaultRegisteredMethod',
+        'DELETE method/$Method' => 'removeRegisteredMethod',
+        'PUT method/$Method/default' => 'setDefaultRegisteredMethod',
     ];
 
     private static $allowed_actions = [
@@ -139,13 +139,6 @@ class AdminRegistrationController extends LeftAndMain
      */
     public function removeRegisteredMethod(HTTPRequest $request): HTTPResponse
     {
-        if (!$request->isDELETE()) {
-            return $this->jsonResponse(
-                ['errors' => [_t(__CLASS__ . '.WRONG_METHOD', 'Wrong HTTP request method used')]],
-                400
-            );
-        }
-
         // Ensure CSRF protection
         if (!SecurityToken::inst()->checkRequest($request)) {
             return $this->jsonResponse(

@@ -296,6 +296,7 @@ RegisteredMFAMethodListField.childContextTypes = {
   endpoints: PropTypes.shape({
     register: PropTypes.string,
     remove: PropTypes.string,
+    setDefault: PropTypes.string,
   }),
   resources: PropTypes.object,
 };

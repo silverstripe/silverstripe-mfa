@@ -25,7 +25,7 @@ class SetDefault extends Component {
     const endpoint = `${setDefault.replace('{urlSegment}', method.urlSegment)}?SecurityID=${token}`;
 
     fetch(endpoint, {
-      method: 'POST',
+      method: 'PUT',
     }).then(response => response.json().then(json => {
       if (response.status === 200) {
         onSetDefaultMethod(method.urlSegment);

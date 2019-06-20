@@ -174,18 +174,6 @@ class AdminRegistrationControllerTest extends FunctionalTest
         $this->assertNotContains('Request timed out', $response->getBody());
     }
 
-    public function testRemoveRegistrationRequiresDeleteHTTPMethod()
-    {
-        $controller = new AdminRegistrationController();
-
-        // Method not even provided
-        $request = new HTTPRequest('POST', '');
-        $response = $controller->removeRegisteredMethod($request);
-
-        $this->assertSame(400, $response->getStatusCode());
-        $this->assertContains('Wrong HTTP request method used', $response->getBody());
-    }
-
     public function testRemoveRegistrationRequiresMethod()
     {
         $this->logInWithPermission();
