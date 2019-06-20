@@ -20,7 +20,7 @@ class RegisteredMFAMethodListFieldTest extends SapphireTest
         $schema = $field->getSchemaDataDefaults();
 
         $this->assertContains('register/', $schema['schema']['endpoints']['register']);
-        $this->assertContains('remove/', $schema['schema']['endpoints']['remove']);
-        $this->assertContains('setDefault/', $schema['schema']['endpoints']['setDefault']);
+        $this->assertContains('method/{urlSegment}', $schema['schema']['endpoints']['remove']);
+        $this->assertContains('method/{urlSegment}/default', $schema['schema']['endpoints']['setDefault']);
     }
 }
