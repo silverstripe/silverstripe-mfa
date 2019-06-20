@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import registeredMethodShape from 'types/registeredMethod';
 import Config from 'lib/Config'; // eslint-disable-line
+import { connect } from 'react-redux';
+import { setDefaultMethod } from 'state/mfaAdministration/actions';
 
 const fallbacks = require('../../../../../lang/src/en.json');
 
@@ -16,7 +18,7 @@ class SetDefault extends Component {
   }
 
   handleSetDefault() {
-    const { method } = this.props;
+    const { method, onSetDefaultMethod } = this.props;
     const { endpoints: { setDefault } } = this.context;
 
     const token = Config.get('SecurityID');
@@ -26,14 +28,12 @@ class SetDefault extends Component {
       method: 'POST',
     }).then(response => response.json().then(json => {
       if (response.status === 200) {
-        // onDeregisterMethod(method);
-        // onAddAvailableMethod(json.availableMethod);
-        console.log('success');
+        onSetDefaultMethod(method.urlSegment);
         return;
       }
 
       const message = (json.errors && ` Errors: \n - ${json.errors.join('\n -')}`) || '';
-      throw Error(`Could not delete method. Error code ${response.status}.${message}`);
+      throw Error(`Could not set default method. Error code ${response.status}.${message}`);
     }));
   }
 
@@ -65,4 +65,10 @@ SetDefault.contextTypes = {
   }),
 };
 
-export default SetDefault;
+const mapDispatchToProps = dispatch => ({
+  onSetDefaultMethod: urlSegment => dispatch(setDefaultMethod(urlSegment)),
+});
+
+export { SetDefault as Component };
+
+export default connect(null, mapDispatchToProps)(SetDefault);

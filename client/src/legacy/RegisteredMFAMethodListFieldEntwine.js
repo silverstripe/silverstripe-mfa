@@ -24,8 +24,8 @@ window.jQuery.entwine('ss', ($) => {
       ReactDOM.render(
         <RegisteredMFAMethodListField
           backupMethod={backupMethod}
-          defaultMethod={defaultMethod}
           readOnly={readOnly}
+          initialDefaultMethod={defaultMethod}
           initialRegisteredMethods={registeredMethods}
           initialAvailableMethods={availableMethods}
           allAvailableMethods={allAvailableMethods}

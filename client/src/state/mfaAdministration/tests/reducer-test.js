@@ -10,6 +10,7 @@ const fakeMethod = {
 describe('MFAAdministration reducer', () => {
   it('should return the initial state', () => {
     expect(reducer(undefined, {})).toEqual({
+      defaultMethod: null,
       registeredMethods: [],
     });
   });
@@ -28,7 +29,8 @@ describe('MFAAdministration reducer', () => {
       registeredMethods: [
         { urlSegment: 'test' },
         fakeMethod,
-        { urlSegement: 'dummy' },
+        { urlSegment: 'dummy' },
+        { urlSegment: 'backup-codes' },
       ]
     }, {
       type: MFA_ADMINISTRATION.REMOVE_REGISTERED_METHOD,
@@ -36,7 +38,8 @@ describe('MFAAdministration reducer', () => {
     })).toEqual({
       registeredMethods: [
         { urlSegment: 'test' },
-        { urlSegement: 'dummy' },
+        { urlSegment: 'dummy' },
+        { urlSegment: 'backup-codes' },
       ],
     });
   });
@@ -45,7 +48,7 @@ describe('MFAAdministration reducer', () => {
     const methods = [
       { urlSegment: 'test' },
       fakeMethod,
-      { urlSegement: 'dummy' },
+      { urlSegment: 'dummy' },
     ];
 
     expect(reducer({}, {
@@ -53,6 +56,25 @@ describe('MFAAdministration reducer', () => {
       payload: { methods }
     })).toEqual({
       registeredMethods: methods,
+    });
+  });
+
+  it('should set the default method when there is only one (non backup) method left', () => {
+    expect(reducer({
+      registeredMethods: [
+        { urlSegment: 'test' },
+        fakeMethod,
+        { urlSegment: 'backup-codes' },
+      ]
+    }, {
+      type: MFA_ADMINISTRATION.REMOVE_REGISTERED_METHOD,
+      payload: { method: fakeMethod }
+    })).toEqual({
+      registeredMethods: [
+        { urlSegment: 'test' },
+        { urlSegment: 'backup-codes' },
+      ],
+      defaultMethod: 'test',
     });
   });
 });

@@ -21,6 +21,16 @@ export const deregisterMethod = method => ({
 });
 
 /**
+ * Set the default registered method
+ *
+ * @param {string} urlSegment
+ */
+export const setDefaultMethod = urlSegment => ({
+  type: MFA_ADMINISTRATION.SET_DEFAULT_METHOD,
+  payload: { defaultMethod: urlSegment },
+});
+
+/**
  * Set the list of registered methods
  *
  * @param {Array} methods

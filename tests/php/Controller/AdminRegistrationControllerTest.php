@@ -160,14 +160,14 @@ class AdminRegistrationControllerTest extends FunctionalTest
         SecurityToken::enable();
 
         $controller = new AdminRegistrationController();
-        $request = new HTTPRequest('GET', '');
+        $request = new HTTPRequest('DELETE', '');
         $response = $controller->removeRegisteredMethod($request);
 
         $this->assertSame(400, $response->getStatusCode());
         $this->assertContains('Request timed out', $response->getBody());
 
         $token = SecurityToken::inst();
-        $request = new HTTPRequest('GET', '', [$token->getName() => $token->getValue()]);
+        $request = new HTTPRequest('DELETE', '', [$token->getName() => $token->getValue()]);
 
         $response = $controller->removeRegisteredMethod($request);
 
@@ -196,14 +196,14 @@ class AdminRegistrationControllerTest extends FunctionalTest
         $controller = new AdminRegistrationController();
 
         // Method not even provided
-        $request = new HTTPRequest('GET', '');
+        $request = new HTTPRequest('DELETE', '');
         $response = $controller->removeRegisteredMethod($request);
 
         $this->assertSame(400, $response->getStatusCode());
         $this->assertContains('No such method is available', $response->getBody());
 
         // Method provided but non-existing
-        $request = new HTTPRequest('GET', '');
+        $request = new HTTPRequest('DELETE', '');
         $request->setRouteParams(['Method' => 'fake123']);
         $response = $controller->removeRegisteredMethod($request);
 
@@ -211,7 +211,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
         $this->assertContains('No such method is available', $response->getBody());
 
         // Existing method
-        $request = new HTTPRequest('GET', '');
+        $request = new HTTPRequest('DELETE', '');
         $basicMathMethod = new BasicMathMethod();
         $request->setRouteParams(['Method' => $basicMathMethod->getURLSegment()]);
         $registeredMethodManager->expects($this->once())->method('deleteFromMember')->willReturn(true);
@@ -230,7 +230,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
 
         $controller = new AdminRegistrationController();
 
-        $request = new HTTPRequest('GET', '');
+        $request = new HTTPRequest('DELETE', '');
         $basicMathMethod = new BasicMathMethod();
         $request->setRouteParams(['Method' => $basicMathMethod->getURLSegment()]);
 
@@ -256,7 +256,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
 
         $controller = new AdminRegistrationController();
 
-        $request = new HTTPRequest('GET', '');
+        $request = new HTTPRequest('DELETE', '');
         $basicMathMethod = new BasicMathMethod();
         $request->setRouteParams(['Method' => $basicMathMethod->getURLSegment()]);
         $registeredMethodManager->expects($this->once())->method('deleteFromMember')->willReturn(true);
@@ -280,7 +280,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
 
         $controller = new AdminRegistrationController();
 
-        $request = new HTTPRequest('GET', '');
+        $request = new HTTPRequest('DELETE', '');
         $basicMathMethod = new BasicMathMethod();
         $request->setRouteParams(['Method' => $basicMathMethod->getURLSegment()]);
         $registeredMethodManager->expects($this->any())->method('deleteFromMember')->willReturn(true);
@@ -453,7 +453,6 @@ class AdminRegistrationControllerTest extends FunctionalTest
         $request->setRouteParams(['Method' => $basicMathMethod->getURLSegment()]);
 
         $response = $controller->setDefaultRegisteredMethod($request);
-        print_r($response->getBody());
         $this->assertSame(200, $response->getStatusCode());
     }
 }

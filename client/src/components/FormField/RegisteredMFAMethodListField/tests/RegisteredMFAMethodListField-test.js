@@ -15,30 +15,33 @@ window.ss = {
 const altMethod = { name: 'Method', urlSegment: 'method', leadInLabel: '', component: '' };
 const backupMethod = { ...altMethod, name: 'Backup Method', urlSegment: 'backup' };
 const defaultMethod = { ...altMethod, name: 'Default Method', urlSegment: 'default' };
+const defaultMethodName = 'default';
 
 const RegisterComponent = () => <div />;
 const onUpdateAvailableMethods = jest.fn();
 const onSetRegisteredMethods = jest.fn();
+const onSetDefaultMethod = jest.fn();
 
 const translationStrings = require('../../../../../lang/src/en.json');
 
 describe('RegisteredMFAMethodListField', () => {
   describe('baseMethods()', () => {
-    it('filters out default and backup methods', () => {
+    it('filters out backup methods', () => {
       const registeredMethods = [altMethod, backupMethod, defaultMethod];
 
       const field = shallow(
         <RegisteredMFAMethodListField
           backupMethod={backupMethod}
-          defaultMethod={defaultMethod}
+          defaultMethod={defaultMethodName}
           registeredMethods={registeredMethods}
           RegisterComponent={RegisterComponent}
           onUpdateAvailableMethods={onUpdateAvailableMethods}
           onSetRegisteredMethods={onSetRegisteredMethods}
+          onSetDefaultMethod={onSetDefaultMethod}
         />
       );
 
-      expect(field.instance().getBaseMethods()).toHaveLength(1);
+      expect(field.instance().getBaseMethods()).toHaveLength(2);
     });
   });
 
@@ -49,12 +52,13 @@ describe('RegisteredMFAMethodListField', () => {
       const wrapper = shallow(
         <RegisteredMFAMethodListField
           backupMethod={backupMethod}
-          defaultMethod={defaultMethod}
+          defaultMethod={defaultMethodName}
           availableMethods={availableMethods}
           registeredMethods={[]}
           RegisterComponent={RegisterComponent}
           onUpdateAvailableMethods={onUpdateAvailableMethods}
           onSetRegisteredMethods={onSetRegisteredMethods}
+          onSetDefaultMethod={onSetDefaultMethod}
         />
       );
 
@@ -67,13 +71,14 @@ describe('RegisteredMFAMethodListField', () => {
       const wrapper = shallow(
         <RegisteredMFAMethodListField
           backupMethod={backupMethod}
-          defaultMethod={defaultMethod}
+          defaultMethod={defaultMethodName}
           availableMethods={availableMethods}
           registeredMethods={[]}
           readOnly
           RegisterComponent={RegisterComponent}
           onUpdateAvailableMethods={onUpdateAvailableMethods}
           onSetRegisteredMethods={onSetRegisteredMethods}
+          onSetDefaultMethod={onSetDefaultMethod}
         />
       );
 
@@ -87,12 +92,13 @@ describe('RegisteredMFAMethodListField', () => {
       const withoutRegisteredMethods = shallow(
         <RegisteredMFAMethodListField
           backupMethod={backupMethod}
-          defaultMethod={defaultMethod}
+          defaultMethod={defaultMethodName}
           availableMethods={availableMethods}
           registeredMethods={[]}
           RegisterComponent={RegisterComponent}
           onUpdateAvailableMethods={onUpdateAvailableMethods}
           onSetRegisteredMethods={onSetRegisteredMethods}
+          onSetDefaultMethod={onSetDefaultMethod}
         />
       );
 
@@ -105,12 +111,13 @@ describe('RegisteredMFAMethodListField', () => {
       const withRegisteredMethods = shallow(
         <RegisteredMFAMethodListField
           backupMethod={backupMethod}
-          defaultMethod={defaultMethod}
+          defaultMethod={defaultMethodName}
           availableMethods={availableMethods}
           registeredMethods={[defaultMethod]}
           RegisterComponent={RegisterComponent}
           onUpdateAvailableMethods={onUpdateAvailableMethods}
           onSetRegisteredMethods={onSetRegisteredMethods}
+          onSetDefaultMethod={onSetDefaultMethod}
         />
       );
 
@@ -133,6 +140,7 @@ describe('RegisteredMFAMethodListField', () => {
           RegisterComponent={RegisterComponent}
           onUpdateAvailableMethods={onUpdateAvailableMethods}
           onSetRegisteredMethods={onSetRegisteredMethods}
+          onSetDefaultMethod={onSetDefaultMethod}
         />
       );
 
@@ -146,12 +154,13 @@ describe('RegisteredMFAMethodListField', () => {
       const withAvailableMethods = shallow(
         <RegisteredMFAMethodListField
           backupMethod={backupMethod}
-          defaultMethod={defaultMethod}
+          defaultMethod={defaultMethodName}
           availableMethods={availableMethods}
           registeredMethods={[]}
           RegisterComponent={RegisterComponent}
           onUpdateAvailableMethods={onUpdateAvailableMethods}
           onSetRegisteredMethods={onSetRegisteredMethods}
+          onSetDefaultMethod={onSetDefaultMethod}
         />
       );
 
@@ -161,11 +170,12 @@ describe('RegisteredMFAMethodListField', () => {
       const withoutAvailableMethods = shallow(
         <RegisteredMFAMethodListField
           backupMethod={backupMethod}
-          defaultMethod={defaultMethod}
+          defaultMethod={defaultMethodName}
           registeredMethods={[]}
           RegisterComponent={RegisterComponent}
           onUpdateAvailableMethods={onUpdateAvailableMethods}
           onSetRegisteredMethods={onSetRegisteredMethods}
+          onSetDefaultMethod={onSetDefaultMethod}
         />
       );
 
