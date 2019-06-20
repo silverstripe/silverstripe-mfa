@@ -78,8 +78,9 @@ class RegisteredMethodManagerTest extends SapphireTest
         $defaultMethod = $member->getDefaultRegisteredMethod();
         $this->assertNotNull($defaultMethod, 'Default registered method should have been assigned');
 
-        RegisteredMethodManager::singleton()->registerForMember($member, $method, ['foo', 'baz']);
-        $this->assertCount(1, $member->RegisteredMFAMethods());
+        $newMethod = new BasicMathMethod();
+        RegisteredMethodManager::singleton()->registerForMember($member, $newMethod, ['foo', 'baz']);
+        $this->assertCount(2, $member->RegisteredMFAMethods());
         $this->assertSame(
             $defaultMethod->ID,
             $member->getDefaultRegisteredMethod()->ID,
