@@ -153,6 +153,18 @@ class EnforcementManagerTest extends SapphireTest
         $this->assertFalse($shouldRedirect);
     }
 
+    public function testShouldNotRedirectToMFAWhenNoMethodsAreRegisteredInTheSystem()
+    {
+        $this->setSiteConfig(['MFARequired' => true]);
+        MethodRegistry::config()->set('methods', []);
+
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, 'sally_smith');
+        $this->logInAs($member);
+
+        $this->assertFalse(EnforcementManager::create()->shouldRedirectToMFA($member));
+    }
+
     /**
      * Helper method for changing the current SiteConfig values
      *
