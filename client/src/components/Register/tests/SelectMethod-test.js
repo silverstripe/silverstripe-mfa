@@ -29,11 +29,25 @@ describe('SelectMethod', () => {
     shallow(
       <SelectMethod
         methods={[firstMethod]}
+        isAvailable={() => true}
         onSelectMethod={mockNextHandler}
       />
     );
 
     expect(mockNextHandler).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not automatically select the only available method when not usable', () => {
+    const mockNextHandler = jest.fn();
+    shallow(
+      <SelectMethod
+        methods={[firstMethod]}
+        isAvailable={() => false}
+        onSelectMethod={mockNextHandler}
+      />
+    );
+
+    expect(mockNextHandler).toHaveBeenCalledTimes(0);
   });
 
   describe('handleGoToNext()', () => {
