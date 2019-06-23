@@ -56,6 +56,7 @@ class MethodRegistry
         }
 
         $configuredMethods = (array) $this->config()->get('methods');
+        $configuredMethods = array_filter($configuredMethods);
 
         $allMethods = [];
 

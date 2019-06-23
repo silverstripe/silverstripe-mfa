@@ -7,7 +7,9 @@ import availableMethodType from 'types/availableMethod';
 import classnames from 'classnames';
 import { SCREEN_INTRODUCTION, SCREEN_REGISTER_METHOD } from '../Register';
 import { showScreen, chooseMethod } from 'state/mfaRegister/actions';
+import { compose } from 'redux';
 import { connect } from 'react-redux';
+import withMethodAvailability from 'state/methodAvailability/withMethodAvailability';
 import Title from './Title';
 
 /**
@@ -17,9 +19,14 @@ class SelectMethod extends Component {
   constructor(props) {
     super(props);
 
+    // If only one method is available, automatically select it
+    let highlightedMethod = null;
+    if (props.methods.length === 1 && props.isAvailable && props.isAvailable(props.methods[0])) {
+      highlightedMethod = props.methods[0];
+    }
+
     this.state = {
-      // If only one method is available, automatically select it
-      highlightedMethod: props.methods.length === 1 ? props.methods[0] : null,
+      highlightedMethod,
     };
 
     this.handleGoToNext = this.handleGoToNext.bind(this);
@@ -147,4 +154,7 @@ const mapDispatchToProps = dispatch => ({
 
 export { SelectMethod as Component };
 
-export default connect(null, mapDispatchToProps)(SelectMethod);
+export default compose(
+  connect(null, mapDispatchToProps),
+  withMethodAvailability
+)(SelectMethod);
