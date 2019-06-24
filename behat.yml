@@ -1,0 +1,31 @@
+# Run mfa behat tests with this command
+# Note that mfa behat tests require CMS module
+# ========================================================================= #
+# chromedriver
+# vendor/bin/behat @mfa
+# ========================================================================= #
+default:
+  suites:
+    mfa:
+      paths:
+        - %paths.modules.mfa%/tests/Behat/features
+      contexts:
+        - SilverStripe\Framework\Tests\Behaviour\FeatureContext
+        - SilverStripe\Framework\Tests\Behaviour\CmsFormsContext
+        - SilverStripe\Framework\Tests\Behaviour\CmsUiContext
+        - SilverStripe\BehatExtension\Context\BasicContext
+        - SilverStripe\BehatExtension\Context\EmailContext
+        - SilverStripe\MFA\Tests\Behat\Context\LoginContext
+        - SilverStripe\CMS\Tests\Behaviour\ThemeContext
+  extensions:
+    SilverStripe\BehatExtension\MinkExtension:
+      default_session: facebook_web_driver
+      javascript_session: facebook_web_driver
+      facebook_web_driver:
+        browser: chrome
+        wd_host: "http://127.0.0.1:9515" #chromedriver port
+      browser_name: chrome
+    SilverStripe\BehatExtension\Extension:
+      bootstrap_file: vendor/silverstripe/cms/tests/behat/serve-bootstrap.php
+      screenshot_path: %paths.base%/artifacts/screenshots
+      retry_seconds: 4 # default is 2
