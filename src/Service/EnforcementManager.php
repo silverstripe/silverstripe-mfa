@@ -2,6 +2,7 @@
 
 namespace SilverStripe\MFA\Service;
 
+use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injectable;
@@ -10,7 +11,6 @@ use SilverStripe\MFA\Extension\SiteConfigExtension;
 use SilverStripe\ORM\FieldType\DBDate;
 use SilverStripe\Security\Member;
 use SilverStripe\SiteConfig\SiteConfig;
-use SilverStripe\SiteConfig\SiteConfigLeftAndMain;
 
 /**
  * The EnforcementManager class is responsible for making decisions regarding multi factor authentication app flow,
@@ -214,9 +214,7 @@ class EnforcementManager
      */
     protected function hasAdminAccess(Member $member): bool
     {
-        // We need to use an actual LeftAndMain implementation, otherwise LeftAndMain::canView() returns true
-        // because no required permission codes are declared
-        $leftAndMain = SiteConfigLeftAndMain::singleton();
+        $leftAndMain = LeftAndMain::singleton();
         if ($leftAndMain->canView($member)) {
             return true;
         }
@@ -225,7 +223,7 @@ class EnforcementManager
         $menu = $leftAndMain->MainMenu();
         foreach ($menu as $candidate) {
             if ($candidate->Link
-                && $candidate->Link != $leftAndMain->Link()
+                && $candidate->Link !== $leftAndMain->Link()
                 && $candidate->MenuItem->controller
                 && singleton($candidate->MenuItem->controller)->canView($member)
             ) {
