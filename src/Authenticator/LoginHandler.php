@@ -125,10 +125,10 @@ class LoginHandler extends BaseLoginHandler
      *
      * @return HTTPResponse|array
      */
-    public function mfa()
+    public function mfa(HTTPRequest $request)
     {
         $store = $this->getStore();
-        if (!$store || !$store->getMember()) {
+        if (!$store || !$store->getMember() || !$this->getSudoModeService()->check($request->getSession())) {
             return $this->redirectBack();
         }
 
