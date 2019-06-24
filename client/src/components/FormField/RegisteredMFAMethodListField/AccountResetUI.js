@@ -84,6 +84,7 @@ class AccountResetUI extends Component {
           className="btn btn-outline-secondary"
           disabled={!resetEndpoint}
           onClick={this.handleSendReset}
+          type="button"
         >
           {
             i18n._t(
