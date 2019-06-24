@@ -236,7 +236,7 @@ class LoginHandler extends BaseLoginHandler
         $sessionMember = $store ? $store->getMember() : null;
         $loggedInMember = Security::getCurrentUser();
 
-        if ((is_null($loggedInMember) && is_null($sessionMember))
+        if (($loggedInMember === null && $sessionMember === null)
             || !$this->getSudoModeService()->check($request->getSession())
         ) {
             return $this->jsonResponse(
@@ -320,10 +320,8 @@ class LoginHandler extends BaseLoginHandler
     public function startVerification(HTTPRequest $request): HTTPResponse
     {
         $store = $this->getStore();
-        $member = $store->getMember();
-
         // If we don't have a valid member we shouldn't be here, or if sudo mode is not active yet.
-        if (!$member || !$this->getSudoModeService()->check($request->getSession())) {
+        if (!$store || !$store->getMember() || !$this->getSudoModeService()->check($request->getSession())) {
             return $this->jsonResponse(['message' => 'Forbidden'], 403);
         }
 
@@ -349,23 +347,21 @@ class LoginHandler extends BaseLoginHandler
     public function finishVerification(HTTPRequest $request): HTTPResponse
     {
         $store = $this->getStore();
-        $member = $store->getMember();
-
-        if ($member->isLockedOut()) {
-            return $this->jsonResponse([
-                'message' => _t(
-                    __CLASS__ . '.LOCKED_OUT',
-                    'Your account is temporarily locked. Please try again later.'
-                ),
-            ], 403);
-        }
-
         // Enforce sudo mode
         if (!$this->getSudoModeService()->check($request->getSession())) {
             return $this->jsonResponse([
                 'message' => _t(
                     __CLASS__ . '.SUDO_MODE_REQUIRED',
                     'You need to re-verify your account before continuing. Please reload and try again.'
+                ),
+            ], 403);
+        }
+
+        if ($store && ($member = $store->getMember()) && $member->isLockedOut()) {
+            return $this->jsonResponse([
+                'message' => _t(
+                    __CLASS__ . '.LOCKED_OUT',
+                    'Your account is temporarily locked. Please try again later.'
                 ),
             ], 403);
         }
