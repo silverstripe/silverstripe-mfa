@@ -100,6 +100,10 @@ class EnforcementManager
             return false;
         }
 
+        if (empty(MethodRegistry::singleton()->getMethods())) {
+            return false;
+        }
+
         if ($member->RegisteredMFAMethods()->exists()) {
             return true;
         }
