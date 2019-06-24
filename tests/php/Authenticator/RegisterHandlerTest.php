@@ -262,7 +262,7 @@ class RegisterHandlerTest extends FunctionalTest
 
         $response = $this->post(self::URL, ['dummy' => 'data'], null, $this->session(), json_encode(['number' => 7]));
         $this->assertSame(403, $response->getStatusCode());
-        $this->assertContains('You must be logged or logging in', (string) $response->getBody());
+        $this->assertContains('You must be logged in or logging in', (string) $response->getBody());
     }
 
     /**

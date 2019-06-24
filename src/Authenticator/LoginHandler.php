@@ -178,11 +178,16 @@ class LoginHandler extends BaseLoginHandler
         $sessionMember = $store ? $store->getMember() : null;
         $loggedInMember = Security::getCurrentUser();
 
-        if ((is_null($loggedInMember) && is_null($sessionMember))
+        if (($loggedInMember === null && $sessionMember === null)
             || !$this->getSudoModeService()->check($request->getSession())
         ) {
             return $this->jsonResponse(
-                ['errors' => [_t(__CLASS__ . '.NOT_AUTHENTICATING', 'You must be logged or logging in')]],
+                ['errors' => [
+                    _t(
+                        __CLASS__ . '.NOT_AUTHENTICATING',
+                        'You must be logged in or logging in. Please refresh the page and try again.'
+                    )
+                ]],
                 403
             );
         }
@@ -240,7 +245,12 @@ class LoginHandler extends BaseLoginHandler
             || !$this->getSudoModeService()->check($request->getSession())
         ) {
             return $this->jsonResponse(
-                ['errors' => [_t(__CLASS__ . '.NOT_AUTHENTICATING', 'You must be logged or logging in')]],
+                ['errors' => [
+                    _t(
+                        __CLASS__ . '.NOT_AUTHENTICATING',
+                        'You must be logged in or logging in. Please refresh the page and try again.'
+                    )
+                ]],
                 403
             );
         }
