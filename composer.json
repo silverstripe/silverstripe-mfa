@@ -48,7 +48,8 @@
     "autoload": {
         "psr-4": {
             "SilverStripe\\MFA\\": "src/",
-            "SilverStripe\\MFA\\Tests\\": "tests/php/"
+            "SilverStripe\\MFA\\Tests\\": "tests/php/",
+            "SilverStripe\\MFA\\Tests\\Behat\\": "tests/Behat/"
         }
     },
     "support": {
