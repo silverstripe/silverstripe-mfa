@@ -1,9 +1,10 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace SilverStripe\MFA\Model;
 
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
+use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
@@ -14,6 +15,7 @@ use SilverStripe\Security\Member;
  * @property int ID
  * @property string MethodClassName
  * @property string Data
+ * @method Member Member
  */
 class RegisteredMethod extends DataObject
 {
@@ -38,7 +40,7 @@ class RegisteredMethod extends DataObject
     /**
      * @return MethodInterface
      */
-    public function getMethod()
+    public function getMethod(): MethodInterface
     {
         if (!$this->method) {
             $this->method = Injector::inst()->create($this->MethodClassName);
@@ -49,7 +51,7 @@ class RegisteredMethod extends DataObject
     /**
      * @return VerifyHandlerInterface
      */
-    public function getVerifyHandler()
+    public function getVerifyHandler(): VerifyHandlerInterface
     {
         return $this->getMethod()->getVerifyHandler();
     }
@@ -57,7 +59,7 @@ class RegisteredMethod extends DataObject
     /**
      * @return RegisterHandlerInterface
      */
-    public function getRegisterHandler()
+    public function getRegisterHandler(): RegisterHandlerInterface
     {
         return $this->getMethod()->getRegisterHandler();
     }

@@ -1,6 +1,7 @@
 import MFA_ADMINISTRATION from './actionTypes';
 
 const initialState = {
+  defaultMethod: null,
   registeredMethods: [],
 };
 
@@ -41,10 +42,27 @@ export default function mfaAdministationReducer(state = initialState, { type, pa
 
       registeredMethods.splice(index, 1);
 
+      // Update the default method in the store as well, if there is only
+      // one method left after removing this one. There will also be a backup
+      // code entry, and it will be last in the list.
+      // We do not want to override existing state if there are more than 2
+      // methods and the default method is already defined.
+      const defaultMethodState = registeredMethods.length === 2 ? {
+        defaultMethod: registeredMethods.find(() => true).urlSegment,
+      } : {};
+
       return {
         ...state,
+        ...defaultMethodState,
         // Ensure state is updated and not mutated
         registeredMethods: [...registeredMethods],
+      };
+    }
+
+    case MFA_ADMINISTRATION.SET_DEFAULT_METHOD: {
+      return {
+        ...state,
+        defaultMethod: payload.defaultMethod,
       };
     }
 

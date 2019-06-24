@@ -41,7 +41,9 @@ const Remove = ({
     const token = Config.get('SecurityID');
     const endpoint = `${remove.replace('{urlSegment}', method.urlSegment)}?SecurityID=${token}`;
 
-    fetch(endpoint).then(response => response.json().then(json => {
+    fetch(endpoint, {
+      method: 'DELETE',
+    }).then(response => response.json().then(json => {
       if (response.status === 200) {
         onDeregisterMethod(method);
         onAddAvailableMethod(json.availableMethod);

@@ -12,7 +12,7 @@ import {
   setAvailableMethods,
   showScreen,
 } from 'state/mfaRegister/actions';
-import { setRegisteredMethods } from 'state/mfaAdministration/actions';
+import { setDefaultMethod, setRegisteredMethods } from 'state/mfaAdministration/actions';
 import {
   SCREEN_CHOOSE_METHOD,
   SCREEN_INTRODUCTION
@@ -42,12 +42,14 @@ class RegisteredMFAMethodListField extends Component {
 
   componentDidMount() {
     const {
+      onSetDefaultMethod, initialDefaultMethod,
       onSetRegisteredMethods, initialRegisteredMethods,
       onUpdateAvailableMethods, initialAvailableMethods,
     } = this.props;
 
     onSetRegisteredMethods(initialRegisteredMethods);
     onUpdateAvailableMethods(initialAvailableMethods);
+    onSetDefaultMethod(initialDefaultMethod);
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -66,11 +68,12 @@ class RegisteredMFAMethodListField extends Component {
   }
 
   /**
-   * The backup and default methods are rendered separately
+   * The backup method is rendered separately
+   *
    * @returns {Array<object>}
    */
   getBaseMethods() {
-    const { backupMethod, defaultMethod } = this.props;
+    const { backupMethod } = this.props;
     let { registeredMethods: methods } = this.props;
 
     if (!methods) {
@@ -79,10 +82,6 @@ class RegisteredMFAMethodListField extends Component {
 
     if (backupMethod) {
       methods = methods.filter(method => method.urlSegment !== backupMethod.urlSegment);
-    }
-
-    if (defaultMethod) {
-      methods = methods.filter(method => method.urlSegment !== defaultMethod.urlSegment);
     }
 
     return methods;
@@ -172,7 +171,7 @@ class RegisteredMFAMethodListField extends Component {
         const props = {
           method,
           key: method.urlSegment,
-          isDefaultMethod: defaultMethod && method.urlSegment === defaultMethod.urlSegment,
+          isDefaultMethod: defaultMethod && method.urlSegment === defaultMethod,
           canRemove: !readOnly,
           canReset: !readOnly,
         };
@@ -268,8 +267,9 @@ class RegisteredMFAMethodListField extends Component {
 
 RegisteredMFAMethodListField.propTypes = {
   backupMethod: registeredMethodShape,
-  defaultMethod: registeredMethodShape,
+  defaultMethod: PropTypes.string,
   readOnly: PropTypes.bool,
+  initialDefaultMethod: PropTypes.string,
   initialRegisteredMethods: PropTypes.arrayOf(registeredMethodShape),
   initialAvailableMethods: PropTypes.arrayOf(availableMethodShape),
   allAvailableMethods: PropTypes.arrayOf(availableMethodShape),
@@ -296,6 +296,7 @@ RegisteredMFAMethodListField.childContextTypes = {
   endpoints: PropTypes.shape({
     register: PropTypes.string,
     remove: PropTypes.string,
+    setDefault: PropTypes.string,
   }),
   resources: PropTypes.object,
 };
@@ -308,6 +309,9 @@ const mapDispatchToProps = dispatch => ({
   onUpdateAvailableMethods: methods => {
     dispatch(setAvailableMethods(methods));
   },
+  onSetDefaultMethod: urlSegment => {
+    dispatch(setDefaultMethod(urlSegment));
+  },
   onSetRegisteredMethods: methods => {
     dispatch(setRegisteredMethods(methods));
   },
@@ -315,10 +319,11 @@ const mapDispatchToProps = dispatch => ({
 
 const mapStateToProps = state => {
   const { availableMethods, screen } = state.mfaRegister;
-  const { registeredMethods } = state.mfaAdministration;
+  const { defaultMethod, registeredMethods } = state.mfaAdministration;
 
   return {
     availableMethods,
+    defaultMethod,
     registeredMethods: registeredMethods || [],
     registrationScreen: screen,
   };

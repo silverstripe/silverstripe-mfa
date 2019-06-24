@@ -3,6 +3,9 @@
 namespace SilverStripe\MFA\Tests\Extension;
 
 use SilverStripe\Dev\SapphireTest;
+use SilverStripe\MFA\BackupCode\Method;
+use SilverStripe\MFA\Extension\MemberExtension;
+use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\Security\Member;
 
 class MemberExtensionTest extends SapphireTest
@@ -11,6 +14,7 @@ class MemberExtensionTest extends SapphireTest
 
     public function testAdminUserCanViewButNotEditOthersMFAConfig()
     {
+        /** @var Member&MemberExtension $targetMember */
         $targetMember = $this->objFromFixture(Member::class, 'squib');
 
         $this->logInAs('admin');
@@ -21,6 +25,7 @@ class MemberExtensionTest extends SapphireTest
 
     public function testAdminUserCanViewAndEditTheirOwnMFAConfig()
     {
+        /** @var Member&MemberExtension $targetMember */
         $targetMember = $this->objFromFixture(Member::class, 'admin');
 
         $this->logInAs($targetMember);
@@ -31,6 +36,7 @@ class MemberExtensionTest extends SapphireTest
 
     public function testStandardUserCannotViewOrEditOthersMFAConfig()
     {
+        /** @var Member&MemberExtension $targetMember */
         $targetMember = $this->objFromFixture(Member::class, 'admin');
 
         $this->logInAs('squib');
@@ -41,11 +47,29 @@ class MemberExtensionTest extends SapphireTest
 
     public function testStandardUserCanViewAndEditTheirOwnMFAConfig()
     {
+        /** @var Member&MemberExtension $targetMember */
         $targetMember = $this->objFromFixture(Member::class, 'squib');
 
         $this->logInAs($targetMember);
 
         $this->assertTrue($targetMember->currentUserCanViewMFAConfig(), 'Can View');
         $this->assertTrue($targetMember->currentUserCanEditMFAConfig(), 'Can Edit');
+    }
+
+    /**
+     * @expectedException \SilverStripe\MFA\Exception\InvalidMethodException
+     * @expectedExceptionMessage The provided method does not belong to this member
+     */
+    public function testSetDefaultRegisteredMethodThrowsExceptionWhenSettingSomeoneElsesMethodAsDefault()
+    {
+        /** @var Member&MemberExtension $targetMember */
+        $targetMember = $this->objFromFixture(Member::class, 'admin');
+        $method = new Method();
+        RegisteredMethodManager::singleton()->registerForMember($targetMember, $method, ['foo' => 'bar']);
+        $registeredMethod = RegisteredMethodManager::singleton()->getFromMember($targetMember, $method);
+
+        /** @var Member&MemberExtension $anotherMember */
+        $anotherMember = $this->objFromFixture(Member::class, 'squib');
+        $anotherMember->setDefaultRegisteredMethod($registeredMethod);
     }
 }

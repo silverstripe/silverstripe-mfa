@@ -1,10 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace SilverStripe\MFA\Extension;
 
 use SilverStripe\Control\Controller;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\MFA\Authenticator\ChangePasswordHandler;
+use SilverStripe\MFA\Exception\InvalidMethodException;
 use SilverStripe\MFA\FormField\RegisteredMFAMethodListField;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
@@ -38,19 +39,35 @@ class MemberExtension extends DataExtension implements PermissionProvider
     ];
 
     /**
-     * Accessor for the `DefaultRegisteredMethod` property
+     * Accessor for the `DefaultRegisteredMethod` property.
      *
      * This is replicating the usual functionality of a has_one relation but does it like this so we can ensure the same
      * instance of the MethodInterface is provided regardless if you access it through the has_one or the has_many.
      *
-     * @return MethodInterface
+     * @return RegisteredMethod|null
      */
-    public function getDefaultRegisteredMethod()
+    public function getDefaultRegisteredMethod(): ?RegisteredMethod
     {
         return $this->owner->RegisteredMFAMethods()->byId($this->owner->DefaultRegisteredMethodID);
     }
 
-    public function updateCMSFields(FieldList $fields)
+    /**
+     * Set the default registered method for the current member. Does not write the owner record.
+     *
+     * @param RegisteredMethod $registeredMethod
+     * @return Member
+     * @throws InvalidMethodException
+     */
+    public function setDefaultRegisteredMethod(RegisteredMethod $registeredMethod): Member
+    {
+        if ($registeredMethod->Member()->ID != $this->owner->ID) {
+            throw new InvalidMethodException('The provided method does not belong to this member');
+        }
+        $this->owner->DefaultRegisteredMethodID = $registeredMethod->ID;
+        return $this->owner;
+    }
+
+    public function updateCMSFields(FieldList $fields): FieldList
     {
         $fields->removeByName(['DefaultRegisteredMethodID', 'HasSkippedMFARegistration', 'RegisteredMFAMethods']);
 
@@ -79,7 +96,7 @@ class MemberExtension extends DataExtension implements PermissionProvider
      *
      * @return bool
      */
-    public function currentUserCanViewMFAConfig()
+    public function currentUserCanViewMFAConfig(): bool
     {
         return (Permission::check(self::MFA_ADMINISTER_REGISTERED_METHODS)
             || $this->currentUserCanEditMFAConfig());
@@ -91,7 +108,7 @@ class MemberExtension extends DataExtension implements PermissionProvider
      *
      * @return bool
      */
-    public function currentUserCanEditMFAConfig()
+    public function currentUserCanEditMFAConfig(): bool
     {
         return (Security::getCurrentUser() && Security::getCurrentUser()->ID === $this->owner->ID);
     }
@@ -101,7 +118,7 @@ class MemberExtension extends DataExtension implements PermissionProvider
      *
      * @return array
      */
-    public function providePermissions()
+    public function providePermissions(): array
     {
         $label = _t(
             __CLASS__ . '.MFA_PERMISSION_LABEL',
@@ -132,7 +149,7 @@ class MemberExtension extends DataExtension implements PermissionProvider
     /**
      * Clear any temporary multi-factor authentication related session keys when a member is successfully logged in.
      */
-    public function afterMemberLoggedIn()
+    public function afterMemberLoggedIn(): void
     {
         if (!Controller::has_curr()) {
             return;

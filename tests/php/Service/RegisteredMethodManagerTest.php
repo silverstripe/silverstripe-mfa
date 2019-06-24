@@ -2,7 +2,6 @@
 
 namespace SilverStripe\MFA\Tests\Service;
 
-use SilverStripe\Control\Email\Email;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\MFA\BackupCode\Method as BackupCodeMethod;
@@ -65,6 +64,28 @@ class RegisteredMethodManagerTest extends SapphireTest
         $this->assertCount(0, $member->RegisteredMFAMethods());
         RegisteredMethodManager::singleton()->registerForMember($member, $method, ['foo', 'bar']);
         $this->assertCount(1, $member->RegisteredMFAMethods());
+    }
+
+    public function testRegisterForMemberAssignsDefaultRegisteredMethod()
+    {
+        /** @var Member&MemberExtension $member */
+        $member = Member::create(['FirstName' => 'Mike']);
+        $member->write();
+        $method = new BackupCodeMethod();
+
+        RegisteredMethodManager::singleton()->registerForMember($member, $method, ['foo', 'bar']);
+        $this->assertCount(1, $member->RegisteredMFAMethods());
+        $defaultMethod = $member->getDefaultRegisteredMethod();
+        $this->assertNotNull($defaultMethod, 'Default registered method should have been assigned');
+
+        $newMethod = new BasicMathMethod();
+        RegisteredMethodManager::singleton()->registerForMember($member, $newMethod, ['foo', 'baz']);
+        $this->assertCount(2, $member->RegisteredMFAMethods());
+        $this->assertSame(
+            $defaultMethod->ID,
+            $member->getDefaultRegisteredMethod()->ID,
+            'Default registered method should not have changed'
+        );
     }
 
     public function testRegisterForMemberSendsNotification()

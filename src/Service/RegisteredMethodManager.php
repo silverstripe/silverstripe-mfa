@@ -79,6 +79,12 @@ class RegisteredMethodManager
         // Add it to the member
         $member->RegisteredMFAMethods()->add($registeredMethod);
 
+        // Define as the default, if none exists yet
+        if (!$member->getDefaultRegisteredMethod()) {
+            $member->setDefaultRegisteredMethod($registeredMethod);
+            $member->write();
+        }
+
         if (!MethodRegistry::create()->isBackupMethod($method)) {
             $this->notification->send(
                 $member,
@@ -109,7 +115,6 @@ class RegisteredMethodManager
     public function deleteFromMember(Member $member, MethodInterface $method): bool
     {
         $method = $this->getFromMember($member, $method);
-
         if (!$method) {
             return false;
         }
@@ -118,13 +123,29 @@ class RegisteredMethodManager
 
         $backupRemovedToo = false;
 
-        // If there is only one method remaining, and that's the configured "backup" method - then delete that too
-        if ($member->RegisteredMFAMethods()->count() === 1
-            && ($method = $member->RegisteredMFAMethods()->first())->MethodClassName
-                === Config::inst()->get(MethodRegistry::class, 'default_backup_method')
-        ) {
-            $method->delete();
-            $backupRemovedToo = true;
+        $backupMethod = MethodRegistry::config()->get('default_backup_method');
+        $remainingMethods = $member->RegisteredMFAMethods()->count();
+        if ($remainingMethods === 2) {
+            // If there is only one other method (other than backup codes) then set that as the default method
+            /** @var RegisteredMethod|null $remainingMethodExceptBackup */
+            $remainingMethodExceptBackup = $member->RegisteredMFAMethods()
+                ->filter('MethodClassName:Not', $backupMethod)
+                ->first();
+
+            if ($remainingMethodExceptBackup) {
+                $member->setDefaultRegisteredMethod($remainingMethodExceptBackup);
+                $member->write();
+            }
+        } elseif ($remainingMethods === 1) {
+            // If there is only one method remaining, and that's the configured "backup" method - then delete that too
+            $remainingMethod = $member->RegisteredMFAMethods()
+                ->filter('MethodClassName', $backupMethod)
+                ->first();
+
+            if ($remainingMethod) {
+                $remainingMethod->delete();
+                $backupRemovedToo = true;
+            }
         }
 
         $this->notification->send(

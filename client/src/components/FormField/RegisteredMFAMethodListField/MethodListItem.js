@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import moment from 'moment';
 import Remove from './MethodListItem/Remove';
 import Reset from './MethodListItem/Reset';
+import SetDefault from './MethodListItem/SetDefault';
 import methodShape from 'types/registeredMethod';
 
 const fallbacks = require('../../../../lang/src/en.json');
@@ -12,7 +13,6 @@ const fallbacks = require('../../../../lang/src/en.json');
 /**
  * Renders a single Registered MFA Method for a Member
  *
- * @todo Add actions when not in read-only mode
  * @param {object} method
  * @param {string} suffix
  * @returns {HTMLElement}
@@ -20,22 +20,34 @@ const fallbacks = require('../../../../lang/src/en.json');
  */
 
 class MethodListItem extends PureComponent {
-  getNameSuffix() {
+  /**
+   * Get the status message template for the method item, depending on whether
+   * it is the default, backup, or a regular method.
+   *
+   * @returns {string}
+   */
+  getStatusMessage() {
+    const { isBackupMethod, isDefaultMethod } = this.props;
     const { ss: { i18n } } = window;
-    const { isDefaultMethod } = this.props;
 
-    let suffix = '';
     if (isDefaultMethod) {
-      suffix = i18n._t(
-        'MultiFactorAuthentication.DEFAULT',
-        fallbacks['MultiFactorAuthentication.DEFAULT']
+      return i18n._t(
+        'MultiFactorAuthentication.DEFAULT_REGISTERED',
+        fallbacks['MultiFactorAuthentication.DEFAULT_REGISTERED']
       );
     }
-    if (suffix.length) {
-      suffix = ` ${suffix}`;
+
+    if (isBackupMethod) {
+      return i18n._t(
+        'MultiFactorAuthentication.BACKUP_REGISTERED',
+        fallbacks['MultiFactorAuthentication.BACKUP_REGISTERED']
+      );
     }
 
-    return suffix;
+    return i18n._t(
+      'MultiFactorAuthentication.REGISTERED',
+      fallbacks['MultiFactorAuthentication.REGISTERED']
+    );
   }
 
   renderRemove() {
@@ -86,6 +98,22 @@ class MethodListItem extends PureComponent {
     return <Reset {...props} />;
   }
 
+  /**
+   * Renders a button to make the current method the default registered method
+   *
+   * @returns {SetDefault}
+   */
+  renderSetAsDefault() {
+    const { isDefaultMethod, isBackupMethod, method } = this.props;
+
+    if (isDefaultMethod || isBackupMethod) {
+      return null;
+    }
+
+    return <SetDefault method={method} />;
+  }
+
+
   renderControls() {
     const { canRemove, canReset } = this.props;
 
@@ -97,30 +125,26 @@ class MethodListItem extends PureComponent {
       <div>
         { this.renderRemove() }
         { this.renderReset() }
+        { this.renderSetAsDefault() }
       </div>
     );
   }
 
+  /**
+   * Gets the method name and status, including whether it's default, backup, etc
+   *
+   * @returns {string}
+   */
   renderNameAndStatus() {
-    const { method, isBackupMethod, createdDate } = this.props;
+    const { method, createdDate } = this.props;
     const { ss: { i18n } } = window;
 
-    let statusMessage = i18n._t(
-      'MultiFactorAuthentication.REGISTERED',
-      fallbacks['MultiFactorAuthentication.REGISTERED']
-    );
-
-    if (isBackupMethod) {
-      statusMessage = i18n._t(
-        'MultiFactorAuthentication.BACKUP_CREATED',
-        fallbacks['MultiFactorAuthentication.BACKUP_REGISTERED']
-      );
-    }
+    const statusMessage = this.getStatusMessage();
 
     moment.locale(i18n.detectLocale());
 
     return i18n.inject(statusMessage, {
-      method: `${method.name}${this.getNameSuffix()}`,
+      method: method.name,
       date: moment(createdDate).format('L'),
     });
   }
