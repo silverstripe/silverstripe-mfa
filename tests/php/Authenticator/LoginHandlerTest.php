@@ -411,6 +411,21 @@ class LoginHandlerTest extends FunctionalTest
         $this->assertSame($failedLogins + 1, $member->FailedLoginCount, 'Failed login is registered');
     }
 
+    public function testGetBackURL()
+    {
+        $handler = new LoginHandler('foo', $this->createMock(MemberAuthenticator::class));
+
+        $request = new HTTPRequest('GET', '/');
+        $handler->setRequest($request);
+
+        $session = new Session([]);
+        $request->setSession($session);
+
+        $session->set(LoginHandler::SESSION_KEY . '.additionalData', ['BackURL' => 'foobar']);
+
+        $this->assertSame('foobar', $handler->getBackURL());
+    }
+
     /**
      * Mark the given user as partially logged in - ie. they've entered their email/password and are currently going
      * through the MFA process
