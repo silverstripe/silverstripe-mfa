@@ -17,9 +17,9 @@ class LoginContext extends CMSLoginContext
         $this->multiFactorAuthenticationIsOptional();
         parent::iAmLoggedInWithPermissions($permCode);
 
-        // Wait for MFA to load
+        // Wait for MFA to finish loading
         $this->getMainContext()->getSession()
-            ->wait(5000, 'document.getElementsByClassName("mfa-app-title").length === 1');
+            ->wait(10000, 'document.getElementsByClassName("mfa-loading-indicator").length === 0');
 
         $this->getMainContext()->pressButton('Setup later');
     }
