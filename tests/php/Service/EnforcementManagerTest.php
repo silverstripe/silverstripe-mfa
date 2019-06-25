@@ -100,6 +100,14 @@ class EnforcementManagerTest extends SapphireTest
         $this->assertTrue(EnforcementManager::create()->shouldRedirectToMFA($member));
     }
 
+    public function testShouldRedirectToMFAForContentAuthors()
+    {
+        $memberID = $this->logInWithPermission('CMS_ACCESS_CMSMain');
+        /** @var Member $member */
+        $member = Member::get()->byID($memberID);
+        $this->assertTrue(EnforcementManager::create()->shouldRedirectToMFA($member));
+    }
+
     public function testShouldRedirectToMFAWhenUserHasRegisteredMFAMethod()
     {
         /** @var Member $member */

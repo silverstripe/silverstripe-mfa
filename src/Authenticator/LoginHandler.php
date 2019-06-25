@@ -420,7 +420,7 @@ class LoginHandler extends BaseLoginHandler
                 _t(__CLASS__ . '.MFA_LOGIN_INCOMPLETE', 'You must provide MFA login details'),
                 ValidationResult::TYPE_ERROR
             );
-            return $this->redirect($loginUrl);
+            return $this->redirect($this->getBackURL() ?: $loginUrl);
         }
 
         $request = $this->getRequest();
@@ -431,7 +431,9 @@ class LoginHandler extends BaseLoginHandler
         // This is potentially redundant logic as the member should only be logged in if they've fully registered.
         // They're allowed to login if they can skip - so only do assertions if they're not allowed to skip
         // We'll also check that they've registered the required MFA details
-        if (!$enforcementManager->canSkipMFA($member) && !$enforcementManager->hasCompletedRegistration($member)) {
+        if (!$enforcementManager->hasCompletedRegistration($member)
+            && $enforcementManager->shouldRedirectToMFA($member)
+        ) {
             // Log them out again
             /** @var IdentityStore $identityStore */
             $identityStore = Injector::inst()->get(IdentityStore::class);
@@ -441,17 +443,11 @@ class LoginHandler extends BaseLoginHandler
                 _t(__CLASS__ . '.INVALID_REGISTRATION', 'You must complete MFA registration'),
                 ValidationResult::TYPE_ERROR
             );
-            return $this->redirect($loginUrl);
+            return $this->redirect($this->getBackURL() ?: $loginUrl);
         }
 
         // Clear the "additional data"
-        $data = $request->getSession()->get(static::SESSION_KEY . '.additionalData') ?: [];
         $request->getSession()->clear(static::SESSION_KEY . '.additionalData');
-
-        // Redirecting after successful login expects a getVar to be set
-        if (!empty($data['BackURL'])) {
-            $request['BackURL'] = $data['BackURL'];
-        }
 
         // Ensure any left over session state is cleaned up
         $store = $this->getStore();
@@ -502,6 +498,25 @@ class LoginHandler extends BaseLoginHandler
     public function getLogger(): ?LoggerInterface
     {
         return $this->logger;
+    }
+
+    /**
+     * Adds another option for the back URL to be returned from a current MFA session store
+     *
+     * @return string|null
+     */
+    public function getBackURL(): ?string
+    {
+        $backURL = parent::getBackURL();
+
+        if (!$backURL && $this->getRequest()) {
+            $data = $this->getRequest()->getSession()->get(static::SESSION_KEY . '.additionalData');
+            if (isset($data['BackURL'])) {
+                $backURL = $data['BackURL'];
+            }
+        }
+
+        return $backURL;
     }
 
     /**
