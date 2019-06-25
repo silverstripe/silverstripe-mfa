@@ -3,6 +3,7 @@
 namespace SilverStripe\MFA\Tests\Authenticator;
 
 use PHPUnit_Framework_MockObject_MockObject;
+use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\Session;
@@ -24,8 +25,8 @@ use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
 use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
-use SilverStripe\SecurityExtensions\Service\SudoModeServiceInterface;
 use SilverStripe\Security\SecurityToken;
+use SilverStripe\SecurityExtensions\Service\SudoModeServiceInterface;
 use SilverStripe\SiteConfig\SiteConfig;
 
 class LoginHandlerTest extends FunctionalTest
@@ -63,7 +64,27 @@ class LoginHandlerTest extends FunctionalTest
         $this->autoFollowRedirection = true;
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertStringEndsWith('/Security/login/default/mfa', $response->getHeader('location'));
+        $this->assertStringEndsWith(
+            Controller::join_links(Security::login_url(), 'default/mfa'),
+            $response->getHeader('location')
+        );
+    }
+
+    public function testMFARedirectsBackWhenSudoModeIsInactive()
+    {
+        /** @var SudoModeServiceInterface&PHPUnit_Framework_MockObject_MockObject $sudoModeService */
+        $sudoModeService = $this->createMock(SudoModeServiceInterface::class);
+        $sudoModeService->expects($this->once())->method('check')->willReturn(false);
+        Injector::inst()->registerService($sudoModeService, SudoModeServiceInterface::class);
+
+        /** @var Member&MemberExtension $member */
+        $member = $this->objFromFixture(Member::class, 'guy');
+        $this->scaffoldPartialLogin($member);
+
+        $this->autoFollowRedirection = false;
+        $response = $this->get(Controller::join_links(Security::login_url(), 'default/mfa'));
+
+        $this->assertSame(302, $response->getStatusCode());
     }
 
     public function testMethodsNotBeingAvailableWillLogin()
@@ -88,7 +109,7 @@ class LoginHandlerTest extends FunctionalTest
     {
         // Assert that this endpoint is not available if you haven't started the login process
         $this->autoFollowRedirection = false;
-        $response = $this->get('Security/login/default/mfa/schema');
+        $response = $this->get(Controller::join_links(Security::login_url(), 'default/mfa/schema'));
         $this->autoFollowRedirection = true;
 
         $this->assertSame(302, $response->getStatusCode());
@@ -101,7 +122,7 @@ class LoginHandlerTest extends FunctionalTest
         $member = $this->objFromFixture(Member::class, 'guy');
         $this->scaffoldPartialLogin($member);
 
-        $result = $this->get('Security/login/default/mfa/schema');
+        $result = $this->get(Controller::join_links(Security::login_url(), 'default/mfa/schema'));
 
         $response = json_decode($result->getBody(), true);
 
@@ -136,7 +157,7 @@ class LoginHandlerTest extends FunctionalTest
         $member = $this->objFromFixture(Member::class, 'simon');
         $this->scaffoldPartialLogin($member);
 
-        $result = $this->get('Security/login/default/mfa/schema');
+        $result = $this->get(Controller::join_links(Security::login_url(), 'default/mfa/schema'));
 
         $response = json_decode($result->getBody(), true);
 
@@ -167,7 +188,7 @@ class LoginHandlerTest extends FunctionalTest
         $member = $this->objFromFixture(Member::class, 'robbie');
         $this->scaffoldPartialLogin($member);
 
-        $result = $this->get('Security/login/default/mfa/schema');
+        $result = $this->get(Controller::join_links(Security::login_url(), 'default/mfa/schema'));
 
         $response = json_decode($result->getBody(), true);
 
@@ -196,7 +217,7 @@ class LoginHandlerTest extends FunctionalTest
             $this->scaffoldPartialLogin($this->objFromFixture(Member::class, $member));
         }
 
-        $response = $this->get('Security/login/default/mfa/skip');
+        $response = $this->get(Controller::join_links(Security::login_url(), 'default/mfa/skip'));
         $this->assertContains('You cannot skip MFA registration', $response->getBody());
     }
 
@@ -222,7 +243,7 @@ class LoginHandlerTest extends FunctionalTest
         $memberId = $member->write();
         $this->logInAs($member);
 
-        $response = $this->get('Security/login/default/mfa/skip');
+        $response = $this->get(Controller::join_links(Security::login_url(), 'default/mfa/skip'));
 
         $this->assertSame(200, $response->getStatusCode());
 

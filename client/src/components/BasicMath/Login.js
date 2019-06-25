@@ -35,7 +35,12 @@ class Login extends Component {
     const { ss: { i18n } } = window;
 
     if (!numbers) {
-      return <LoadingIndicator block />;
+      return (
+        <div>
+          <LoadingIndicator block />
+          { moreOptionsControl }
+        </div>
+      );
     }
 
     return (
