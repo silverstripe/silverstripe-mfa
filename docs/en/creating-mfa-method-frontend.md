@@ -6,7 +6,7 @@ The MFA module provides a clear path for creating additional authentication meth
 implement the front-end portion of the required code, using the Basic Math method as an example. Some prior experience
 with React / Redux is recommended.
 
-The front-end components of MFA make use of `react-injector` (Injector) to allow sharing of React components and Redux
+The front-end components of MFA make use of [`react-injector`](https://github.com/silverstripe/react-injector/) (Injector) to allow sharing of React components and Redux
 reducers between separate JS bundles. You can find more documentation on the Injector API in the [SilverStripe docs](https://docs.silverstripe.org/en/4/developer_guides/customising_the_admin_interface/reactjs_redux_and_graphql/#the-injector-api).
 
 You'll find it easiest to get up and running by matching the NPM dependencies and Webpack configuration used in the TOTP
