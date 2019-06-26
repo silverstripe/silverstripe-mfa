@@ -30,7 +30,7 @@ class BackupCodeGenerator implements BackupCodeGeneratorInterface
      * @config
      * @var int
      */
-    private static $backup_code_length = 9;
+    private static $backup_code_length = 12;
 
     /**
      * Generates a list of backup codes
@@ -58,11 +58,7 @@ class BackupCodeGenerator implements BackupCodeGeneratorInterface
 
     public function getCharacterSet(): array
     {
-        $characterSet = array_merge(
-            range('a', 'z'),
-            range('A', 'Z'),
-            range(0, 9)
-        );
+        $characterSet = range('a', 'z');
 
         $this->extend('updateCharacterSet', $characterSet);
 
