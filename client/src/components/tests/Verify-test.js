@@ -9,6 +9,7 @@ import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { Component as Verify } from '../Verify';
 import SelectMethod from '../Verify/SelectMethod';
+import LoadingError from 'components/LoadingError';
 import { loadComponent } from 'lib/Injector'; // eslint-disable-line
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -329,8 +330,7 @@ describe('Verify', () => {
           selectedMethod: mockRegisteredMethods[0],
         });
 
-        expect(wrapper.find('.mfa-method--unavailable')).toHaveLength(1);
-        expect(wrapper.text()).toContain('There is no spoon');
+        expect(wrapper.find(LoadingError)).toHaveLength(1);
         done();
       });
     });

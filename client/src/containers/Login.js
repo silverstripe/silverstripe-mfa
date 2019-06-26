@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import Verify from 'components/Verify';
 import Register from 'components/Register';
 import LoadingIndicator from 'components/LoadingIndicator';
+import LoadingError from 'components/LoadingError';
 import { chooseMethod, setAvailableMethods } from 'state/mfaRegister/actions';
 import { setAllMethods } from 'state/mfaVerify/actions';
 import { connect } from 'react-redux';
@@ -37,13 +38,22 @@ class Login extends Component {
     const { schemaURL, onSetAllMethods } = this.props;
 
     return fetch(schemaURL)
-      .then(response => response.json())
+      .then(response => {
+        if (response.status !== 200) {
+          this.setState({
+            schemaLoaded: true, // Triggers an error state - see render()
+          });
+          return Promise.reject();
+        }
+        return response.json();
+      })
       .then(schemaData => {
         this.setState({
           schema: schemaData
         });
         onSetAllMethods(schemaData.allMethods);
-      });
+      })
+      .catch(() => {}); // noop
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -158,10 +168,24 @@ class Login extends Component {
 
   render() {
     const { schema, schemaLoaded, loading } = this.state;
+    const { ss: { i18n } } = window;
 
     if (!schema || loading) {
       if (!schema && schemaLoaded) {
-        throw new Error('Could not read configuration schema to load MFA interface');
+        return (
+          <LoadingError
+            title={i18n._t('MFALogin.SOMETHING_WENT_WRONG', 'Something went wrong!')}
+            controls={
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="btn btn-outline-secondary"
+              >
+                {i18n._t('MFALogin.TRY_AGAIN', 'Try again')}
+              </button>
+            }
+          />
+        );
       }
 
       return <LoadingIndicator block />;
@@ -177,7 +201,7 @@ class Login extends Component {
 }
 
 Login.propTypes = {
-  schemaURL: PropTypes.string
+  schemaURL: PropTypes.string.isRequired,
 };
 
 const mapDispatchToProps = dispatch => ({
