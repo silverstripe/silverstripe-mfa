@@ -63,7 +63,7 @@ class Verify extends Component {
       <ul className="mfa-action-list">
         <li className="mfa-action-list__item">
           <button
-            className="btn btn-success"
+            className="btn btn-primary"
             disabled={this.state.value.length === 0}
             onClick={this.handleCompleteVerification}
           >
