@@ -120,7 +120,7 @@ describe('Register - Recovery Codes', () => {
       />
     );
 
-    wrapper.find('button').simulate('click');
+    wrapper.find('button.btn-primary').simulate('click');
 
     expect(completeFunction.mock.calls).toHaveLength(1);
   });
