@@ -1,4 +1,4 @@
-# Creating a new MFA method: Frontend
+# Creating a new MFA method: Front-end
 
 ## Introduction
 
@@ -6,11 +6,13 @@ The MFA module provides a clear path for creating additional authentication meth
 implement the front-end portion of the required code, using the Basic Math method as an example. Some prior experience
 with React / Redux is recommended.
 
-The front-end components of MFA make use of [`react-injector`](https://github.com/silverstripe/react-injector/) (Injector) to allow sharing of React components and Redux
-reducers between separate JS bundles. You can find more documentation on the Injector API in the [SilverStripe docs](https://docs.silverstripe.org/en/4/developer_guides/customising_the_admin_interface/reactjs_redux_and_graphql/#the-injector-api).
+The front-end components of MFA make use of [`react-injector`](https://github.com/silverstripe/react-injector/)
+(Injector) to allow sharing of React components and Redux reducers between separate JS bundles. You can find more
+documentation on the Injector API in the [SilverStripe docs](https://docs.silverstripe.org/en/4/developer_guides/customising_the_admin_interface/reactjs_redux_and_graphql/#the-injector-api).
 
 You'll find it easiest to get up and running by matching the NPM dependencies and Webpack configuration used in the TOTP
-and WebAuthn modules, with a single entry point that handles registering your components with Injector.
+and WebAuthn modules, with a single entry point that handles registering your components with Injector. We also suggest
+making use of the i18n library, exposed to components as `window.ss.i18n`, and shown in the examples below.
 
 ## Create components
 
@@ -85,13 +87,15 @@ export default Register;
 Your verification component will look similar to your registration one - it should accept the following props:
 
 - `onCompleteVerification`: A callback that should be invoked when the user has completed the challenge presented, with
-  any data that your `VerifyHandlerInterface::verify()` implementation needs to confirm the user's identity.
+  any data that your `VerifyHandlerInterface::verify()` implementation needs to confirm the user's identity. **NOTE:**
+  It is _imperative_ that your backend code is involved in the verification process, as providing secrets to the browser
+  or otherwise relying solely on it to approve the authentication can result in significant security flaws.
 - `moreOptionsControl`: A React component to render in your UI, which presents a button for users to pick a different
   method to authenticate with. We recommend referencing the layout of the TOTP / WebAuthn implementations.
 - Any data you return from your `VerifyHandlerInterface::start()` implementation will also be provided to the
   component as props. For example, the WebAuthn module sends a challenge for the security key to sign.
 
-A Register component for Basic Math might look like this:
+A Verify component for Basic Math might look like this:
 
 ```jsx
 import React, { Component } from 'react';
@@ -126,7 +130,7 @@ class BasicMathVerify extends Component {
     if (!numbers) {
       return (
         <div>
-          <h3>Loading...</h1>
+          <h3>{i18n._t('BasicMathLogin.LOADING', 'Loading...')}</h3>
           { moreOptionsControl }
         </div>
       );
