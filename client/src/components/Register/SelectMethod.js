@@ -82,7 +82,7 @@ class SelectMethod extends Component {
       <ul className="mfa-action-list">
         <li className="mfa-action-list__item">
           <button
-            className="btn btn-success"
+            className="btn btn-primary"
             disabled={highlightedMethod === null}
             onClick={this.handleGoToNext}
           >

@@ -8,7 +8,7 @@ import registeredMethodType from 'types/registeredMethod';
 import LoadingIndicator from 'components/LoadingIndicator';
 import SelectMethod from 'components/Verify/SelectMethod';
 import withMethodAvailability from 'state/methodAvailability/withMethodAvailability';
-import CircleWarning from 'components/Icons/CircleWarning';
+import LoadingError from 'components/LoadingError';
 
 class Verify extends Component {
   constructor(props) {
@@ -291,20 +291,16 @@ class Verify extends Component {
     if (isAvailable && !isAvailable(selectedMethod)) {
       const unavailableMessage = getUnavailableMessage(selectedMethod);
       return (
-        <div className="mfa-method mfa-method--unavailable">
-          <div className="mfa-method-icon mfa-method-icon--unavailable">
-            <CircleWarning size="80px" />
-          </div>
-
-          <h2 className="mfa-method-title mfa-method-title--unavailable">
-            { i18n._t('MFAVerify.METHOD_UNAVAILABLE', 'This authentication method is unavailable') }
-          </h2>
-          {unavailableMessage && <p>{unavailableMessage}</p>}
-
-          <div className="mfa-method-options">
-            {this.renderOtherMethodsControl('btn-outline-secondary')}
-          </div>
-        </div>
+        <LoadingError
+          title={
+            i18n._t(
+              'MFAVerify.METHOD_UNAVAILABLE',
+              'This authentication method is unavailable'
+            )
+          }
+          message={unavailableMessage}
+          controls={this.renderOtherMethodsControl('btn-outline-secondary')}
+        />
       );
     }
 
