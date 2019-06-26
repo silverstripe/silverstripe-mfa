@@ -90,9 +90,9 @@ class Register extends Component {
    */
   renderCodes() {
     return (
-      <div ref={this.setPrintRef} className="mfa-register-backup-codes__code-grid">
+      <pre ref={this.setPrintRef} className="mfa-register-backup-codes__code-grid">
         {this.getFormattedCodes().map(code => <div key={code}>{code}</div>)}
-      </div>
+      </pre>
     );
   }
 
