@@ -89,6 +89,7 @@ class MethodVerifyHandler implements VerifyHandlerInterface, TestOnly
      */
     public function getComponent(): string
     {
+        // This component does not exist
         return 'BasicMathLogin';
     }
 }
