@@ -16,12 +16,6 @@ class LoginContext extends CMSLoginContext
         // Set MFA to optional, perform login logic, then skip MFA
         $this->multiFactorAuthenticationIsOptional();
         parent::iAmLoggedInWithPermissions($permCode);
-
-        // Wait for MFA to finish loading
-        $this->getMainContext()->getSession()
-            ->wait(10000, 'document.getElementsByClassName("mfa-loading-indicator").length === 0');
-
-        $this->getMainContext()->pressButton('Setup later');
     }
 
     /**
