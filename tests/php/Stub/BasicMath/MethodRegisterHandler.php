@@ -84,6 +84,7 @@ class MethodRegisterHandler implements RegisterHandlerInterface, TestOnly
      */
     public function getComponent(): string
     {
+        // This component does not exist
         return 'BasicMathRegister';
     }
 }
