@@ -72,7 +72,7 @@ class BackupCodeGenerator implements BackupCodeGeneratorInterface
      * @param int $codeLength
      * @return string
      */
-    protected function generateCode(array $charset, int $codeLength = 9): string
+    protected function generateCode(array $charset, int $codeLength): string
     {
         $characters = [];
         $numberOfOptions = count($charset);
