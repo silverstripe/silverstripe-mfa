@@ -19,7 +19,7 @@ Install with Composer:
 composer require silverstripe/mfa ^4.0
 ```
 
-You should also install one of the additional multi factor authenticator modules:
+You should also install one of the additional multi-factor authenticator modules:
 
 * [silverstripe/totp-authenticator](https://github.com/silverstripe/silverstripe-totp-authenticator)
 * [silverstripe/webauthn-authenticator](https://github.com/silverstripe/silverstripe-webauthn-authenticator)
@@ -37,14 +37,14 @@ SilverStripe\MFA\Service\MethodRegistry:
     - Another\Method\Here
 ```
 
-After installing, an option in site configuration will enable MFA for users, which will automatically be added after 
+After installing, an option in site configuration will enable MFA for users, which will automatically be added after
 login and to member profiles.
 
 ## Documentation
 
-This module provides two distinct processes for MFA; verification and registration. This module provides a decoupled 
-architecture where front-end and back-end are separate. Provided with the module is a React app that interfaces with 
-default endpoints added by this module. Please refer to the docs for specific information about the included 
+This module provides two distinct processes for MFA; verification and registration. This module provides a decoupled
+architecture where front-end and back-end are separate. Provided with the module is a React app that interfaces with
+default endpoints added by this module. Please refer to the docs for specific information about the included
 functionality:
 
 - [Debugging](docs/en/debugging.md)

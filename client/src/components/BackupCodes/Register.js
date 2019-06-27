@@ -111,7 +111,7 @@ class Register extends Component {
           'MFABackupCodesRegister.DESCRIPTION',
           'Recovery codes enable you to log into your account in the event your primary ' +
             'authentication is not available. Each code can only be used once. Store these codes ' +
-            'somewhere safe, as they will not be viewable after this leaving this page.'
+            'somewhere safe, as they will not be viewable after leaving this page.'
         )}
         &nbsp;
         <a

@@ -1,6 +1,6 @@
 {
     "name": "silverstripe/mfa",
-    "description": "Enable multi factor authentication with fallback codes",
+    "description": "Enable multi-factor authentication with fallback codes",
     "type": "silverstripe-vendormodule",
     "license": "BSD-3-Clause",
     "keywords": [

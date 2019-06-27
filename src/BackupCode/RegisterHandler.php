@@ -87,7 +87,7 @@ class RegisterHandler implements RegisterHandlerInterface
      */
     public function getName(): string
     {
-        return _t(__CLASS__ . '.NAME', 'Backup recovery codes');
+        return _t(__CLASS__ . '.NAME', 'Recovery codes');
     }
 
     /**

@@ -92,7 +92,7 @@ class RegisteredMethodManager
                 [
                     'subject' => _t(
                         self::class . '.MFAADDED',
-                        'A multi factor authentication method was added to your account'
+                        'A multi-factor authentication method was added to your account'
                     ),
                     'MethodName' => $method->getRegisterHandler()->getName(),
                 ]
@@ -154,7 +154,7 @@ class RegisteredMethodManager
             [
                 'subject' => _t(
                     self::class . '.MFAREMOVED',
-                    'A multi factor authentication method was removed from your account'
+                    'A multi-factor authentication method was removed from your account'
                 ),
                 'MethodName' => $method->getRegisterHandler()->getName(),
                 'BackupAlsoRemoved' => $backupRemovedToo,

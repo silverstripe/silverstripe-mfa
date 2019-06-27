@@ -19,7 +19,7 @@ class LoginContext extends CMSLoginContext
     }
 
     /**
-     * @Given multi factor authentication is optional
+     * @Given multi-factor authentication is optional
      */
     public function multiFactorAuthenticationIsOptional()
     {
