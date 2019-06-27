@@ -251,6 +251,6 @@ class ChangePasswordHandlerTest extends FunctionalTest
         $response = $handler->verifyMFACheck($request);
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertContains('Multi factor authenticated', $response->getBody());
+        $this->assertContains('Multi-factor authenticated', $response->getBody());
     }
 }

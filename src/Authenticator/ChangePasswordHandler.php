@@ -194,7 +194,7 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
         $store->clear($request);
 
         return $this->jsonResponse([
-            'message' => 'Multi factor authenticated',
+            'message' => 'Multi-factor authenticated',
         ], 200);
     }
 

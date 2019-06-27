@@ -12,7 +12,7 @@ use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\View\Requirements;
 
 /**
- * Adds multi factor authentication related settings to the SiteConfig "Access" tab
+ * Adds multi-factor authentication related settings to the SiteConfig "Access" tab
  *
  * @property bool MFARequired
  * @property string MFAGracePeriodExpires
@@ -20,7 +20,7 @@ use SilverStripe\View\Requirements;
 class SiteConfigExtension extends DataExtension
 {
     /**
-     * A URL that will help CMS users find out more information about multi factor authentication
+     * A URL that will help CMS users find out more information about multi-factor authentication
      *
      * @config
      * @var string
@@ -64,7 +64,7 @@ class SiteConfigExtension extends DataExtension
         $mfaOptions = CompositeField::create($mfaOptions, $mfaGraceEnd)
             ->setTitle(DBField::create_field(
                 'HTMLFragment',
-                _t(__CLASS__ . '.MULTI_FACTOR_AUTHENTICATION', 'Multi Factor Authentication (MFA)')
+                _t(__CLASS__ . '.MULTI_FACTOR_AUTHENTICATION', 'Multi-factor authentication (MFA)')
                 . $this->getHelpLink()
             ));
 

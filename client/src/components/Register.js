@@ -263,7 +263,7 @@ class Register extends Component {
   }
 
   /**
-   * If the site has more than one multi factor method enabled, show others a user can register
+   * If the site has more than one multi-factor method enabled, show others a user can register
    *
    * @return {SelectMethod|null}
    */
