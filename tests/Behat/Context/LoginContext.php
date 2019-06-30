@@ -6,6 +6,10 @@ use SilverStripe\CMS\Tests\Behaviour\LoginContext as CMSLoginContext;
 use SilverStripe\MFA\Extension\SiteConfigExtension;
 use SilverStripe\SiteConfig\SiteConfig;
 
+if (!class_exists(CMSLoginContext::class)) {
+    return;
+}
+
 /**
  * Overridden from the CMS module to ensure that MFA can be handled during fixtured member generation
  */
