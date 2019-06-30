@@ -52,7 +52,7 @@ class Register extends Component {
     event.preventDefault();
 
     (new Printd()).print(
-      this.printRef.current,
+      this.printRef,
       ['body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif }']
     );
   }
@@ -90,9 +90,9 @@ class Register extends Component {
    */
   renderCodes() {
     return (
-      <div ref={this.setPrintRef} className="mfa-register-backup-codes__code-grid">
+      <pre ref={this.setPrintRef} className="mfa-register-backup-codes__code-grid">
         {this.getFormattedCodes().map(code => <div key={code}>{code}</div>)}
-      </div>
+      </pre>
     );
   }
 
@@ -134,9 +134,9 @@ class Register extends Component {
     const { ss: { i18n } } = window;
 
     return (
-      <a href="#" onClick={this.handlePrint}>
+      <button type="button" onClick={this.handlePrint} className="btn btn-link">
         {i18n._t('MFABackupCodesRegister.PRINT', 'Print codes')}
-      </a>
+      </button>
     );
   }
 
@@ -155,7 +155,7 @@ class Register extends Component {
     const codesURL = URL.createObjectURL(codesBlob);
 
     return (
-      <a download={`${method.name}.txt`} href={codesURL}>
+      <a download={`${method.name}.txt`} href={codesURL} className="btn btn-link">
         {i18n._t('MFABackupCodesRegister.DOWNLOAD', 'Download')}
       </a>
     );
@@ -177,13 +177,13 @@ class Register extends Component {
 
     return (
       <CopyToClipboard text={codes.join('\n')}>
-        <a
-          href="#"
-          className="mfa-register-backup-codes__copy-to-clipboard"
+        <button
+          type="button"
+          className="mfa-register-backup-codes__copy-to-clipboard btn btn-link"
           onClick={this.handleCopy}
         >
           {label}
-        </a>
+        </button>
       </CopyToClipboard>
     );
   }
@@ -196,11 +196,13 @@ class Register extends Component {
       <div className="mfa-register-backup-codes__container">
         {this.renderDescription()}
         {this.renderCodes()}
+
         <div className="mfa-register-backup-codes__helper-links">
           {this.renderPrintAction()}
           {this.renderDownloadAction()}
           {this.renderCopyAction()}
         </div>
+
         <button className="btn btn-primary" onClick={() => onCompleteRegistration()}>
           {i18n._t('MFABackupCodesRegister.FINISH', 'Finish')}
         </button>
