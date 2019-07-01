@@ -145,7 +145,7 @@ class SchemaGenerator
         $module = ModuleLoader::getModule('silverstripe/mfa');
 
         return [
-            'user_docs_url' => Config::inst()->get(LoginHandler::class, 'user_docs_url'),
+            'user_help_link' => Config::inst()->get(LoginHandler::class, 'user_help_link'),
             'extra_factor_image_url' => $module->getResource('client/dist/images/extra-protection.svg')->getURL(),
             'unique_image_url' => $module->getResource('client/dist/images/unique.svg')->getURL(),
             'more_options_image_url' => $module->getResource('client/dist/images/more-options.svg')->getURL(),

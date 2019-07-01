@@ -26,6 +26,7 @@ class AvailableMethodDetails implements AvailableMethodDetailsInterface
             'name' => $this->method->getRegisterHandler()->getName(),
             'description' => $this->method->getRegisterHandler()->getDescription(),
             'supportLink' => $this->method->getRegisterHandler()->getSupportLink(),
+            'supportText' => $this->method->getRegisterHandler()->getSupportText(),
             'thumbnail' => $this->method->getThumbnail(),
             'component' => $this->method->getRegisterHandler()->getComponent(),
             'isAvailable' => $this->method->isAvailable(),

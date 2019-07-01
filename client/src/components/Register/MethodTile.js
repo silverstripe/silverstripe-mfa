@@ -50,19 +50,20 @@ class MethodTile extends Component {
    */
   renderSupportLink(method) {
     const { ss: { i18n } } = window;
+    const { supportLink, supportText } = method;
 
-    if (!method.supportLink) {
+    if (!supportLink) {
       return null;
     }
 
     return (
       <a
-        href={method.supportLink}
+        href={supportLink}
         target="_blank"
         rel="noopener noreferrer"
         className="mfa-method-tile__support-link"
       >
-        {i18n._t('MFARegister.HELP', 'Find out more.')}
+        {supportText || i18n._t('MFARegister.HELP', 'Find out more.')}
       </a>
     );
   }

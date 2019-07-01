@@ -70,9 +70,9 @@ const Introduction = ({ canSkip, onContinue, onSkip, resources, showTitle }) => 
               ) }
               &nbsp;
               {
-                resources.user_docs_url &&
-                <a href={resources.user_docs_url}>
-                  { i18n._t('MultiFactorAuthentication.FIND_OUT_MORE', fallbacks['MultiFactorAuthentication.FIND_OUT_MORE']) }
+                resources.user_help_link &&
+                <a href={resources.user_help_link}>
+                  { i18n._t('MultiFactorAuthentication.HOW_MFA_WORKS', fallbacks['MultiFactorAuthentication.HOW_MFA_WORKS']) }
                 </a>
               }
             </p>
@@ -122,7 +122,7 @@ Introduction.propTypes = {
   onContinue: PropTypes.func.isRequired,
   onSkip: PropTypes.func,
   resources: PropTypes.shape({
-    user_docs_url: PropTypes.string,
+    user_help_link: PropTypes.string,
     extra_factor_image_url: PropTypes.string,
     unique_image_url: PropTypes.string,
   }).isRequired,

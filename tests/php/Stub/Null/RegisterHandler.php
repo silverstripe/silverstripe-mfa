@@ -71,6 +71,16 @@ class RegisterHandler implements RegisterHandlerInterface, TestOnly
     }
 
     /**
+     * Provide a localised string to describe the support link {@see getSupportLink} about this MFA Method.
+     *
+     * @return string
+     */
+    public function getSupportText(): string
+    {
+        // TODO: Implement getSupportText() method.
+    }
+
+    /**
      * Get the key that a React UI component is registered under (with @silverstripe/react-injector on the front-end)
      *
      * @return string

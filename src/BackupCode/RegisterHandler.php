@@ -118,6 +118,16 @@ class RegisterHandler implements RegisterHandlerInterface
     }
 
     /**
+     * Provide a localised string to describe the support link {@see getSupportLink} about this MFA Method.
+     *
+     * @return string
+     */
+    public function getSupportText(): string
+    {
+        return _t(__CLASS__ . '.SUPPORT_LINK_DESCRIPTION', 'Learn about recovery codes.');
+    }
+
+    /**
      * Get the key that a React UI component is registered under (with @silverstripe/react-injector on the front-end)
      *
      * @return string

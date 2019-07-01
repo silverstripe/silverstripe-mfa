@@ -19,7 +19,8 @@ en:
     COULD_NOT_DELETE: 'Could not delete the specified method from the user'
     COULD_NOT_SET_DEFAULT: 'Could not set the default method for the user'
     CSRF_FAILURE: 'Request timed out, please try again'
-    INVALID_METHOD: 'No such registered method is available'
+    INVALID_METHOD: 'No such method is available'
+    INVALID_REGISTERED_METHOD: 'No such registered method is available'
     INVALID_SESSION: 'Invalid session. Please refresh and try again.'
     MENUTITLE: SilverStripe\MFA\Controller\AdminRegistrationController
   SilverStripe\MFA\Email\AccountReset:
