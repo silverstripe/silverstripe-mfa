@@ -20,7 +20,7 @@ class AvailableMethodDetailsTest extends SapphireTest
      */
     protected $details;
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
 

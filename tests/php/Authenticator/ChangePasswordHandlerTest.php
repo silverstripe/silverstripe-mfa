@@ -25,7 +25,7 @@ class ChangePasswordHandlerTest extends FunctionalTest
 {
     protected static $fixture_file = 'ChangePasswordHandlerTest.yml';
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
 

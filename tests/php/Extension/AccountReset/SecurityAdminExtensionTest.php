@@ -17,14 +17,14 @@ class SecurityAdminExtensionTest extends FunctionalTest
 {
     protected static $fixture_file = 'SecurityAdminExtensionTest.yml';
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
 
         SecurityToken::enable();
     }
 
-    protected function tearDown()
+    public function tearDown()
     {
         parent::tearDown();
 

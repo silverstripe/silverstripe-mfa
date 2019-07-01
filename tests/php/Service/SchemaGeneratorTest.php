@@ -18,7 +18,7 @@ class SchemaGeneratorTest extends SapphireTest
      */
     protected $generator;
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
 

@@ -33,7 +33,7 @@ class LoginHandlerTest extends FunctionalTest
 {
     protected static $fixture_file = 'LoginHandlerTest.yml';
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
         Config::modify()->set(MethodRegistry::class, 'methods', [Method::class]);

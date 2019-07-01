@@ -19,7 +19,7 @@ class RegisteredMethodDetailsTest extends \PHPUnit_Framework_TestCase
      */
     protected $details;
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
 

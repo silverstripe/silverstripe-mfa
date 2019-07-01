@@ -28,7 +28,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
 {
     protected static $fixture_file = 'AdminRegistrationControllerTest.yml';
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
 

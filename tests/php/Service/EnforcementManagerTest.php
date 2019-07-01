@@ -15,7 +15,7 @@ class EnforcementManagerTest extends SapphireTest
 {
     protected static $fixture_file = 'EnforcementManagerTest.yml';
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
 

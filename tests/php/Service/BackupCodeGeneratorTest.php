@@ -7,7 +7,7 @@ use SilverStripe\MFA\State\BackupCode;
 
 class BackupCodeGeneratorTest extends SapphireTest
 {
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
 
