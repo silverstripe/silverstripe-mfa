@@ -4,11 +4,11 @@ namespace SilverStripe\MFA\Store;
 
 use RuntimeException;
 use Serializable;
-use SilverStripe\Control\HTTPRequest;
+use SS_HTTPRequest as HTTPRequest;
 use SilverStripe\MFA\Exception\InvalidMethodException;
 use SilverStripe\MFA\Extension\MemberExtension;
-use SilverStripe\ORM\DataObject;
-use SilverStripe\Security\Member;
+use DataObject;
+use Member;
 
 /**
  * This class provides an interface to store data in session during an MFA process. This is implemented as a measure to

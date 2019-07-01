@@ -2,11 +2,11 @@
 
 namespace SilverStripe\MFA\Tests\Extension\AccountReset;
 
-use SilverStripe\Admin\SecurityAdmin;
-use SilverStripe\Dev\FunctionalTest;
+use SecurityAdmin;
+use FunctionalTest;
 use SilverStripe\MFA\Extension\AccountReset\SecurityAdminExtension;
-use SilverStripe\Security\Member;
-use SilverStripe\Security\SecurityToken;
+use Member;
+use SecurityToken;
 
 /**
  * Class SecurityAdminExtensionTest

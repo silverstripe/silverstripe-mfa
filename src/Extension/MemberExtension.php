@@ -2,19 +2,19 @@
 
 namespace SilverStripe\MFA\Extension;
 
-use SilverStripe\Control\Controller;
-use SilverStripe\Forms\FieldList;
+use Controller;
+use FieldList;
 use SilverStripe\MFA\Authenticator\ChangePasswordHandler;
 use SilverStripe\MFA\Exception\InvalidMethodException;
 use SilverStripe\MFA\FormField\RegisteredMFAMethodListField;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
-use SilverStripe\ORM\DataExtension;
-use SilverStripe\ORM\HasManyList;
-use SilverStripe\Security\Member;
-use SilverStripe\Security\Permission;
-use SilverStripe\Security\PermissionProvider;
-use SilverStripe\Security\Security;
+use DataExtension;
+use HasManyList;
+use Member;
+use Permission;
+use PermissionProvider;
+use Security;
 
 /**
  * Extend Member to add relationship to registered methods and track some specific preferences

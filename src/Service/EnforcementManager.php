@@ -2,25 +2,21 @@
 
 namespace SilverStripe\MFA\Service;
 
-use SilverStripe\Admin\LeftAndMain;
-use SilverStripe\Core\Config\Config;
-use SilverStripe\Core\Config\Configurable;
-use SilverStripe\Core\Injector\Injectable;
+use LeftAndMain;
+use Config;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Extension\SiteConfigExtension;
-use SilverStripe\ORM\FieldType\DBDate;
-use SilverStripe\Security\Member;
-use SilverStripe\SiteConfig\SiteConfig;
+use Date as DBDate;
+use Member;
+use SiteConfig;
+use SS_Object;
 
 /**
  * The EnforcementManager class is responsible for making decisions regarding multi factor authentication app flow,
  * e.g. "should we redirect to the MFA section", "can the user skip MFA registration" etc.
  */
-class EnforcementManager
+class EnforcementManager extends SS_Object
 {
-    use Configurable;
-    use Injectable;
-
     /**
      * Indicate how many MFA methods the user must authenticate with before they are considered logged in
      *

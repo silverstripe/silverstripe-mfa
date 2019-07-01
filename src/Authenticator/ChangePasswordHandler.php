@@ -3,10 +3,10 @@
 namespace SilverStripe\MFA\Authenticator;
 
 use LogicException;
-use Psr\Log\LoggerInterface;
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Control\HTTPResponse;
-use SilverStripe\Core\Injector\Injector;
+use Psr\Log\LoggerInterface; // Not present in SS3
+use SS_HTTPRequest as HTTPRequest;
+use SS_HTTPResponse as HTTPResponse;
+use Injector;
 use SilverStripe\MFA\Exception\InvalidMethodException;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\RequestHandler\BaseHandlerTrait;
@@ -14,8 +14,8 @@ use SilverStripe\MFA\RequestHandler\VerificationHandlerTrait;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\SchemaGenerator;
 use SilverStripe\MFA\Store\StoreInterface;
-use SilverStripe\Security\Member;
-use SilverStripe\Security\MemberAuthenticator\ChangePasswordHandler as BaseChangePasswordHandler;
+use Member;
+use SilverStripe\Security\MemberAuthenticator\ChangePasswordHandler as BaseChangePasswordHandler; // Not present in SS3
 use Throwable;
 
 /**

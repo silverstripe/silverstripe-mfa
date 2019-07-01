@@ -2,8 +2,8 @@
 
 namespace SilverStripe\MFA\Tests\Stub\Null;
 
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Dev\TestOnly;
+use SS_HTTPRequest as HTTPRequest;
+use TestOnly;
 use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\State\Result;

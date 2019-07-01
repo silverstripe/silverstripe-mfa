@@ -2,7 +2,7 @@
 
 namespace SilverStripe\MFA;
 
-use SilverStripe\Control\HTTPResponse;
+use SS_HTTPResponse as HTTPResponse;
 
 /**
  * Provides a simplified method for creating JSON-based HTTPResponses.

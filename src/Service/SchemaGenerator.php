@@ -2,26 +2,22 @@
 
 namespace SilverStripe\MFA\Service;
 
-use SilverStripe\Core\Config\Config;
-use SilverStripe\Core\Extensible;
-use SilverStripe\Core\Injector\Injectable;
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Core\Manifest\ModuleLoader;
+use Config;
+use Injector;
+use SilverStripe\Core\Manifest\ModuleLoader; // Not present in SS3
 use SilverStripe\MFA\Authenticator\LoginHandler;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\State\AvailableMethodDetailsInterface;
 use SilverStripe\MFA\State\RegisteredMethodDetailsInterface;
-use SilverStripe\Security\Member;
+use Member;
+use SS_Object;
 
 /**
  * Generates a multi-factor authentication frontend app schema from the given request
  */
-class SchemaGenerator
+class SchemaGenerator extends SS_Object
 {
-    use Extensible;
-    use Injectable;
-
     /**
      * Provides the full schema for the multi-factor authentication app, using the current Member as context
      *

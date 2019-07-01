@@ -2,14 +2,14 @@
 
 namespace SilverStripe\MFA\FormField;
 
-use SilverStripe\Admin\SecurityAdmin;
-use SilverStripe\Forms\FormField;
+use SecurityAdmin;
+use FormField;
 use SilverStripe\MFA\Controller\AdminRegistrationController;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Service\SchemaGenerator;
-use SilverStripe\Security\Security;
+use Security;
 
 class RegisteredMFAMethodListField extends FormField
 {

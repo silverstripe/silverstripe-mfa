@@ -2,7 +2,7 @@
 
 namespace SilverStripe\MFA\Method\Handler;
 
-use SilverStripe\Control\HTTPRequest;
+use SS_HTTPRequest as HTTPRequest;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;

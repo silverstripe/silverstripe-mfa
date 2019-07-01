@@ -3,12 +3,12 @@
 namespace SilverStripe\MFA\Tests\Authenticator;
 
 use PHPUnit_Framework_MockObject_MockObject;
-use Psr\Log\LoggerInterface;
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Control\HTTPResponse;
-use SilverStripe\Control\Session;
-use SilverStripe\Core\Config\Config;
-use SilverStripe\Dev\FunctionalTest;
+use Psr\Log\LoggerInterface; // Not present in SS3
+use SS_HTTPRequest as HTTPRequest;
+use SS_HTTPResponse as HTTPResponse;
+use Session;
+use Config;
+use FunctionalTest;
 use SilverStripe\MFA\Authenticator\ChangePasswordHandler;
 use SilverStripe\MFA\Authenticator\MemberAuthenticator;
 use SilverStripe\MFA\Exception\InvalidMethodException;
@@ -18,8 +18,8 @@ use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\MFA\Store\StoreInterface;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
-use SilverStripe\Security\Member;
-use SilverStripe\SiteConfig\SiteConfig;
+use Member;
+use SiteConfig;
 
 class ChangePasswordHandlerTest extends FunctionalTest
 {

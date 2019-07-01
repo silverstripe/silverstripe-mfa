@@ -4,20 +4,20 @@ namespace SilverStripe\MFA\Extension\AccountReset;
 
 use Exception;
 use Psr\Log\LoggerInterface;
-use SilverStripe\Control\Controller;
+use Controller;
 use SilverStripe\Control\Email\Email;
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Control\HTTPResponse;
-use SilverStripe\Core\Extension;
-use SilverStripe\Admin\SecurityAdmin;
+use SS_HTTPRequest as HTTPRequest;
+use SS_HTTPResponse as HTTPResponse;
+use Extension;
+use SecurityAdmin;
 use SilverStripe\MFA\Extension\MemberExtension as BaseMFAMemberExtension;
 use SilverStripe\MFA\JSONResponse;
-use SilverStripe\ORM\ValidationException;
-use SilverStripe\Security\Member;
+use ValidationException;
+use Member;
 use SilverStripe\Security\PasswordEncryptor_NotFoundException;
-use SilverStripe\Security\Permission;
-use SilverStripe\Security\Security;
-use SilverStripe\Security\SecurityToken;
+use Permission;
+use Security;
+use SecurityToken;
 
 /**
  * This extension is applied to SecurityAdmin to provide an additional endpoint

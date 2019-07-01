@@ -3,13 +3,13 @@
 namespace SilverStripe\MFA\Tests\Authenticator;
 
 use PHPUnit_Framework_MockObject_MockObject;
-use SilverStripe\Control\Controller;
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Control\HTTPResponse;
-use SilverStripe\Control\Session;
-use SilverStripe\Core\Config\Config;
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Dev\FunctionalTest;
+use Controller;
+use SS_HTTPRequest as HTTPRequest;
+use SS_HTTPResponse as HTTPResponse;
+use Session;
+use Config;
+use Injector;
+use FunctionalTest;
 use SilverStripe\MFA\Authenticator\LoginHandler;
 use SilverStripe\MFA\Authenticator\MemberAuthenticator;
 use SilverStripe\MFA\Extension\MemberExtension;
@@ -22,12 +22,12 @@ use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\MFA\Store\StoreInterface;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
-use SilverStripe\ORM\FieldType\DBDatetime;
-use SilverStripe\Security\Member;
-use SilverStripe\Security\Security;
-use SilverStripe\Security\SecurityToken;
+use SS_Datetime as DBDatetime;
+use Member;
+use Security;
+use SecurityToken;
 use SilverStripe\SecurityExtensions\Service\SudoModeServiceInterface;
-use SilverStripe\SiteConfig\SiteConfig;
+use SiteConfig;
 
 class LoginHandlerTest extends FunctionalTest
 {

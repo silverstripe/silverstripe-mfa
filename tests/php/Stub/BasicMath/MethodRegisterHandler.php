@@ -2,8 +2,8 @@
 
 namespace SilverStripe\MFA\Tests\Stub\BasicMath;
 
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Dev\TestOnly;
+use SS_HTTPRequest as HTTPRequest;
+use TestOnly;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;

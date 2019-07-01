@@ -2,14 +2,14 @@
 
 namespace SilverStripe\MFA\Extension;
 
-use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\CompositeField;
-use SilverStripe\Forms\DateField;
-use SilverStripe\Forms\FieldList;
-use SilverStripe\Forms\OptionsetField;
-use SilverStripe\ORM\DataExtension;
-use SilverStripe\ORM\FieldType\DBField;
-use SilverStripe\View\Requirements;
+use CheckboxField;
+use CompositeField;
+use DateField;
+use FieldList;
+use OptionsetField;
+use DataExtension;
+use DBField;
+use Requirements;
 
 /**
  * Adds multi factor authentication related settings to the SiteConfig "Access" tab

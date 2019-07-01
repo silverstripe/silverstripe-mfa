@@ -2,9 +2,9 @@
 
 namespace SilverStripe\MFA\Tests\Extension\AccountReset;
 
-use SilverStripe\Dev\SapphireTest;
+use SapphireTest;
 use SilverStripe\MFA\Extension\AccountReset\MemberExtension;
-use SilverStripe\Security\Member;
+use Member;
 
 class MemberExtensionTest extends SapphireTest
 {

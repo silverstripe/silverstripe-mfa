@@ -3,20 +3,20 @@
 namespace SilverStripe\MFA\Controller;
 
 use Psr\Log\LoggerInterface;
-use SilverStripe\Admin\LeftAndMain;
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Control\HTTPResponse;
-use SilverStripe\Core\Injector\Injector;
+use LeftAndMain;
+use SS_HTTPRequest as HTTPRequest;
+use SS_HTTPResponse as HTTPResponse;
+use Injector;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\RequestHandler\BaseHandlerTrait;
 use SilverStripe\MFA\RequestHandler\RegistrationHandlerTrait;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\State\AvailableMethodDetailsInterface;
-use SilverStripe\ORM\ValidationException;
-use SilverStripe\Security\Member;
-use SilverStripe\Security\Security;
-use SilverStripe\Security\SecurityToken;
+use ValidationException;
+use Member;
+use Security;
+use SecurityToken;
 
 /**
  * This controller handles actions that a user may perform on MFA methods registered on their own account while logged

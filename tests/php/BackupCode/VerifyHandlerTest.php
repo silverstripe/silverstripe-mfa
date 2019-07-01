@@ -3,15 +3,15 @@
 namespace SilverStripe\MFA\Tests\BackupCode;
 
 use PHPUnit_Framework_MockObject_MockObject;
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Dev\SapphireTest;
+use SS_HTTPRequest as HTTPRequest;
+use SapphireTest;
 use SilverStripe\MFA\BackupCode\VerifyHandler;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\Notification;
 use SilverStripe\MFA\Store\StoreInterface;
-use SilverStripe\ORM\DataObject;
-use SilverStripe\Security\Member;
+use DataObject;
+use Member;
 
 class VerifyHandlerTest extends SapphireTest
 {

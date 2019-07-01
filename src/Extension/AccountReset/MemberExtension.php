@@ -2,11 +2,11 @@
 
 namespace SilverStripe\MFA\Extension\AccountReset;
 
-use SilverStripe\Forms\FieldList;
-use SilverStripe\ORM\DataExtension;
-use SilverStripe\ORM\DataObject;
-use SilverStripe\ORM\FieldType\DBDatetime;
-use SilverStripe\Security\Member;
+use FieldList;
+use DataExtension;
+use DataObject;
+use SS_Datetime as DBDatetime;
+use Member;
 use SilverStripe\Security\RandomGenerator;
 
 /**

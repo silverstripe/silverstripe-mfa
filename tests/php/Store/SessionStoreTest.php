@@ -2,9 +2,9 @@
 
 namespace SilverStripe\MFA\Tests\Store;
 
-use SilverStripe\Dev\SapphireTest;
+use SapphireTest;
 use SilverStripe\MFA\Store\SessionStore;
-use SilverStripe\Security\Member;
+use Member;
 
 class SessionStoreTest extends SapphireTest
 {

@@ -2,8 +2,8 @@
 
 namespace SilverStripe\MFA\BackupCode;
 
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Core\Manifest\ModuleLoader;
+use Injector;
+use SilverStripe\Core\Manifest\ModuleLoader; // Not present in SS3
 use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;

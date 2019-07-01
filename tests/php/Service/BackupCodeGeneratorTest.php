@@ -2,7 +2,7 @@
 
 namespace SilverStripe\MFA\Service;
 
-use SilverStripe\Dev\SapphireTest;
+use SapphireTest;
 use SilverStripe\MFA\State\BackupCode;
 
 class BackupCodeGeneratorTest extends SapphireTest

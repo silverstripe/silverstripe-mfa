@@ -2,12 +2,12 @@
 
 namespace SilverStripe\MFA\RequestHandler;
 
-use SilverStripe\Core\Injector\Injector;
+use Injector;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Store\StoreInterface;
-use SilverStripe\Security\Member;
+use Member;
 use SilverStripe\SecurityExtensions\Service\SudoModeServiceInterface;
-use SilverStripe\View\Requirements;
+use Requirements;
 
 trait BaseHandlerTrait
 {

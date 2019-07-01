@@ -2,9 +2,9 @@
 
 namespace SilverStripe\MFA\Tests\FormField;
 
-use SilverStripe\Dev\SapphireTest;
+use SapphireTest;
 use SilverStripe\MFA\FormField\RegisteredMFAMethodListField;
-use SilverStripe\Security\Member;
+use Member;
 
 class RegisteredMFAMethodListFieldTest extends SapphireTest
 {

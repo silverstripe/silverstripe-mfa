@@ -3,16 +3,16 @@
 namespace SilverStripe\MFA\Tests\BackupCode;
 
 use PHPUnit_Framework_MockObject_MockObject;
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Dev\SapphireTest;
+use SS_HTTPRequest as HTTPRequest;
+use Injector;
+use SapphireTest;
 use SilverStripe\MFA\BackupCode\Method;
 use SilverStripe\MFA\BackupCode\RegisterHandler;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Store\StoreInterface;
-use SilverStripe\Security\Member;
-use SilverStripe\Security\Security;
+use Member;
+use Security;
 
 class RegisterHandlerTest extends SapphireTest
 {

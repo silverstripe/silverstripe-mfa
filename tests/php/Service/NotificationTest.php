@@ -2,9 +2,9 @@
 
 namespace SilverStripe\MFA\Service\Tests;
 
-use SilverStripe\Dev\SapphireTest;
+use SapphireTest;
 use SilverStripe\MFA\Service\Notification;
-use SilverStripe\Security\Member;
+use Member;
 
 class NotificationTest extends SapphireTest
 {

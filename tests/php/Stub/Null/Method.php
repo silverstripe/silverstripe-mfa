@@ -2,7 +2,7 @@
 
 namespace SilverStripe\MFA\Tests\Stub\Null;
 
-use SilverStripe\Dev\TestOnly;
+use TestOnly;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;

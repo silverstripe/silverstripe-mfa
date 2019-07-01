@@ -3,22 +3,17 @@
 namespace SilverStripe\MFA\Service;
 
 use Exception;
-use Psr\Log\LoggerInterface;
-use SilverStripe\Control\Email\Email;
-use SilverStripe\Core\Config\Configurable;
-use SilverStripe\Core\Extensible;
-use SilverStripe\Core\Injector\Injectable;
-use SilverStripe\Security\Member;
+use Psr\Log\LoggerInterface; // Not present in SS3
+use SilverStripe\Control\Email\Email; // Rewritten since SS3
+use Member;
+use SS_Object;
 
 /**
  * Encapsulates setting up an Email in order to allow for dependency injection and to avoid introducing a hard
  * coupling to the SilverStripe core Email class in code that consumes this class.
  */
-class Notification
+class Notification extends SS_Object
 {
-    use Configurable;
-    use Injectable;
-    use Extensible;
 
     /**
      * @config

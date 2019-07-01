@@ -2,9 +2,9 @@
 
 namespace SilverStripe\MFA\Tests\Stub\BasicMath;
 
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Core\Config\Configurable;
-use SilverStripe\Dev\TestOnly;
+use SS_HTTPRequest as HTTPRequest;
+use SS_Object;
+use TestOnly;
 use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\State\Result;
@@ -13,10 +13,8 @@ use SilverStripe\MFA\Store\StoreInterface;
 /**
  * Handles login attempts for the Math Method
  */
-class MethodVerifyHandler implements VerifyHandlerInterface, TestOnly
+class MethodVerifyHandler extends SS_Object implements VerifyHandlerInterface, TestOnly
 {
-    use Configurable;
-
     private static $number_of_numbers = 2;
 
     /**

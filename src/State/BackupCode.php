@@ -3,17 +3,15 @@
 namespace SilverStripe\MFA\State;
 
 use JsonSerializable;
-use SilverStripe\Core\Injector\Injectable;
-use SilverStripe\Security\PasswordEncryptor;
-use SilverStripe\Security\PasswordEncryptor_NotFoundException;
+use PasswordEncryptor;
+use PasswordEncryptor_NotFoundException;
+use SS_Object;
 
 /**
  * A container for a backup code and its hash, normally used during backup code generation
  */
-class BackupCode implements JsonSerializable
+class BackupCode extends SS_Object implements JsonSerializable
 {
-    use Injectable;
-
     /**
      * @var string
      */

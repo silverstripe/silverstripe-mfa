@@ -2,16 +2,16 @@
 
 namespace SilverStripe\MFA\Tests\Service;
 
-use SilverStripe\Core\Config\Config;
-use SilverStripe\Dev\SapphireTest;
+use Config;
+use SapphireTest;
 use SilverStripe\MFA\BackupCode\Method as BackupCodeMethod;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method as BasicMathMethod;
-use SilverStripe\ORM\DataObject;
-use SilverStripe\Security\Member;
+use DataObject;
+use Member;
 
 class RegisteredMethodManagerTest extends SapphireTest
 {

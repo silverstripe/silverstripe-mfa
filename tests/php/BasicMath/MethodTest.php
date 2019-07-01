@@ -2,7 +2,7 @@
 
 namespace SilverStripe\MFA\Tests\BasicMath;
 
-use SilverStripe\Dev\SapphireTest;
+use SapphireTest;
 use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method;

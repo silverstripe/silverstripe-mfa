@@ -3,9 +3,9 @@
 namespace SilverStripe\MFA\Tests\Authenticator;
 
 use PHPUnit_Framework_MockObject_MockObject;
-use SilverStripe\Core\Config\Config;
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Dev\FunctionalTest;
+use Config;
+use Injector;
+use FunctionalTest;
 use SilverStripe\MFA\Authenticator\MemberAuthenticator;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
@@ -14,10 +14,10 @@ use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
-use SilverStripe\Security\Member;
-use SilverStripe\Security\Security;
+use Member;
+use Security;
 use SilverStripe\SecurityExtensions\Service\SudoModeServiceInterface;
-use SilverStripe\Security\SecurityToken;
+use SecurityToken;
 
 /**
  * Class RegisterHandlerTest

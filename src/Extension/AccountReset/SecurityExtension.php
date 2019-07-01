@@ -2,21 +2,20 @@
 
 namespace SilverStripe\MFA\Extension\AccountReset;
 
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Control\HTTPResponse;
-use SilverStripe\Core\Extensible;
-use SilverStripe\Core\Extension;
-use SilverStripe\Forms\FieldList;
-use SilverStripe\Forms\Form;
-use SilverStripe\Forms\FormAction;
-use SilverStripe\Forms\PasswordField;
-use SilverStripe\Forms\RequiredFields;
+use Extension;
+use SS_HTTPRequest as HTTPRequest;
+use SS_HTTPResponse as HTTPResponse;
+use FieldList;
+use Form;
+use FormAction;
+use PasswordField;
+use RequiredFields;
 use SilverStripe\MFA\JSONResponse;
 use SilverStripe\MFA\RequestHandler\BaseHandlerTrait;
-use SilverStripe\ORM\FieldType\DBDatetime;
-use SilverStripe\ORM\ValidationResult;
-use SilverStripe\Security\Member;
-use SilverStripe\Security\Security;
+use SS_Datetime as DBDatetime;
+use ValidationResult;
+use Member;
+use Security;
 
 /**
  * Extends the Security controller to support Account Resets. This extension can
@@ -29,7 +28,6 @@ use SilverStripe\Security\Security;
 class SecurityExtension extends Extension
 {
     use BaseHandlerTrait;
-    use Extensible;
 
     private static $url_handlers = [
         'GET reset-account' => 'resetaccount',

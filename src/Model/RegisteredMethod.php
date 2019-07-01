@@ -2,12 +2,12 @@
 
 namespace SilverStripe\MFA\Model;
 
-use SilverStripe\Core\Injector\Injector;
+use Injector;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
-use SilverStripe\ORM\DataObject;
-use SilverStripe\Security\Member;
+use DataObject;
+use Member;
 
 /**
  * @package SilverStripe\MFA\Model

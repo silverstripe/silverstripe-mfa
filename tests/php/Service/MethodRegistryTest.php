@@ -2,11 +2,11 @@
 
 namespace SilverStripe\MFA\Tests\Service;
 
-use SilverStripe\Core\Config\Config;
-use SilverStripe\Dev\SapphireTest;
+use Config;
+use SapphireTest;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
-use SilverStripe\Security\Member;
+use Member;
 use UnexpectedValueException;
 
 class MethodRegistryTest extends SapphireTest

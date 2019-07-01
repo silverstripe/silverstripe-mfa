@@ -3,8 +3,8 @@
 namespace SilverStripe\MFA\BackupCode;
 
 use RuntimeException;
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Core\Manifest\ModuleLoader;
+use SS_HTTPRequest as HTTPRequest;
+use SilverStripe\Core\Manifest\ModuleLoader; // Not present in SS3
 use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\Notification;

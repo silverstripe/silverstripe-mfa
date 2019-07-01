@@ -2,20 +2,17 @@
 
 namespace SilverStripe\MFA\Service;
 
-use SilverStripe\Core\Config\Configurable;
-use SilverStripe\Core\Injector\Injectable;
-use SilverStripe\Core\Injector\Injector;
+use Injector;
 use SilverStripe\MFA\BackupCode\Method;
 use SilverStripe\MFA\Method\MethodInterface;
+use SS_Object;
 use UnexpectedValueException;
 
 /**
  * A service class that holds the configuration for enabled MFA methods and facilitates providing these methods
  */
-class MethodRegistry
+class MethodRegistry extends SS_Object
 {
-    use Configurable;
-    use Injectable;
 
     /**
      * List of configured MFA methods. These should be class names that implement MethodInterface

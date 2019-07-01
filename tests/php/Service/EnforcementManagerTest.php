@@ -2,14 +2,14 @@
 
 namespace SilverStripe\MFA\Tests\Service;
 
-use SilverStripe\Dev\SapphireTest;
+use SapphireTest;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method as BasicMathMethod;
-use SilverStripe\ORM\FieldType\DBDatetime;
-use SilverStripe\Security\Member;
-use SilverStripe\SiteConfig\SiteConfig;
+use SS_Datetime as DBDatetime;
+use Member;
+use SiteConfig;
 
 class EnforcementManagerTest extends SapphireTest
 {

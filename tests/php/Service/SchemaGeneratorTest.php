@@ -2,12 +2,12 @@
 
 namespace SilverStripe\MFA\Tests\Service;
 
-use SilverStripe\Dev\SapphireTest;
+use SapphireTest;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\SchemaGenerator;
 use SilverStripe\MFA\State\RegisteredMethodDetailsInterface;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method as BasicMathMethod;
-use SilverStripe\Security\Member;
+use Member;
 
 class SchemaGeneratorTest extends SapphireTest
 {

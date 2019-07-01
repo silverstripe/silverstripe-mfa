@@ -2,9 +2,9 @@
 
 namespace SilverStripe\MFA\Extension\AccountReset;
 
-use SilverStripe\Core\Extension;
+use Extension;
 use SilverStripe\MFA\Extension\MemberExtension as MemberExtension;
-use SilverStripe\Security\Member;
+use Member;
 
 /**
  * Handles removing a member's registered MFA methods during Account Reset. Also

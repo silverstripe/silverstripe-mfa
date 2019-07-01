@@ -2,23 +2,19 @@
 
 namespace SilverStripe\MFA\Service;
 
-use SilverStripe\Core\Config\Config;
-use SilverStripe\Core\Extensible;
-use SilverStripe\Core\Injector\Injectable;
+use Config;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
-use SilverStripe\Security\Member;
+use Member;
+use SS_Object;
 
 /**
  * The RegisteredMethodManager service class facilitates the communication of Members and RegisteredMethod instances
  * in a reusable singleton.
  */
-class RegisteredMethodManager
+class RegisteredMethodManager extends SS_Object
 {
-    use Extensible;
-    use Injectable;
-
     private static $dependencies = [
         'NotificationService' => '%$' . Notification::class
     ];

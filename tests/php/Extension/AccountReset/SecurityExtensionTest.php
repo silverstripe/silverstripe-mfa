@@ -2,12 +2,12 @@
 
 namespace SilverStripe\MFA\Tests\Extension\AccountReset;
 
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Dev\FunctionalTest;
+use SS_HTTPRequest as HTTPRequest;
+use FunctionalTest;
 use SilverStripe\MFA\Extension\AccountReset\MemberExtension;
 use SilverStripe\MFA\Extension\AccountReset\SecurityAdminExtension;
-use SilverStripe\ORM\FieldType\DBDatetime;
-use SilverStripe\Security\Member;
+use SS_Datetime as DBDatetime;
+use Member;
 
 /**
  * Class SecurityExtensionTest

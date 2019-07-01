@@ -2,10 +2,10 @@
 
 namespace SilverStripe\MFA\Authenticator;
 
-use Psr\Log\LoggerInterface;
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Control\HTTPResponse;
-use SilverStripe\Core\Injector\Injector;
+use Psr\Log\LoggerInterface; // Not present in SS3
+use SS_HTTPRequest as HTTPRequest;
+use SS_HTTPResponse as HTTPResponse;
+use Injector;
 use SilverStripe\MFA\Exception\InvalidMethodException;
 use SilverStripe\MFA\Exception\MemberNotFoundException;
 use SilverStripe\MFA\Extension\MemberExtension;
@@ -16,13 +16,13 @@ use SilverStripe\MFA\RequestHandler\VerificationHandlerTrait;
 use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\SchemaGenerator;
-use SilverStripe\ORM\ValidationException;
-use SilverStripe\ORM\ValidationResult;
-use SilverStripe\Security\IdentityStore;
-use SilverStripe\Security\Member;
-use SilverStripe\Security\MemberAuthenticator\LoginHandler as BaseLoginHandler;
-use SilverStripe\Security\MemberAuthenticator\MemberLoginForm;
-use SilverStripe\Security\Security;
+use ValidationException;
+use ValidationResult;
+use SilverStripe\Security\IdentityStore; // Not present in SS3
+use Member;
+use SilverStripe\Security\MemberAuthenticator\LoginHandler as BaseLoginHandler; // Not present in SS3
+use MemberLoginForm;
+use Security;
 
 class LoginHandler extends BaseLoginHandler
 {

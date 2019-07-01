@@ -2,11 +2,11 @@
 
 namespace SilverStripe\MFA\Tests\Extension;
 
-use SilverStripe\Dev\SapphireTest;
+use SapphireTest;
 use SilverStripe\MFA\BackupCode\Method;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
-use SilverStripe\Security\Member;
+use Member;
 
 class MemberExtensionTest extends SapphireTest
 {

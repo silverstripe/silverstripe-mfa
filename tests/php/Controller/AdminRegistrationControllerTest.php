@@ -3,13 +3,13 @@
 namespace SilverStripe\MFA\Tests\Controller;
 
 use PHPUnit_Framework_MockObject_MockObject;
-use Psr\Log\LoggerInterface;
-use SilverStripe\Admin\AdminRootController;
-use SilverStripe\Control\Controller;
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Core\Config\Config;
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Dev\FunctionalTest;
+ use Psr\Log\LoggerInterface; // Not present in SS3
+use AdminRootController;
+use Controller;
+use SS_HTTPRequest as HTTPRequest;
+use Config;
+use Injector;
+use FunctionalTest;
 use SilverStripe\MFA\Controller\AdminRegistrationController;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Model\RegisteredMethod;
@@ -18,10 +18,10 @@ use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\State\AvailableMethodDetails;
 use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method as BasicMathMethod;
-use SilverStripe\ORM\ValidationException;
-use SilverStripe\Security\Member;
-use SilverStripe\Security\Security;
-use SilverStripe\Security\SecurityToken;
+use ValidationException;
+use Member;
+use Security;
+use SecurityToken;
 use SilverStripe\SecurityExtensions\Service\SudoModeServiceInterface;
 
 class AdminRegistrationControllerTest extends FunctionalTest
