@@ -110,7 +110,7 @@ class MemberExtension extends DataExtension implements PermissionProvider
      */
     public function currentUserCanEditMFAConfig(): bool
     {
-        return (Security::getCurrentUser() && Security::getCurrentUser()->ID === $this->owner->ID);
+        return (Member::currentUser() && Member::currentUser()->ID === $this->owner->ID);
     }
 
     /**

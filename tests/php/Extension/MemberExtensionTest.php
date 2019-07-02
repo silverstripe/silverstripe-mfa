@@ -16,8 +16,10 @@ class MemberExtensionTest extends SapphireTest
     {
         /** @var Member&MemberExtension $targetMember */
         $targetMember = $this->objFromFixture(Member::class, 'squib');
+        /** @var Member&MemberExtension $adminMember */
+        $adminMember = $this->objFromFixture(Member::class, 'admin');
 
-        $this->logInAs('admin');
+        $adminMember->logIn();
 
         $this->assertTrue($targetMember->currentUserCanViewMFAConfig(), 'Can View');
         $this->assertFalse($targetMember->currentUserCanEditMFAConfig(), 'Can Edit');
@@ -28,7 +30,7 @@ class MemberExtensionTest extends SapphireTest
         /** @var Member&MemberExtension $targetMember */
         $targetMember = $this->objFromFixture(Member::class, 'admin');
 
-        $this->logInAs($targetMember);
+        $targetMember->logIn();
 
         $this->assertTrue($targetMember->currentUserCanViewMFAConfig(), 'Can View');
         $this->assertTrue($targetMember->currentUserCanEditMFAConfig(), 'Can Edit');
@@ -38,8 +40,10 @@ class MemberExtensionTest extends SapphireTest
     {
         /** @var Member&MemberExtension $targetMember */
         $targetMember = $this->objFromFixture(Member::class, 'admin');
+        /** @var Member&MemberExtension $standardMember */
+        $standardMember = $this->objFromFixture(Member::class, 'squib');
 
-        $this->logInAs('squib');
+        $standardMember->logIn();
 
         $this->assertFalse($targetMember->currentUserCanViewMFAConfig(), 'Can View');
         $this->assertFalse($targetMember->currentUserCanEditMFAConfig(), 'Can Edit');
@@ -50,7 +54,7 @@ class MemberExtensionTest extends SapphireTest
         /** @var Member&MemberExtension $targetMember */
         $targetMember = $this->objFromFixture(Member::class, 'squib');
 
-        $this->logInAs($targetMember);
+        $targetMember->logIn();
 
         $this->assertTrue($targetMember->currentUserCanViewMFAConfig(), 'Can View');
         $this->assertTrue($targetMember->currentUserCanEditMFAConfig(), 'Can Edit');
