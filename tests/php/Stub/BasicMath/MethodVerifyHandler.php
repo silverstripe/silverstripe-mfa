@@ -6,7 +6,7 @@ use SS_HTTPRequest as HTTPRequest;
 use SS_Object;
 use TestOnly;
 use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
-use SilverStripe\MFA\Model\RegisteredMethod;
+use MFARegisteredMethod as RegisteredMethod;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
 

@@ -3,19 +3,19 @@ name: mfa-authenticator
 After:
   - #coresecurity
 ---
-SilverStripe\Core\Injector\Injector:
-  SilverStripe\Security\Security:
+Injector:
+  Security:
     properties:
       Authenticators:
         default: %$SilverStripe\MFA\Authenticator\MemberAuthenticator
 ---
 name: mfa-memberextension
 ---
-SilverStripe\Security\Member:
+Member:
   extensions:
     mfaExtension: SilverStripe\MFA\Extension\MemberExtension
     accountResetExtension: SilverStripe\MFA\Extension\AccountReset\MemberExtension
-SilverStripe\Security\Security:
+Security:
   extensions:
     accountResetExtension: SilverStripe\MFA\Extension\AccountReset\SecurityExtension
 SilverStripe\MFA\Extension\AccountReset\SecurityExtension:

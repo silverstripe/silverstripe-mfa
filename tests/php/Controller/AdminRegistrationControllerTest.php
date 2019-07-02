@@ -12,7 +12,7 @@ use Injector;
 use FunctionalTest;
 use SilverStripe\MFA\Controller\AdminRegistrationController;
 use SilverStripe\MFA\Extension\MemberExtension;
-use SilverStripe\MFA\Model\RegisteredMethod;
+use MFARegisteredMethod as RegisteredMethod;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\State\AvailableMethodDetails;

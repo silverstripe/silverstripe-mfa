@@ -1,4 +1,4 @@
-SilverStripe\Security\Member:
+Member:
   admin:
     FirstName: 'MFA Administrator'
     Email: 'admin@example.org'
@@ -6,15 +6,15 @@ SilverStripe\Security\Member:
     FirstName: 'Squib'
     Email: 'squib@example.org'
 
-SilverStripe\Security\Group:
+Group:
   admin:
     Title: 'MFA Admins'
-    Members: =>SilverStripe\Security\Member.admin
+    Members: =>Member.admin
   security-admin:
     Title: 'Security Admins'
-    Members: =>SilverStripe\Security\Member.squib
+    Members: =>Member.squib
 
-SilverStripe\Security\Permission:
+Permission:
   admin:
     Code: ADMIN
     Group: =>SilverStripe\Security\Group.admin

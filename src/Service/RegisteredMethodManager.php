@@ -5,7 +5,7 @@ namespace SilverStripe\MFA\Service;
 use Config;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
-use SilverStripe\MFA\Model\RegisteredMethod;
+use MFARegisteredMethod as RegisteredMethod;
 use Member;
 use SS_Object;
 
@@ -16,7 +16,7 @@ use SS_Object;
 class RegisteredMethodManager extends SS_Object
 {
     private static $dependencies = [
-        'NotificationService' => '%$' . Notification::class
+        'NotificationService' => '%$SilverStripe\\MFA\\Service\\Notification',
     ];
 
     /**

@@ -5,7 +5,7 @@ namespace SilverStripe\MFA\FormField;
 use SecurityAdmin;
 use FormField;
 use SilverStripe\MFA\Controller\AdminRegistrationController;
-use SilverStripe\MFA\Model\RegisteredMethod;
+use MFARegisteredMethod as RegisteredMethod;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Service\SchemaGenerator;

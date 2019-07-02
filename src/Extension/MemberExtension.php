@@ -8,7 +8,7 @@ use SilverStripe\MFA\Authenticator\ChangePasswordHandler;
 use SilverStripe\MFA\Exception\InvalidMethodException;
 use SilverStripe\MFA\FormField\RegisteredMFAMethodListField;
 use SilverStripe\MFA\Method\MethodInterface;
-use SilverStripe\MFA\Model\RegisteredMethod;
+use MFARegisteredMethod as RegisteredMethod;
 use DataExtension;
 use HasManyList;
 use Member;

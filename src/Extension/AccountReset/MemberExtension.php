@@ -7,7 +7,7 @@ use DataExtension;
 use DataObject;
 use SS_Datetime as DBDatetime;
 use Member;
-use SilverStripe\Security\RandomGenerator;
+use RandomGenerator;
 
 /**
  * Provides DB columns / methods for account resets on Members

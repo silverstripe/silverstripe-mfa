@@ -3,9 +3,9 @@
 namespace SilverStripe\MFA\Extension\AccountReset;
 
 use Exception;
-use Psr\Log\LoggerInterface;
+use Psr\Log\LoggerInterface; // Not present in SS3
 use Controller;
-use SilverStripe\Control\Email\Email;
+use SilverStripe\Control\Email\Email; // Not present in SS3
 use SS_HTTPRequest as HTTPRequest;
 use SS_HTTPResponse as HTTPResponse;
 use Extension;
@@ -14,7 +14,7 @@ use SilverStripe\MFA\Extension\MemberExtension as BaseMFAMemberExtension;
 use SilverStripe\MFA\JSONResponse;
 use ValidationException;
 use Member;
-use SilverStripe\Security\PasswordEncryptor_NotFoundException;
+use PasswordEncryptor_NotFoundException;
 use Permission;
 use Security;
 use SecurityToken;

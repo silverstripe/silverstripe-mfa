@@ -8,7 +8,7 @@ If you need to use a different storage mechanism (e.g. Redis, DynamoDB etc) you 
 own `StoreInterface`, and register it with Injector:
 
 ```yaml
-SilverStripe\Core\Injector\Injector:
+Injector:
   SilverStripe\MFA\Store\StoreInterface:
     class: App\MFA\RedisStoreInterface
 ```

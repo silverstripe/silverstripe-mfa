@@ -6,7 +6,7 @@ implementation), however no Monolog handlers are attached by default. To enable 
 An example that will log to a `mfa.log` file in the project root:
 
 ```yaml
-SilverStripe\Core\Injector\Injector:
+Injector:
   Psr\Log\LoggerInterface.mfa:
     calls:
       pushFileLogHandler: [ pushHandler, [ '%$MFAFileLogHandler' ] ]

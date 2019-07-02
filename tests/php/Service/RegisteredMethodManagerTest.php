@@ -6,7 +6,7 @@ use Config;
 use SapphireTest;
 use SilverStripe\MFA\BackupCode\Method as BackupCodeMethod;
 use SilverStripe\MFA\Extension\MemberExtension;
-use SilverStripe\MFA\Model\RegisteredMethod;
+use MFARegisteredMethod as RegisteredMethod;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method as BasicMathMethod;

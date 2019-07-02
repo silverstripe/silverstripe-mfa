@@ -15,7 +15,7 @@ use SilverStripe\MFA\Authenticator\MemberAuthenticator;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
-use SilverStripe\MFA\Model\RegisteredMethod;
+use MFARegisteredMethod as RegisteredMethod;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\State\Result;

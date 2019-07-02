@@ -1,20 +1,20 @@
-SilverStripe\MFA\Model\RegisteredMethod:
+MFARegisteredMethod:
   simon-math:
     MethodClassName: "SilverStripe\\MFA\\Tests\\Stub\\BasicMath\\Method"
   robbie-math:
     MethodClassName: "SilverStripe\\MFA\\Tests\\Stub\\BasicMath\\Method"
 
-SilverStripe\Security\Permission:
+Permission:
   admin:
     Code: ADMIN
 
-SilverStripe\Security\Group:
+Group:
   admingroup:
     Title: Create, edit and delete pages
     Code: admingroup
     Permissions: =>SilverStripe\Security\Permission.admin
 
-SilverStripe\Security\Member:
+Member:
   guy:
     Email: guy@example.com
     Password: Password123
@@ -22,11 +22,11 @@ SilverStripe\Security\Member:
     Groups: =>SilverStripe\Security\Group.admingroup
   simon:
     Email: simon@example.com
-    RegisteredMFAMethods: =>SilverStripe\MFA\Model\RegisteredMethod.simon-math
+    RegisteredMFAMethods: =>MFARegisteredMethod.simon-math
     Groups: =>SilverStripe\Security\Group.admingroup
   robbie:
     Email: robbie@example.com
-    RegisteredMFAMethods: =>SilverStripe\MFA\Model\RegisteredMethod.robbie-math
-    DefaultRegisteredMethodID: =>SilverStripe\MFA\Model\RegisteredMethod.robbie-math
+    RegisteredMFAMethods: =>MFARegisteredMethod.robbie-math
+    DefaultRegisteredMethodID: =>MFARegisteredMethod.robbie-math
     Groups: =>SilverStripe\Security\Group.admingroup
 

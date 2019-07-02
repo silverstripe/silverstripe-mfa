@@ -7,7 +7,7 @@ use SS_HTTPRequest as HTTPRequest;
 use SapphireTest;
 use SilverStripe\MFA\BackupCode\VerifyHandler;
 use SilverStripe\MFA\Extension\MemberExtension;
-use SilverStripe\MFA\Model\RegisteredMethod;
+use MFARegisteredMethod as RegisteredMethod;
 use SilverStripe\MFA\Service\Notification;
 use SilverStripe\MFA\Store\StoreInterface;
 use DataObject;

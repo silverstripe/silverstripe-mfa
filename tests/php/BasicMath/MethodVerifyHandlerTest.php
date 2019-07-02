@@ -5,7 +5,7 @@ namespace SilverStripe\MFA\Tests\BasicMath;
 use PHPUnit_Framework_MockObject_MockObject;
 use SS_HTTPRequest as HTTPRequest;
 use SapphireTest;
-use SilverStripe\MFA\Model\RegisteredMethod;
+use MFARegisteredMethod as RegisteredMethod;
 use SilverStripe\MFA\Store\StoreInterface;
 use SilverStripe\MFA\Tests\Stub\BasicMath\MethodVerifyHandler;
 

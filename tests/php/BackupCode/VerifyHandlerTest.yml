@@ -1,12 +1,12 @@
-SilverStripe\MFA\Model\RegisteredMethod:
+MFARegisteredMethod:
   codes:
     MethodClassName: "SilverStripe\\MFA\\BackupCode\\Method"
     # 123456, 654321, 111111, 222222
     Data: '["{\"hash\":\"$2y$10$0e51c5eacb30a53f0c055uo31pASfJgWETrw8wn8hnsOT2.1ZkyAC\",\"algorithm\":\"blowfish\",\"salt\":\"10$0e51c5eacb30a53f0c0557\"}","{\"hash\":\"$2y$10$630af2e0e9c4eca2f4917e2iCJpbPUqSWLc.SNRgB7EriXbJbF5Lm\",\"algorithm\":\"blowfish\",\"salt\":\"10$630af2e0e9c4eca2f4917e\"}","{\"hash\":\"$2y$10$35138190124b6ed1948afuQf931YtHM.DRB2gGt\\\/eySPVlpVUVoRW\",\"algorithm\":\"blowfish\",\"salt\":\"10$35138190124b6ed1948af0\"}","{\"hash\":\"$2y$10$8876ae5c66ecc90742637uiA2QhTLZx1AI1SWi8e.rP02ISJBRs.m\",\"algorithm\":\"blowfish\",\"salt\":\"10$8876ae5c66ecc907426372\"}"]'
 
-SilverStripe\Security\Member:
+Member:
   guy:
     Email: guy@example.com
     Password: Password123
     PasswordExpiry: 2030-01-01
-    RegisteredMFAMethods: =>SilverStripe\MFA\Model\RegisteredMethod.codes
+    RegisteredMFAMethods: =>MFARegisteredMethod.codes

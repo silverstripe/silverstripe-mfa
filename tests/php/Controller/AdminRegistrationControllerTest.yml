@@ -1,12 +1,12 @@
-SilverStripe\Security\Permission:
+Permission:
   admin:
     Code: ADMIN
-SilverStripe\Security\Group:
+Group:
   admingroup:
     Title: Admin
     Code: admin
     Permissions: '=>SilverStripe\Security\Permission.admin'
-SilverStripe\Security\Member:
+Member:
   sally_smith:
     FirstName: Sally
     Surname: Smith
