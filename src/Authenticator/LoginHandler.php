@@ -98,6 +98,9 @@ class LoginHandler extends BaseLoginHandler
         $store = $this->createStore($member);
         // We don't need to store the user's password
         $request->offsetUnset('Password');
+        // User code may adjust the request properties further if they have their own sensitive data which
+        // should be excluded from the store.
+        $this->extend('onBeforeSaveRequestToStore', $request, $store);
         $store->save($request);
 
         // Store the BackURL for use after the process is complete
