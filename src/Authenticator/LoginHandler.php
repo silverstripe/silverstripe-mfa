@@ -2,7 +2,6 @@
 
 namespace SilverStripe\MFA\Authenticator;
 
-use Psr\Log\LoggerInterface; // Not present in SS3
 use SS_HTTPRequest as HTTPRequest;
 use SS_HTTPResponse as HTTPResponse;
 use Injector;
@@ -61,18 +60,6 @@ class LoginHandler extends BaseLoginHandler
      * @var string
      */
     private static $user_help_link = '';
-
-    /**
-     * @var string[]
-     */
-    private static $dependencies = [
-        'Logger' => '%$' . LoggerInterface::class . '.mfa',
-    ];
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
 
     /**
      * Override the parent "doLogin" to insert extra steps into the flow
@@ -486,24 +473,6 @@ class LoginHandler extends BaseLoginHandler
         }
 
         return $member;
-    }
-
-    /**
-     * @param LoggerInterface $logger
-     * @return $this
-     */
-    public function setLogger(LoggerInterface $logger): self
-    {
-        $this->logger = $logger;
-        return $this;
-    }
-
-    /**
-     * @return LoggerInterface
-     */
-    public function getLogger(): ?LoggerInterface
-    {
-        return $this->logger;
     }
 
     /**

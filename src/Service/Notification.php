@@ -3,9 +3,9 @@
 namespace SilverStripe\MFA\Service;
 
 use Exception;
-use Psr\Log\LoggerInterface; // Not present in SS3
 use SilverStripe\Control\Email\Email; // Rewritten since SS3
 use Member;
+use SS_Log;
 use SS_Object;
 
 /**
@@ -14,15 +14,6 @@ use SS_Object;
  */
 class Notification extends SS_Object
 {
-
-    /**
-     * @config
-     * @var array
-     */
-    private static $dependencies = [
-        'Logger' => '%$' . LoggerInterface::class . '.mfa',
-    ];
-
     /**
      * Whether sending emails is enabled for MFA changes
      *
@@ -30,17 +21,6 @@ class Notification extends SS_Object
      * @var bool
      */
     private static $enabled = true;
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    public function setLogger(LoggerInterface $logger): self
-    {
-        $this->logger = $logger;
-        return $this;
-    }
 
     /**
      * Sends the notification to the member
@@ -79,7 +59,7 @@ class Notification extends SS_Object
 
             $sendResult = $email->send();
         } catch (Exception $e) {
-            $this->logger->info($e->getMessage());
+            SS_Log::get_logger()->log($e->getMessage(), SS_Log::INFO);
         }
 
         $this->extend('onAfterSend', $email, $sendResult);

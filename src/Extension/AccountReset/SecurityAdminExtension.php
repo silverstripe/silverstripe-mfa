@@ -3,7 +3,7 @@
 namespace SilverStripe\MFA\Extension\AccountReset;
 
 use Exception;
-use Psr\Log\LoggerInterface; // Not present in SS3
+use SS_Log; // Not present in SS3
 use Controller;
 use SilverStripe\Control\Email\Email; // Not present in SS3
 use SS_HTTPRequest as HTTPRequest;
@@ -33,18 +33,6 @@ class SecurityAdminExtension extends Extension
     private static $allowed_actions = [
         'reset',
     ];
-
-    /**
-     * @var string[]
-     */
-    private static $dependencies = [
-        'Logger' => '%$' . LoggerInterface::class . '.account_reset',
-    ];
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
 
     public function reset(HTTPRequest $request): HTTPResponse
     {
@@ -139,7 +127,7 @@ class SecurityAdminExtension extends Extension
 
             return $email->send();
         } catch (Exception $e) {
-            $this->logger->info('WARNING: Account Reset Email failed to send: ' . $e->getMessage());
+            SS_Log::get_logger()->log('WARNING: Account Reset Email failed to send: ' . $e->getMessage(), SS_Log::INFO);
             return false;
         }
     }

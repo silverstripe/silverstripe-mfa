@@ -3,7 +3,7 @@
 namespace SilverStripe\MFA\Authenticator;
 
 use LogicException;
-use Psr\Log\LoggerInterface; // Not present in SS3
+use SS_Log;
 use SS_HTTPRequest as HTTPRequest;
 use SS_HTTPResponse as HTTPResponse;
 use Injector;
@@ -53,15 +53,6 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
         'verifyMFACheck',
     ];
 
-    private static $dependencies = [
-        'Logger' => '%$' . LoggerInterface::class . '.mfa',
-    ];
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
     /**
      * Respond with the given array as a JSON response
      *
@@ -96,7 +87,7 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
                 ])
             );
         } catch (Throwable $exception) {
-            $this->logger->debug($exception->getMessage());
+            SS_Log::get_logger()->log($exception->getMessage(), SS_Log::DEBUG);
             // If we don't have a valid member we shouldn't be here...
             return $this->redirectBack();
         }
@@ -174,7 +165,7 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
             $result = $this->completeVerificationRequest($store, $request);
         } catch (InvalidMethodException $exception) {
             // Invalid method usually means a timeout. A user might be trying to verify before "starting"
-            $this->logger->debug($exception->getMessage());
+            SS_Log::get_logger()->log($exception->getMessage(), SS_Log::DEBUG);
             return $this->jsonResponse(['message' => 'Forbidden'], 403);
         }
 
@@ -215,15 +206,5 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
         }
 
         return parent::changepassword();
-    }
-
-    /**
-     * @param LoggerInterface $logger
-     * @return $this
-     */
-    public function setLogger(LoggerInterface $logger): ChangePasswordHandler
-    {
-        $this->logger = $logger;
-        return $this;
     }
 }

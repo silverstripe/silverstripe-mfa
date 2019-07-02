@@ -2,7 +2,7 @@
 
 namespace SilverStripe\MFA\Controller;
 
-use Psr\Log\LoggerInterface;
+use SS_Log;
 use LeftAndMain;
 use SS_HTTPRequest as HTTPRequest;
 use SS_HTTPResponse as HTTPResponse;
@@ -46,15 +46,6 @@ class AdminRegistrationController extends LeftAndMain
     ];
 
     private static $required_permission_codes = false;
-
-    private static $dependencies = [
-        'Logger' => '%$' . LoggerInterface::class . '.mfa',
-    ];
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
 
     /**
      * Start a registration for a method on the currently logged in user
@@ -230,9 +221,10 @@ class AdminRegistrationController extends LeftAndMain
             $member->setDefaultRegisteredMethod($registeredMethod);
             $member->write();
         } catch (ValidationException $exception) {
-            $this->logger->debug(
+            SS_Log::get_logger()->log(
                 'Failed to set default registered method for user #' . $member->ID . ' to ' . $specifiedMethod
-                . ': ' . $exception->getMessage()
+                . ': ' . $exception->getMessage(),
+                SS_Log::DEBUG
             );
 
             return $this->jsonResponse(
@@ -259,15 +251,5 @@ class AdminRegistrationController extends LeftAndMain
         return HTTPResponse::create(json_encode($response))
             ->addHeader('Content-Type', 'application/json')
             ->setStatusCode($code);
-    }
-
-    /**
-     * @param LoggerInterface|null $logger
-     * @return $this
-     */
-    public function setLogger(?LoggerInterface $logger): self
-    {
-        $this->logger = $logger;
-        return $this;
     }
 }
