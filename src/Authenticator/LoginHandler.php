@@ -96,6 +96,8 @@ class LoginHandler extends BaseLoginHandler
 
         // Create a store for handling MFA for this member
         $store = $this->createStore($member);
+        // We don't need to store the user's password
+        $request->offsetUnset('Password');
         $store->save($request);
 
         // Store the BackURL for use after the process is complete
