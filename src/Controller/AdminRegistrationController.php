@@ -222,7 +222,7 @@ class AdminRegistrationController extends LeftAndMain
         $registeredMethod = $registeredMethodManager->getFromMember($member, $method);
         if (!$registeredMethod) {
             return $this->jsonResponse(
-                ['errors' => [_t(__CLASS__ . '.INVALID_METHOD', 'No such registered method is available')]],
+                ['errors' => [_t(__CLASS__ . '.INVALID_REGISTERED_METHOD', 'No such registered method is available')]],
                 400
             );
         }

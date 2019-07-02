@@ -103,7 +103,7 @@ class Register extends Component {
    */
   renderDescription() {
     const { ss: { i18n } } = window;
-    const { method } = this.props;
+    const { method: { supportLink, supportText } } = this.props;
 
     return (
       <p>
@@ -114,13 +114,15 @@ class Register extends Component {
             'somewhere safe, as they will not be viewable after leaving this page.'
         )}
         &nbsp;
-        <a
-          href={method.supportLink}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {i18n._t('MFARegister.HELP', 'Find out more')}
-        </a>
+        {supportLink &&
+          <a
+            href={supportLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {supportText || i18n._t('MFARegister.RECOVERY_HELP', 'Learn more about recovery codes.')}
+          </a>
+        }
       </p>
     );
   }

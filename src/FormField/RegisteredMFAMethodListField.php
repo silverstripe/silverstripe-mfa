@@ -23,7 +23,7 @@ class RegisteredMFAMethodListField extends FormField
      */
     public function __construct(string $name, ?string $title, Member $value)
     {
-        return parent::__construct($name, $title, $value);
+        parent::__construct($name, $title, $value);
     }
 
     public function setValue($value, $data = null)
