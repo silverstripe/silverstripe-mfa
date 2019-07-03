@@ -3,7 +3,7 @@
 namespace SilverStripe\MFA\Service;
 
 use Exception;
-use SilverStripe\Control\Email\Email; // Rewritten since SS3
+use Email;
 use Member;
 use SS_Log;
 use SS_Object;
@@ -45,8 +45,8 @@ class Notification extends SS_Object
         try {
             $email = Email::create()
                 ->setTo($member->Email)
-                ->setHTMLTemplate($template)
-                ->setData(array_merge(['Member' => $member], $data));
+                ->setTemplate($template)
+                ->populateTemplate(array_merge(['Member' => $member], $data));
 
             foreach (['to', 'from', 'subject'] as $header) {
                 if (isset($data[$header])) {

@@ -3,9 +3,9 @@
 namespace SilverStripe\MFA\Extension\AccountReset;
 
 use Exception;
-use SS_Log; // Not present in SS3
+use SS_Log;
 use Controller;
-use SilverStripe\Control\Email\Email; // Not present in SS3
+use Email;
 use SS_HTTPRequest as HTTPRequest;
 use SS_HTTPResponse as HTTPResponse;
 use Extension;
@@ -114,14 +114,14 @@ class SecurityAdminExtension extends Extension
         // Create email and fire
         try {
             $email = Email::create()
-                ->setHTMLTemplate('SilverStripe\\MFA\\Email\\AccountReset')
-                ->setData($member)
+                ->setTemplate('SilverStripe\\MFA\\Email\\AccountReset')
+                ->populateTemplate($member)
                 ->setSubject(_t(
                     __CLASS__ . '.ACCOUNT_RESET_EMAIL_SUBJECT',
                     'Reset your account'
                 ))
-                ->addData('AccountResetLink', $this->getAccountResetLink($member, $token))
-                ->addData('Member', $member)
+                ->populateTemplate(['AccountResetLink' => $this->getAccountResetLink($member, $token)])
+                ->populateTemplate(['Member' => $member])
                 ->setFrom(Email::config()->get('admin_email'))
                 ->setTo($member->Email);
 
