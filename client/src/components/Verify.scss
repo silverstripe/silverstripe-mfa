@@ -1,5 +1,5 @@
 .help-block {
-  color: $color-message-error;
+  color: var(--color-message-error);
   margin: 0.2em 0;
 }
 
@@ -11,7 +11,7 @@
   margin-bottom: $content-spacing;
 
   &--unavailable {
-    color: $color-blue;
+    color: var(--color-blue);
   }
 }
 

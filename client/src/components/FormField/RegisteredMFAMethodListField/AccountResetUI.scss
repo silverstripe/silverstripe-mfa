@@ -7,11 +7,11 @@
 .account-reset-action__icon {
   .account-reset-action--sending &,
   .account-reset-action--success & {
-    color: $color-blue;
+    color: var(--color-blue);
   }
 
   .account-reset-action--failure & {
-    color: $color-grey;
+    color: var(--color-grey);
   }
 }
 

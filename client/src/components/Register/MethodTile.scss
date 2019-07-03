@@ -19,7 +19,7 @@
   // Inner content section
   &__content {
     border-radius: $tile-border-radius;
-    box-shadow: $tile-box-shadow;
+    box-shadow: var(--tile-box-shadow);
     padding: $tile-padding;
     width: 100%;
 
@@ -31,14 +31,14 @@
     // When the method is hovered or tabbed into
     &:hover,
     &:focus {
-      background: $tile-border-color-hover;
+      background: var(--tile-border-color-hover);
       cursor: pointer;
     }
   }
 
   // When the method is highlighted (via clicking it)
   &--active .mfa-method-tile__content {
-    box-shadow: $tile-box-shadow-active;
+    box-shadow: var(--tile-box-shadow-active);
   }
 
   &__description {
@@ -77,15 +77,15 @@
   // Styles for the dark banner over unsupported methods
   &__unavailable {
     &-mask {
-      background: $tile-mask-background;
+      background: var(--tile-mask-background);
       border-top-left-radius: $tile-border-radius;
       border-top-right-radius: $tile-border-radius;
       color: $tile-mask-colour;
-      width: 100%;
       left: 0;
       padding: $tile-padding/2 $tile-padding;
       position: absolute;
       top: 0;
+      width: 100%;
     }
 
     &-title {
