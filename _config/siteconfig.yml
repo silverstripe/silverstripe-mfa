@@ -1,6 +1,6 @@
 ---
 Name: mfa-siteconfig
 ---
-SilverStripe\SiteConfig\SiteConfig:
+SiteConfig:
   extensions:
     - SilverStripe\MFA\Extension\SiteConfigExtension

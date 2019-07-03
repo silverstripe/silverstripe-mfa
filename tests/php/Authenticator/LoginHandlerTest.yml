@@ -19,14 +19,14 @@ Member:
     Email: guy@example.com
     Password: Password123
     PasswordExpiry: 2030-01-01
-    Groups: =>SilverStripe\Security\Group.admingroup
+    Groups: =>Group.admingroup
   simon:
     Email: simon@example.com
     RegisteredMFAMethods: =>MFARegisteredMethod.simon-math
-    Groups: =>SilverStripe\Security\Group.admingroup
+    Groups: =>Group.admingroup
   robbie:
     Email: robbie@example.com
     RegisteredMFAMethods: =>MFARegisteredMethod.robbie-math
     DefaultRegisteredMethodID: =>MFARegisteredMethod.robbie-math
-    Groups: =>SilverStripe\Security\Group.admingroup
+    Groups: =>Group.admingroup
 

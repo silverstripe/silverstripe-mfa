@@ -12,6 +12,6 @@ Member:
     Surname: Smith
     Email: sally.smith@example.com
     Groups:
-      - =>SilverStripe\Security\Group.admingroup
+      - =>Group.admingroup
 
 
