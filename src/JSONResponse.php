@@ -13,7 +13,7 @@ trait JSONResponse
 {
     public function jsonResponse(array $body, int $status = 200): HTTPResponse
     {
-        return HTTPResponse::create()
+        return (new HTTPResponse())
             ->setStatusCode($status)
             ->addHeader('Content-Type', 'application/json')
             ->setBody(json_encode($body));

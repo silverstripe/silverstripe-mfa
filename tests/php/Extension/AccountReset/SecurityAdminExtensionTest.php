@@ -7,6 +7,8 @@ use FunctionalTest;
 use SilverStripe\MFA\Extension\AccountReset\SecurityAdminExtension;
 use Member;
 use SecurityToken;
+use SS_Log;
+use SS_LogFileWriter;
 
 /**
  * Class SecurityAdminExtensionTest
@@ -33,10 +35,9 @@ class SecurityAdminExtensionTest extends FunctionalTest
 
     public function testEndpointRequiresCSRF()
     {
-        $this->logInAs('admin');
-
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'squib');
+        $member->logIn();
 
         $response = $this->post(SecurityAdmin::singleton()->Link("reset/{$member->ID}"), [true]);
 
@@ -46,7 +47,9 @@ class SecurityAdminExtensionTest extends FunctionalTest
 
     public function testResetCanBeInitiatedByAdmin()
     {
-        $this->logInAs('admin');
+        /** @var Member $adminMember */
+        $adminMember = $this->objFromFixture(Member::class, 'admin');
+        $adminMember->logIn();
 
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'squib');
@@ -65,10 +68,9 @@ class SecurityAdminExtensionTest extends FunctionalTest
 
     public function testResetCannotBeInitiatedByStandardUser()
     {
-        $this->logInAs('squib');
-
         /** @var Member $member */
-        $member = $this->objFromFixture(Member::class, 'admin');
+        $member = $this->objFromFixture(Member::class, 'squib');
+        $member->logIn();
 
         $response = $this->post(
             SecurityAdmin::singleton()->Link("reset/{$member->ID}"),

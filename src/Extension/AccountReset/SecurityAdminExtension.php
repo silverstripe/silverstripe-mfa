@@ -114,7 +114,7 @@ class SecurityAdminExtension extends Extension
         // Create email and fire
         try {
             $email = Email::create()
-                ->setTemplate('SilverStripe\\MFA\\Email\\AccountReset')
+                ->setTemplate('AccountReset')
                 ->populateTemplate($member)
                 ->setSubject(_t(
                     __CLASS__ . '.ACCOUNT_RESET_EMAIL_SUBJECT',

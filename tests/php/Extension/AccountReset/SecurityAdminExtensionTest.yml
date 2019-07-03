@@ -17,7 +17,7 @@ Group:
 Permission:
   admin:
     Code: ADMIN
-    Group: =>SilverStripe\Security\Group.admin
+    Group: =>Group.admin
   security:
     Code: 'CMS_ACCESS_SecurityAdmin'
-    Group: =>SilverStripe\Security\Group.security-admin
+    Group: =>Group.security-admin
