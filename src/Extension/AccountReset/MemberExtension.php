@@ -21,7 +21,7 @@ class MemberExtension extends DataExtension
 {
     private static $db = [
         'AccountResetHash' => 'Varchar(160)',
-        'AccountResetExpired' => 'Datetime',
+        'AccountResetExpired' => 'SS_Datetime',
     ];
 
     public function updateCMSFields(FieldList $fields)
@@ -49,10 +49,13 @@ class MemberExtension extends DataExtension
             '"Member"."AccountResetHash"' => $hash,
         ]));
 
+        $expiry = DBDatetime::create();
+        $expiry->setValue(
+            intval(DBDatetime::now()->Format('U')) + $lifetime
+        );
+
         $this->owner->AccountResetHash = $hash;
-        $this->owner->AccountResetExpired = DBDatetime::create()->setValue(
-            DBDatetime::now()->getTimestamp() + $lifetime
-        )->Rfc2822();
+        $this->owner->AccountResetExpired = $expiry->getValue();
 
         $this->owner->write();
 
