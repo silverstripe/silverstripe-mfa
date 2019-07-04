@@ -18,6 +18,3 @@ Member:
 Security:
   extensions:
     accountResetExtension: SilverStripe\MFA\Extension\AccountReset\SecurityExtension
-SilverStripe\MFA\Extension\AccountReset\SecurityExtension:
-  extensions:
-    mfaResetExtension: SilverStripe\MFA\Extension\AccountReset\MFAResetExtension

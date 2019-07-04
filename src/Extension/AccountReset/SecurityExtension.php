@@ -189,8 +189,13 @@ class SecurityExtension extends Extension
         $member->AccountResetExpired = DBDatetime::create()->now();
         $member->write();
 
-        // Pass off to extensions to perform any additional reset actions
-        $this->extend('handleAccountReset', $member);
+        // Load any implementations of AccountResetHandler to trigger their actions
+        $accountResetHandlers = SS_ClassLoader::instance()->getManifest()
+            ->getImplementorsOf(AccountResetHandler::class);
+
+        foreach ($accountResetHandlers as $handler) {
+            (new $handler)->handleAccountReset($member);
+        }
 
         // Send the user along to the login form (allowing any additional factors to kick in as needed)
         $this->owner->setSessionMessage(

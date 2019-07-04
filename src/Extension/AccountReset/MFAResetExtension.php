@@ -13,12 +13,12 @@ use Member;
  *
  * @package SilverStripe\MFA\Extension\AccountReset
  */
-class MFAResetExtension extends Extension
+class MFAResetExtension implements AccountResetHandler
 {
     /**
      * @param Member&MemberExtension $member
      */
-    public function handleAccountReset(Member $member)
+    public function handleAccountReset(Member $member): void
     {
         foreach ($member->RegisteredMFAMethods() as $method) {
             $method->delete();
