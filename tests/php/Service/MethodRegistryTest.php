@@ -25,7 +25,7 @@ class MethodRegistryTest extends SapphireTest
     /**
      * phpcs:disable
      * @expectedException UnexpectedValueException
-     * @expectedExceptionMessage Given method "SilverStripe\Security\Member" does not implement SilverStripe\MFA\Method\MethodInterface
+     * @expectedExceptionMessage Given method "Member" does not implement SilverStripe\MFA\Method\MethodInterface
      * phpcs:enable
      */
     public function testInvalidMethodsThrowExceptions()
