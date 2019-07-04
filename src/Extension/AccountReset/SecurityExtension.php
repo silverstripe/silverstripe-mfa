@@ -175,7 +175,7 @@ class SecurityExtension extends Extension
         // Check if the new password is accepted
         $validationResult = $member->changePassword($data['NewPassword1']);
         if (!$validationResult->valid()) {
-            $form->setSessionValidationResult($validationResult);
+            $form->getValidator()->validationError('NewPassword1', $validationResult->message(), 'bad');
 
             return $this->owner->redirectBack();
         }
@@ -198,13 +198,12 @@ class SecurityExtension extends Extension
         }
 
         // Send the user along to the login form (allowing any additional factors to kick in as needed)
-        $this->owner->setSessionMessage(
+        return Security::permissionFailure(
+            $this->owner,
             _t(
                 __CLASS__ . '.RESETSUCCESSMESSAGE',
                 'Reset complete. Please log in with your new password.'
-            ),
-            ValidationResult::TYPE_GOOD
+            )
         );
-        return $this->owner->redirect($this->owner->Link('login'));
     }
 }

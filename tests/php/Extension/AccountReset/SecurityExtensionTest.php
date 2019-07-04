@@ -74,8 +74,8 @@ class SecurityExtensionTest extends FunctionalTest
 
         $this->assertEquals(200, $response->getStatusCode(), $response->getBody());
 
-        // Simulate expired session (can't call destroy() due to issue in SilverStripe 4.1
-        $this->session()->inst_destroy();
+        // Simulate expired session
+        $this->session()->inst_clearAll();
 
         $response = $this->submitForm(
             'Form_ResetAccountForm',
