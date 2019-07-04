@@ -274,12 +274,14 @@ class AdminRegistrationControllerTest extends FunctionalTest
         $registeredMethodManager->expects($this->any())->method('deleteFromMember')->willReturn(true);
 
         // Test when there's no backup method registered
-        Config::modify()->set(MethodRegistry::class, 'default_backup_method', null);
+        Config::inst()->remove(MethodRegistry::class, 'default_backup_method');
+        Config::inst()->update(MethodRegistry::class, 'default_backup_method', null);
         $response = $controller->removeRegisteredMethod($request);
         $this->assertFalse(json_decode($response->getBody())->hasBackupMethod);
 
         // Make "basic math" the backup method as it's the only available method
-        Config::modify()->set(MethodRegistry::class, 'default_backup_method', BasicMathMethod::class);
+        Config::inst()->remove(MethodRegistry::class, 'default_backup_method');
+        Config::inst()->update(MethodRegistry::class, 'default_backup_method', BasicMathMethod::class);
 
         // Mock checking for the registered backup method when it's not registered (first) and then when it is (second)
         $registeredMethodManager

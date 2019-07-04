@@ -36,7 +36,8 @@ class LoginHandlerTest extends FunctionalTest
     public function setUp()
     {
         parent::setUp();
-        Config::modify()->set(MethodRegistry::class, 'methods', [Method::class]);
+        Config::inst()->remove(MethodRegistry::class, 'methods');
+        Config::inst()->update(MethodRegistry::class, 'methods', [Method::class]);
 
         Injector::inst()->load([
             Security::class => [
@@ -89,7 +90,8 @@ class LoginHandlerTest extends FunctionalTest
 
     public function testMethodsNotBeingAvailableWillLogin()
     {
-        Config::modify()->set(MethodRegistry::class, 'methods', []);
+        Config::inst()->remove(MethodRegistry::class, 'methods');
+        Config::inst()->update(MethodRegistry::class, 'methods', []);
 
         /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'guy');

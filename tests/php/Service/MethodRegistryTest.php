@@ -13,7 +13,8 @@ class MethodRegistryTest extends SapphireTest
 {
     public function testGetAllMethodsReturnsRegisteredMethods()
     {
-        Config::modify()->set(MethodRegistry::class, 'methods', [Method::class]);
+        Config::inst()->remove(MethodRegistry::class, 'methods');
+        Config::inst()->update(MethodRegistry::class, 'methods', [Method::class]);
         $registry = MethodRegistry::singleton();
         $methods = $registry->getMethods();
 
@@ -29,7 +30,8 @@ class MethodRegistryTest extends SapphireTest
      */
     public function testInvalidMethodsThrowExceptions()
     {
-        Config::modify()->set(MethodRegistry::class, 'methods', [Member::class]);
+        Config::inst()->remove(MethodRegistry::class, 'methods');
+        Config::inst()->update(MethodRegistry::class, 'methods', [Member::class]);
         $registry = MethodRegistry::singleton();
         $registry->getMethods();
     }

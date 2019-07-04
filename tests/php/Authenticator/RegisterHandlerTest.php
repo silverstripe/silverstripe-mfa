@@ -33,7 +33,8 @@ class RegisterHandlerTest extends FunctionalTest
     public function setUp()
     {
         parent::setUp();
-        Config::modify()->set(MethodRegistry::class, 'methods', [Method::class]);
+        Config::inst()->remove(MethodRegistry::class, 'methods');
+        Config::inst()->update(MethodRegistry::class, 'methods', [Method::class]);
 
         Injector::inst()->load([
             Security::class => [
