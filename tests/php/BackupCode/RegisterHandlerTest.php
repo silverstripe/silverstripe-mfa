@@ -22,7 +22,7 @@ class RegisterHandlerTest extends SapphireTest
     {
         /** @var StoreInterface|PHPUnit_Framework_MockObject_MockObject $store */
         $store = $this->createMock(StoreInterface::class);
-        $store->expects($this->once())->method('getMember')->willReturn(Security::getCurrentUser());
+        $store->expects($this->once())->method('getMember')->willReturn(Member::currentUser());
 
         $handler = new RegisterHandler();
 

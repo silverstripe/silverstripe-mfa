@@ -3,6 +3,9 @@
 namespace SilverStripe\MFA\Extension\AccountReset;
 
 use Extension;
+use Session;
+use SS_ClassLoader;
+use SS_ClassManifest;
 use SS_HTTPRequest as HTTPRequest;
 use SS_HTTPResponse as HTTPResponse;
 use FieldList;
@@ -40,7 +43,7 @@ class SecurityExtension extends Extension
 
     public function resetaccount(HTTPRequest $request)
     {
-        if (Security::getCurrentUser()) {
+        if (Member::currentUser()) {
             $output = $this->owner->renderWith(
                 'Security',
                 [
@@ -73,13 +76,13 @@ class SecurityExtension extends Extension
                     'Content' => _t(
                         __CLASS__ . '.INVALIDTOKENBODY',
                         'Your account reset token may have expired. Please contact an administrator.'
-                    )
+                    ),
                 ]
             );
             return $this->owner->getResponse()->setBody($output)->setStatusCode(400);
         }
 
-        $request->getSession()->set('MemberID', $member->ID);
+        Session::set('MemberID', $member->ID);
 
         return $this->owner->getResponse()->setBody($this->owner->renderWith(
             'Security',
@@ -138,7 +141,7 @@ class SecurityExtension extends Extension
      */
     public function doResetAccount(array $data, Form $form): HTTPResponse
     {
-        $memberID = $this->owner->getRequest()->getSession()->get('MemberID');
+        $memberID = Session::get('MemberID');
 
         // If the ID isn't in the session, politely assume the session has expired
         if (!$memberID) {
@@ -147,7 +150,7 @@ class SecurityExtension extends Extension
                     __CLASS__ . '.RESETTIMEDOUT',
                     "The account reset process timed out. Please click the link in the email and try again."
                 ),
-                ValidationResult::TYPE_ERROR
+                'bad'
             );
 
             return $this->owner->redirectBack();
@@ -163,7 +166,7 @@ class SecurityExtension extends Extension
                     'SilverStripe\\Security\\Member.ERRORNEWPASSWORD',
                     'You have entered your new password differently, try again'
                 ),
-                ValidationResult::TYPE_ERROR
+                'bad'
             );
 
             return $this->owner->redirectBack();
@@ -171,7 +174,7 @@ class SecurityExtension extends Extension
 
         // Check if the new password is accepted
         $validationResult = $member->changePassword($data['NewPassword1']);
-        if (!$validationResult->isValid()) {
+        if (!$validationResult->valid()) {
             $form->setSessionValidationResult($validationResult);
 
             return $this->owner->redirectBack();

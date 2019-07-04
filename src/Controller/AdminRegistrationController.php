@@ -56,7 +56,7 @@ class AdminRegistrationController extends LeftAndMain
     public function startRegistration(HTTPRequest $request): HTTPResponse
     {
         // Create a fresh store from the current logged in user
-        $member = Security::getCurrentUser();
+        $member = Member::currentUser();
         $store = $this->createStore($member);
 
         if (!$this->getSudoModeService()->check($request->getSession())) {
@@ -150,7 +150,7 @@ class AdminRegistrationController extends LeftAndMain
         }
 
         // Remove the method from the user
-        $member = Security::getCurrentUser();
+        $member = Member::currentUser();
         $registeredMethodManager = RegisteredMethodManager::singleton();
         $result = $registeredMethodManager->deleteFromMember($member, $method);
 
@@ -208,7 +208,7 @@ class AdminRegistrationController extends LeftAndMain
 
         // Set the method as the default
         /** @var Member&MemberExtension $member */
-        $member = Security::getCurrentUser();
+        $member = Member::currentUser();
         $registeredMethodManager = RegisteredMethodManager::singleton();
         $registeredMethod = $registeredMethodManager->getFromMember($member, $method);
         if (!$registeredMethod) {

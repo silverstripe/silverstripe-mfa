@@ -87,13 +87,13 @@ class LoginHandler extends BaseLoginHandler
 
         // Store the BackURL for use after the process is complete
         if (!empty($data)) {
-            $request->getSession()->set(static::SESSION_KEY . '.additionalData', $data);
+            Session::set(static::SESSION_KEY . '.additionalData', $data);
         }
 
         // If there is at least one MFA method registered then the user MUST login with it
-        $request->getSession()->clear(static::SESSION_KEY . '.mustLogin');
+        Session::clear(static::SESSION_KEY . '.mustLogin');
         if ($member->RegisteredMFAMethods()->count() > 0) {
-            $request->getSession()->set(static::SESSION_KEY . '.mustLogin', true);
+            Session::set(static::SESSION_KEY . '.mustLogin', true);
         }
 
         // Bypass the MFA UI if the user can and has skipped it or MFA is not enabled
@@ -163,7 +163,7 @@ class LoginHandler extends BaseLoginHandler
     {
         $store = $this->getStore();
         $sessionMember = $store ? $store->getMember() : null;
-        $loggedInMember = Security::getCurrentUser();
+        $loggedInMember = Member::currentUser();
 
         if (($loggedInMember === null && $sessionMember === null)
             || !$this->getSudoModeService()->check($request->getSession())
@@ -226,7 +226,7 @@ class LoginHandler extends BaseLoginHandler
     {
         $store = $this->getStore();
         $sessionMember = $store ? $store->getMember() : null;
-        $loggedInMember = Security::getCurrentUser();
+        $loggedInMember = Member::currentUser();
 
         if (($loggedInMember === null && $sessionMember === null)
             || !$this->getSudoModeService()->check($request->getSession())
@@ -255,7 +255,7 @@ class LoginHandler extends BaseLoginHandler
         // If we've completed registration and the member is not already logged in then we need to log them in
         /** @var EnforcementManager $enforcementManager */
         $enforcementManager = EnforcementManager::create();
-        $mustLogin = $request->getSession()->get(static::SESSION_KEY . '.mustLogin');
+        $mustLogin = Session::get(static::SESSION_KEY . '.mustLogin');
 
         // If the user has a valid registration at this point then we can log them in. We must ensure that they're not
         // required to log in though. The "mustLogin" flag is set at the beginning of the MFA process if they have at
@@ -405,7 +405,7 @@ class LoginHandler extends BaseLoginHandler
     {
         // Assert that we have a member logged in already. We explicitly don't use ->getMember as that will pull from
         // session during the MFA process
-        $member = Security::getCurrentUser();
+        $member = Member::currentUser();
         $loginUrl = Security::login_url();
 
         if (!$member) {
@@ -440,14 +440,14 @@ class LoginHandler extends BaseLoginHandler
         }
 
         // Clear the "additional data"
-        $request->getSession()->clear(static::SESSION_KEY . '.additionalData');
+        Session::clear(static::SESSION_KEY . '.additionalData');
 
         // Ensure any left over session state is cleaned up
         $store = $this->getStore();
         if ($store) {
             $store->clear($request);
         }
-        $request->getSession()->clear(static::SESSION_KEY . '.mustLogin');
+        Session::clear(static::SESSION_KEY . '.mustLogin');
 
         // Delegate to parent logic
         return parent::redirectAfterSuccessfulLogin();
@@ -465,7 +465,7 @@ class LoginHandler extends BaseLoginHandler
             return $store->getMember();
         }
 
-        $member = Security::getCurrentUser();
+        $member = Member::currentUser();
 
         // If we don't have a valid member we shouldn't be here...
         if (!$member) {
@@ -517,10 +517,10 @@ class LoginHandler extends BaseLoginHandler
     protected function doPerformLogin(HTTPRequest $request, Member $member)
     {
         // Load the previously stored data from session and perform the login using it...
-        $data = $request->getSession()->get(static::SESSION_KEY . '.additionalData') ?: [];
+        $data = Session::get(static::SESSION_KEY . '.additionalData') ?: [];
 
         // Check that we don't have a logged in member before actually performing a login
-        $currentMember = Security::getCurrentUser();
+        $currentMember = Member::currentUser();
 
         if (!$currentMember) {
             // These next two lines are pulled from "parent::doLogin()"

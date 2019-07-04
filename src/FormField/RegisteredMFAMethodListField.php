@@ -53,6 +53,6 @@ class RegisteredMFAMethodListField extends FormField
     protected function getBackupMethod(): ?RegisteredMethod
     {
         $backupMethod = MethodRegistry::singleton()->getBackupMethod();
-        return RegisteredMethodManager::singleton()->getFromMember(Security::getCurrentUser(), $backupMethod);
+        return RegisteredMethodManager::singleton()->getFromMember(Member::currentUser(), $backupMethod);
     }
 }
