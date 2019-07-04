@@ -11,6 +11,18 @@ use SilverStripe\MFA\Method\MethodInterface;
 class Method implements MethodInterface
 {
     /**
+     * Provide a localised name for this MFA Method.
+     *
+     * eg. "Authenticator app"
+     *
+     * @return string
+     */
+    public function getName(): string
+    {
+        return _t(__CLASS__ . '.NAME', 'Recovery codes');
+    }
+
+    /**
      * Get a URL segment for this method. This will be used in URL paths for performing authentication by this method
      *
      * @return string

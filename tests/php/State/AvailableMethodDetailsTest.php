@@ -25,16 +25,12 @@ class AvailableMethodDetailsTest extends SapphireTest
         parent::setUp();
 
         $this->method = $this->createMock(MethodInterface::class);
-        $this->method->method('getRegisterHandler')->willReturn(
-            $this->createMock(RegisterHandlerInterface::class)
-        );
-
         $this->details = new AvailableMethodDetails($this->method);
     }
 
     public function testJsonSerialize()
     {
-        $this->method->getRegisterHandler()->expects($this->once())->method('getName')->willReturn('Backup Codes');
+        $this->method->expects($this->once())->method('getName')->willReturn('Backup Codes');
         $result = json_encode($this->details);
         $this->assertContains('Backup Codes', $result);
     }

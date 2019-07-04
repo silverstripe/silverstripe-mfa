@@ -11,7 +11,6 @@ use SilverStripe\MFA\Store\StoreInterface;
 
 class VerifyHandler implements VerifyHandlerInterface, TestOnly
 {
-
     /**
      * Stores any data required to handle a login process with a method, and returns relevant state to be applied to the
      * front-end application managing the process.
@@ -37,18 +36,6 @@ class VerifyHandler implements VerifyHandlerInterface, TestOnly
     public function verify(HTTPRequest $request, StoreInterface $store, RegisteredMethod $registeredMethod): Result
     {
         // TODO: Implement verify() method.
-    }
-
-    /**
-     * Provide a localised string that serves as a lead in for choosing this option for authentication
-     *
-     * eg. "Enter one of your recovery codes"
-     *
-     * @return string
-     */
-    public function getLeadInLabel(): string
-    {
-        // TODO: Implement getLeadInLabel() method.
     }
 
     /**

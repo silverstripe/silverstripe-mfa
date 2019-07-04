@@ -12,6 +12,15 @@ use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 interface MethodInterface
 {
     /**
+     * Provide a localised name for this MFA Method.
+     *
+     * eg. "Authenticator app"
+     *
+     * @return string
+     */
+    public function getName(): string;
+
+    /**
      * Get a URL segment for this method. This will be used in URL paths for performing authentication by this method
      *
      * @return string

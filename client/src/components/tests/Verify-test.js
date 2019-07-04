@@ -15,7 +15,13 @@ import { loadComponent } from 'lib/Injector'; // eslint-disable-line
 Enzyme.configure({ adapter: new Adapter() });
 
 window.ss = {
-  i18n: { _t: (key, string) => string },
+  i18n: {
+    _t: (key, string) => string,
+    inject: (string, map) => Object.entries(map).reduce(
+      (acc, [key, value]) => acc.replace(key, value),
+      string
+    ),
+  },
 };
 
 const endpoints = {
@@ -25,12 +31,12 @@ const endpoints = {
 const mockRegisteredMethods = [
   {
     urlSegment: 'aye',
-    leadInLabel: 'Login with aye',
+    name: 'aye',
     component: 'Test',
   },
   {
     urlSegment: 'bee',
-    leadInLabel: 'Login with bee',
+    name: 'bee',
     component: 'Test',
   },
 ];
@@ -62,7 +68,7 @@ describe('Verify', () => {
 
     expect(wrapper.state('selectedMethod')).toEqual({
       urlSegment: 'aye',
-      leadInLabel: 'Login with aye',
+      name: 'aye',
       component: 'Test',
     });
   });
@@ -78,7 +84,7 @@ describe('Verify', () => {
 
     expect(wrapper.state('selectedMethod')).toEqual({
       urlSegment: 'bee',
-      leadInLabel: 'Login with bee',
+      name: 'bee',
       component: 'Test',
     });
   });

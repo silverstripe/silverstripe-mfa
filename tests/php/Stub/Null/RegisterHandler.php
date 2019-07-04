@@ -37,18 +37,6 @@ class RegisterHandler implements RegisterHandlerInterface, TestOnly
     }
 
     /**
-     * Provide a localised name for this MFA Method.
-     *
-     * eg. "Authenticator app"
-     *
-     * @return string
-     */
-    public function getName(): string
-    {
-        // TODO: Implement getName() method.
-    }
-
-    /**
      * Provide a localised description of this MFA Method.
      *
      * eg. "Verification codes are created by an app on your phone"

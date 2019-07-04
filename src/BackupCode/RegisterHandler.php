@@ -79,18 +79,6 @@ class RegisterHandler implements RegisterHandlerInterface
     }
 
     /**
-     * Provide a localised name for this MFA Method.
-     *
-     * eg. "Authenticator app"
-     *
-     * @return string
-     */
-    public function getName(): string
-    {
-        return _t(__CLASS__ . '.NAME', 'Recovery codes');
-    }
-
-    /**
      * Provide a localised description of this MFA Method.
      *
      * eg. "Verification codes are created by an app on your phone"

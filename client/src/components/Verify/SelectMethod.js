@@ -52,6 +52,10 @@ class SelectMethod extends PureComponent {
     const { isAvailable, getUnavailableMessage, onSelectMethod } = this.props;
     const { ss: { i18n } } = window;
 
+    const leadInLabel = i18n.inject(i18n._t('MFAVerify.VERIFY_WITH', 'Verify with {method}'), {
+      method: method.name.toLowerCase(),
+    });
+
     // Unavailable state, e.g. if unsupported in the current browser
     if (!isAvailable(method)) {
       const helpLink = method.supportLink && (
@@ -69,7 +73,7 @@ class SelectMethod extends PureComponent {
 
       return (
         <li key={method.urlSegment} className={className}>
-          {method.leadInLabel} {helpLink}
+          {leadInLabel} {helpLink}
           {message && <span className="mfa-verify-select-method__method-message">{message}</span>}
         </li>
       );
@@ -78,7 +82,7 @@ class SelectMethod extends PureComponent {
     return (
       <li key={method.urlSegment} className="mfa-verify-select-method__method">
         <a href="#" onClick={onSelectMethod(method)}>
-          {method.leadInLabel}
+          {leadInLabel}
         </a>
       </li>
     );

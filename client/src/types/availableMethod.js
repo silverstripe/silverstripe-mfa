@@ -9,6 +9,7 @@ export default PropTypes.shape({
   name: PropTypes.string,
   description: PropTypes.string,
   supportLink: PropTypes.string,
+  supportText: PropTypes.string,
   thumbnail: PropTypes.string,
   component: PropTypes.string,
   isAvailable: PropTypes.bool,
