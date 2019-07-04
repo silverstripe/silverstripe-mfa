@@ -2,6 +2,7 @@
 
 namespace SilverStripe\MFA\FormField;
 
+use Member;
 use SecurityAdmin;
 use FormField;
 use SilverStripe\MFA\Controller\AdminRegistrationController;
@@ -21,14 +22,12 @@ class RegisteredMFAMethodListField extends FormField
     /**
      * @return array
      */
-    public function getSchemaDataDefaults()
+    public function getSchemaData()
     {
-        $defaults = parent::getSchemaDataDefaults();
-
         $adminController = AdminRegistrationController::singleton();
         $generator = SchemaGenerator::create();
 
-        return array_merge($defaults, [
+        return [
             'schema' => $generator->getSchema($this->value) + [
                 'endpoints' => [
                     'register' => $adminController->Link('register/{urlSegment}'),
@@ -42,7 +41,7 @@ class RegisteredMFAMethodListField extends FormField
                     : null,
                 'resetEndpoint' => SecurityAdmin::singleton()->Link("reset/{$this->value->ID}"),
             ],
-        ]);
+        ];
     }
 
     /**
