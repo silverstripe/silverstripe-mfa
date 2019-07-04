@@ -84,7 +84,7 @@ class RegisteredMethodManager extends SS_Object
         if (!MethodRegistry::create()->isBackupMethod($method)) {
             $this->notification->send(
                 $member,
-                'SilverStripe/MFA/Email/Notification_register',
+                'Notification_register',
                 [
                     'subject' => _t(
                         self::class . '.MFAADDED',
@@ -125,7 +125,7 @@ class RegisteredMethodManager extends SS_Object
             // If there is only one other method (other than backup codes) then set that as the default method
             /** @var RegisteredMethod|null $remainingMethodExceptBackup */
             $remainingMethodExceptBackup = $member->RegisteredMFAMethods()
-                ->filter('MethodClassName:Not', $backupMethod)
+                ->filter('MethodClassName:not', $backupMethod)
                 ->first();
 
             if ($remainingMethodExceptBackup) {
@@ -146,7 +146,7 @@ class RegisteredMethodManager extends SS_Object
 
         $this->notification->send(
             $member,
-            'SilverStripe/MFA/Email/Notification_removed',
+            'Notification_removed',
             [
                 'subject' => _t(
                     self::class . '.MFAREMOVED',
