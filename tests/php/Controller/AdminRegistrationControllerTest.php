@@ -44,7 +44,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
 
     public function testStartRegistrationAssertsValidMethod()
     {
-        $this->logInAs($this->objFromFixture(Member::class, 'sally_smith'));
+        $this->objFromFixture(Member::class, 'sally_smith')->logIn();
 
         $result = $this->get(Controller::join_links(AdminRootController::admin_url(), 'mfa', 'register/foo'));
 
@@ -54,7 +54,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
 
     public function testStartRegistrationEnforcesSudoMode()
     {
-        $this->logInAs($this->objFromFixture(Member::class, 'sally_smith'));
+        $this->objFromFixture(Member::class, 'sally_smith')->logIn();
 
         /** @var SudoModeServiceInterface&PHPUnit_Framework_MockObject_MockObject $sudoModeService */
         $sudoModeService = $this->createMock(SudoModeServiceInterface::class);
@@ -69,7 +69,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
 
     public function testStartRegistrationReturns200Response()
     {
-        $this->logInAs($this->objFromFixture(Member::class, 'sally_smith'));
+        $this->objFromFixture(Member::class, 'sally_smith')->logIn();
         $method = new BasicMathMethod();
 
         $result = $this->get(
@@ -86,7 +86,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
 
     public function testFinishRegistrationGracefullyHandlesInvalidSessions()
     {
-        $this->logInAs($this->objFromFixture(Member::class, 'sally_smith'));
+        $this->objFromFixture(Member::class, 'sally_smith')->logIn();
         $method = new BasicMathMethod();
 
         $result = $this->post(
@@ -107,7 +107,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
     {
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'sally_smith');
-        $this->logInAs($member);
+        $member->logIn();
         $method = new BasicMathMethod();
 
         $store = new SessionStore($member);
@@ -132,7 +132,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
     {
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'sally_smith');
-        $this->logInAs($member);
+        $member->logIn();
         $method = new BasicMathMethod();
 
         $store = new SessionStore($member);
@@ -309,7 +309,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
 
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'sally_smith');
-        $this->logInAs($member);
+        $member->logIn();
         $method = new BasicMathMethod();
 
         $store = new SessionStore($member);
@@ -429,7 +429,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
     {
         /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'sally_smith');
-        $this->logInAs($member);
+        $member->logIn();
         // Give Sally basic math
         $basicMathMethod = new BasicMathMethod();
         RegisteredMethodManager::singleton()->registerForMember($member, $basicMathMethod, ['foo' => 'bar']);

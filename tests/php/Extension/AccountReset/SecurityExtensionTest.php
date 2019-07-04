@@ -22,7 +22,7 @@ class SecurityExtensionTest extends FunctionalTest
     {
         /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'user');
-        $this->logInAs($member);
+        $member->logIn();
 
         $token = $member->generateAccountResetTokenAndStoreHash();
 

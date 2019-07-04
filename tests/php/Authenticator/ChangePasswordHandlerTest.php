@@ -57,7 +57,7 @@ class ChangePasswordHandlerTest extends FunctionalTest
 
     public function testMFADoesNotLoadWhenAUserIsLoggedIn()
     {
-        $this->logInAs('simon');
+        $this->objFromFixture(Member::class, 'simon')->logIn();
         $response = $this->get('Security/changepassword');
         $this->assertContains('OldPassword', $response->getBody());
     }

@@ -105,7 +105,7 @@ class RegisterHandlerTest extends FunctionalTest
      */
     public function testStartRegistrationFailsWhenMethodIsAlreadyRegistered()
     {
-        $this->logInAs('stale-member');
+        $this->objFromFixture(Member::class, 'stale-member')->logIn();
 
         $response = $this->get(self::URL);
         $this->assertEquals(400, $response->getStatusCode());

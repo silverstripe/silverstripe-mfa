@@ -33,7 +33,7 @@ class SchemaGeneratorTest extends SapphireTest
     {
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'sally_smith');
-        $this->logInAs($member);
+        $member->logIn();
 
         $schema = $this->generator->getSchema($member);
 

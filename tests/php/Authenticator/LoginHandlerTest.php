@@ -241,7 +241,7 @@ class LoginHandlerTest extends FunctionalTest
         $member->FirstName = 'Some new';
         $member->Surname = 'member';
         $memberId = $member->write();
-        $this->logInAs($member);
+        $member->logIn();
 
         $response = $this->get(Controller::join_links(Security::login_url(), 'default/mfa/skip'));
 

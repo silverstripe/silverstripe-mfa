@@ -58,7 +58,7 @@ class EnforcementManagerTest extends SapphireTest
         // Sally has "backup codes" as a registered authentication method already
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'sally_smith');
-        $this->logInAs($member);
+        $member->logIn();
 
         $this->assertFalse(EnforcementManager::create()->canSkipMFA($member));
     }
@@ -78,7 +78,7 @@ class EnforcementManagerTest extends SapphireTest
     {
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'sammy_smith');
-        $this->logInAs($member);
+        $member->logIn();
         $this->assertFalse(EnforcementManager::create()->shouldRedirectToMFA($member));
     }
 
@@ -88,7 +88,7 @@ class EnforcementManagerTest extends SapphireTest
 
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'sammy_smith');
-        $this->logInAs($member);
+        $member->logIn();
         $this->assertTrue(EnforcementManager::create()->shouldRedirectToMFA($member));
     }
 
@@ -96,7 +96,7 @@ class EnforcementManagerTest extends SapphireTest
     {
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'reports_user');
-        $this->logInAs($member);
+        $member->logIn();
         $this->assertTrue(EnforcementManager::create()->shouldRedirectToMFA($member));
     }
 
@@ -121,7 +121,7 @@ class EnforcementManagerTest extends SapphireTest
         $this->setSiteConfig(['MFARequired' => true]);
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'sally_smith');
-        $this->logInAs($member);
+        $member->logIn();
 
         $this->assertTrue(EnforcementManager::create()->shouldRedirectToMFA($member));
     }
@@ -134,7 +134,7 @@ class EnforcementManagerTest extends SapphireTest
         $member = $this->objFromFixture(Member::class, 'sally_smith');
         $member->HasSkippedMFARegistration = false;
         $member->write();
-        $this->logInAs($member);
+        $member->logIn();
 
         $this->assertTrue(EnforcementManager::create()->shouldRedirectToMFA($member));
     }
@@ -147,7 +147,7 @@ class EnforcementManagerTest extends SapphireTest
         $member = $this->objFromFixture(Member::class, 'sammy_smith');
         $member->HasSkippedMFARegistration = true;
         $member->write();
-        $this->logInAs($member);
+        $member->logIn();
 
         $this->assertFalse(EnforcementManager::create()->shouldRedirectToMFA($member));
     }
@@ -168,7 +168,7 @@ class EnforcementManagerTest extends SapphireTest
 
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'sally_smith');
-        $this->logInAs($member);
+        $member->logIn();
 
         $this->assertFalse(EnforcementManager::create()->shouldRedirectToMFA($member));
     }
