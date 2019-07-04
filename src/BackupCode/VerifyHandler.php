@@ -2,9 +2,9 @@
 
 namespace SilverStripe\MFA\BackupCode;
 
+use Director;
 use RuntimeException;
 use SS_HTTPRequest as HTTPRequest;
-use SilverStripe\Core\Manifest\ModuleLoader; // Not present in SS3
 use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use MFARegisteredMethod as RegisteredMethod;
 use SilverStripe\MFA\Service\Notification;
@@ -15,7 +15,7 @@ use SilverStripe\MFA\Store\StoreInterface;
 class VerifyHandler implements VerifyHandlerInterface
 {
     private static $dependencies = [
-        'NotificationService' => '%$' . Notification::class
+        'NotificationService' => '%$SilverStripe\\MFA\\Service\\Notification'
     ];
 
     /**
@@ -41,8 +41,7 @@ class VerifyHandler implements VerifyHandlerInterface
     {
         // Provide a path to the graphic shown
         return [
-            'graphic' => ModuleLoader::getModule('silverstripe/mfa')
-                ->getResource('client/dist/images/recovery-codes.svg')->getURL(),
+            'graphic' => Director::baseFolder() . '/mfa/client/dist/images/recovery-codes.svg',
         ];
     }
 

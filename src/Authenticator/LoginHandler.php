@@ -23,7 +23,7 @@ use SilverStripe\Security\MemberAuthenticator\LoginHandler as BaseLoginHandler; 
 use MemberLoginForm;
 use Security;
 
-class LoginHandler extends BaseLoginHandler
+class LoginHandler /*extends BaseLoginHandler*/
 {
     use BaseHandlerTrait;
     use VerificationHandlerTrait;

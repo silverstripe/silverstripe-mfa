@@ -2,6 +2,7 @@
 
 namespace SilverStripe\MFA\Tests\Service;
 
+use Config;
 use SapphireTest;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\SchemaGenerator;
@@ -22,7 +23,8 @@ class SchemaGeneratorTest extends SapphireTest
     {
         parent::setUp();
 
-        MethodRegistry::config()->set('methods', [
+        Config::inst()->remove(MethodRegistry::class, 'methods');
+        Config::inst()->update(MethodRegistry::class, 'methods', [
             BasicMathMethod::class,
         ]);
 

@@ -3,15 +3,17 @@
 namespace SilverStripe\MFA\Service;
 
 use Config;
+use Director;
 use Injector;
-use SilverStripe\Core\Manifest\ModuleLoader; // Not present in SS3
+use Member;
 use SilverStripe\MFA\Authenticator\LoginHandler;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\State\AvailableMethodDetailsInterface;
 use SilverStripe\MFA\State\RegisteredMethodDetailsInterface;
-use Member;
 use SS_Object;
+
+// Not present in SS3
 
 /**
  * Generates a multi-factor authentication frontend app schema from the given request
@@ -138,13 +140,13 @@ class SchemaGenerator extends SS_Object
      */
     protected function getResources()
     {
-        $module = ModuleLoader::getModule('silverstripe/mfa');
+        $base = Director::baseFolder() . 'mfa/';
 
         return [
             'user_docs_url' => Config::inst()->get(LoginHandler::class, 'user_docs_url'),
-            'extra_factor_image_url' => $module->getResource('client/dist/images/extra-protection.svg')->getURL(),
-            'unique_image_url' => $module->getResource('client/dist/images/unique.svg')->getURL(),
-            'more_options_image_url' => $module->getResource('client/dist/images/more-options.svg')->getURL(),
+            'extra_factor_image_url' => $base . 'client/dist/images/extra-protection.svg',
+            'unique_image_url' => $base . 'client/dist/images/unique.svg',
+            'more_options_image_url' => $base . 'client/dist/images/more-options.svg',
         ];
     }
 }

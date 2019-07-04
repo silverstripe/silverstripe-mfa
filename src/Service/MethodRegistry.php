@@ -31,7 +31,7 @@ class MethodRegistry extends SS_Object
      * @config
      * @var string
      */
-    private static $default_backup_method = Method::class;
+    private static $default_backup_method = 'SilverStripe\\MFA\\BackupCode\\Method';
 
     /**
      * Request cache of instantiated method instances
