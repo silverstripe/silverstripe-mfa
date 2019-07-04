@@ -12,11 +12,11 @@ Group:
   admingroup:
     Title: Create, edit and delete pages
     Code: admingroup
-    Permissions: =>SilverStripe\Security\Permission.cmsmain1
+    Permissions: =>Permission.cmsmain1
   reportsgroup:
     Title: View reports
     Code: reportsgroup
-    Permissions: =>SilverStripe\Security\Permission.reports
+    Permissions: =>Permission.reports
 
 Member:
   sally_smith:

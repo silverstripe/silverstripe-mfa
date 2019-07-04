@@ -2,6 +2,7 @@
 
 namespace SilverStripe\MFA\Tests\Service;
 
+use Config;
 use SapphireTest;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Service\EnforcementManager;
@@ -21,11 +22,12 @@ class EnforcementManagerTest extends SapphireTest
 
         DBDatetime::set_mock_now('2019-01-25 12:00:00');
 
-        MethodRegistry::config()->set('methods', [
+        Config::inst()->remove(MethodRegistry::class, 'methods');
+        Config::inst()->update(MethodRegistry::class, 'methods', [
             BasicMathMethod::class,
         ]);
 
-        EnforcementManager::config()->set('requires_admin_access', true);
+        Config::inst()->update(EnforcementManager::class, 'requires_admin_access', true);
     }
 
     public function testCannotSkipWhenMFAIsRequiredWithNoGracePeriod()
@@ -84,7 +86,7 @@ class EnforcementManagerTest extends SapphireTest
 
     public function testShouldRedirectToMFAWhenUserDoesNotHaveCMSAccessButTheCheckIsDisabledWithConfig()
     {
-        EnforcementManager::config()->set('requires_admin_access', false);
+        Config::inst()->update(EnforcementManager::class, 'requires_admin_access', false);
 
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'sammy_smith');
@@ -154,7 +156,7 @@ class EnforcementManagerTest extends SapphireTest
 
     public function testShouldNotRedirectToMFAWhenConfigIsDisabled()
     {
-        EnforcementManager::config()->set('enabled', false);
+        Config::inst()->update(EnforcementManager::class, 'enabled', false);
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'sally_smith');
         $shouldRedirect = EnforcementManager::create()->shouldRedirectToMFA($member);
@@ -164,7 +166,9 @@ class EnforcementManagerTest extends SapphireTest
     public function testShouldNotRedirectToMFAWhenNoMethodsAreRegisteredInTheSystem()
     {
         $this->setSiteConfig(['MFARequired' => true]);
-        MethodRegistry::config()->set('methods', []);
+
+        Config::inst()->remove(MethodRegistry::class, 'methods');
+        Config::inst()->update(MethodRegistry::class, 'methods', []);
 
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'sally_smith');
