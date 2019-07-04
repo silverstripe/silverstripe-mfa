@@ -2,6 +2,7 @@
 
 namespace SilverStripe\MFA\Service;
 
+use Config;
 use SapphireTest;
 use SilverStripe\MFA\State\BackupCode;
 
@@ -11,9 +12,10 @@ class BackupCodeGeneratorTest extends SapphireTest
     {
         parent::setUp();
 
-        BackupCodeGenerator::config()
-            ->set('backup_code_count', 3)
-            ->set('backup_code_length', 6);
+        Config::inst()->remove(BackupCodeGenerator::class, 'backup_code_count');
+        Config::inst()->update(BackupCodeGenerator::class, 'backup_code_count', 3);
+        Config::inst()->remove(BackupCodeGenerator::class, 'backup_code_length');
+        Config::inst()->update(BackupCodeGenerator::class, 'backup_code_length', 6);
     }
 
     public function testGenerate()

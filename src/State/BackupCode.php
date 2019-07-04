@@ -35,9 +35,13 @@ class BackupCode extends SS_Object implements JsonSerializable
     /**
      * @param string $code
      * @param string $hash
+     * @param string $algorithm
+     * @param string $salt
      */
     public function __construct(string $code, string $hash, string $algorithm, string $salt)
     {
+        parent::__construct();
+
         $this->code = $code;
         $this->hash = $hash;
         $this->algorithm = $algorithm;
