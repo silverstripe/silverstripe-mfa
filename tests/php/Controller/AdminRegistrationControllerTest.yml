@@ -5,7 +5,7 @@ Group:
   admingroup:
     Title: Admin
     Code: admin
-    Permissions: '=>SilverStripe\Security\Permission.admin'
+    Permissions: =>Permission.admin
 Member:
   sally_smith:
     FirstName: Sally

@@ -12,7 +12,7 @@ Group:
   admingroup:
     Title: Create, edit and delete pages
     Code: admingroup
-    Permissions: =>SilverStripe\Security\Permission.admin
+    Permissions: =>Permission.admin
 
 Member:
   guy:
