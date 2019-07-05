@@ -7,6 +7,7 @@ use SilverStripe\Admin\SecurityAdmin;
 use SilverStripe\Forms\FormField;
 use SilverStripe\MFA\Controller\AdminRegistrationController;
 use SilverStripe\MFA\Model\RegisteredMethod;
+use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Service\SchemaGenerator;
@@ -67,6 +68,7 @@ class RegisteredMFAMethodListField extends FormField
                     ? $this->getBackupMethod()->Created
                     : null,
                 'resetEndpoint' => SecurityAdmin::singleton()->Link("reset/{$this->value->ID}"),
+                'isMFARequired' => EnforcementManager::create()->isMFARequired(),
             ],
         ]);
     }

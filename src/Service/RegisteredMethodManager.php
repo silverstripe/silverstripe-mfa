@@ -5,6 +5,7 @@ namespace SilverStripe\MFA\Service;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
@@ -105,6 +106,36 @@ class RegisteredMethodManager
     }
 
     /**
+     * Determines if a method can be removed
+     *
+     * By default this is false if MFA is required and the method is the last on the Member (besides the backup method)
+     * but the funcation provides a hook point for extensibility e.g. if an site requires a particular method to be in
+     * use by a subset of members - admins must use U2F but normal users can use TOTP.
+     *
+     * @param Member $member
+     * @param MethodInterface $method
+     * @return bool
+     */
+    public function canRemoveMethod(Member $member, MethodInterface $method): bool
+    {
+        $removable = true;
+        $backupMethodClass = MethodRegistry::config()->get('default_backup_method');
+        $remainingMethods = $member->RegisteredMFAMethods()
+            ->filter('MethodClassName:Not', $backupMethodClass)
+            ->count();
+        $mfaIsRequired = Injector::inst()->get(EnforcementManager::class)->isMFARequired();
+
+        // This is the last method (besides the backup method), and MFA is required
+        if ($mfaIsRequired && $remainingMethods === 1) {
+            $removable = false;
+        }
+
+        $this->extend(__FUNCTION__, $member, $method);
+
+        return $removable;
+    }
+
+    /**
      * Delete a registration for the given method from the given member, provided it exists. This will also remove a
      * registered back-up method if it will leave the member with only the back-up method remaing
      *
@@ -114,10 +145,11 @@ class RegisteredMethodManager
      */
     public function deleteFromMember(Member $member, MethodInterface $method): bool
     {
-        $method = $this->getFromMember($member, $method);
-        if (!$method) {
+        if (!$method || !$this->canRemoveMethod($member, $method)) {
             return false;
         }
+
+        $method = $this->getFromMember($member, $method);
 
         $method->delete();
 

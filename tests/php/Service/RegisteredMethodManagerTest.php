@@ -3,10 +3,12 @@
 namespace SilverStripe\MFA\Tests\Service;
 
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\MFA\BackupCode\Method as BackupCodeMethod;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Model\RegisteredMethod;
+use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method as BasicMathMethod;
@@ -176,5 +178,43 @@ class RegisteredMethodManagerTest extends SapphireTest
 
         $this->assertNull(DataObject::get_by_id(RegisteredMethod::class, $backupMethod->ID));
         $this->assertNull(DataObject::get_by_id(RegisteredMethod::class, $mathMethod->ID));
+    }
+
+    public function testCanRemoveTheOnlyMethodWhenMFAIsOptional()
+    {
+        Config::modify()->set(MethodRegistry::class, 'default_backup_method', BackupCodeMethod::class);
+        $this->registerServiceForMFAToBeRequired(false);
+        $jane = $this->objFromFixture(Member::class, 'jane_doe');
+        $method = $this->objFromFixture(RegisteredMethod::class, 'math');
+        $this->assertTrue(RegisteredMethodManager::create()->canRemoveMethod($jane, $method->getMethod()));
+    }
+
+    public function testCannotRemoveTheOnlyMethodWhenMFAIsRequired()
+    {
+        Config::modify()->set(MethodRegistry::class, 'default_backup_method', BackupCodeMethod::class);
+        $this->registerServiceForMFAToBeRequired(true);
+        $jane = $this->objFromFixture(Member::class, 'jane_doe');
+        $method = $this->objFromFixture(RegisteredMethod::class, 'math');
+        $this->assertFalse(RegisteredMethodManager::create()->canRemoveMethod($jane, $method->getMethod()));
+    }
+
+    public function testCanRemoveOneOfTwoMethodsWhenMFAIsRequired()
+    {
+        Config::modify()->set(MethodRegistry::class, 'default_backup_method', BackupCodeMethod::class);
+        $this->registerServiceForMFAToBeRequired(true);
+        $bob = $this->objFromFixture(Member::class, 'bob_jones');
+        $method = $this->objFromFixture(RegisteredMethod::class, 'math2');
+        $this->assertTrue(RegisteredMethodManager::create()->canRemoveMethod($bob, $method->getMethod()));
+    }
+
+    private function registerServiceForMFAToBeRequired($required = false)
+    {
+        $enforcementMock = $this->getMockBuilder(EnforcementManager::class)
+            ->setMethods(['isMFARequired'])
+            ->getMock();
+        $enforcementMock
+            ->method('isMFARequired')
+            ->willReturn($required);
+        Injector::inst()->registerService($enforcementMock, EnforcementManager::class);
     }
 }
