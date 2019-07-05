@@ -2,6 +2,9 @@
 
 namespace SilverStripe\MFA\Controller;
 
+use Controller;
+use Session;
+use SilverStripe\MFA\JSONResponse;
 use SS_Log;
 use LeftAndMain;
 use SS_HTTPRequest as HTTPRequest;
@@ -26,6 +29,7 @@ class AdminRegistrationController extends LeftAndMain
 {
     use RegistrationHandlerTrait;
     use BaseHandlerTrait;
+    use JSONResponse;
 
     private static $url_segment = 'mfa';
 
@@ -48,16 +52,15 @@ class AdminRegistrationController extends LeftAndMain
     /**
      * Start a registration for a method on the currently logged in user
      *
-     * @param HTTPRequest $request
      * @return HTTPResponse
      */
-    public function startRegistration(HTTPRequest $request): HTTPResponse
+    public function startRegistration(): HTTPResponse
     {
         // Create a fresh store from the current logged in user
         $member = Member::currentUser();
         $store = $this->createStore($member);
 
-        if (!$this->getSudoModeService()->check($request->getSession())) {
+        if (!$this->getSudoModeService()->check($this->getSession())) {
             return $this->jsonResponse(
                 ['errors' => [_t(__CLASS__ . '.INVALID_SESSION', 'Invalid session. Please refresh and try again.')]],
                 400
@@ -65,7 +68,7 @@ class AdminRegistrationController extends LeftAndMain
         }
 
         // Get the specified method
-        $method = MethodRegistry::singleton()->getMethodByURLSegment($request->param('Method'));
+        $method = MethodRegistry::singleton()->getMethodByURLSegment($this->getRequest()->param('Method'));
 
         if (!$method) {
             return $this->jsonResponse(
@@ -75,7 +78,7 @@ class AdminRegistrationController extends LeftAndMain
         }
 
         $response = $this->createStartRegistrationResponse($store, $method, true);
-        $store->save($request);
+        $store->save($this->getRequest());
 
         return $response;
     }
@@ -90,7 +93,7 @@ class AdminRegistrationController extends LeftAndMain
     {
         $store = $this->getStore();
 
-        if (!$store || !$this->getSudoModeService()->check($request->getSession())) {
+        if (!$store || !$this->getSudoModeService()->check($this->getSession())) {
             return $this->jsonResponse(
                 ['errors' => [_t(__CLASS__ . '.INVALID_SESSION', 'Invalid session. Please refresh and try again.')]],
                 400
@@ -181,11 +184,12 @@ class AdminRegistrationController extends LeftAndMain
      * @param HTTPRequest $request
      * @return HTTPResponse
      */
-    public function setDefaultRegisteredMethod(HTTPRequest $request): HTTPResponse
+    public function setDefaultRegisteredMethod(): HTTPResponse
     {
+        $request = $this->getRequest();
         // Ensure CSRF and sudo-mode protection
         if (!SecurityToken::inst()->checkRequest($request)
-            || !$this->getSudoModeService()->check($request->getSession())
+            || !$this->getSudoModeService()->check($this->getSession())
         ) {
             return $this->jsonResponse(
                 ['errors' => [_t(__CLASS__ . '.CSRF_FAILURE', 'Request timed out, please try again')]],
@@ -235,19 +239,5 @@ class AdminRegistrationController extends LeftAndMain
         }
 
         return $this->jsonResponse(['success' => true]);
-    }
-
-    /**
-     * Respond with the given array as a JSON response
-     *
-     * @param array $response
-     * @param int $code The HTTP response code to set on the response
-     * @return HTTPResponse
-     */
-    protected function jsonResponse(array $response, int $code = 200): HTTPResponse
-    {
-        return HTTPResponse::create(json_encode($response))
-            ->addHeader('Content-Type', 'application/json')
-            ->setStatusCode($code);
     }
 }

@@ -18,6 +18,7 @@ use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\State\AvailableMethodDetails;
 use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method as BasicMathMethod;
+use SS_Log;
 use ValidationException;
 use Member;
 use Security;
@@ -32,9 +33,8 @@ class AdminRegistrationControllerTest extends FunctionalTest
     {
         parent::setUp();
 
-        MethodRegistry::config()->set('methods', [
-            BasicMathMethod::class,
-        ]);
+        Config::inst()->remove(MethodRegistry::class, 'methods');
+        Config::inst()->update(MethodRegistry::class, 'methods', [BasicMathMethod::class]);
 
         /** @var SudoModeServiceInterface&PHPUnit_Framework_MockObject_MockObject $sudoModeService */
         $sudoModeService = $this->createMock(SudoModeServiceInterface::class);
@@ -46,7 +46,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
     {
         $this->objFromFixture(Member::class, 'sally_smith')->logIn();
 
-        $result = $this->get(Controller::join_links(AdminRootController::admin_url(), 'mfa', 'register/foo'));
+        $result = $this->get(Controller::join_links('admin', 'mfa', 'register/foo'));
 
         $this->assertSame(400, $result->getStatusCode());
         $this->assertContains('No such method is available', $result->getBody());
@@ -61,7 +61,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
         $sudoModeService->expects($this->any())->method('check')->willReturn(false);
         Injector::inst()->registerService($sudoModeService, SudoModeServiceInterface::class);
 
-        $result = $this->get(Controller::join_links(AdminRootController::admin_url(), 'mfa', 'register/foo'));
+        $result = $this->get(Controller::join_links('admin', 'mfa', 'register/foo'));
 
         $this->assertSame(400, $result->getStatusCode());
         $this->assertContains('Invalid session. Please refresh and try again.', (string) $result->getBody());
@@ -74,7 +74,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
 
         $result = $this->get(
             Controller::join_links(
-                AdminRootController::admin_url(),
+                'admin',
                 'mfa',
                 'register',
                 $method->getURLSegment()
@@ -91,7 +91,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
 
         $result = $this->post(
             Controller::join_links(
-                AdminRootController::admin_url(),
+                'admin',
                 'mfa',
                 'register',
                 $method->getURLSegment()
@@ -116,7 +116,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
 
         $result = $this->post(
             Controller::join_links(
-                AdminRootController::admin_url(),
+                'admin',
                 'mfa',
                 'register',
                 'foo'
@@ -141,7 +141,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
 
         $result = $this->post(
             Controller::join_links(
-                AdminRootController::admin_url(),
+                'admin',
                 'mfa',
                 'register',
                 $method->getURLSegment()
@@ -159,7 +159,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
     {
         SecurityToken::enable();
 
-        $controller = new AdminRegistrationController();
+        $controller = AdminRegistrationController::singleton();
         $request = new HTTPRequest('DELETE', '');
         $response = $controller->removeRegisteredMethod($request);
 
@@ -181,7 +181,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
         // Prep a mock for deleting methods
         $registeredMethodManager = $this->scaffoldRegisteredMethodManagerMock();
 
-        $controller = new AdminRegistrationController();
+        $controller = AdminRegistrationController::singleton();
 
         // Method not even provided
         $request = new HTTPRequest('DELETE', '');
@@ -216,7 +216,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
         // Prep a mock for deleting methods
         $registeredMethodManager = $this->scaffoldRegisteredMethodManagerMock();
 
-        $controller = new AdminRegistrationController();
+        $controller = AdminRegistrationController::singleton();
 
         $request = new HTTPRequest('DELETE', '');
         $basicMathMethod = new BasicMathMethod();
@@ -242,7 +242,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
         // Prep a mock for deleting methods
         $registeredMethodManager = $this->scaffoldRegisteredMethodManagerMock();
 
-        $controller = new AdminRegistrationController();
+        $controller = AdminRegistrationController::singleton();
 
         $request = new HTTPRequest('DELETE', '');
         $basicMathMethod = new BasicMathMethod();
@@ -266,7 +266,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
         // Prep a mock for deleting methods
         $registeredMethodManager = $this->scaffoldRegisteredMethodManagerMock();
 
-        $controller = new AdminRegistrationController();
+        $controller = AdminRegistrationController::singleton();
 
         $request = new HTTPRequest('DELETE', '');
         $basicMathMethod = new BasicMathMethod();
@@ -320,7 +320,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
 
         $result = $this->post(
             Controller::join_links(
-                AdminRootController::admin_url(),
+                'admin',
                 'mfa',
                 'register',
                 $method->getURLSegment()
@@ -343,38 +343,43 @@ class AdminRegistrationControllerTest extends FunctionalTest
      */
     public function testAnyUserCanView()
     {
-        $this->assertFalse(AdminRegistrationController::getRequiredPermissions());
+        $this->objFromFixture(Member::class, 'sally_smith')->logIn();
+
+        $this->assertTrue(AdminRegistrationController::singleton()->canView());
     }
 
     public function testSetDefaultRegisteredMethodChecksCSRF()
     {
         SecurityToken::enable();
 
+        $controller = AdminRegistrationController::singleton();
         $request = new HTTPRequest('POST', '');
-        $request->setSession($this->session());
-        $controller = new AdminRegistrationController();
+        $controller->setSession($this->session());
+        $controller->setRequest($request);
 
-        $response = $controller->setDefaultRegisteredMethod($request);
+        $response = $controller->setDefaultRegisteredMethod();
 
         $this->assertSame(400, $response->getStatusCode());
         $this->assertContains('Request timed out', $response->getBody());
 
         $token = SecurityToken::inst();
         $request = new HTTPRequest('POST', '', [$token->getName() => $token->getValue()]);
-        $request->setSession($this->session());
+        $controller->setSession($this->session());
+        $controller->setRequest($request);
 
-        $response = $controller->setDefaultRegisteredMethod($request);
+        $response = $controller->setDefaultRegisteredMethod();
         $this->assertNotContains('Request timed out', $response->getBody());
     }
 
     public function testSetDefaultRegisteredMethodFailsWhenMethodWasNotFound()
     {
+        $controller = AdminRegistrationController::singleton();
         $request = new HTTPRequest('POST', '');
         $request->setRouteParams(['Method' => 'doesnotexist']);
-        $request->setSession($this->session());
-        $controller = new AdminRegistrationController();
+        $controller->setRequest($request);
+        $controller->setSession($this->session());
 
-        $response = $controller->setDefaultRegisteredMethod($request);
+        $response = $controller->setDefaultRegisteredMethod();
 
         $this->assertSame(400, $response->getStatusCode());
         $this->assertContains('No such method is available', $response->getBody());
@@ -385,46 +390,17 @@ class AdminRegistrationControllerTest extends FunctionalTest
         // Arbitrary user, no MFA configured for it
         $this->logInWithPermission();
 
+        $controller = AdminRegistrationController::singleton();
         $request = new HTTPRequest('POST', '');
         $basicMathMethod = new BasicMathMethod();
         $request->setRouteParams(['Method' => $basicMathMethod->getURLSegment()]);
-        $request->setSession($this->session());
-        $controller = new AdminRegistrationController();
+        $controller->setRequest($request);
+        $controller->setSession($this->session());
 
-        $response = $controller->setDefaultRegisteredMethod($request);
+        $response = $controller->setDefaultRegisteredMethod();
 
         $this->assertSame(400, $response->getStatusCode());
         $this->assertContains('No such registered method is available', $response->getBody());
-    }
-
-    public function testSetDefaultRegisteredMethodHandlesExceptionsOnWrite()
-    {
-        $registeredMethodManager = $this->scaffoldRegisteredMethodManagerMock();
-
-        $controller = new AdminRegistrationController();
-        /** @var LoggerInterface&PHPUnit_Framework_MockObject_MockObject $loggerMock */
-        $loggerMock = $this->createMock(LoggerInterface::class);
-        $controller->setLogger($loggerMock);
-
-        $request = new HTTPRequest('POST', '');
-        $request->setSession($this->session());
-        $basicMathMethod = new BasicMathMethod();
-        $request->setRouteParams(['Method' => $basicMathMethod->getURLSegment()]);
-
-        $registeredMethodManager
-            ->expects($this->once())
-            ->method('getFromMember')
-            ->willReturn(new RegisteredMethod());
-
-        /** @var Member&PHPUnit_Framework_MockObject_MockObject $memberMock */
-        $memberMock = $this->createMock(Member::class);
-        $memberMock->method('write')->willThrowException(new ValidationException());
-        Security::setCurrentUser($memberMock);
-
-        $loggerMock->expects($this->once())->method('debug');
-        $response = $controller->setDefaultRegisteredMethod($request);
-        $this->assertSame(400, $response->getStatusCode());
-        $this->assertContains('Could not set the default method for the user', $response->getBody());
     }
 
     public function testSetDefaultRegisteredMethod()
@@ -437,12 +413,13 @@ class AdminRegistrationControllerTest extends FunctionalTest
         RegisteredMethodManager::singleton()->registerForMember($member, $basicMathMethod, ['foo' => 'bar']);
 
         // Set basic math as the default method
-        $controller = new AdminRegistrationController();
+        $controller = AdminRegistrationController::singleton();
         $request = new HTTPRequest('POST', '');
-        $request->setSession($this->session());
         $request->setRouteParams(['Method' => $basicMathMethod->getURLSegment()]);
+        $controller->setRequest($request);
+        $controller->setSession($this->session());
 
-        $response = $controller->setDefaultRegisteredMethod($request);
+        $response = $controller->setDefaultRegisteredMethod();
         $this->assertSame(200, $response->getStatusCode());
     }
 }
