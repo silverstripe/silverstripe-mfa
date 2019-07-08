@@ -158,6 +158,7 @@ class RegisteredMFAMethodListField extends Component {
    * @return {Array<MethodListItem>}
    */
   renderBaseMethods() {
+    const { isMFARequired } = this.props;
     const baseMethods = this.getBaseMethods();
 
     if (!baseMethods.length) {
@@ -172,7 +173,7 @@ class RegisteredMFAMethodListField extends Component {
           method,
           key: method.urlSegment,
           isDefaultMethod: defaultMethod && method.urlSegment === defaultMethod,
-          canRemove: !readOnly,
+          canRemove: !readOnly && !(isMFARequired && baseMethods.length === 1),
           canReset: !readOnly,
         };
 
@@ -269,6 +270,7 @@ RegisteredMFAMethodListField.propTypes = {
   backupMethod: registeredMethodShape,
   defaultMethod: PropTypes.string,
   readOnly: PropTypes.bool,
+  isMFARequired: PropTypes.bool,
   initialDefaultMethod: PropTypes.string,
   initialRegisteredMethods: PropTypes.arrayOf(registeredMethodShape),
   initialAvailableMethods: PropTypes.arrayOf(availableMethodShape),
