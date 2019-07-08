@@ -130,7 +130,7 @@ class RegisteredMethodManager
             $removable = false;
         }
 
-        $this->extend(__FUNCTION__, $member, $method);
+        $this->extend(__FUNCTION__, $removable, $member, $method);
 
         return $removable;
     }
