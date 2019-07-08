@@ -63,7 +63,7 @@ class SiteConfigExtension extends DataExtension
 
         $mfaOptions = CompositeField::create($mfaOptions, $mfaGraceEnd)
             ->setTitle(DBField::create_field(
-                'HTMLFragment',
+                'HTMLText',
                 _t(__CLASS__ . '.MULTI_FACTOR_AUTHENTICATION', 'Multi Factor Authentication (MFA)')
                 . $this->getHelpLink()
             ));

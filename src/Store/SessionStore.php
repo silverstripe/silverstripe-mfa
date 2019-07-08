@@ -4,6 +4,7 @@ namespace SilverStripe\MFA\Store;
 
 use RuntimeException;
 use Serializable;
+use Session;
 use SS_HTTPRequest as HTTPRequest;
 use SilverStripe\MFA\Exception\InvalidMethodException;
 use SilverStripe\MFA\Extension\MemberExtension;

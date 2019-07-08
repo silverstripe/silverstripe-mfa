@@ -47,7 +47,7 @@ trait VerificationHandlerTrait
             $registeredMethod = $member->DefaultRegisteredMethod;
         }
 
-        $response = HTTPResponse::create()
+        $response = (new HTTPResponse)
             ->addHeader('Content-Type', 'application/json');
 
         // We can't proceed with login if the Member doesn't have this method registered

@@ -140,7 +140,7 @@ class SchemaGenerator extends SS_Object
      */
     protected function getResources()
     {
-        $base = Director::baseFolder() . 'mfa/';
+        $base = '/mfa/';
 
         return [
             'user_docs_url' => Config::inst()->get(LoginHandler::class, 'user_docs_url'),

@@ -42,7 +42,7 @@ trait RegistrationHandlerTrait
         // Sanity check that the method hasn't already been registered
         $existingRegisteredMethod = RegisteredMethodManager::singleton()->getFromMember($member, $method);
 
-        $response = HTTPResponse::create()
+        $response = (new HTTPResponse())
             ->addHeader('Content-Type', 'application/json');
 
         if (!$allowReregistration && $existingRegisteredMethod) {

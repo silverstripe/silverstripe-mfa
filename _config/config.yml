@@ -1,13 +1,10 @@
 ---
 name: mfa-authenticator
-After:
-  - #coresecurity
 ---
-Injector:
-  Security:
-    properties:
-      Authenticators:
-        default: %$SilverStripe\MFA\Authenticator\MemberAuthenticator
+Authenticator:
+  authenticators:
+   - SilverStripe\MFA\Authenticator\MemberAuthenticator
+  default_authenticator: SilverStripe\MFA\Authenticator\MemberAuthenticator
 ---
 name: mfa-memberextension
 ---

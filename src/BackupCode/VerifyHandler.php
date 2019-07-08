@@ -2,15 +2,14 @@
 
 namespace SilverStripe\MFA\BackupCode;
 
-use Director;
-use RuntimeException;
-use SS_HTTPRequest as HTTPRequest;
-use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use MFARegisteredMethod as RegisteredMethod;
+use RuntimeException;
+use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Service\Notification;
 use SilverStripe\MFA\State\BackupCode;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
+use SS_HTTPRequest as HTTPRequest;
 
 class VerifyHandler implements VerifyHandlerInterface
 {
@@ -41,7 +40,7 @@ class VerifyHandler implements VerifyHandlerInterface
     {
         // Provide a path to the graphic shown
         return [
-            'graphic' => Director::baseFolder() . '/mfa/client/dist/images/recovery-codes.svg',
+            'graphic' => '/mfa/client/dist/images/recovery-codes.svg',
         ];
     }
 

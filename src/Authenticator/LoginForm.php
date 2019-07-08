@@ -2,12 +2,15 @@
 
 namespace SilverStripe\MFA\Authenticator;
 
-use SS_HTTPRequest as HTTPRequest;
-use SS_HTTPResponse as HTTPResponse;
-use Injector;
+use Controller;
+use Member;
+use MemberLoginForm;
+use Security;
+use Session;
 use SilverStripe\MFA\Exception\InvalidMethodException;
 use SilverStripe\MFA\Exception\MemberNotFoundException;
 use SilverStripe\MFA\Extension\MemberExtension;
+use SilverStripe\MFA\JSONResponse;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\RequestHandler\BaseHandlerTrait;
 use SilverStripe\MFA\RequestHandler\RegistrationHandlerTrait;
@@ -15,19 +18,17 @@ use SilverStripe\MFA\RequestHandler\VerificationHandlerTrait;
 use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\SchemaGenerator;
+use SS_HTTPRequest as HTTPRequest;
+use SS_HTTPResponse as HTTPResponse;
 use ValidationException;
 use ValidationResult;
-use SilverStripe\Security\IdentityStore; // Not present in SS3
-use Member;
-use SilverStripe\Security\MemberAuthenticator\LoginHandler as BaseLoginHandler; // Not present in SS3
-use MemberLoginForm;
-use Security;
 
-class LoginHandler /*extends BaseLoginHandler*/
+class LoginForm extends MemberLoginForm
 {
     use BaseHandlerTrait;
     use VerificationHandlerTrait;
     use RegistrationHandlerTrait;
+    use JSONResponse;
 
     const SESSION_KEY = 'MFALogin';
 
@@ -66,24 +67,28 @@ class LoginHandler /*extends BaseLoginHandler*/
      *
      * @inheritdoc
      */
-    public function doLogin($data, MemberLoginForm $form, HTTPRequest $request)
+    public function doLogin($data)
     {
         /** @var Member&MemberExtension $member */
-        $member = $this->checkLogin($data, $request, $result);
+        $member = call_user_func_array(array($this->authenticator_class, 'authenticate'), array($data, $this));
         $enforcementManager = EnforcementManager::singleton();
 
         // If there's no member it's an invalid login. We'll delegate this to the parent
         // Additionally if there are no MFA methods registered then we will also delegate
-        if (!$member || !$this->getMethodRegistry()->hasMethods()) {
-            return parent::doLogin($data, $form, $request);
+        if (
+            !$member
+            || !$this->getMethodRegistry()->hasMethods()
+            || !$enforcementManager->shouldRedirectToMFA($member)
+        ) {
+            return parent::dologin($data);
         }
 
         // Enable sudo mode. This would usually be done by the default login handler's afterLogin() hook.
-        $this->getSudoModeService()->activate($request->getSession());
+        $this->getSudoModeService()->activate($this->controller->getSession());
 
         // Create a store for handling MFA for this member
         $store = $this->createStore($member);
-        $store->save($request);
+        $store->save($this->request);
 
         // Store the BackURL for use after the process is complete
         if (!empty($data)) {
@@ -96,14 +101,11 @@ class LoginHandler /*extends BaseLoginHandler*/
             Session::set(static::SESSION_KEY . '.mustLogin', true);
         }
 
-        // Bypass the MFA UI if the user can and has skipped it or MFA is not enabled
-        if (!$enforcementManager->shouldRedirectToMFA($member)) {
-            $this->doPerformLogin($request, $member);
-            return $this->redirectAfterSuccessfulLogin();
-        }
+        // Ensure session attributes are actually saved
+        Session::save();
 
         // Redirect to the MFA step
-        return $this->redirect($this->link('mfa'));
+        return $this->controller->redirect($this->makeLink('mfa'));
     }
 
     /**
@@ -112,19 +114,22 @@ class LoginHandler /*extends BaseLoginHandler*/
      *
      * @return HTTPResponse|array
      */
-    public function mfa(HTTPRequest $request)
+    public function mfa()
     {
         $store = $this->getStore();
-        if (!$store || !$store->getMember() || !$this->getSudoModeService()->check($request->getSession())) {
-            return $this->redirectBack();
+        if (!$store || !$store->getMember() || !$this->getSudoModeService()->check($this->controller->getSession())) {
+            if (!$this->getRequest()->requestVar('BackURL')) {
+                return $this->controller->redirect(Security::login_url());
+            }
+            return $this->controller->redirectBack();
         }
 
         $this->applyRequirements();
 
-        return [
-            'Form' => $this->renderWith($this->getViewerTemplates()),
+        return $this->customise([
+            'Form' => $this->renderWith('LoginHandler'),
             'ClassName' => 'mfa',
-        ];
+        ])->renderWith('Security');
     }
 
     /**
@@ -140,16 +145,16 @@ class LoginHandler /*extends BaseLoginHandler*/
             return $this->jsonResponse(
                 $schema + [
                     'endpoints' => [
-                        'register' => $this->Link('mfa/register/{urlSegment}'),
-                        'verify' => $this->Link('mfa/verify/{urlSegment}'),
-                        'complete' => $this->Link('mfa/complete'),
-                        'skip' => $this->Link('mfa/skip'),
+                        'register' => $this->makeLink('mfa/register/{urlSegment}'),
+                        'verify' => $this->makeLink('mfa/verify/{urlSegment}'),
+                        'complete' => $this->makeLink('mfa/complete'),
+                        'skip' => $this->makeLink('mfa/skip'),
                     ],
                 ]
             );
         } catch (MemberNotFoundException $exception) {
             // If we don't have a valid member we shouldn't be here...
-            return $this->redirectBack();
+            return $this->controller->redirectBack();
         }
     }
 
@@ -166,7 +171,7 @@ class LoginHandler /*extends BaseLoginHandler*/
         $loggedInMember = Member::currentUser();
 
         if (($loggedInMember === null && $sessionMember === null)
-            || !$this->getSudoModeService()->check($request->getSession())
+            || !$this->getSudoModeService()->check($this->controller->getSession())
         ) {
             return $this->jsonResponse(
                 ['errors' => [
@@ -229,7 +234,7 @@ class LoginHandler /*extends BaseLoginHandler*/
         $loggedInMember = Member::currentUser();
 
         if (($loggedInMember === null && $sessionMember === null)
-            || !$this->getSudoModeService()->check($request->getSession())
+            || !$this->getSudoModeService()->check($this->controller->getSession())
         ) {
             return $this->jsonResponse(
                 ['errors' => [
@@ -264,7 +269,7 @@ class LoginHandler /*extends BaseLoginHandler*/
         if ((!$mustLogin || $this->isVerificationComplete($store))
             && $enforcementManager->hasCompletedRegistration($sessionMember)
         ) {
-            $this->doPerformLogin($request, $sessionMember);
+            $this->doPerformLogin($sessionMember);
         }
 
         return $this->jsonResponse(['success' => true], 201);
@@ -290,12 +295,12 @@ class LoginHandler /*extends BaseLoginHandler*/
                     _t(__CLASS__ . '.CANNOT_SKIP', 'You cannot skip MFA registration'),
                     ValidationResult::TYPE_ERROR
                 );
-                return $this->redirect($loginUrl);
+                return $this->controller->redirect($loginUrl);
             }
 
             $member->update(['HasSkippedMFARegistration' => true])->write();
             $this->extend('onSkipRegistration', $member);
-            $this->doPerformLogin($request, $member);
+            $this->doPerformLogin($member);
 
             // Redirect the user back to wherever they originally came from when they started the login process
             return $this->redirectAfterSuccessfulLogin();
@@ -304,7 +309,7 @@ class LoginHandler /*extends BaseLoginHandler*/
                 _t(__CLASS__ . '.CANNOT_SKIP', 'You cannot skip MFA registration'),
                 ValidationResult::TYPE_ERROR
             );
-            return $this->redirect($loginUrl);
+            return $this->controller->redirect($loginUrl);
         }
     }
 
@@ -318,7 +323,7 @@ class LoginHandler /*extends BaseLoginHandler*/
     {
         $store = $this->getStore();
         // If we don't have a valid member we shouldn't be here, or if sudo mode is not active yet.
-        if (!$store || !$store->getMember() || !$this->getSudoModeService()->check($request->getSession())) {
+        if (!$store || !$store->getMember() || !$this->getSudoModeService()->check($this->controller->getSession())) {
             return $this->jsonResponse(['message' => 'Forbidden'], 403);
         }
 
@@ -345,7 +350,7 @@ class LoginHandler /*extends BaseLoginHandler*/
     {
         $store = $this->getStore();
         // Enforce sudo mode
-        if (!$this->getSudoModeService()->check($request->getSession())) {
+        if (!$this->getSudoModeService()->check($this->controller->getSession())) {
             return $this->jsonResponse([
                 'message' => _t(
                     __CLASS__ . '.SUDO_MODE_REQUIRED',
@@ -389,7 +394,7 @@ class LoginHandler /*extends BaseLoginHandler*/
         $member = $store->getMember();
 
         if (EnforcementManager::create()->hasCompletedRegistration($member)) {
-            $this->doPerformLogin($request, $member);
+            $this->doPerformLogin($member);
 
             // And also clear the session
             $store->clear($request);
@@ -406,14 +411,12 @@ class LoginHandler /*extends BaseLoginHandler*/
         // Assert that we have a member logged in already. We explicitly don't use ->getMember as that will pull from
         // session during the MFA process
         $member = Member::currentUser();
-        $loginUrl = Security::login_url();
 
         if (!$member) {
-            Security::singleton()->setSessionMessage(
-                _t(__CLASS__ . '.MFA_LOGIN_INCOMPLETE', 'You must provide MFA login details'),
-                ValidationResult::TYPE_ERROR
+            return Security::permissionFailure(
+                $this->controller,
+                _t(__CLASS__ . '.MFA_LOGIN_INCOMPLETE', 'You must provide MFA login details')
             );
-            return $this->redirect($this->getBackURL() ?: $loginUrl);
         }
 
         $request = $this->getRequest();
@@ -427,19 +430,16 @@ class LoginHandler /*extends BaseLoginHandler*/
         if (!$enforcementManager->hasCompletedRegistration($member)
             && $enforcementManager->shouldRedirectToMFA($member)
         ) {
-            // Log them out again
-            /** @var IdentityStore $identityStore */
-            $identityStore = Injector::inst()->get(IdentityStore::class);
-            $identityStore->logOut($request);
+            $member->logOut();
 
-            Security::singleton()->setSessionMessage(
-                _t(__CLASS__ . '.INVALID_REGISTRATION', 'You must complete MFA registration'),
-                ValidationResult::TYPE_ERROR
+            return Security::permissionFailure(
+                $this->controller,
+                _t(__CLASS__ . '.INVALID_REGISTRATION', 'You must complete MFA registration')
             );
-            return $this->redirect($this->getBackURL() ?: $loginUrl);
         }
 
         // Clear the "additional data"
+        $data = Session::get(static::SESSION_KEY . '.additionalData');
         Session::clear(static::SESSION_KEY . '.additionalData');
 
         // Ensure any left over session state is cleaned up
@@ -449,8 +449,11 @@ class LoginHandler /*extends BaseLoginHandler*/
         }
         Session::clear(static::SESSION_KEY . '.mustLogin');
 
+        // Force the back url back into the request var (ugly SS3 hacks)
+        $_REQUEST['BackURL'] = $data['BackURL'];
+
         // Delegate to parent logic
-        return parent::redirectAfterSuccessfulLogin();
+        return parent::logInUserAndRedirect($data);
     }
 
     /**
@@ -482,10 +485,10 @@ class LoginHandler /*extends BaseLoginHandler*/
      */
     public function getBackURL(): ?string
     {
-        $backURL = parent::getBackURL();
+        $backURL = $_REQUEST['BackURL'] ?? $this->controller->getSession()->get('BackURL');
 
         if (!$backURL && $this->getRequest()) {
-            $data = $this->getRequest()->getSession()->get(static::SESSION_KEY . '.additionalData');
+            $data = $this->controller->getSession()->get(static::SESSION_KEY . '.additionalData');
             if (isset($data['BackURL'])) {
                 $backURL = $data['BackURL'];
             }
@@ -495,26 +498,11 @@ class LoginHandler /*extends BaseLoginHandler*/
     }
 
     /**
-     * Respond with the given array as a JSON response
-     *
-     * @param array $response
-     * @param int $code The HTTP response code to set on the response
-     * @return HTTPResponse
-     */
-    public function jsonResponse(array $response, int $code = 200): HTTPResponse
-    {
-        return HTTPResponse::create(json_encode($response))
-            ->addHeader('Content-Type', 'application/json')
-            ->setStatusCode($code);
-    }
-
-    /**
      * Complete the login process for the given member by calling "performLogin" on the parent class
      *
-     * @param HTTPRequest $request
      * @param Member&MemberExtension $member
      */
-    protected function doPerformLogin(HTTPRequest $request, Member $member)
+    protected function doPerformLogin(Member $member)
     {
         // Load the previously stored data from session and perform the login using it...
         $data = Session::get(static::SESSION_KEY . '.additionalData') ?: [];
@@ -524,7 +512,7 @@ class LoginHandler /*extends BaseLoginHandler*/
 
         if (!$currentMember) {
             // These next two lines are pulled from "parent::doLogin()"
-            $this->performLogin($member, $data, $request);
+            $member->logIn(isset($data['Remember']));
             // Allow operations on the member after successful login
             parent::extend('afterLogin', $member);
         }
@@ -536,5 +524,10 @@ class LoginHandler /*extends BaseLoginHandler*/
     protected function getMethodRegistry(): MethodRegistry
     {
         return MethodRegistry::singleton();
+    }
+
+    protected function makeLink($link)
+    {
+        return $this->controller->Link($this->getName() . '/' . $link);
     }
 }
