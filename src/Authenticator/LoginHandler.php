@@ -75,6 +75,11 @@ class LoginHandler extends BaseLoginHandler
     protected $logger;
 
     /**
+     * @var string hold the back url for the duration of the request (being in memory) {@see getBackURL}
+     */
+    protected $backURL = null;
+
+    /**
      * Override the parent "doLogin" to insert extra steps into the flow
      *
      * @inheritdoc
@@ -457,6 +462,9 @@ class LoginHandler extends BaseLoginHandler
             return $this->redirect($this->getBackURL() ?: $loginUrl);
         }
 
+        // Store the back URL before clearing the session data
+        $this->backURL = $this->getBackURL();
+
         // Clear the "additional data"
         $request->getSession()->clear(static::SESSION_KEY . '.additionalData');
 
@@ -512,7 +520,9 @@ class LoginHandler extends BaseLoginHandler
     }
 
     /**
-     * Adds another option for the back URL to be returned from a current MFA session store
+     * Adds more options for the back URL - to be returned from a current MFA session store or from memory during this
+     * request. The latter is required as session store is cleared before the 'BackURL' key is utilised
+     * {@see redirectAfterSuccessfulLogin}
      *
      * @return string|null
      */
@@ -527,7 +537,7 @@ class LoginHandler extends BaseLoginHandler
             }
         }
 
-        return $backURL;
+        return $backURL ?: $this->backURL;
     }
 
     /**
