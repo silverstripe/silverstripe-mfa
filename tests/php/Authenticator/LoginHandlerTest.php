@@ -143,7 +143,7 @@ class LoginHandlerTest extends FunctionalTest
         $firstMethod = $methods[0];
 
         $this->assertSame($method->getURLSegment(), $firstMethod['urlSegment']);
-        $this->assertSame($registerHandler->getName(), $firstMethod['name']);
+        $this->assertSame($method->getName(), $firstMethod['name']);
         $this->assertSame($registerHandler->getDescription(), $firstMethod['description']);
         $this->assertSame($registerHandler->getSupportLink(), $firstMethod['supportLink']);
         $this->assertContains('client/dist/images', $firstMethod['thumbnail']);
@@ -171,11 +171,10 @@ class LoginHandlerTest extends FunctionalTest
 
         /** @var MethodInterface $method */
         $method = Injector::inst()->get(Method::class);
-        $verifyHandler = $method->getVerifyHandler();
 
         $result = $response['registeredMethods'][0];
         $this->assertSame($method->getURLSegment(), $result['urlSegment']);
-        $this->assertSame($verifyHandler->getLeadInLabel(), $result['leadInLabel']);
+        $this->assertSame($method->getName(), $result['name']);
         $this->assertSame('BasicMathLogin', $result['component']);
         $this->assertSame('https://google.com', $result['supportLink']);
         $this->assertContains('totp.svg', $result['thumbnail']);

@@ -305,11 +305,15 @@ class Verify extends Component {
     }
 
     const MethodComponent = loadComponent(selectedMethod.component);
+    const leadInLabel = i18n.inject(i18n._t('MFAVerify.VERIFY_WITH', 'Verify with {method}'), {
+      method: selectedMethod.name.toLowerCase(),
+    });
+
     return (
       <Fragment>
         {this.renderTitle()}
 
-        <h2 className="mfa-section-title">{selectedMethod.leadInLabel}</h2>
+        <h2 className="mfa-section-title">{leadInLabel}</h2>
         {MethodComponent && <MethodComponent
           {...verifyProps}
           method={selectedMethod}

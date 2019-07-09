@@ -140,7 +140,7 @@ class Verify extends Component {
   }
 
   render() {
-    const { graphic, leadInLabel } = this.props;
+    const { graphic, name } = this.props;
 
     return (
       <form className="mfa-verify-backup-codes__container">
@@ -149,7 +149,7 @@ class Verify extends Component {
           {this.renderInput()}
         </div>
         <div>
-          <img className="mfa-verify-backup-codes__image" src={graphic} alt={leadInLabel} />
+          <img className="mfa-verify-backup-codes__image" src={graphic} alt={name} />
         </div>
         {this.renderControls()}
       </form>

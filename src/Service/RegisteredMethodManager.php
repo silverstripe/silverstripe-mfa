@@ -95,7 +95,7 @@ class RegisteredMethodManager
                         self::class . '.MFAADDED',
                         'A multi-factor authentication method was added to your account'
                     ),
-                    'MethodName' => $method->getRegisterHandler()->getName(),
+                    'MethodName' => $method->getName(),
                 ]
             );
         }
@@ -142,6 +142,7 @@ class RegisteredMethodManager
      * @param Member&MemberExtension $member
      * @param MethodInterface $method
      * @return bool Returns false if the given method is not registered for the member
+     * @throws \SilverStripe\ORM\ValidationException
      */
     public function deleteFromMember(Member $member, MethodInterface $method): bool
     {
@@ -149,9 +150,8 @@ class RegisteredMethodManager
             return false;
         }
 
-        $method = $this->getFromMember($member, $method);
-
-        $method->delete();
+        $registeredMethod = $this->getFromMember($member, $method);
+        $registeredMethod->delete();
 
         $backupRemovedToo = false;
 
@@ -188,7 +188,7 @@ class RegisteredMethodManager
                     self::class . '.MFAREMOVED',
                     'A multi-factor authentication method was removed from your account'
                 ),
-                'MethodName' => $method->getRegisterHandler()->getName(),
+                'MethodName' => $method->getName(),
                 'BackupAlsoRemoved' => $backupRemovedToo,
             ]
         );
