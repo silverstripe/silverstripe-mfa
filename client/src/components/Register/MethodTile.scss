@@ -70,6 +70,10 @@
 
   &__thumbnail-container {
     text-align: center;
+
+    &--unsupported {
+      opacity: 0.3;
+    }
   }
 
   &__thumbnail {
@@ -83,17 +87,23 @@
   &__unavailable {
     &-mask {
       background: $tile-mask-background;
-      height: 100%;
+      border-top-left-radius: $tile-border-radius;
+      border-top-right-radius: $tile-border-radius;
+      color: $tile-mask-colour;
       width: 100%;
       left: 0;
-      padding: $tile-padding;
+      padding: $tile-padding/2 $tile-padding;
       position: absolute;
       top: 0;
     }
 
     &-title {
       font-size: $font-size-h1;
-      margin-top: 0;
+      display: inline;
+    }
+
+    &-text {
+      display: inline;
     }
   }
 }

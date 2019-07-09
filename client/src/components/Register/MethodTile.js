@@ -86,7 +86,7 @@ class MethodTile extends Component {
     return (
       <div className="mfa-method-tile__unavailable-mask">
         <h3 className="mfa-method-tile__unavailable-title">
-          {i18n._t('MFAMethodTile.UNAVAILABLE', 'Unsupported')}
+          {i18n._t('MFAMethodTile.UNAVAILABLE', 'Unsupported: ')}
         </h3>
         {message && (
           <p className="mfa-method-tile__unavailable-text">
@@ -102,11 +102,15 @@ class MethodTile extends Component {
 
     const classes = classnames('mfa-method-tile', {
       'mfa-method-tile--active': isActive,
+      'mfa-method-tile--unsupported': !method.isAvailable,
+    });
+
+    const thumbnailClasses = classnames('mfa-method-tile__thumbnail-container', {
+      'mfa-method-tile__thumbnail-container--unsupported': !method.isAvailable,
     });
 
     return (
       <li className={classes}>
-        {this.renderUnavailableMask()}
         <div
           className="mfa-method-tile__content"
           onClick={this.handleClick}
@@ -115,7 +119,7 @@ class MethodTile extends Component {
           role="button"
         >
           {method.thumbnail && (
-            <div className="mfa-method-tile__thumbnail-container">
+            <div className={thumbnailClasses}>
               <img src={method.thumbnail} className="mfa-method-tile__thumbnail" alt={method.name} />
             </div>
           )}
@@ -125,6 +129,7 @@ class MethodTile extends Component {
             {this.renderSupportLink(method)}
           </p>
         </div>
+        {this.renderUnavailableMask()}
       </li>
     );
   }
