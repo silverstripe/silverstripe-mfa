@@ -15,3 +15,4 @@ Member:
 Security:
   extensions:
     accountResetExtension: SilverStripe\MFA\Extension\AccountReset\SecurityExtension
+    changePasswordExtension: SilverStripe\MFA\Extension\ChangePasswordExtension

@@ -1,17 +1,17 @@
 <?php
 
-namespace SilverStripe\MFA\Tests\Authenticator;
+namespace SilverStripe\MFA\Tests\Extension;
 
+use Controller;
 use PHPUnit_Framework_MockObject_MockObject;
-use Psr\Log\LoggerInterface; // Not present in SS3
 use SS_HTTPRequest as HTTPRequest;
 use SS_HTTPResponse as HTTPResponse;
 use Session;
 use Config;
 use FunctionalTest;
-use SilverStripe\MFA\Authenticator\ChangePasswordHandler;
 use SilverStripe\MFA\Authenticator\MemberAuthenticator;
 use SilverStripe\MFA\Exception\InvalidMethodException;
+use SilverStripe\MFA\Extension\ChangePasswordExtension;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\State\Result;
@@ -21,17 +21,17 @@ use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
 use Member;
 use SiteConfig;
 
-class ChangePasswordHandlerTest extends FunctionalTest
+class ChangePasswordExtensionTest extends FunctionalTest
 {
-    protected static $fixture_file = 'ChangePasswordHandlerTest.yml';
+    protected static $fixture_file = 'ChangePasswordExtensionTest.yml';
 
     public function setUp()
     {
         parent::setUp();
 
-        Config::modify()
-            ->set(MethodRegistry::class, 'methods', [Method::class])
-            ->set(Member::class, 'auto_login_token_lifetime', 10);
+        Config::inst()->remove(MethodRegistry::class, 'methods');
+        Config::inst()->update(MethodRegistry::class, 'methods', [Method::class]);
+        Config::inst()->update(Member::class, 'auto_login_token_lifetime', 10);
     }
 
     /**
@@ -119,8 +119,8 @@ class ChangePasswordHandlerTest extends FunctionalTest
      */
     public function testStartMfaCheckThrowsExceptionWithoutStore()
     {
-        /** @var ChangePasswordHandler&PHPUnit_Framework_MockObject_MockObject $handler */
-        $handler = $this->getMockBuilder(ChangePasswordHandler::class)
+        /** @var ChangePasswordExtension&PHPUnit_Framework_MockObject_MockObject $handler */
+        $handler = $this->getMockBuilder(ChangePasswordExtension::class)
             ->disableOriginalConstructor()
             ->setMethods(['getStore'])
             ->getMock();
@@ -132,8 +132,8 @@ class ChangePasswordHandlerTest extends FunctionalTest
 
     public function testStartMfaReturnsForbiddenWithoutMember()
     {
-        /** @var ChangePasswordHandler&PHPUnit_Framework_MockObject_MockObject $handler */
-        $handler = $this->getMockBuilder(ChangePasswordHandler::class)
+        /** @var ChangePasswordExtension&PHPUnit_Framework_MockObject_MockObject $handler */
+        $handler = $this->getMockBuilder(ChangePasswordExtension::class)
             ->disableOriginalConstructor()
             ->setMethods(['getStore'])
             ->getMock();
@@ -149,8 +149,8 @@ class ChangePasswordHandlerTest extends FunctionalTest
 
     public function testMfaStartsVerificationResponse()
     {
-        /** @var ChangePasswordHandler&PHPUnit_Framework_MockObject_MockObject $handler */
-        $handler = $this->getMockBuilder(ChangePasswordHandler::class)
+        /** @var ChangePasswordExtension&PHPUnit_Framework_MockObject_MockObject $handler */
+        $handler = $this->getMockBuilder(ChangePasswordExtension::class)
             ->disableOriginalConstructor()
             ->setMethods(['getStore', 'createStartVerificationResponse'])
             ->getMock();
@@ -163,24 +163,22 @@ class ChangePasswordHandlerTest extends FunctionalTest
         $expectedResponse = new HTTPResponse();
         $handler->expects($this->once())->method('createStartVerificationResponse')->willReturn($expectedResponse);
 
+        // ChangePasswordExtension is not a controller, so we can't apply this directly
         $request = new HTTPRequest('GET', '');
         $request->setRouteParams(['Method' => 'test']);
-        $response = $handler->startMFACheck($request);
+        Controller::curr()->setRequest($request);
+
+        $response = $handler->startMFACheck();
         $this->assertSame($expectedResponse, $response);
     }
 
     public function testVerifyMfaCheckReturnsForbiddenOnVerificationFailure()
     {
-        /** @var ChangePasswordHandler&PHPUnit_Framework_MockObject_MockObject $handler */
-        $handler = $this->getMockBuilder(ChangePasswordHandler::class)
+        /** @var ChangePasswordExtension&PHPUnit_Framework_MockObject_MockObject $handler */
+        $handler = $this->getMockBuilder(ChangePasswordExtension::class)
             ->disableOriginalConstructor()
             ->setMethods(['getStore', 'completeVerificationRequest'])
             ->getMock();
-
-        /** @var LoggerInterface&PHPUnit_Framework_MockObject_MockObject $logger */
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger->expects($this->once())->method('debug');
-        $handler->setLogger($logger);
 
         $store = $this->createMock(StoreInterface::class);
 
@@ -195,8 +193,8 @@ class ChangePasswordHandlerTest extends FunctionalTest
 
     public function testVerifyMfaCheckReturnsUnsuccessfulValidationResult()
     {
-        /** @var ChangePasswordHandler&PHPUnit_Framework_MockObject_MockObject $handler */
-        $handler = $this->getMockBuilder(ChangePasswordHandler::class)
+        /** @var ChangePasswordExtension&PHPUnit_Framework_MockObject_MockObject $handler */
+        $handler = $this->getMockBuilder(ChangePasswordExtension::class)
             ->disableOriginalConstructor()
             ->setMethods(['getStore', 'completeVerificationRequest'])
             ->getMock();
@@ -215,8 +213,8 @@ class ChangePasswordHandlerTest extends FunctionalTest
 
     public function testVerifyMfaReturnsWhenVerificationIsNotComplete()
     {
-        /** @var ChangePasswordHandler&PHPUnit_Framework_MockObject_MockObject $handler */
-        $handler = $this->getMockBuilder(ChangePasswordHandler::class)
+        /** @var ChangePasswordExtension&PHPUnit_Framework_MockObject_MockObject $handler */
+        $handler = $this->getMockBuilder(ChangePasswordExtension::class)
             ->disableOriginalConstructor()
             ->setMethods(['getStore', 'completeVerificationRequest', 'isVerificationComplete'])
             ->getMock();
@@ -234,8 +232,8 @@ class ChangePasswordHandlerTest extends FunctionalTest
 
     public function testVerifyMfaResultSuccessful()
     {
-        /** @var ChangePasswordHandler&PHPUnit_Framework_MockObject_MockObject $handler */
-        $handler = $this->getMockBuilder(ChangePasswordHandler::class)
+        /** @var ChangePasswordExtension&PHPUnit_Framework_MockObject_MockObject $handler */
+        $handler = $this->getMockBuilder(ChangePasswordExtension::class)
             ->disableOriginalConstructor()
             ->setMethods(['getStore', 'completeVerificationRequest', 'isVerificationComplete'])
             ->getMock();
@@ -247,7 +245,7 @@ class ChangePasswordHandlerTest extends FunctionalTest
         $handler->expects($this->once())->method('isVerificationComplete')->willReturn(true);
 
         $request = new HTTPRequest('GET', '/');
-        $request->setSession(new Session([]));
+        $this->session()->inst_start(new Session([]));
         $response = $handler->verifyMFACheck($request);
 
         $this->assertEquals(200, $response->getStatusCode());
