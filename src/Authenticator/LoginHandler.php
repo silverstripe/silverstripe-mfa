@@ -75,11 +75,6 @@ class LoginHandler extends BaseLoginHandler
     protected $logger;
 
     /**
-     * @var string hold the back url for the duration of the request (being in memory) {@see getBackURL}
-     */
-    protected $backURL = null;
-
-    /**
      * Override the parent "doLogin" to insert extra steps into the flow
      *
      * @inheritdoc
@@ -447,8 +442,8 @@ class LoginHandler extends BaseLoginHandler
         // This is potentially redundant logic as the member should only be logged in if they've fully registered.
         // They're allowed to login if they can skip - so only do assertions if they're not allowed to skip
         // We'll also check that they've registered the required MFA details
-        if (!$enforcementManager->hasCompletedRegistration($member)
-            && $enforcementManager->shouldRedirectToMFA($member)
+        if (!$enforcementManager->canSkipMFA($member)
+            && !$enforcementManager->hasCompletedRegistration($member)
         ) {
             // Log them out again
             /** @var IdentityStore $identityStore */
@@ -462,8 +457,8 @@ class LoginHandler extends BaseLoginHandler
             return $this->redirect($this->getBackURL() ?: $loginUrl);
         }
 
-        // Store the back URL before clearing the session data
-        $this->backURL = $this->getBackURL();
+        // Redirecting after successful login expects a getVar to be set, store it before clearing the session data
+        $request['BackURL'] = $this->getBackURL();
 
         // Clear the "additional data"
         $request->getSession()->clear(static::SESSION_KEY . '.additionalData');
@@ -537,7 +532,7 @@ class LoginHandler extends BaseLoginHandler
             }
         }
 
-        return $backURL ?: $this->backURL;
+        return $backURL;
     }
 
     /**
