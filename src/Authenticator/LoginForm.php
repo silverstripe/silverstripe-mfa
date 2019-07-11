@@ -161,11 +161,11 @@ class LoginForm extends MemberLoginForm
     /**
      * Handles the request to start a registration
      *
-     * @param HTTPRequest $request
      * @return HTTPResponse
      */
-    public function startRegistration(HTTPRequest $request): HTTPResponse
+    public function startRegistration(): HTTPResponse
     {
+        $request = $this->getRequest();
         $store = $this->getStore();
         $sessionMember = $store ? $store->getMember() : null;
         $loggedInMember = Member::currentUser();
@@ -224,17 +224,17 @@ class LoginForm extends MemberLoginForm
     /**
      * Handles the request to verify and process a new registration
      *
-     * @param HTTPRequest $request
      * @return HTTPResponse
      */
-    public function finishRegistration(HTTPRequest $request): HTTPResponse
+    public function finishRegistration(): HTTPResponse
     {
+        $request = $this->getRequest();
         $store = $this->getStore();
         $sessionMember = $store ? $store->getMember() : null;
         $loggedInMember = Member::currentUser();
 
         if (($loggedInMember === null && $sessionMember === null)
-            || !$this->getSudoModeService()->check($this->controller->getSession())
+            || !$this->getSudoModeService()->check($this->controller->getSession() ?: new Session([]))
         ) {
             return $this->jsonResponse(
                 ['errors' => [
@@ -278,11 +278,10 @@ class LoginForm extends MemberLoginForm
     /**
      * Handle an HTTP request to skip MFA registration
      *
-     * @param HTTPRequest $request
      * @return HTTPResponse
      * @throws ValidationException
      */
-    public function skipRegistration(HTTPRequest $request): HTTPResponse
+    public function skipRegistration()
     {
         $loginUrl = Security::login_url();
 
@@ -291,10 +290,6 @@ class LoginForm extends MemberLoginForm
             $enforcementManager = EnforcementManager::create();
 
             if (!$enforcementManager->canSkipMFA($member)) {
-                Security::singleton()->setSessionMessage(
-                    _t(__CLASS__ . '.CANNOT_SKIP', 'You cannot skip MFA registration'),
-                    ValidationResult::TYPE_ERROR
-                );
                 return $this->controller->redirect($loginUrl);
             }
 
@@ -305,10 +300,6 @@ class LoginForm extends MemberLoginForm
             // Redirect the user back to wherever they originally came from when they started the login process
             return $this->redirectAfterSuccessfulLogin();
         } catch (MemberNotFoundException $exception) {
-            Security::singleton()->setSessionMessage(
-                _t(__CLASS__ . '.CANNOT_SKIP', 'You cannot skip MFA registration'),
-                ValidationResult::TYPE_ERROR
-            );
             return $this->controller->redirect($loginUrl);
         }
     }
@@ -316,14 +307,15 @@ class LoginForm extends MemberLoginForm
     /**
      * Handles the request to start an authentication process with an authenticator (possibly specified by the request)
      *
-     * @param HTTPRequest $request
      * @return HTTPResponse
      */
-    public function startVerification(HTTPRequest $request): HTTPResponse
+    public function startVerification(): HTTPResponse
     {
+        $request = $this->getRequest();
         $store = $this->getStore();
         // If we don't have a valid member we shouldn't be here, or if sudo mode is not active yet.
-        if (!$store || !$store->getMember() || !$this->getSudoModeService()->check($this->controller->getSession())) {
+        if (!$store || !$store->getMember() ||
+            !$this->getSudoModeService()->check($this->controller->getSession() ?: new Session([]))) {
             return $this->jsonResponse(['message' => 'Forbidden'], 403);
         }
 
@@ -343,14 +335,14 @@ class LoginForm extends MemberLoginForm
     /**
      * Handles requests to authenticate from any MFA method, directing verification to the Method supplied.
      *
-     * @param HTTPRequest $request
      * @return HTTPResponse
      */
-    public function finishVerification(HTTPRequest $request): HTTPResponse
+    public function finishVerification(): HTTPResponse
     {
+        $request = $this->getRequest();
         $store = $this->getStore();
         // Enforce sudo mode
-        if (!$this->getSudoModeService()->check($this->controller->getSession())) {
+        if (!$this->getSudoModeService()->check($this->controller->getSession() ?: new Session([]))) {
             return $this->jsonResponse([
                 'message' => _t(
                     __CLASS__ . '.SUDO_MODE_REQUIRED',
@@ -406,7 +398,7 @@ class LoginForm extends MemberLoginForm
         ], 200);
     }
 
-    public function redirectAfterSuccessfulLogin(): HTTPResponse
+    public function redirectAfterSuccessfulLogin()
     {
         // Assert that we have a member logged in already. We explicitly don't use ->getMember as that will pull from
         // session during the MFA process

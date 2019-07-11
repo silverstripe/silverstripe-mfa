@@ -1,8 +1,8 @@
 MFARegisteredMethod:
   simon-math:
-    MethodClassName: "SilverStripe\\MFA\\Tests\\Stub\\BasicMath\\Method"
+    MethodClassName: "SilverStripe\MFA\Tests\Stub\BasicMath\Method"
   robbie-math:
-    MethodClassName: "SilverStripe\\MFA\\Tests\\Stub\\BasicMath\\Method"
+    MethodClassName: "SilverStripe\MFA\Tests\Stub\BasicMath\Method"
 
 Permission:
   admin:

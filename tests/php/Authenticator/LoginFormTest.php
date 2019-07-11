@@ -3,14 +3,13 @@
 namespace SilverStripe\MFA\Tests\Authenticator;
 
 use PHPUnit_Framework_MockObject_MockObject;
-use Controller;
 use SS_HTTPRequest as HTTPRequest;
 use SS_HTTPResponse as HTTPResponse;
 use Session;
 use Config;
 use Injector;
 use FunctionalTest;
-use SilverStripe\MFA\Authenticator\LoginHandler;
+use SilverStripe\MFA\Authenticator\LoginForm;
 use SilverStripe\MFA\Authenticator\MemberAuthenticator;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
@@ -29,9 +28,9 @@ use SecurityToken;
 use SilverStripe\SecurityExtensions\Service\SudoModeServiceInterface;
 use SiteConfig;
 
-class LoginHandlerTest extends FunctionalTest
+class LoginFormTest extends FunctionalTest
 {
-    protected static $fixture_file = 'LoginHandlerTest.yml';
+    protected static $fixture_file = 'LoginFormTest.yml';
 
     public function setUp()
     {
@@ -66,8 +65,8 @@ class LoginHandlerTest extends FunctionalTest
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertStringEndsWith(
-            Controller::join_links(Security::login_url(), 'default/mfa'),
-            $response->getHeader('location')
+            Security::singleton()->Link('LoginForm/mfa'),
+            $response->getHeader('Location')
         );
     }
 
@@ -83,7 +82,7 @@ class LoginHandlerTest extends FunctionalTest
         $this->scaffoldPartialLogin($member);
 
         $this->autoFollowRedirection = false;
-        $response = $this->get(Controller::join_links(Security::login_url(), 'default/mfa'));
+        $response = $this->get(Security::singleton()->Link('LoginForm/mfa'));
 
         $this->assertSame(302, $response->getStatusCode());
     }
@@ -104,14 +103,14 @@ class LoginHandlerTest extends FunctionalTest
         $this->autoFollowRedirection = true;
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertStringEndsWith('/something', $response->getHeader('location'));
+        $this->assertStringEndsWith('/something', $response->getHeader('Location'));
     }
 
     public function testMFASchemaEndpointIsNotAccessibleByDefault()
     {
         // Assert that this endpoint is not available if you haven't started the login process
         $this->autoFollowRedirection = false;
-        $response = $this->get(Controller::join_links(Security::login_url(), 'default/mfa/schema'));
+        $response = $this->get(Security::singleton()->Link('LoginForm/mfa/schema'));
         $this->autoFollowRedirection = true;
 
         $this->assertSame(302, $response->getStatusCode());
@@ -124,7 +123,7 @@ class LoginHandlerTest extends FunctionalTest
         $member = $this->objFromFixture(Member::class, 'guy');
         $this->scaffoldPartialLogin($member);
 
-        $result = $this->get(Controller::join_links(Security::login_url(), 'default/mfa/schema'));
+        $result = $this->get(Security::singleton()->Link('LoginForm/mfa/schema'));
 
         $response = json_decode($result->getBody(), true);
 
@@ -159,7 +158,7 @@ class LoginHandlerTest extends FunctionalTest
         $member = $this->objFromFixture(Member::class, 'simon');
         $this->scaffoldPartialLogin($member);
 
-        $result = $this->get(Controller::join_links(Security::login_url(), 'default/mfa/schema'));
+        $result = $this->get(Security::singleton()->Link('LoginForm/mfa/schema'));
 
         $response = json_decode($result->getBody(), true);
 
@@ -190,7 +189,7 @@ class LoginHandlerTest extends FunctionalTest
         $member = $this->objFromFixture(Member::class, 'robbie');
         $this->scaffoldPartialLogin($member);
 
-        $result = $this->get(Controller::join_links(Security::login_url(), 'default/mfa/schema'));
+        $result = $this->get(Security::singleton()->Link('LoginForm/mfa/schema'));
 
         $response = json_decode($result->getBody(), true);
 
@@ -219,8 +218,14 @@ class LoginHandlerTest extends FunctionalTest
             $this->scaffoldPartialLogin($this->objFromFixture(Member::class, $member));
         }
 
-        $response = $this->get(Controller::join_links(Security::login_url(), 'default/mfa/skip'));
-        $this->assertContains('You cannot skip MFA registration', $response->getBody());
+        $this->autoFollowRedirection = false;
+        $response = $this->get(Security::singleton()->Link('LoginForm/mfa/skip'));
+        $this->autoFollowRedirection = true;
+        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertStringEndsWith(
+            Security::singleton()->Link('login'),
+            $response->getHeader('Location')
+        );
     }
 
     /**
@@ -245,9 +250,15 @@ class LoginHandlerTest extends FunctionalTest
         $memberId = $member->write();
         $member->logIn();
 
-        $response = $this->get(Controller::join_links(Security::login_url(), 'default/mfa/skip'));
+        $this->autoFollowRedirection = false;
+        $response = $this->get(Security::singleton()->Link('LoginForm/mfa/skip'));
+        $this->autoFollowRedirection = false;
 
-        $this->assertSame(200, $response->getStatusCode());
+        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertStringEndsWith(
+            '/',
+            $response->getHeader('Location')
+        );
 
         $member = Member::get()->byID($memberId);
         $this->assertTrue((bool)$member->HasSkippedMFARegistration);
@@ -258,10 +269,9 @@ class LoginHandlerTest extends FunctionalTest
      */
     public function testGetMemberThrowsExceptionWithoutMember()
     {
-        $this->logOut();
-        $handler = new LoginHandler('foo', $this->createMock(MemberAuthenticator::class));
+        Member::singleton()->logOut();
+        $handler = new LoginForm(Security::singleton(), $this->createMock(MemberAuthenticator::class));
         $handler->setRequest(new HTTPRequest('GET', '/'));
-        $handler->getRequest()->setSession(new Session([]));
         $handler->getMember();
     }
 
@@ -269,15 +279,16 @@ class LoginHandlerTest extends FunctionalTest
     {
         SecurityToken::enable();
 
-        $handler = new LoginHandler('mfa', $this->createMock(MemberAuthenticator::class));
+        $handler = new LoginForm(Security::singleton(), $this->createMock(MemberAuthenticator::class));
         $member = $this->objFromFixture(Member::class, 'robbie');
         $store = new SessionStore($member);
         $handler->setStore($store);
 
         $request = new HTTPRequest('GET', '/');
-        $request->setSession(new Session([]));
         $request->setRouteParams(['Method' => 'basic-math']);
-        $response = json_decode($handler->startVerification($request)->getBody());
+        $handler->setRequest($request);
+
+        $response = json_decode($handler->startVerification()->getBody());
 
         $this->assertNotNull($response->SecurityID);
         $this->assertTrue(SecurityToken::inst()->check($response->SecurityID));
@@ -287,16 +298,16 @@ class LoginHandlerTest extends FunctionalTest
     {
         SecurityToken::enable();
 
-        $handler = new LoginHandler('mfa', $this->createMock(MemberAuthenticator::class));
+        $handler = new LoginForm(Security::singleton(), $this->createMock(MemberAuthenticator::class));
         $member = $this->objFromFixture(Member::class, 'robbie');
         $store = new SessionStore($member);
         $store->setMethod('basic-math');
         $handler->setStore($store);
 
         $request = new HTTPRequest('GET', '/');
-        $request->setSession(new Session([]));
+        $handler->setRequest($request);
 
-        $response = $handler->finishVerification($request);
+        $response = $handler->finishVerification();
 
         $this->assertSame(403, $response->getStatusCode());
         $this->assertContains('Your request timed out', $response->getBody());
@@ -304,7 +315,7 @@ class LoginHandlerTest extends FunctionalTest
         $request = new HTTPRequest('GET', '/', [
             SecurityToken::inst()->getName() => SecurityToken::inst()->getValue()
         ]);
-        $request->setSession(new Session([]));
+        $handler->setRequest($request);
 
         // Mock the verification process...
         $mockVerifyHandler = $this->createMock(VerifyHandlerInterface::class);
@@ -319,18 +330,18 @@ class LoginHandlerTest extends FunctionalTest
         // Register our mock service
         Injector::inst()->registerService($mockRegisteredMethodManager, RegisteredMethodManager::class);
 
-        $response = $handler->finishVerification($request);
+        $response = $handler->finishVerification();
 
         $this->assertSame(200, $response->getStatusCode());
     }
 
     public function testStartVerificationReturnsForbiddenWithoutMember()
     {
-        $this->logOut();
+        Member::singleton()->logOut();
 
-        $handler = new LoginHandler('mfa', $this->createMock(MemberAuthenticator::class));
+        $handler = new LoginForm(Security::singleton(), $this->createMock(MemberAuthenticator::class));
         $handler->setRequest(new HTTPRequest('GET', '/'));
-        $handler->getRequest()->setSession(new Session([]));
+        $this->session()->inst_start(new Session([]));
         $handler->setStore($this->createMock(StoreInterface::class));
 
         $response = $handler->startVerification($handler->getRequest());
@@ -348,9 +359,9 @@ class LoginHandlerTest extends FunctionalTest
         $sudoModeService->method('check')->willReturn(false);
         Injector::inst()->registerService($sudoModeService, SudoModeServiceInterface::class);
 
-        $handler = new LoginHandler('mfa', $this->createMock(MemberAuthenticator::class));
+        $handler = new LoginForm(Security::singleton(), $this->createMock(MemberAuthenticator::class));
         $handler->setRequest(new HTTPRequest('GET', '/'));
-        $handler->getRequest()->setSession(new Session([]));
+        $this->session()->inst_start(new Session([]));
 
         $store = new SessionStore($member);
         $store->setMethod('basic-math');
@@ -365,12 +376,12 @@ class LoginHandlerTest extends FunctionalTest
         /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'robbie');
         // Mock the member being locked out for fifteen minutes
-        $member->LockedOutUntil = date('Y-m-d H:i:s', DBDatetime::now()->getTimestamp() + 15 * 60);
+        $member->LockedOutUntil = date('Y-m-d H:i:s', intval(DBDatetime::now()->Format('U')) + 15 * 60);
         $member->write();
 
-        $handler = new LoginHandler('mfa', $this->createMock(MemberAuthenticator::class));
+        $handler = new LoginForm(Security::singleton(), $this->createMock(MemberAuthenticator::class));
         $request = new HTTPRequest('GET', '/');
-        $request->setSession(new Session([]));
+        $this->session()->inst_start(new Session([]));
 
         $store = new SessionStore($member);
         $store->setMethod('basic-math');
@@ -386,9 +397,9 @@ class LoginHandlerTest extends FunctionalTest
         /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'robbie');
 
-        $handler = new LoginHandler('mfa', $this->createMock(MemberAuthenticator::class));
+        $handler = new LoginForm(Security::singleton(), $this->createMock(MemberAuthenticator::class));
         $request = new HTTPRequest('GET', '/');
-        $request->setSession(new Session([]));
+        $this->session()->inst_start(new Session([]));
 
         $store = new SessionStore($member);
         $store->setMethod('basic-math');
@@ -408,26 +419,29 @@ class LoginHandlerTest extends FunctionalTest
     {
         /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'robbie');
-        $member->config()->set('lock_out_after_incorrect_logins', 5);
+        Config::inst()->update(Member::class, 'lock_out_after_incorrect_logins', 5);
         $failedLogins = $member->FailedLoginCount;
 
-        /** @var LoginHandler|PHPUnit_Framework_MockObject_MockObject $handler */
-        $handler = $this->getMockBuilder(LoginHandler::class)
+        /** @var LoginForm|PHPUnit_Framework_MockObject_MockObject $handler */
+        $handler = $this->getMockBuilder(LoginForm::class)
             ->setMethods(['completeVerificationRequest'])
             ->disableOriginalConstructor()
             ->getMock();
+
+        $handler->setController(Security::singleton());
 
         $handler->expects($this->once())->method('completeVerificationRequest')->willReturn(
             Result::create(false, 'It failed because it\'s mocked, obviously')
         );
 
         $request = new HTTPRequest('GET', '/');
-        $request->setSession(new Session([]));
+        $handler->setRequest($request);
+        $this->session()->inst_start(new Session([]));
         $store = new SessionStore($member);
         $store->setMethod('basic-math');
         $handler->setStore($store);
 
-        $response = $handler->finishVerification($request);
+        $response = $handler->finishVerification();
 
         $this->assertEquals(401, $response->getStatusCode());
         $this->assertContains('It failed because it\'s mocked', (string) $response->getBody());
@@ -436,15 +450,14 @@ class LoginHandlerTest extends FunctionalTest
 
     public function testGetBackURL()
     {
-        $handler = new LoginHandler('foo', $this->createMock(MemberAuthenticator::class));
+        $handler = new LoginForm(Security::singleton(), $this->createMock(MemberAuthenticator::class));
 
         $request = new HTTPRequest('GET', '/');
         $handler->setRequest($request);
 
         $session = new Session([]);
-        $request->setSession($session);
-
-        $session->set(LoginHandler::SESSION_KEY . '.additionalData', ['BackURL' => 'foobar']);
+        $session->set(LoginForm::SESSION_KEY . '.additionalData', ['BackURL' => 'foobar']);
+        $handler->getController()->setSession($session);
 
         $this->assertSame('foobar', $handler->getBackURL());
     }
@@ -456,7 +469,7 @@ class LoginHandlerTest extends FunctionalTest
      */
     protected function scaffoldPartialLogin(Member $member)
     {
-        $this->logOut();
+        Member::singleton()->logOut();
 
         $this->session()->set(SessionStore::SESSION_KEY, new SessionStore($member));
     }
@@ -471,7 +484,7 @@ class LoginHandlerTest extends FunctionalTest
         $this->get(Config::inst()->get(Security::class, 'login_url'));
 
         return $this->submitForm(
-            'MemberLoginForm_LoginForm',
+            'SilverStripe_MFA_Authenticator_LoginForm_LoginForm',
             null,
             array(
                 'Email' => $member->Email,
