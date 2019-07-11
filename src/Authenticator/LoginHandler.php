@@ -458,6 +458,7 @@ class LoginHandler extends BaseLoginHandler
         }
 
         // Redirecting after successful login expects a getVar to be set, store it before clearing the session data
+        /** @see HTTPRequest::offsetSet */
         $request['BackURL'] = $this->getBackURL();
 
         // Clear the "additional data"
@@ -515,9 +516,7 @@ class LoginHandler extends BaseLoginHandler
     }
 
     /**
-     * Adds more options for the back URL - to be returned from a current MFA session store or from memory during this
-     * request. The latter is required as session store is cleared before the 'BackURL' key is utilised
-     * {@see redirectAfterSuccessfulLogin}
+     * Adds more options for the back URL - to be returned from a current MFA session store
      *
      * @return string|null
      */
