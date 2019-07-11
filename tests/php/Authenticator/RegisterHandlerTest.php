@@ -26,7 +26,7 @@ use SecurityToken;
  */
 class RegisterHandlerTest extends FunctionalTest
 {
-    const URL = 'Security/login/default/mfa/register/basic-math/';
+    const URL = 'Security/LoginForm/mfa/register/basic-math/';
 
     protected static $fixture_file = 'RegisterHandlerTest.yml';
 
@@ -81,7 +81,7 @@ class RegisterHandlerTest extends FunctionalTest
 
         $this->scaffoldPartialLogin($freshMember);
 
-        $response = $this->get('Security/login/default/mfa/register/inert/');
+        $response = $this->get('Security/LoginForm/mfa/register/inert/');
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertContains('No such method is available', $response->getBody());
     }
@@ -275,7 +275,7 @@ class RegisterHandlerTest extends FunctionalTest
      */
     protected function scaffoldPartialLogin(Member $member, $method = null)
     {
-        $this->logOut();
+        Member::singleton()->logOut();
 
         $store = new SessionStore($member);
         if ($method) {
