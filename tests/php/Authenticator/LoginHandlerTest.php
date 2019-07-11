@@ -2,6 +2,7 @@
 
 namespace SilverStripe\MFA\Tests\Authenticator;
 
+use Page;
 use PHPUnit_Framework_MockObject_MockObject;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
@@ -232,22 +233,75 @@ class LoginHandlerTest extends FunctionalTest
         ];
     }
 
-    public function testSkipRegistration()
+    /**
+     * @param $memberFixture
+     * @param $expectedRedirect
+     * @dataProvider skipRegistrationProvider
+     */
+    public function testSkipRegistration($memberFixture, $mfaRequiredInGrace = false, $expectedRedirect = null)
     {
-        $this->setSiteConfig(['MFARequired' => false]);
+        if ($mfaRequiredInGrace) {
+            $this->setSiteConfig([
+                'MFARequired' => true,
+                'MFAGracePeriodExpires' => DBDatetime::now()
+                    ->setValue(strtotime('+1 day', DBDatetime::now()->getTimestamp()))->Rfc2822()
+            ]);
+        } else {
+            $this->setSiteConfig(['MFARequired' => false]);
+        }
 
-        $member = new Member();
-        $member->FirstName = 'Some new';
-        $member->Surname = 'member';
-        $memberId = $member->write();
-        $this->logInAs($member);
+        if (!$expectedRedirect) {
+            $expectedRedirect = Controller::join_links(Security::login_url(), 'default');
+        }
 
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, $memberFixture);
+        $this->scaffoldPartialLogin($member);
+
+        $this->autoFollowRedirection = false;
         $response = $this->get(Controller::join_links(Security::login_url(), 'default/mfa/skip'));
 
-        $this->assertSame(200, $response->getStatusCode());
+        // Assert a redirect is given
+        $this->assertSame(302, $response->getStatusCode());
 
-        $member = Member::get()->byID($memberId);
+        // Assert the redirect is to the expected location
+        $this->assertStringEndsWith($expectedRedirect, $response->getHeader('location'));
+
+        // Assert the user is now logged in
+        $this->assertSame($member->ID, Security::getCurrentUser()->ID, 'User is successfully logged in');
+
+        // Assert that the member is tracked as having skipped registration
+        $member = Member::get()->byID($member->ID);
         $this->assertTrue((bool)$member->HasSkippedMFARegistration);
+    }
+
+    public function skipRegistrationProvider()
+    {
+        return [
+            ['guy'],
+            ['guy', true],
+            ['pete', false, 'Security/changepassword'],
+            ['pete', true, 'Security/changepassword'],
+        ];
+    }
+
+    /**
+     * @param $memberFixture
+     * @dataProvider methodlessMemberFixtureProvider
+     */
+    public function testBackURLIsPreservedWhenSkipping($memberFixture)
+    {
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, $memberFixture);
+        $this->scaffoldPartialLogin($member);
+
+        $this->doLogin($member, 'Password123', 'admin/pages');
+
+        $this->autoFollowRedirection = false;
+        $response = $this->get(Controller::join_links(Security::login_url(), 'default/mfa/skip'));
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertStringEndsWith('admin/pages', $response->getHeader('location'));
     }
 
     /**
@@ -431,6 +485,43 @@ class LoginHandlerTest extends FunctionalTest
         $this->assertSame($failedLogins + 1, $member->FailedLoginCount, 'Failed login is registered');
     }
 
+    /**
+     * @param $memberFixture
+     * @dataProvider methodlessMemberFixtureProvider
+     */
+    public function testFinishVerificationWillRedirectToTheBackURLSetAsLoginIsStarted($memberFixture)
+    {
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, $memberFixture);
+        $this->scaffoldPartialLogin($member);
+
+        $this->doLogin($member, 'Password123', 'admin/pages');
+
+        /** @var LoginHandler|PHPUnit_Framework_MockObject_MockObject $handler */
+        $handler = $this->getMockBuilder(LoginHandler::class)
+            ->setMethods(['completeVerificationRequest'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $handler->expects($this->once())->method('completeVerificationRequest')->willReturn(Result::create());
+
+        $request = new HTTPRequest('GET', '/');
+        $request->setSession(new Session([]));
+        $store = new SessionStore($member);
+        $store->setMethod('basic-math');
+        $handler->setStore($store);
+
+        $response = $handler->finishVerification($request);
+
+        // Assert "Accepted" response
+        $this->assertSame(202, $response->getStatusCode());
+
+        $this->autoFollowRedirection = false;
+        $response = $this->get(Controller::join_links(Security::login_url(), 'default/mfa/complete'));
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertStringEndsWith('admin/pages', $response->getHeader('location'));
+    }
+
     public function testGetBackURL()
     {
         $handler = new LoginHandler('foo', $this->createMock(MemberAuthenticator::class));
@@ -444,6 +535,11 @@ class LoginHandlerTest extends FunctionalTest
         $session->set(LoginHandler::SESSION_KEY . '.additionalData', ['BackURL' => 'foobar']);
 
         $this->assertSame('foobar', $handler->getBackURL());
+    }
+
+    public function methodlessMemberFixtureProvider()
+    {
+        return [['guy', 'carla']];
     }
 
     /**
@@ -463,9 +559,15 @@ class LoginHandlerTest extends FunctionalTest
      * @param string $password
      * @return HTTPResponse
      */
-    protected function doLogin(Member $member, $password)
+    protected function doLogin(Member $member, $password, $backUrl = null)
     {
-        $this->get(Config::inst()->get(Security::class, 'login_url'));
+        $url = Config::inst()->get(Security::class, 'login_url');
+
+        if ($backUrl) {
+            $url .= '?BackURL=' . $backUrl;
+        }
+
+        $this->get($url);
 
         return $this->submitForm(
             'MemberLoginForm_LoginForm',

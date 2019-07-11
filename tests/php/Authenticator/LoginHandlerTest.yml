@@ -3,16 +3,25 @@ SilverStripe\MFA\Model\RegisteredMethod:
     MethodClassName: "SilverStripe\\MFA\\Tests\\Stub\\BasicMath\\Method"
   robbie-math:
     MethodClassName: "SilverStripe\\MFA\\Tests\\Stub\\BasicMath\\Method"
+  colin-math:
+    MethodClassName: "SilverStripe\\MFA\\Tests\\Stub\\BasicMath\\Method"
+
 
 SilverStripe\Security\Permission:
   admin:
     Code: ADMIN
+  content:
+    Code: CMS_ACCESS_CMSMain
 
 SilverStripe\Security\Group:
   admingroup:
     Title: Create, edit and delete pages
     Code: admingroup
     Permissions: =>SilverStripe\Security\Permission.admin
+  contentgroup:
+    Title: Content author
+    Code: contentgroup
+    Permissions: =>SilverStripe\Security\Permission.content
 
 SilverStripe\Security\Member:
   guy:
@@ -29,4 +38,15 @@ SilverStripe\Security\Member:
     RegisteredMFAMethods: =>SilverStripe\MFA\Model\RegisteredMethod.robbie-math
     DefaultRegisteredMethodID: =>SilverStripe\MFA\Model\RegisteredMethod.robbie-math
     Groups: =>SilverStripe\Security\Group.admingroup
-
+  colin:
+    Email: colin@example.com
+    RegisteredMFAMethods: =>SilverStripe\MFA\Model\RegisteredMethod.colin-math
+    DefaultRegisteredMethodID: =>SilverStripe\MFA\Model\RegisteredMethod.colin-math
+    Groups: =>SilverStripe\Security\Group.contentgroup
+  carla:
+    Email: carla@example.com
+    Groups: =>SilverStripe\Security\Group.contentgroup
+  pete:
+    Email: pete@example.com
+    PasswordExpiry: 1990-01-01
+    Groups: =>SilverStripe\Security\Group.contentgroup
