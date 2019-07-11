@@ -1,9 +1,9 @@
-<p><% _t('Notification.HELLO', 'Hi') %> $Member.Name,</p>
+<p><%t MFANotification.HELLO 'Hi' %> $Member.Name,</p>
 
 <p>
-	<%t Notification.REGISTERED 'You have successfully registered {method} as an extra layer of protection for your account at {site}.' method=$MethodName site=$AbsoluteBaseURL %>
+	<%t MFANotification.REGISTERED 'You have successfully registered {method} as an extra layer of protection for your account at {site}.' method=$MethodName site=$AbsoluteBaseURL %>
 </p>
 
 <p>
-    <% _t('Notification.NOTYOU', 'If you did not take this action, please contact your system administrator immediately.') %>
+    <%t MFANotification.NOTYOU 'If you did not take this action, please contact your system administrator immediately.' %>
 </p>

@@ -86,7 +86,7 @@ class VerifyHandler implements VerifyHandlerInterface
             $registeredMethod->write();
             $this->notification->send(
                 $registeredMethod->Member(),
-                'SilverStripe/MFA/Email/Notification_backupcodeused',
+                'Notification_backupcodeused',
                 [
                     'subject' => _t(self::class . '.MFAREMOVED', 'A recovery code was used to access your account'),
                     'CodesRemaining' => count($candidates),
