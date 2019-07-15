@@ -2,7 +2,6 @@
 
 namespace SilverStripe\MFA\Tests\Authenticator;
 
-use Page;
 use PHPUnit_Framework_MockObject_MockObject;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
@@ -234,8 +233,9 @@ class LoginHandlerTest extends FunctionalTest
     }
 
     /**
-     * @param $memberFixture
-     * @param $expectedRedirect
+     * @param string $memberFixture
+     * @param bool $mfaRequiredInGrace
+     * @param string|null $expectedRedirect
      * @dataProvider skipRegistrationProvider
      */
     public function testSkipRegistration($memberFixture, $mfaRequiredInGrace = false, $expectedRedirect = null)
@@ -286,7 +286,7 @@ class LoginHandlerTest extends FunctionalTest
     }
 
     /**
-     * @param $memberFixture
+     * @param string $memberFixture
      * @dataProvider methodlessMemberFixtureProvider
      */
     public function testBackURLIsPreservedWhenSkipping($memberFixture)
@@ -486,7 +486,7 @@ class LoginHandlerTest extends FunctionalTest
     }
 
     /**
-     * @param $memberFixture
+     * @param string $memberFixture
      * @dataProvider methodlessMemberFixtureProvider
      */
     public function testFinishVerificationWillRedirectToTheBackURLSetAsLoginIsStarted($memberFixture)
@@ -572,12 +572,12 @@ class LoginHandlerTest extends FunctionalTest
         return $this->submitForm(
             'MemberLoginForm_LoginForm',
             null,
-            array(
+            [
                 'Email' => $member->Email,
                 'Password' => $password,
                 'AuthenticationMethod' => MemberAuthenticator::class,
                 'action_doLogin' => 1,
-            )
+            ]
         );
     }
 
