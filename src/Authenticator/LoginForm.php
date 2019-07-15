@@ -493,10 +493,10 @@ class LoginForm extends MemberLoginForm
      *
      * @param Member&MemberExtension $member
      */
-    protected function doPerformLogin(Member $member)
+    protected function doPerformLogin(Member $member): void
     {
         // Load the previously stored data from session and perform the login using it...
-        $data = Session::get(static::SESSION_KEY . '.additionalData') ?: [];
+        $data = Session::get(self::SESSION_KEY . '.additionalData') ?: [];
 
         // Check that we don't have a logged in member before actually performing a login
         $currentMember = Member::currentUser();
@@ -517,7 +517,13 @@ class LoginForm extends MemberLoginForm
         return MethodRegistry::singleton();
     }
 
-    protected function makeLink($link)
+    /**
+     * Convenience method to generate a link to a method within this request handler.
+     *
+     * @param $link
+     * @return string
+     */
+    protected function makeLink($link): string
     {
         return $this->controller->Link($this->getName() . '/' . $link);
     }
