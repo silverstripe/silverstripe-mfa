@@ -442,8 +442,8 @@ class LoginHandler extends BaseLoginHandler
         // This is potentially redundant logic as the member should only be logged in if they've fully registered.
         // They're allowed to login if they can skip - so only do assertions if they're not allowed to skip
         // We'll also check that they've registered the required MFA details
-        if (!$enforcementManager->hasCompletedRegistration($member)
-            && $enforcementManager->shouldRedirectToMFA($member)
+        if (!$enforcementManager->canSkipMFA($member)
+            && !$enforcementManager->hasCompletedRegistration($member)
         ) {
             // Log them out again
             /** @var IdentityStore $identityStore */
@@ -456,6 +456,10 @@ class LoginHandler extends BaseLoginHandler
             );
             return $this->redirect($this->getBackURL() ?: $loginUrl);
         }
+
+        // Redirecting after successful login expects a getVar to be set, store it before clearing the session data
+        /** @see HTTPRequest::offsetSet */
+        $request['BackURL'] = $this->getBackURL();
 
         // Clear the "additional data"
         $request->getSession()->clear(static::SESSION_KEY . '.additionalData');
@@ -512,7 +516,7 @@ class LoginHandler extends BaseLoginHandler
     }
 
     /**
-     * Adds another option for the back URL to be returned from a current MFA session store
+     * Adds more options for the back URL - to be returned from a current MFA session store
      *
      * @return string|null
      */
