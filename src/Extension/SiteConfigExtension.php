@@ -55,6 +55,7 @@ class SiteConfigExtension extends DataExtension
             'MFAGracePeriodExpires',
             _t(__CLASS__ . '.MFA_GRACE_TITLE', 'MFA will be required from (optional)')
         );
+        $mfaGraceEnd->setConfig('showcalendar', true);
         $mfaGraceEnd->setDescription(_t(
             __CLASS__ . '.MFA_GRACE_DESCRIPTION',
             'MFA setup will be optional prior to this date'
