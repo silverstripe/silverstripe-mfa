@@ -8,12 +8,13 @@ en:
     MUST_USE_EXISTING_METHOD: 'This member already has an MFA method'
     NOT_AUTHENTICATING: 'You must be logged in or logging in. Please refresh the page and try again.'
     SUDO_MODE_REQUIRED: 'You need to re-verify your account before continuing. Please reload and try again.'
+  SilverStripe\MFA\BackupCode\Method:
+    NAME: 'Recovery codes'
   SilverStripe\MFA\BackupCode\RegisterHandler:
     DESCRIPTION: 'Recovery codes enable you to log into your account in the event your primary authentication is not available. Each code can only be used once. Store these codes somewhere safe, as they will not be viewable after this leaving this page.'
-    NAME: 'Recovery codes'
+    SUPPORT_LINK_DESCRIPTION: 'Learn about recovery codes.'
   SilverStripe\MFA\BackupCode\VerifyHandler:
     INVALID_CODE: 'Invalid code'
-    LEAD_IN: 'Verify with recovery code'
     MFAREMOVED: 'A recovery code was used to access your account'
   SilverStripe\MFA\Controller\AdminRegistrationController:
     COULD_NOT_DELETE: 'Could not delete the specified method from the user'
