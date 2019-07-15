@@ -39,7 +39,7 @@ class MyCustomLoginHandler implements LoginHandlerInterface
         try {
             $method->doSomething();
         } catch (\Exception $ex) {
-            SS_Log::log('Something went wrong! ' . $ex->getMessage(), $ex->getTrace(), SS_Log::DEBUG);
+            SS_Log::log($ex, SS_Log::DEBUG);
         }
     }
 }
