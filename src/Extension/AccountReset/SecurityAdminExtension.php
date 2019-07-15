@@ -127,7 +127,7 @@ class SecurityAdminExtension extends Extension
 
             return $email->send();
         } catch (Exception $e) {
-            SS_Log::get_logger()->log('WARNING: Account Reset Email failed to send: ' . $e->getMessage(), SS_Log::INFO);
+            SS_Log::log('WARNING: Account Reset Email failed to send: ' . $e->getMessage(), SS_Log::INFO);
             return false;
         }
     }

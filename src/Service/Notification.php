@@ -59,7 +59,7 @@ class Notification extends SS_Object
 
             $sendResult = $email->send();
         } catch (Exception $e) {
-            SS_Log::get_logger()->log($e->getMessage(), SS_Log::INFO);
+            SS_Log::log($e->getMessage(), SS_Log::INFO);
         }
 
         $this->extend('onAfterSend', $email, $sendResult);

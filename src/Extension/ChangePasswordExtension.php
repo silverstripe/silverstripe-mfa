@@ -79,7 +79,7 @@ class ChangePasswordExtension extends Extension
                 ])
             );
         } catch (Throwable $exception) {
-            SS_Log::get_logger()->log($exception->getMessage(), SS_Log::DEBUG);
+            SS_Log::log($exception->getMessage(), SS_Log::DEBUG);
             // If we don't have a valid member we shouldn't be here...
             return $this->owner->redirectBack();
         }
@@ -158,7 +158,7 @@ class ChangePasswordExtension extends Extension
             $result = $this->completeVerificationRequest($store, $request);
         } catch (InvalidMethodException $exception) {
             // Invalid method usually means a timeout. A user might be trying to verify before "starting"
-            SS_Log::get_logger()->log($exception->getMessage(), SS_Log::DEBUG);
+            SS_Log::log($exception->getMessage(), SS_Log::DEBUG);
             return $this->jsonResponse(['message' => 'Forbidden'], 403);
         }
 

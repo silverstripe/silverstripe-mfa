@@ -223,7 +223,7 @@ class AdminRegistrationController extends LeftAndMain
             $member->setDefaultRegisteredMethod($registeredMethod);
             $member->write();
         } catch (ValidationException $exception) {
-            SS_Log::get_logger()->log(
+            SS_Log::log(
                 'Failed to set default registered method for user #' . $member->ID . ' to ' . $specifiedMethod
                 . ': ' . $exception->getMessage(),
                 SS_Log::DEBUG
