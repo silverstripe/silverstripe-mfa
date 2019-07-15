@@ -4,6 +4,7 @@ use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
 
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 /**
  * Known as RegisteredMethod in SS4, but renamed and un-namespaced for table
  * name consistency in SS3.

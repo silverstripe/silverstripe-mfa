@@ -194,7 +194,7 @@ class SecurityExtension extends Extension
             ->getImplementorsOf(AccountResetHandler::class);
 
         foreach ($accountResetHandlers as $handler) {
-            (new $handler)->handleAccountReset($member);
+            (new $handler())->handleAccountReset($member);
         }
 
         // Send the user along to the login form (allowing any additional factors to kick in as needed)

@@ -75,8 +75,7 @@ class LoginForm extends MemberLoginForm
 
         // If there's no member it's an invalid login. We'll delegate this to the parent
         // Additionally if there are no MFA methods registered then we will also delegate
-        if (
-            !$member
+        if (!$member
             || !$this->getMethodRegistry()->hasMethods()
             || !$enforcementManager->shouldRedirectToMFA($member)
         ) {
