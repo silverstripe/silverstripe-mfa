@@ -2,12 +2,13 @@
 
 namespace SilverStripe\MFA\Tests\Service;
 
-use SilverStripe\Dev\SapphireTest;
+use Config;
+use SapphireTest;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\SchemaGenerator;
 use SilverStripe\MFA\State\RegisteredMethodDetailsInterface;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method as BasicMathMethod;
-use SilverStripe\Security\Member;
+use Member;
 
 class SchemaGeneratorTest extends SapphireTest
 {
@@ -18,11 +19,12 @@ class SchemaGeneratorTest extends SapphireTest
      */
     protected $generator;
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
 
-        MethodRegistry::config()->set('methods', [
+        Config::inst()->remove(MethodRegistry::class, 'methods');
+        Config::inst()->update(MethodRegistry::class, 'methods', [
             BasicMathMethod::class,
         ]);
 
@@ -33,7 +35,7 @@ class SchemaGeneratorTest extends SapphireTest
     {
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'sally_smith');
-        $this->logInAs($member);
+        $member->logIn();
 
         $schema = $this->generator->getSchema($member);
 

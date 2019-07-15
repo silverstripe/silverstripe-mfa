@@ -1,7 +1,7 @@
 ---
 Name: mfastate
 ---
-SilverStripe\Core\Injector\Injector:
+Injector:
   SilverStripe\MFA\State\AvailableMethodDetailsInterface:
     class: SilverStripe\MFA\State\AvailableMethodDetails
   SilverStripe\MFA\State\RegisteredMethodDetailsInterface:

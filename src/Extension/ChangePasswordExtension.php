@@ -1,34 +1,39 @@
 <?php declare(strict_types=1);
 
-namespace SilverStripe\MFA\Authenticator;
+namespace SilverStripe\MFA\Extension;
 
+use Controller;
+use Extension;
 use LogicException;
-use Psr\Log\LoggerInterface;
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Control\HTTPResponse;
-use SilverStripe\Core\Injector\Injector;
+use Security;
+use Session;
+use SilverStripe\MFA\JSONResponse;
+use SS_Log;
+use SS_HTTPRequest as HTTPRequest;
+use SS_HTTPResponse as HTTPResponse;
+use Injector;
 use SilverStripe\MFA\Exception\InvalidMethodException;
-use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\RequestHandler\BaseHandlerTrait;
 use SilverStripe\MFA\RequestHandler\VerificationHandlerTrait;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\SchemaGenerator;
 use SilverStripe\MFA\Store\StoreInterface;
-use SilverStripe\Security\Member;
-use SilverStripe\Security\MemberAuthenticator\ChangePasswordHandler as BaseChangePasswordHandler;
+use Member;
 use Throwable;
 
 /**
- * Extends the "MemberAuthenticator version of the ChangePasswordHandler in order to allow MFA to be
- * inserted into the flow when an AutoLoginHash is being used  - that is when the user has clicked a
- * reset password link in an email after using the "forgot password" functionality.
- * When an "auto login" is not being used (a user is already logged in), it is existing functionality
- * to ask a user for their password before allowing a change - so this flow does not require MFA.
+ * Wraps the changepassword method in Security in order to allow MFA to be inserted into the flow when an AutoLoginHash
+ * is being used - that is when the user has clicked a reset password link in an email after using the "forgot password"
+ * functionality. When an "auto login" is not being used (a user is already logged in), it is existing functionality to
+ * ask a user for their password before allowing a change - so this flow does not require MFA.
+ *
+ * @property Security owner
  */
-class ChangePasswordHandler extends BaseChangePasswordHandler
+class ChangePasswordExtension extends Extension
 {
     use BaseHandlerTrait;
     use VerificationHandlerTrait;
+    use JSONResponse;
 
     /**
      * Session key used to track whether multi-factor authentication has been verified during a change password
@@ -39,42 +44,20 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
     const MFA_VERIFIED_ON_CHANGE_PASSWORD = 'MultiFactorAuthenticated';
 
     private static $url_handlers = [
-        'GET mfa/schema' => 'getSchema', // Provides details about existing registered methods, etc.
-        'GET mfa/login/$Method' => 'startMFACheck', // Initiates login process for $Method
-        'POST mfa/login/$Method' => 'verifyMFACheck', // Verifies login via $Method
-        'GET mfa' => 'mfa', // Renders the MFA Login Page to init the app
+        'GET changepassword/mfa/schema' => 'getSchema', // Provides details about existing registered methods, etc.
+        'GET changepassword/mfa/login/$Method' => 'startMFACheck', // Initiates login process for $Method
+        'POST changepassword/mfa/login/$Method' => 'verifyMFACheck', // Verifies login via $Method
+        'GET changepassword/mfa' => 'mfa', // Renders the MFA Login Page to init the app
+        'changepassword' => 'handleChangePassword', // Wraps the default changepassword handler in MFA checks
     ];
 
     private static $allowed_actions = [
-        'changepassword',
+        'handleChangePassword',
         'mfa',
         'getSchema',
         'startMFACheck',
         'verifyMFACheck',
     ];
-
-    private static $dependencies = [
-        'Logger' => '%$' . LoggerInterface::class . '.mfa',
-    ];
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
-     * Respond with the given array as a JSON response
-     *
-     * @param array $response
-     * @param int $code The HTTP response code to set on the response
-     * @return HTTPResponse
-     */
-    protected function jsonResponse(array $response, int $code = 200): HTTPResponse
-    {
-        return HTTPResponse::create(json_encode($response))
-            ->addHeader('Content-Type', 'application/json')
-            ->setStatusCode($code);
-    }
 
     /**
      * Supply JavaScript application configuration details, required for an MFA check
@@ -89,16 +72,16 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
             return $this->jsonResponse(
                 array_merge($schema, [
                     'endpoints' => [
-                        'verify' => $this->Link('mfa/login/{urlSegment}'),
-                        'complete' => $this->Link(),
+                        'verify' => $this->owner->Link('mfa/login/{urlSegment}'),
+                        'complete' => $this->owner->Link('changepassword'),
                     ],
                     'shouldRedirect' => false,
                 ])
             );
         } catch (Throwable $exception) {
-            $this->logger->debug($exception->getMessage());
+            SS_Log::log($exception, SS_Log::DEBUG);
             // If we don't have a valid member we shouldn't be here...
-            return $this->redirectBack();
+            return $this->owner->redirectBack();
         }
     }
 
@@ -111,26 +94,27 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
     {
         $store = $this->getStore();
         if (!$store || !$store->getMember()) {
-            return $this->redirectBack();
+            return $this->owner->redirectBack();
         }
 
         $this->applyRequirements();
 
-        return [
-            'Form' => $this->renderWith($this->getViewerTemplates()),
+        return $this->owner->customise([
+            'Form' => $this->owner->renderWith('ChangePasswordHandler'),
             'ClassName' => 'mfa',
-        ];
+        ])->renderWith('Security');
     }
 
     /**
      * Initiates the session for the user attempting to log in, in preparation for an MFA check
      *
-     * @param HTTPRequest $request
      * @return HTTPResponse
      * @throws LogicException when no store is available
      */
-    public function startMFACheck(HTTPRequest $request): HTTPResponse
+    public function startMFACheck(): HTTPResponse
     {
+        $request = $this->getRequest();
+
         $store = $this->getStore();
         if (!$store) {
             throw new LogicException('Store not found, please create one first.');
@@ -163,18 +147,18 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
     /**
      * Checks the MFA JavaScript app input to validate the user attempting to log in
      *
-     * @param HTTPRequest $request
      * @return HTTPResponse
      */
-    public function verifyMFACheck(HTTPRequest $request): HTTPResponse
+    public function verifyMFACheck(): HTTPResponse
     {
+        $request = $this->getRequest();
         $store = $this->getStore();
 
         try {
             $result = $this->completeVerificationRequest($store, $request);
         } catch (InvalidMethodException $exception) {
             // Invalid method usually means a timeout. A user might be trying to verify before "starting"
-            $this->logger->debug($exception->getMessage());
+            SS_Log::log($exception, SS_Log::DEBUG);
             return $this->jsonResponse(['message' => 'Forbidden'], 403);
         }
 
@@ -190,7 +174,7 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
             ], 202);
         }
 
-        $request->getSession()->set(self::MFA_VERIFIED_ON_CHANGE_PASSWORD, true);
+        Session::set(self::MFA_VERIFIED_ON_CHANGE_PASSWORD, true);
         $store->clear($request);
 
         return $this->jsonResponse([
@@ -198,9 +182,9 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
         ], 200);
     }
 
-    public function changepassword()
+    public function handleChangePassword()
     {
-        $session = $this->getRequest()->getSession();
+        $session = Controller::curr()->getSession();
         $hash = $session->get('AutoLoginHash');
         /** @var Member&MemberExtension $member */
         $member = Member::member_from_autologinhash($hash);
@@ -210,20 +194,25 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
             && $member->RegisteredMFAMethods()->exists()
             && !$session->get(self::MFA_VERIFIED_ON_CHANGE_PASSWORD)
         ) {
-            Injector::inst()->create(StoreInterface::class, $member)->save($this->getRequest());
+            Injector::inst()->create(StoreInterface::class, $member)->save($this->owner->getRequest());
             return $this->mfa();
         }
 
-        return parent::changepassword();
+        return $this->owner->changepassword();
     }
 
     /**
-     * @param LoggerInterface $logger
-     * @return $this
+     * Glue to support BaseHandlerTrait
+     *
+     * @return \NullHTTPRequest|HTTPRequest
      */
-    public function setLogger(LoggerInterface $logger): ChangePasswordHandler
+    protected function getRequest()
     {
-        $this->logger = $logger;
-        return $this;
+        return $this->owner ? $this->owner->getRequest() : Controller::curr()->getRequest();
+    }
+
+    protected function extend($name, ...$data)
+    {
+        $this->owner->extend($name, ...$data);
     }
 }

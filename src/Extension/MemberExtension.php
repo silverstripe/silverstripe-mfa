@@ -2,24 +2,24 @@
 
 namespace SilverStripe\MFA\Extension;
 
-use SilverStripe\Control\Controller;
-use SilverStripe\Forms\FieldList;
+use Controller;
+use FieldList;
 use SilverStripe\MFA\Authenticator\ChangePasswordHandler;
 use SilverStripe\MFA\Exception\InvalidMethodException;
 use SilverStripe\MFA\FormField\RegisteredMFAMethodListField;
 use SilverStripe\MFA\Method\MethodInterface;
-use SilverStripe\MFA\Model\RegisteredMethod;
-use SilverStripe\ORM\DataExtension;
-use SilverStripe\ORM\HasManyList;
-use SilverStripe\Security\Member;
-use SilverStripe\Security\Permission;
-use SilverStripe\Security\PermissionProvider;
-use SilverStripe\Security\Security;
+use MFARegisteredMethod;
+use DataExtension;
+use HasManyList;
+use Member;
+use Permission;
+use PermissionProvider;
+use Security;
 
 /**
  * Extend Member to add relationship to registered methods and track some specific preferences
  *
- * @method RegisteredMethod[]|HasManyList RegisteredMFAMethods
+ * @method MFARegisteredMethod[]|HasManyList RegisteredMFAMethods
  * @property MethodInterface DefaultRegisteredMethod
  * @property string DefaultRegisteredMethodID
  * @property bool HasSkippedMFARegistration
@@ -30,7 +30,7 @@ class MemberExtension extends DataExtension implements PermissionProvider
     const MFA_ADMINISTER_REGISTERED_METHODS = 'MFA_ADMINISTER_REGISTERED_METHODS';
 
     private static $has_many = [
-        'RegisteredMFAMethods' => RegisteredMethod::class,
+        'RegisteredMFAMethods' => MFARegisteredMethod::class,
     ];
 
     private static $db = [
@@ -44,9 +44,9 @@ class MemberExtension extends DataExtension implements PermissionProvider
      * This is replicating the usual functionality of a has_one relation but does it like this so we can ensure the same
      * instance of the MethodInterface is provided regardless if you access it through the has_one or the has_many.
      *
-     * @return RegisteredMethod|null
+     * @return MFARegisteredMethod|null
      */
-    public function getDefaultRegisteredMethod(): ?RegisteredMethod
+    public function getDefaultRegisteredMethod(): ?MFARegisteredMethod
     {
         return $this->owner->RegisteredMFAMethods()->byId($this->owner->DefaultRegisteredMethodID);
     }
@@ -54,11 +54,11 @@ class MemberExtension extends DataExtension implements PermissionProvider
     /**
      * Set the default registered method for the current member. Does not write the owner record.
      *
-     * @param RegisteredMethod $registeredMethod
+     * @param MFARegisteredMethod $registeredMethod
      * @return Member
      * @throws InvalidMethodException
      */
-    public function setDefaultRegisteredMethod(RegisteredMethod $registeredMethod): Member
+    public function setDefaultRegisteredMethod(MFARegisteredMethod $registeredMethod): Member
     {
         if ($registeredMethod->Member()->ID != $this->owner->ID) {
             throw new InvalidMethodException('The provided method does not belong to this member');
@@ -110,7 +110,7 @@ class MemberExtension extends DataExtension implements PermissionProvider
      */
     public function currentUserCanEditMFAConfig(): bool
     {
-        return (Security::getCurrentUser() && Security::getCurrentUser()->ID === $this->owner->ID);
+        return (Member::currentUser() && Member::currentUser()->ID === $this->owner->ID);
     }
 
     /**

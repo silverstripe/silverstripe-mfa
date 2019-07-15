@@ -2,18 +2,12 @@
 
 namespace SilverStripe\MFA\Service;
 
-use SilverStripe\Core\Config\Configurable;
-use SilverStripe\Core\Extensible;
-use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\MFA\State\BackupCode;
-use SilverStripe\Security\Security;
+use Security;
+use SS_Object;
 
-class BackupCodeGenerator implements BackupCodeGeneratorInterface
+class BackupCodeGenerator extends SS_Object implements BackupCodeGeneratorInterface
 {
-    use Configurable;
-    use Extensible;
-    use Injectable;
-
     /**
      * The number of back-up codes that should be generated for a user. Note that changing this value will not
      * regenerate or generate new codes to meet the new number. The user will have to manually regenerate codes to

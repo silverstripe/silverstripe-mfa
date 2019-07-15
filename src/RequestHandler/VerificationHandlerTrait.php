@@ -2,9 +2,9 @@
 
 namespace SilverStripe\MFA\RequestHandler;
 
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Control\HTTPResponse;
-use SilverStripe\Core\Config\Config;
+use SS_HTTPRequest as HTTPRequest;
+use SS_HTTPResponse as HTTPResponse;
+use Config;
 use SilverStripe\MFA\Exception\InvalidMethodException;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Service\EnforcementManager;
@@ -12,7 +12,7 @@ use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
-use SilverStripe\Security\SecurityToken;
+use SecurityToken;
 
 /**
  * This trait encapsulates logic that can be added to a `RequestHandler` to work with logging in using MFA front-end
@@ -47,7 +47,7 @@ trait VerificationHandlerTrait
             $registeredMethod = $member->DefaultRegisteredMethod;
         }
 
-        $response = HTTPResponse::create()
+        $response = (new HTTPResponse())
             ->addHeader('Content-Type', 'application/json');
 
         // We can't proceed with login if the Member doesn't have this method registered

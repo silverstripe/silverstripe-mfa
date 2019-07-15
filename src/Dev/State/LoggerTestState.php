@@ -2,12 +2,12 @@
 
 namespace SilverStripe\MFA\Dev\State;
 
-use Monolog\Handler\NullHandler;
-use Monolog\Logger;
-use Psr\Log\LoggerInterface;
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Dev\SapphireTest;
-use SilverStripe\Dev\State\TestState;
+use Monolog\Handler\NullHandler; // Not present in SS3
+use Monolog\Logger; // Not present in SS3
+use Psr\Log\LoggerInterface; // Not present in SS3
+use Injector;
+use SapphireTest;
+use SilverStripe\Dev\State\TestState; // Not present in SS3
 
 /**
  * Clears any user defined loggers during unit test execution

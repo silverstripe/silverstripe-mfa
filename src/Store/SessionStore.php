@@ -4,11 +4,12 @@ namespace SilverStripe\MFA\Store;
 
 use RuntimeException;
 use Serializable;
-use SilverStripe\Control\HTTPRequest;
+use Session;
+use SS_HTTPRequest as HTTPRequest;
 use SilverStripe\MFA\Exception\InvalidMethodException;
 use SilverStripe\MFA\Extension\MemberExtension;
-use SilverStripe\ORM\DataObject;
-use SilverStripe\Security\Member;
+use DataObject;
+use Member;
 
 /**
  * This class provides an interface to store data in session during an MFA process. This is implemented as a measure to
@@ -149,7 +150,7 @@ class SessionStore implements StoreInterface, Serializable
      */
     public function save(HTTPRequest $request): StoreInterface
     {
-        $request->getSession()->set(static::SESSION_KEY, $this);
+        Session::set(static::SESSION_KEY, $this);
 
         return $this;
     }
@@ -162,7 +163,7 @@ class SessionStore implements StoreInterface, Serializable
      */
     public static function load(HTTPRequest $request): ?StoreInterface
     {
-        $store = $request->getSession()->get(static::SESSION_KEY);
+        $store = Session::get(static::SESSION_KEY);
         return $store instanceof self ? $store : null;
     }
 
@@ -173,7 +174,7 @@ class SessionStore implements StoreInterface, Serializable
      */
     public static function clear(HTTPRequest $request): void
     {
-        $request->getSession()->clear(static::SESSION_KEY);
+        Session::clear(static::SESSION_KEY);
     }
 
     /**

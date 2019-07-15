@@ -3,10 +3,8 @@
 namespace SilverStripe\MFA\BackupCode;
 
 use Exception;
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Core\Config\Configurable;
-use SilverStripe\Core\Extensible;
-use SilverStripe\Core\Injector\Injector;
+use SS_HTTPRequest as HTTPRequest;
+use Injector;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Service\BackupCodeGeneratorInterface;
@@ -14,12 +12,10 @@ use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\State\BackupCode;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
+use SS_Object;
 
-class RegisterHandler implements RegisterHandlerInterface
+class RegisterHandler extends SS_Object implements RegisterHandlerInterface
 {
-    use Extensible;
-    use Configurable;
-
     /**
      * Provide a user help link that will be available when registering backup codes
      * TODO Will this have a user help link as a default?

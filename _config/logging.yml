@@ -1,7 +1,7 @@
 ---
 Name: mfalogging
 ---
-SilverStripe\Core\Injector\Injector:
+Injector:
   # Note: bring your own handlers, none are configured by default
   Psr\Log\LoggerInterface.mfa:
     type: singleton

@@ -2,7 +2,7 @@
 
 namespace SilverStripe\MFA\State;
 
-use SilverStripe\Core\Injector\Injectable;
+use SS_Object;
 
 /**
  * An immutable result object often detailing the result of a registration or validation completed by the
@@ -10,10 +10,8 @@ use SilverStripe\Core\Injector\Injectable;
  *
  * @method static Result create(bool $success = true, string $message = '', array $context = [])
  */
-class Result
+class Result extends SS_Object
 {
-    use Injectable;
-
     /**
      * Indicates this result was successful
      *

@@ -3,7 +3,7 @@
 namespace SilverStripe\MFA\Tests\State;
 
 use PHPUnit_Framework_MockObject_MockObject;
-use SilverStripe\Dev\SapphireTest;
+use SapphireTest;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\State\AvailableMethodDetails;
@@ -20,7 +20,7 @@ class AvailableMethodDetailsTest extends SapphireTest
      */
     protected $details;
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
 

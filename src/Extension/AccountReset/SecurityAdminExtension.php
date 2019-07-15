@@ -3,21 +3,21 @@
 namespace SilverStripe\MFA\Extension\AccountReset;
 
 use Exception;
-use Psr\Log\LoggerInterface;
-use SilverStripe\Control\Controller;
-use SilverStripe\Control\Email\Email;
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Control\HTTPResponse;
-use SilverStripe\Core\Extension;
-use SilverStripe\Admin\SecurityAdmin;
+use SS_Log;
+use Controller;
+use Email;
+use SS_HTTPRequest as HTTPRequest;
+use SS_HTTPResponse as HTTPResponse;
+use Extension;
+use SecurityAdmin;
 use SilverStripe\MFA\Extension\MemberExtension as BaseMFAMemberExtension;
 use SilverStripe\MFA\JSONResponse;
-use SilverStripe\ORM\ValidationException;
-use SilverStripe\Security\Member;
-use SilverStripe\Security\PasswordEncryptor_NotFoundException;
-use SilverStripe\Security\Permission;
-use SilverStripe\Security\Security;
-use SilverStripe\Security\SecurityToken;
+use ValidationException;
+use Member;
+use PasswordEncryptor_NotFoundException;
+use Permission;
+use Security;
+use SecurityToken;
 
 /**
  * This extension is applied to SecurityAdmin to provide an additional endpoint
@@ -33,18 +33,6 @@ class SecurityAdminExtension extends Extension
     private static $allowed_actions = [
         'reset',
     ];
-
-    /**
-     * @var string[]
-     */
-    private static $dependencies = [
-        'Logger' => '%$' . LoggerInterface::class . '.account_reset',
-    ];
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
 
     public function reset(HTTPRequest $request): HTTPResponse
     {
@@ -126,20 +114,20 @@ class SecurityAdminExtension extends Extension
         // Create email and fire
         try {
             $email = Email::create()
-                ->setHTMLTemplate('SilverStripe\\MFA\\Email\\AccountReset')
-                ->setData($member)
+                ->setTemplate('AccountReset')
+                ->populateTemplate($member)
                 ->setSubject(_t(
                     __CLASS__ . '.ACCOUNT_RESET_EMAIL_SUBJECT',
                     'Reset your account'
                 ))
-                ->addData('AccountResetLink', $this->getAccountResetLink($member, $token))
-                ->addData('Member', $member)
+                ->populateTemplate(['AccountResetLink' => $this->getAccountResetLink($member, $token)])
+                ->populateTemplate(['Member' => $member])
                 ->setFrom(Email::config()->get('admin_email'))
                 ->setTo($member->Email);
 
             return $email->send();
         } catch (Exception $e) {
-            $this->logger->info('WARNING: Account Reset Email failed to send: ' . $e->getMessage());
+            SS_Log::log('WARNING: Account Reset Email failed to send: ' . $e->getMessage(), SS_Log::INFO);
             return false;
         }
     }

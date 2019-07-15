@@ -2,9 +2,9 @@
 
 namespace SilverStripe\MFA\Extension\AccountReset;
 
-use SilverStripe\Core\Extension;
+use Extension;
 use SilverStripe\MFA\Extension\MemberExtension as MemberExtension;
-use SilverStripe\Security\Member;
+use Member;
 
 /**
  * Handles removing a member's registered MFA methods during Account Reset. Also
@@ -13,12 +13,12 @@ use SilverStripe\Security\Member;
  *
  * @package SilverStripe\MFA\Extension\AccountReset
  */
-class MFAResetExtension extends Extension
+class MFAResetExtension implements AccountResetHandler
 {
     /**
      * @param Member&MemberExtension $member
      */
-    public function handleAccountReset(Member $member)
+    public function handleAccountReset(Member $member): void
     {
         foreach ($member->RegisteredMFAMethods() as $method) {
             $method->delete();

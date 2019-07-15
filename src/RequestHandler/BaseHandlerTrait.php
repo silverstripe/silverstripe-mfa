@@ -2,12 +2,12 @@
 
 namespace SilverStripe\MFA\RequestHandler;
 
-use SilverStripe\Core\Injector\Injector;
+use Injector;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Store\StoreInterface;
-use SilverStripe\Security\Member;
+use Member;
 use SilverStripe\SecurityExtensions\Service\SudoModeServiceInterface;
-use SilverStripe\View\Requirements;
+use Requirements;
 
 trait BaseHandlerTrait
 {
@@ -27,8 +27,9 @@ trait BaseHandlerTrait
     {
         // Run through requirements
         if ($frontEndRequirements) {
-            Requirements::javascript('silverstripe/mfa: client/dist/js/injector.js');
-            Requirements::javascript('silverstripe/admin: client/dist/js/i18n.js');
+            Requirements::javascript('framework/thirdparty/jquery/jquery.js');
+            Requirements::javascript('mfa/client/dist/js/injector.js');
+            Requirements::javascript('framework/javascript/i18n.js');
         }
 
         // Plugin module requirements
@@ -36,11 +37,11 @@ trait BaseHandlerTrait
             $method->applyRequirements();
         }
 
-        Requirements::add_i18n_javascript('silverstripe/mfa: client/lang');
+        Requirements::add_i18n_javascript('mfa/client/lang');
 
         $suffix = $frontEndRequirements ? '' : '-cms';
-        Requirements::javascript("silverstripe/mfa: client/dist/js/bundle{$suffix}.js");
-        Requirements::css("silverstripe/mfa: client/dist/styles/bundle{$suffix}.css");
+        Requirements::javascript("mfa/client/dist/js/bundle{$suffix}.js");
+        Requirements::css("mfa/client/dist/styles/bundle{$suffix}.css");
     }
 
     /**
@@ -49,8 +50,7 @@ trait BaseHandlerTrait
     protected function getStore(): ?StoreInterface
     {
         if (!$this->store) {
-            $spec = Injector::inst()->getServiceSpec(StoreInterface::class);
-            $class = is_string($spec) ? $spec : $spec['class'];
+            $class = get_class(Injector::inst()->create(StoreInterface::class, Member::create()));
             $this->store = call_user_func([$class, 'load'], $this->getRequest());
         }
 

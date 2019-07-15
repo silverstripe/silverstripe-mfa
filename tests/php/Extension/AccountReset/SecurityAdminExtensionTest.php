@@ -2,11 +2,13 @@
 
 namespace SilverStripe\MFA\Tests\Extension\AccountReset;
 
-use SilverStripe\Admin\SecurityAdmin;
-use SilverStripe\Dev\FunctionalTest;
+use SecurityAdmin;
+use FunctionalTest;
 use SilverStripe\MFA\Extension\AccountReset\SecurityAdminExtension;
-use SilverStripe\Security\Member;
-use SilverStripe\Security\SecurityToken;
+use Member;
+use SecurityToken;
+use SS_Log;
+use SS_LogFileWriter;
 
 /**
  * Class SecurityAdminExtensionTest
@@ -17,14 +19,14 @@ class SecurityAdminExtensionTest extends FunctionalTest
 {
     protected static $fixture_file = 'SecurityAdminExtensionTest.yml';
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
 
         SecurityToken::enable();
     }
 
-    protected function tearDown()
+    public function tearDown()
     {
         parent::tearDown();
 
@@ -33,10 +35,9 @@ class SecurityAdminExtensionTest extends FunctionalTest
 
     public function testEndpointRequiresCSRF()
     {
-        $this->logInAs('admin');
-
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'squib');
+        $member->logIn();
 
         $response = $this->post(SecurityAdmin::singleton()->Link("reset/{$member->ID}"), [true]);
 
@@ -46,7 +47,9 @@ class SecurityAdminExtensionTest extends FunctionalTest
 
     public function testResetCanBeInitiatedByAdmin()
     {
-        $this->logInAs('admin');
+        /** @var Member $adminMember */
+        $adminMember = $this->objFromFixture(Member::class, 'admin');
+        $adminMember->logIn();
 
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'squib');
@@ -65,10 +68,9 @@ class SecurityAdminExtensionTest extends FunctionalTest
 
     public function testResetCannotBeInitiatedByStandardUser()
     {
-        $this->logInAs('squib');
-
         /** @var Member $member */
-        $member = $this->objFromFixture(Member::class, 'admin');
+        $member = $this->objFromFixture(Member::class, 'squib');
+        $member->logIn();
 
         $response = $this->post(
             SecurityAdmin::singleton()->Link("reset/{$member->ID}"),

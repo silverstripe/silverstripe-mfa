@@ -3,16 +3,16 @@
 namespace SilverStripe\MFA\RequestHandler;
 
 use Exception;
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Control\HTTPResponse;
-use SilverStripe\Core\Injector\Injector;
+use SS_HTTPRequest as HTTPRequest;
+use SS_HTTPResponse as HTTPResponse;
+use Injector;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\State\RegisteredMethodDetailsInterface;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
-use SilverStripe\ORM\ValidationResult;
-use SilverStripe\Security\SecurityToken;
+use ValidationResult;
+use SecurityToken;
 
 /**
  * This trait encapsulates logic that can be added to a `RequestHandler` to work with registering MFA authenticators
@@ -42,7 +42,7 @@ trait RegistrationHandlerTrait
         // Sanity check that the method hasn't already been registered
         $existingRegisteredMethod = RegisteredMethodManager::singleton()->getFromMember($member, $method);
 
-        $response = HTTPResponse::create()
+        $response = (new HTTPResponse())
             ->addHeader('Content-Type', 'application/json');
 
         if (!$allowReregistration && $existingRegisteredMethod) {

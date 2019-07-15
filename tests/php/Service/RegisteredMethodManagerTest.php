@@ -2,16 +2,16 @@
 
 namespace SilverStripe\MFA\Tests\Service;
 
-use SilverStripe\Core\Config\Config;
-use SilverStripe\Dev\SapphireTest;
+use Config;
+use SapphireTest;
 use SilverStripe\MFA\BackupCode\Method as BackupCodeMethod;
 use SilverStripe\MFA\Extension\MemberExtension;
-use SilverStripe\MFA\Model\RegisteredMethod;
+use MFARegisteredMethod as RegisteredMethod;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method as BasicMathMethod;
-use SilverStripe\ORM\DataObject;
-use SilverStripe\Security\Member;
+use DataObject;
+use Member;
 
 class RegisteredMethodManagerTest extends SapphireTest
 {
@@ -156,7 +156,8 @@ class RegisteredMethodManagerTest extends SapphireTest
     public function testDeletingLastMethodRemovesBackupCodes()
     {
         // Assert the config is set for backup codes
-        Config::modify()->set(MethodRegistry::class, 'default_backup_method', BackupCodeMethod::class);
+        Config::inst()->remove(MethodRegistry::class, 'default_backup_method');
+        Config::inst()->update(MethodRegistry::class, 'default_backup_method', BackupCodeMethod::class);
 
         /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'jane_doe');
@@ -174,7 +175,7 @@ class RegisteredMethodManagerTest extends SapphireTest
 
         $this->assertCount(0, $member->RegisteredMFAMethods());
 
-        $this->assertNull(DataObject::get_by_id(RegisteredMethod::class, $backupMethod->ID));
-        $this->assertNull(DataObject::get_by_id(RegisteredMethod::class, $mathMethod->ID));
+        $this->assertFalse(DataObject::get_by_id(RegisteredMethod::class, $backupMethod->ID));
+        $this->assertFalse(DataObject::get_by_id(RegisteredMethod::class, $mathMethod->ID));
     }
 }

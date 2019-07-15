@@ -2,12 +2,12 @@
 
 namespace SilverStripe\MFA\Extension\AccountReset;
 
-use SilverStripe\Forms\FieldList;
-use SilverStripe\ORM\DataExtension;
-use SilverStripe\ORM\DataObject;
-use SilverStripe\ORM\FieldType\DBDatetime;
-use SilverStripe\Security\Member;
-use SilverStripe\Security\RandomGenerator;
+use FieldList;
+use DataExtension;
+use DataObject;
+use SS_Datetime as DBDatetime;
+use Member;
+use RandomGenerator;
 
 /**
  * Provides DB columns / methods for account resets on Members
@@ -21,7 +21,7 @@ class MemberExtension extends DataExtension
 {
     private static $db = [
         'AccountResetHash' => 'Varchar(160)',
-        'AccountResetExpired' => 'Datetime',
+        'AccountResetExpired' => 'SS_Datetime',
     ];
 
     public function updateCMSFields(FieldList $fields)
@@ -49,10 +49,13 @@ class MemberExtension extends DataExtension
             '"Member"."AccountResetHash"' => $hash,
         ]));
 
+        $expiry = DBDatetime::create();
+        $expiry->setValue(
+            intval(DBDatetime::now()->Format('U')) + $lifetime
+        );
+
         $this->owner->AccountResetHash = $hash;
-        $this->owner->AccountResetExpired = DBDatetime::create()->setValue(
-            DBDatetime::now()->getTimestamp() + $lifetime
-        )->Rfc2822();
+        $this->owner->AccountResetExpired = $expiry->getValue();
 
         $this->owner->write();
 

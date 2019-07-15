@@ -2,7 +2,7 @@
 
 namespace SilverStripe\MFA\Tests\Service;
 
-use SilverStripe\Dev\SapphireTest;
+use SapphireTest;
 use SilverStripe\MFA\Service\DefusePHPEncryptionAdapter;
 
 class PHPEncryptionAdapterTest extends SapphireTest

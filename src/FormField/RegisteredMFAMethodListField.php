@@ -2,14 +2,15 @@
 
 namespace SilverStripe\MFA\FormField;
 
-use SilverStripe\Admin\SecurityAdmin;
-use SilverStripe\Forms\FormField;
+use Member;
+use SecurityAdmin;
+use FormField;
 use SilverStripe\MFA\Controller\AdminRegistrationController;
-use SilverStripe\MFA\Model\RegisteredMethod;
+use MFARegisteredMethod as RegisteredMethod;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Service\SchemaGenerator;
-use SilverStripe\Security\Security;
+use Security;
 
 class RegisteredMFAMethodListField extends FormField
 {
@@ -21,14 +22,12 @@ class RegisteredMFAMethodListField extends FormField
     /**
      * @return array
      */
-    public function getSchemaDataDefaults()
+    public function getSchemaData()
     {
-        $defaults = parent::getSchemaDataDefaults();
-
         $adminController = AdminRegistrationController::singleton();
         $generator = SchemaGenerator::create();
 
-        return array_merge($defaults, [
+        return [
             'schema' => $generator->getSchema($this->value) + [
                 'endpoints' => [
                     'register' => $adminController->Link('register/{urlSegment}'),
@@ -42,7 +41,7 @@ class RegisteredMFAMethodListField extends FormField
                     : null,
                 'resetEndpoint' => SecurityAdmin::singleton()->Link("reset/{$this->value->ID}"),
             ],
-        ]);
+        ];
     }
 
     /**
@@ -53,6 +52,6 @@ class RegisteredMFAMethodListField extends FormField
     protected function getBackupMethod(): ?RegisteredMethod
     {
         $backupMethod = MethodRegistry::singleton()->getBackupMethod();
-        return RegisteredMethodManager::singleton()->getFromMember(Security::getCurrentUser(), $backupMethod);
+        return RegisteredMethodManager::singleton()->getFromMember(Member::currentUser(), $backupMethod);
     }
 }

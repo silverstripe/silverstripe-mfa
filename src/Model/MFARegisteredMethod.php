@@ -1,26 +1,21 @@
 <?php declare(strict_types=1);
 
-namespace SilverStripe\MFA\Model;
-
-use SilverStripe\Core\Injector\Injector;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
-use SilverStripe\ORM\DataObject;
-use SilverStripe\Security\Member;
 
+// phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
 /**
- * @package SilverStripe\MFA\Model
+ * Known as RegisteredMethod in SS4, but renamed and un-namespaced for table
+ * name consistency in SS3.
  *
  * @property int ID
  * @property string MethodClassName
  * @property string Data
  * @method Member Member
  */
-class RegisteredMethod extends DataObject
+class MFARegisteredMethod extends DataObject
 {
-    private static $table_name = 'MFARegisteredMethod';
-
     private static $db = [
         // The class name of the MethodInterface that this record refers to
         'MethodClassName' => 'Varchar',

@@ -2,10 +2,9 @@
 
 namespace SilverStripe\MFA\BackupCode;
 
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Core\Manifest\ModuleLoader;
-use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
+use Injector;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
+use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
 
 class Method implements MethodInterface
@@ -42,9 +41,7 @@ class Method implements MethodInterface
 
     public function getThumbnail(): string
     {
-        return (string) ModuleLoader::getModule('silverstripe/mfa')
-            ->getResource('client/dist/images/locked-letter.svg')
-            ->getURL();
+        return '/mfa/client/dist/images/locked-letter.svg';
     }
 
     public function applyRequirements(): void

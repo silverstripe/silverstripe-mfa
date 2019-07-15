@@ -1,0 +1,32 @@
+MFARegisteredMethod:
+  simon-math:
+    MethodClassName: "SilverStripe\MFA\Tests\Stub\BasicMath\Method"
+  robbie-math:
+    MethodClassName: "SilverStripe\MFA\Tests\Stub\BasicMath\Method"
+
+Permission:
+  admin:
+    Code: ADMIN
+
+Group:
+  admingroup:
+    Title: Create, edit and delete pages
+    Code: admingroup
+    Permissions: =>Permission.admin
+
+Member:
+  guy:
+    Email: guy@example.com
+    Password: Password123
+    PasswordExpiry: 2030-01-01
+    Groups: =>Group.admingroup
+  simon:
+    Email: simon@example.com
+    RegisteredMFAMethods: =>MFARegisteredMethod.simon-math
+    Groups: =>Group.admingroup
+  robbie:
+    Email: robbie@example.com
+    RegisteredMFAMethods: =>MFARegisteredMethod.robbie-math
+    DefaultRegisteredMethodID: =>MFARegisteredMethod.robbie-math
+    Groups: =>Group.admingroup
+

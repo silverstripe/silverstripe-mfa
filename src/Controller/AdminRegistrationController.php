@@ -2,21 +2,24 @@
 
 namespace SilverStripe\MFA\Controller;
 
-use Psr\Log\LoggerInterface;
-use SilverStripe\Admin\LeftAndMain;
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Control\HTTPResponse;
-use SilverStripe\Core\Injector\Injector;
+use Controller;
+use Session;
+use SilverStripe\MFA\JSONResponse;
+use SS_Log;
+use LeftAndMain;
+use SS_HTTPRequest as HTTPRequest;
+use SS_HTTPResponse as HTTPResponse;
+use Injector;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\RequestHandler\BaseHandlerTrait;
 use SilverStripe\MFA\RequestHandler\RegistrationHandlerTrait;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\State\AvailableMethodDetailsInterface;
-use SilverStripe\ORM\ValidationException;
-use SilverStripe\Security\Member;
-use SilverStripe\Security\Security;
-use SilverStripe\Security\SecurityToken;
+use ValidationException;
+use Member;
+use Security;
+use SecurityToken;
 
 /**
  * This controller handles actions that a user may perform on MFA methods registered on their own account while logged
@@ -26,10 +29,9 @@ class AdminRegistrationController extends LeftAndMain
 {
     use RegistrationHandlerTrait;
     use BaseHandlerTrait;
+    use JSONResponse;
 
     private static $url_segment = 'mfa';
-
-    private static $ignore_menuitem = true;
 
     private static $url_handlers = [
         'GET register/$Method' => 'startRegistration',
@@ -47,28 +49,18 @@ class AdminRegistrationController extends LeftAndMain
 
     private static $required_permission_codes = false;
 
-    private static $dependencies = [
-        'Logger' => '%$' . LoggerInterface::class . '.mfa',
-    ];
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
     /**
      * Start a registration for a method on the currently logged in user
      *
-     * @param HTTPRequest $request
      * @return HTTPResponse
      */
-    public function startRegistration(HTTPRequest $request): HTTPResponse
+    public function startRegistration(): HTTPResponse
     {
         // Create a fresh store from the current logged in user
-        $member = Security::getCurrentUser();
+        $member = Member::currentUser();
         $store = $this->createStore($member);
 
-        if (!$this->getSudoModeService()->check($request->getSession())) {
+        if (!$this->getSudoModeService()->check($this->getSession())) {
             return $this->jsonResponse(
                 ['errors' => [_t(__CLASS__ . '.INVALID_SESSION', 'Invalid session. Please refresh and try again.')]],
                 400
@@ -76,7 +68,7 @@ class AdminRegistrationController extends LeftAndMain
         }
 
         // Get the specified method
-        $method = MethodRegistry::singleton()->getMethodByURLSegment($request->param('Method'));
+        $method = MethodRegistry::singleton()->getMethodByURLSegment($this->getRequest()->param('Method'));
 
         if (!$method) {
             return $this->jsonResponse(
@@ -86,7 +78,7 @@ class AdminRegistrationController extends LeftAndMain
         }
 
         $response = $this->createStartRegistrationResponse($store, $method, true);
-        $store->save($request);
+        $store->save($this->getRequest());
 
         return $response;
     }
@@ -101,7 +93,7 @@ class AdminRegistrationController extends LeftAndMain
     {
         $store = $this->getStore();
 
-        if (!$store || !$this->getSudoModeService()->check($request->getSession())) {
+        if (!$store || !$this->getSudoModeService()->check($this->getSession())) {
             return $this->jsonResponse(
                 ['errors' => [_t(__CLASS__ . '.INVALID_SESSION', 'Invalid session. Please refresh and try again.')]],
                 400
@@ -159,7 +151,7 @@ class AdminRegistrationController extends LeftAndMain
         }
 
         // Remove the method from the user
-        $member = Security::getCurrentUser();
+        $member = Member::currentUser();
         $registeredMethodManager = RegisteredMethodManager::singleton();
         $result = $registeredMethodManager->deleteFromMember($member, $method);
 
@@ -192,11 +184,12 @@ class AdminRegistrationController extends LeftAndMain
      * @param HTTPRequest $request
      * @return HTTPResponse
      */
-    public function setDefaultRegisteredMethod(HTTPRequest $request): HTTPResponse
+    public function setDefaultRegisteredMethod(): HTTPResponse
     {
+        $request = $this->getRequest();
         // Ensure CSRF and sudo-mode protection
         if (!SecurityToken::inst()->checkRequest($request)
-            || !$this->getSudoModeService()->check($request->getSession())
+            || !$this->getSudoModeService()->check($this->getSession())
         ) {
             return $this->jsonResponse(
                 ['errors' => [_t(__CLASS__ . '.CSRF_FAILURE', 'Request timed out, please try again')]],
@@ -217,7 +210,7 @@ class AdminRegistrationController extends LeftAndMain
 
         // Set the method as the default
         /** @var Member&MemberExtension $member */
-        $member = Security::getCurrentUser();
+        $member = Member::currentUser();
         $registeredMethodManager = RegisteredMethodManager::singleton();
         $registeredMethod = $registeredMethodManager->getFromMember($member, $method);
         if (!$registeredMethod) {
@@ -230,9 +223,10 @@ class AdminRegistrationController extends LeftAndMain
             $member->setDefaultRegisteredMethod($registeredMethod);
             $member->write();
         } catch (ValidationException $exception) {
-            $this->logger->debug(
+            SS_Log::log(
                 'Failed to set default registered method for user #' . $member->ID . ' to ' . $specifiedMethod
-                . ': ' . $exception->getMessage()
+                . ': ' . $exception->getMessage(),
+                SS_Log::DEBUG
             );
 
             return $this->jsonResponse(
@@ -245,29 +239,5 @@ class AdminRegistrationController extends LeftAndMain
         }
 
         return $this->jsonResponse(['success' => true]);
-    }
-
-    /**
-     * Respond with the given array as a JSON response
-     *
-     * @param array $response
-     * @param int $code The HTTP response code to set on the response
-     * @return HTTPResponse
-     */
-    protected function jsonResponse(array $response, int $code = 200): HTTPResponse
-    {
-        return HTTPResponse::create(json_encode($response))
-            ->addHeader('Content-Type', 'application/json')
-            ->setStatusCode($code);
-    }
-
-    /**
-     * @param LoggerInterface|null $logger
-     * @return $this
-     */
-    public function setLogger(?LoggerInterface $logger): self
-    {
-        $this->logger = $logger;
-        return $this;
     }
 }

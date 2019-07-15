@@ -2,30 +2,32 @@
 
 namespace SilverStripe\MFA\Tests\Service;
 
-use SilverStripe\Dev\SapphireTest;
+use Config;
+use SapphireTest;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method as BasicMathMethod;
-use SilverStripe\ORM\FieldType\DBDatetime;
-use SilverStripe\Security\Member;
-use SilverStripe\SiteConfig\SiteConfig;
+use SS_Datetime as DBDatetime;
+use Member;
+use SiteConfig;
 
 class EnforcementManagerTest extends SapphireTest
 {
     protected static $fixture_file = 'EnforcementManagerTest.yml';
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
 
         DBDatetime::set_mock_now('2019-01-25 12:00:00');
 
-        MethodRegistry::config()->set('methods', [
+        Config::inst()->remove(MethodRegistry::class, 'methods');
+        Config::inst()->update(MethodRegistry::class, 'methods', [
             BasicMathMethod::class,
         ]);
 
-        EnforcementManager::config()->set('requires_admin_access', true);
+        Config::inst()->update(EnforcementManager::class, 'requires_admin_access', true);
     }
 
     public function testCannotSkipWhenMFAIsRequiredWithNoGracePeriod()
@@ -58,7 +60,7 @@ class EnforcementManagerTest extends SapphireTest
         // Sally has "backup codes" as a registered authentication method already
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'sally_smith');
-        $this->logInAs($member);
+        $member->logIn();
 
         $this->assertFalse(EnforcementManager::create()->canSkipMFA($member));
     }
@@ -78,17 +80,17 @@ class EnforcementManagerTest extends SapphireTest
     {
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'sammy_smith');
-        $this->logInAs($member);
+        $member->logIn();
         $this->assertFalse(EnforcementManager::create()->shouldRedirectToMFA($member));
     }
 
     public function testShouldRedirectToMFAWhenUserDoesNotHaveCMSAccessButTheCheckIsDisabledWithConfig()
     {
-        EnforcementManager::config()->set('requires_admin_access', false);
+        Config::inst()->update(EnforcementManager::class, 'requires_admin_access', false);
 
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'sammy_smith');
-        $this->logInAs($member);
+        $member->logIn();
         $this->assertTrue(EnforcementManager::create()->shouldRedirectToMFA($member));
     }
 
@@ -96,7 +98,7 @@ class EnforcementManagerTest extends SapphireTest
     {
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'reports_user');
-        $this->logInAs($member);
+        $member->logIn();
         $this->assertTrue(EnforcementManager::create()->shouldRedirectToMFA($member));
     }
 
@@ -121,7 +123,7 @@ class EnforcementManagerTest extends SapphireTest
         $this->setSiteConfig(['MFARequired' => true]);
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'sally_smith');
-        $this->logInAs($member);
+        $member->logIn();
 
         $this->assertTrue(EnforcementManager::create()->shouldRedirectToMFA($member));
     }
@@ -134,7 +136,7 @@ class EnforcementManagerTest extends SapphireTest
         $member = $this->objFromFixture(Member::class, 'sally_smith');
         $member->HasSkippedMFARegistration = false;
         $member->write();
-        $this->logInAs($member);
+        $member->logIn();
 
         $this->assertTrue(EnforcementManager::create()->shouldRedirectToMFA($member));
     }
@@ -147,14 +149,14 @@ class EnforcementManagerTest extends SapphireTest
         $member = $this->objFromFixture(Member::class, 'sammy_smith');
         $member->HasSkippedMFARegistration = true;
         $member->write();
-        $this->logInAs($member);
+        $member->logIn();
 
         $this->assertFalse(EnforcementManager::create()->shouldRedirectToMFA($member));
     }
 
     public function testShouldNotRedirectToMFAWhenConfigIsDisabled()
     {
-        EnforcementManager::config()->set('enabled', false);
+        Config::inst()->update(EnforcementManager::class, 'enabled', false);
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'sally_smith');
         $shouldRedirect = EnforcementManager::create()->shouldRedirectToMFA($member);
@@ -164,11 +166,13 @@ class EnforcementManagerTest extends SapphireTest
     public function testShouldNotRedirectToMFAWhenNoMethodsAreRegisteredInTheSystem()
     {
         $this->setSiteConfig(['MFARequired' => true]);
-        MethodRegistry::config()->set('methods', []);
+
+        Config::inst()->remove(MethodRegistry::class, 'methods');
+        Config::inst()->update(MethodRegistry::class, 'methods', []);
 
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'sally_smith');
-        $this->logInAs($member);
+        $member->logIn();
 
         $this->assertFalse(EnforcementManager::create()->shouldRedirectToMFA($member));
     }

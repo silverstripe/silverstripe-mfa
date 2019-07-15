@@ -3,9 +3,9 @@
 namespace SilverStripe\MFA\Tests\Authenticator;
 
 use PHPUnit_Framework_MockObject_MockObject;
-use SilverStripe\Core\Config\Config;
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Dev\FunctionalTest;
+use Config;
+use Injector;
+use FunctionalTest;
 use SilverStripe\MFA\Authenticator\MemberAuthenticator;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
@@ -14,10 +14,10 @@ use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
-use SilverStripe\Security\Member;
-use SilverStripe\Security\Security;
+use Member;
+use Security;
 use SilverStripe\SecurityExtensions\Service\SudoModeServiceInterface;
-use SilverStripe\Security\SecurityToken;
+use SecurityToken;
 
 /**
  * Class RegisterHandlerTest
@@ -26,14 +26,15 @@ use SilverStripe\Security\SecurityToken;
  */
 class RegisterHandlerTest extends FunctionalTest
 {
-    const URL = 'Security/login/default/mfa/register/basic-math/';
+    const URL = 'Security/LoginForm/mfa/register/basic-math/';
 
     protected static $fixture_file = 'RegisterHandlerTest.yml';
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
-        Config::modify()->set(MethodRegistry::class, 'methods', [Method::class]);
+        Config::inst()->remove(MethodRegistry::class, 'methods');
+        Config::inst()->update(MethodRegistry::class, 'methods', [Method::class]);
 
         Injector::inst()->load([
             Security::class => [
@@ -80,7 +81,7 @@ class RegisterHandlerTest extends FunctionalTest
 
         $this->scaffoldPartialLogin($freshMember);
 
-        $response = $this->get('Security/login/default/mfa/register/inert/');
+        $response = $this->get('Security/LoginForm/mfa/register/inert/');
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertContains('No such method is available', $response->getBody());
     }
@@ -105,7 +106,7 @@ class RegisterHandlerTest extends FunctionalTest
      */
     public function testStartRegistrationFailsWhenMethodIsAlreadyRegistered()
     {
-        $this->logInAs('stale-member');
+        $this->objFromFixture(Member::class, 'stale-member')->logIn();
 
         $response = $this->get(self::URL);
         $this->assertEquals(400, $response->getStatusCode());
@@ -274,7 +275,7 @@ class RegisterHandlerTest extends FunctionalTest
      */
     protected function scaffoldPartialLogin(Member $member, $method = null)
     {
-        $this->logOut();
+        Member::singleton()->logOut();
 
         $store = new SessionStore($member);
         if ($method) {

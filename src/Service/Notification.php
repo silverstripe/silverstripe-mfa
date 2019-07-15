@@ -3,31 +3,17 @@
 namespace SilverStripe\MFA\Service;
 
 use Exception;
-use Psr\Log\LoggerInterface;
-use SilverStripe\Control\Email\Email;
-use SilverStripe\Core\Config\Configurable;
-use SilverStripe\Core\Extensible;
-use SilverStripe\Core\Injector\Injectable;
-use SilverStripe\Security\Member;
+use Email;
+use Member;
+use SS_Log;
+use SS_Object;
 
 /**
  * Encapsulates setting up an Email in order to allow for dependency injection and to avoid introducing a hard
  * coupling to the SilverStripe core Email class in code that consumes this class.
  */
-class Notification
+class Notification extends SS_Object
 {
-    use Configurable;
-    use Injectable;
-    use Extensible;
-
-    /**
-     * @config
-     * @var array
-     */
-    private static $dependencies = [
-        'Logger' => '%$' . LoggerInterface::class . '.mfa',
-    ];
-
     /**
      * Whether sending emails is enabled for MFA changes
      *
@@ -35,17 +21,6 @@ class Notification
      * @var bool
      */
     private static $enabled = true;
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    public function setLogger(LoggerInterface $logger): self
-    {
-        $this->logger = $logger;
-        return $this;
-    }
 
     /**
      * Sends the notification to the member
@@ -70,8 +45,8 @@ class Notification
         try {
             $email = Email::create()
                 ->setTo($member->Email)
-                ->setHTMLTemplate($template)
-                ->setData(array_merge(['Member' => $member], $data));
+                ->setTemplate($template)
+                ->populateTemplate(array_merge(['Member' => $member], $data));
 
             foreach (['to', 'from', 'subject'] as $header) {
                 if (isset($data[$header])) {
@@ -84,7 +59,7 @@ class Notification
 
             $sendResult = $email->send();
         } catch (Exception $e) {
-            $this->logger->info($e->getMessage());
+            SS_Log::log($e, SS_Log::INFO);
         }
 
         $this->extend('onAfterSend', $email, $sendResult);

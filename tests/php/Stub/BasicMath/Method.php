@@ -1,14 +1,11 @@
 <?php
 namespace SilverStripe\MFA\Tests\Stub\BasicMath;
 
-use SilverStripe\Control\Director;
-use SilverStripe\Core\Manifest\ModuleLoader;
-use SilverStripe\Dev\TestOnly;
-use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
+use Director;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
+use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
-use SilverStripe\MFA\State\AvailableMethodDetails;
-use SilverStripe\MFA\State\AvailableMethodDetailsInterface;
+use TestOnly;
 
 class Method implements MethodInterface, TestOnly
 {
@@ -44,9 +41,7 @@ class Method implements MethodInterface, TestOnly
 
     public function getThumbnail(): string
     {
-        return (string) ModuleLoader::getModule('silverstripe/mfa')
-            ->getResource('client/dist/images/totp.svg')
-            ->getURL();
+        return (string) Director::baseFolder() . '/mfa/client/dist/images/totp.svg';
     }
 
     public function applyRequirements(): void

@@ -2,9 +2,9 @@
 
 namespace SilverStripe\MFA\Tests\FormField;
 
-use SilverStripe\Dev\SapphireTest;
+use SapphireTest;
 use SilverStripe\MFA\FormField\RegisteredMFAMethodListField;
-use SilverStripe\Security\Member;
+use Member;
 
 class RegisteredMFAMethodListFieldTest extends SapphireTest
 {
@@ -17,7 +17,7 @@ class RegisteredMFAMethodListFieldTest extends SapphireTest
 
         $field = new RegisteredMFAMethodListField('test');
         $field->setValue($member);
-        $schema = $field->getSchemaDataDefaults();
+        $schema = $field->getSchemaData();
 
         $this->assertContains('register/', $schema['schema']['endpoints']['register']);
         $this->assertContains('method/{urlSegment}', $schema['schema']['endpoints']['remove']);

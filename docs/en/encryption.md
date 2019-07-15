@@ -6,7 +6,7 @@ You can add your own implementation if you would like to use something different
 and takes `encrypt()` and `decrypt()` methods with a payload and an encryption key argument.
 
 ```yaml
-SilverStripe\Core\Injector\Injector:
+Injector:
   SilverStripe\MFA\Service\EncryptionAdapterInterface:
     class: App\MFA\ReallyStrongEncryptionAdapter
 ```

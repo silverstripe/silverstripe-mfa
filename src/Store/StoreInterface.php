@@ -2,9 +2,9 @@
 
 namespace SilverStripe\MFA\Store;
 
-use SilverStripe\Control\HTTPRequest;
+use SS_HTTPRequest as HTTPRequest;
 use SilverStripe\MFA\Extension\MemberExtension;
-use SilverStripe\Security\Member;
+use Member;
 
 /**
  * Represents a place for temporarily storing state related to a login or registration attempt.

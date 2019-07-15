@@ -2,21 +2,23 @@
 
 namespace SilverStripe\MFA\Extension\AccountReset;
 
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Control\HTTPResponse;
-use SilverStripe\Core\Extensible;
-use SilverStripe\Core\Extension;
-use SilverStripe\Forms\FieldList;
-use SilverStripe\Forms\Form;
-use SilverStripe\Forms\FormAction;
-use SilverStripe\Forms\PasswordField;
-use SilverStripe\Forms\RequiredFields;
+use Extension;
+use Session;
+use SS_ClassLoader;
+use SS_ClassManifest;
+use SS_HTTPRequest as HTTPRequest;
+use SS_HTTPResponse as HTTPResponse;
+use FieldList;
+use Form;
+use FormAction;
+use PasswordField;
+use RequiredFields;
 use SilverStripe\MFA\JSONResponse;
 use SilverStripe\MFA\RequestHandler\BaseHandlerTrait;
-use SilverStripe\ORM\FieldType\DBDatetime;
-use SilverStripe\ORM\ValidationResult;
-use SilverStripe\Security\Member;
-use SilverStripe\Security\Security;
+use SS_Datetime as DBDatetime;
+use ValidationResult;
+use Member;
+use Security;
 
 /**
  * Extends the Security controller to support Account Resets. This extension can
@@ -29,7 +31,6 @@ use SilverStripe\Security\Security;
 class SecurityExtension extends Extension
 {
     use BaseHandlerTrait;
-    use Extensible;
 
     private static $url_handlers = [
         'GET reset-account' => 'resetaccount',
@@ -42,7 +43,7 @@ class SecurityExtension extends Extension
 
     public function resetaccount(HTTPRequest $request)
     {
-        if (Security::getCurrentUser()) {
+        if (Member::currentUser()) {
             $output = $this->owner->renderWith(
                 'Security',
                 [
@@ -75,13 +76,13 @@ class SecurityExtension extends Extension
                     'Content' => _t(
                         __CLASS__ . '.INVALIDTOKENBODY',
                         'Your account reset token may have expired. Please contact an administrator.'
-                    )
+                    ),
                 ]
             );
             return $this->owner->getResponse()->setBody($output)->setStatusCode(400);
         }
 
-        $request->getSession()->set('MemberID', $member->ID);
+        Session::set('MemberID', $member->ID);
 
         return $this->owner->getResponse()->setBody($this->owner->renderWith(
             'Security',
@@ -140,7 +141,7 @@ class SecurityExtension extends Extension
      */
     public function doResetAccount(array $data, Form $form): HTTPResponse
     {
-        $memberID = $this->owner->getRequest()->getSession()->get('MemberID');
+        $memberID = Session::get('MemberID');
 
         // If the ID isn't in the session, politely assume the session has expired
         if (!$memberID) {
@@ -149,7 +150,7 @@ class SecurityExtension extends Extension
                     __CLASS__ . '.RESETTIMEDOUT',
                     "The account reset process timed out. Please click the link in the email and try again."
                 ),
-                ValidationResult::TYPE_ERROR
+                'bad'
             );
 
             return $this->owner->redirectBack();
@@ -165,7 +166,7 @@ class SecurityExtension extends Extension
                     'SilverStripe\\Security\\Member.ERRORNEWPASSWORD',
                     'You have entered your new password differently, try again'
                 ),
-                ValidationResult::TYPE_ERROR
+                'bad'
             );
 
             return $this->owner->redirectBack();
@@ -173,8 +174,8 @@ class SecurityExtension extends Extension
 
         // Check if the new password is accepted
         $validationResult = $member->changePassword($data['NewPassword1']);
-        if (!$validationResult->isValid()) {
-            $form->setSessionValidationResult($validationResult);
+        if (!$validationResult->valid()) {
+            $form->getValidator()->validationError('NewPassword1', $validationResult->message(), 'bad');
 
             return $this->owner->redirectBack();
         }
@@ -188,17 +189,21 @@ class SecurityExtension extends Extension
         $member->AccountResetExpired = DBDatetime::create()->now();
         $member->write();
 
-        // Pass off to extensions to perform any additional reset actions
-        $this->extend('handleAccountReset', $member);
+        // Load any implementations of AccountResetHandler to trigger their actions
+        $accountResetHandlers = SS_ClassLoader::instance()->getManifest()
+            ->getImplementorsOf(AccountResetHandler::class);
+
+        foreach ($accountResetHandlers as $handler) {
+            (new $handler())->handleAccountReset($member);
+        }
 
         // Send the user along to the login form (allowing any additional factors to kick in as needed)
-        $this->owner->setSessionMessage(
+        return Security::permissionFailure(
+            $this->owner,
             _t(
                 __CLASS__ . '.RESETSUCCESSMESSAGE',
                 'Reset complete. Please log in with your new password.'
-            ),
-            ValidationResult::TYPE_GOOD
+            )
         );
-        return $this->owner->redirect($this->owner->Link('login'));
     }
 }

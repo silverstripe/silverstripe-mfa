@@ -6,7 +6,7 @@ implementation), however no Monolog handlers are attached by default. To enable 
 An example that will log to a `mfa.log` file in the project root:
 
 ```yaml
-SilverStripe\Core\Injector\Injector:
+Injector:
   Psr\Log\LoggerInterface.mfa:
     calls:
       pushFileLogHandler: [ pushHandler, [ '%$MFAFileLogHandler' ] ]
@@ -39,7 +39,7 @@ class MyCustomLoginHandler implements LoginHandlerInterface
         try {
             $method->doSomething();
         } catch (\Exception $ex) {
-            $this->logger->debug('Something went wrong! ' . $ex->getMessage(), $ex->getTrace());
+            SS_Log::log($ex, SS_Log::DEBUG);
         }
     }
 }

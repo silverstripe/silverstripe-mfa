@@ -1,13 +1,13 @@
-SilverStripe\Security\PermissionRole:
+PermissionRole:
   mfa:
     Title: 'MFA'
 
-SilverStripe\Security\PermissionRoleCode:
+PermissionRoleCode:
   mfa:
-    Role: =>SilverStripe\Security\PermissionRole.mfa
+    Role: =>PermissionRole.mfa
     Code: 'MFA_Admin'
 
-SilverStripe\Security\Member:
+Member:
   admin:
     FirstName: 'MFA Administrator'
     Email: 'admin@example.org'
@@ -15,13 +15,13 @@ SilverStripe\Security\Member:
     FirstName: 'Squib'
     Email: 'squib@example.org'
 
-SilverStripe\Security\Group:
+Group:
   mfa-admin:
     Title: 'MFA Admins'
-    Members: =>SilverStripe\Security\Member.admin
-    Roles: =>SilverStripe\Security\PermissionRole.mfa
+    Members: =>Member.admin
+    Roles: =>PermissionRole.mfa
 
-SilverStripe\Security\Permission:
+Permission:
   mfa:
     Code: 'MFA_ADMINISTER_REGISTERED_METHODS'
-    Group: =>SilverStripe\Security\Group.mfa-admin
+    Group: =>Group.mfa-admin

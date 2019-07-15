@@ -2,8 +2,8 @@
 
 namespace SilverStripe\MFA\Extension;
 
-use SilverStripe\Admin\LeftAndMain;
-use SilverStripe\Core\Extension;
+use LeftAndMain;
+use Extension;
 use SilverStripe\MFA\RequestHandler\BaseHandlerTrait;
 
 class RequirementsExtension extends Extension

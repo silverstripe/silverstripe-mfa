@@ -1,17 +1,17 @@
-SilverStripe\Security\Permission:
+Permission:
   admin:
     Code: ADMIN
-SilverStripe\Security\Group:
+Group:
   admingroup:
     Title: Admin
     Code: admin
-    Permissions: '=>SilverStripe\Security\Permission.admin'
-SilverStripe\Security\Member:
+    Permissions: =>Permission.admin
+Member:
   sally_smith:
     FirstName: Sally
     Surname: Smith
     Email: sally.smith@example.com
     Groups:
-      - =>SilverStripe\Security\Group.admingroup
+      - =>Group.admingroup
 
 

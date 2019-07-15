@@ -2,20 +2,19 @@
 
 namespace SilverStripe\MFA\BackupCode;
 
+use MFARegisteredMethod as RegisteredMethod;
 use RuntimeException;
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
-use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\Notification;
 use SilverStripe\MFA\State\BackupCode;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
+use SS_HTTPRequest as HTTPRequest;
 
 class VerifyHandler implements VerifyHandlerInterface
 {
     private static $dependencies = [
-        'NotificationService' => '%$' . Notification::class
+        'NotificationService' => '%$SilverStripe\\MFA\\Service\\Notification'
     ];
 
     /**
@@ -41,8 +40,7 @@ class VerifyHandler implements VerifyHandlerInterface
     {
         // Provide a path to the graphic shown
         return [
-            'graphic' => ModuleLoader::getModule('silverstripe/mfa')
-                ->getResource('client/dist/images/recovery-codes.svg')->getURL(),
+            'graphic' => '/mfa/client/dist/images/recovery-codes.svg',
         ];
     }
 
@@ -88,7 +86,7 @@ class VerifyHandler implements VerifyHandlerInterface
             $registeredMethod->write();
             $this->notification->send(
                 $registeredMethod->Member(),
-                'SilverStripe/MFA/Email/Notification_backupcodeused',
+                'Notification_backupcodeused',
                 [
                     'subject' => _t(self::class . '.MFAREMOVED', 'A recovery code was used to access your account'),
                     'CodesRemaining' => count($candidates),

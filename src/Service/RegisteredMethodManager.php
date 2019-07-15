@@ -2,25 +2,21 @@
 
 namespace SilverStripe\MFA\Service;
 
-use SilverStripe\Core\Config\Config;
-use SilverStripe\Core\Extensible;
-use SilverStripe\Core\Injector\Injectable;
+use Config;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
-use SilverStripe\MFA\Model\RegisteredMethod;
-use SilverStripe\Security\Member;
+use MFARegisteredMethod as RegisteredMethod;
+use Member;
+use SS_Object;
 
 /**
  * The RegisteredMethodManager service class facilitates the communication of Members and RegisteredMethod instances
  * in a reusable singleton.
  */
-class RegisteredMethodManager
+class RegisteredMethodManager extends SS_Object
 {
-    use Extensible;
-    use Injectable;
-
     private static $dependencies = [
-        'NotificationService' => '%$' . Notification::class
+        'NotificationService' => '%$SilverStripe\\MFA\\Service\\Notification',
     ];
 
     /**
@@ -88,7 +84,7 @@ class RegisteredMethodManager
         if (!MethodRegistry::create()->isBackupMethod($method)) {
             $this->notification->send(
                 $member,
-                'SilverStripe/MFA/Email/Notification_register',
+                'Notification_register',
                 [
                     'subject' => _t(
                         self::class . '.MFAADDED',
@@ -129,7 +125,7 @@ class RegisteredMethodManager
             // If there is only one other method (other than backup codes) then set that as the default method
             /** @var RegisteredMethod|null $remainingMethodExceptBackup */
             $remainingMethodExceptBackup = $member->RegisteredMFAMethods()
-                ->filter('MethodClassName:Not', $backupMethod)
+                ->filter('MethodClassName:not', $backupMethod)
                 ->first();
 
             if ($remainingMethodExceptBackup) {
@@ -150,7 +146,7 @@ class RegisteredMethodManager
 
         $this->notification->send(
             $member,
-            'SilverStripe/MFA/Email/Notification_removed',
+            'Notification_removed',
             [
                 'subject' => _t(
                     self::class . '.MFAREMOVED',
