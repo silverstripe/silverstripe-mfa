@@ -40,6 +40,7 @@ class RegisteredMFAMethodListField extends FormField
                     : null,
                 'resetEndpoint' => SecurityAdmin::singleton()->Link("reset/{$this->value->ID}"),
             ],
+            'readOnly' => $this->isReadonly(),
         ]);
     }
 
