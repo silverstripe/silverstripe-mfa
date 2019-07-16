@@ -37,9 +37,7 @@
   }
 }
 
-// Work around an issue with modals with lots of content overflowing it's bounds
-.registered-mfa-method-list-field-register-modal {
-  height: initial;
+.modal-dialog {
   // Make this a sort of "bootstrap context"
   @import '~bootstrap/scss/reboot';
   @import '~bootstrap/scss/buttons';
