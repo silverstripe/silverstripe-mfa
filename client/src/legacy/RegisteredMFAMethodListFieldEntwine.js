@@ -2,6 +2,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { loadComponent } from 'lib/Injector'; // eslint-disable-line
+import { Provider } from 'react-redux';
 
 const FIELD_SELECTOR = '.js-injector-boot [data-field-type="registered-mfa-method-list-field"]';
 
@@ -22,18 +23,22 @@ window.jQuery.entwine('ss', ($) => {
       } } = this.data('schema');
 
       ReactDOM.render(
-        <RegisteredMFAMethodListField
-          backupMethod={backupMethod}
-          readOnly={readOnly}
-          initialDefaultMethod={defaultMethod}
-          initialRegisteredMethods={registeredMethods}
-          initialAvailableMethods={availableMethods}
-          allAvailableMethods={allAvailableMethods}
-          resources={resources}
-          endpoints={endpoints}
-          backupCreatedDate={backupCreatedDate}
-          resetEndpoint={resetEndpoint}
-        />,
+        (
+          <Provider store={window.ss.store}>
+            <RegisteredMFAMethodListField
+              backupMethod={backupMethod}
+              readOnly={readOnly}
+              initialDefaultMethod={defaultMethod}
+              initialRegisteredMethods={registeredMethods}
+              initialAvailableMethods={availableMethods}
+              allAvailableMethods={allAvailableMethods}
+              resources={resources}
+              endpoints={endpoints}
+              backupCreatedDate={backupCreatedDate}
+              resetEndpoint={resetEndpoint}
+            />
+          </Provider>
+        ),
         this[0]
       );
     }

@@ -1,7 +1,14 @@
-// Core variables
-//@import 'variables';
-
 @import '../styles/mfa-variables';
+@import '../framework/admin/scss/themes/_default';
+
+// Bootstrap reqs
+@import '~bootstrap/scss/functions';
+@import '~bootstrap/scss/variables';
+@import '~bootstrap/scss/mixins';
+@import '~bootstrap/scss/transitions';
+@import '~bootstrap/scss/close';
+@import '~bootstrap/scss/modal';
+
 @import '../styles/mfa';
 
 @import '../containers/Login';
