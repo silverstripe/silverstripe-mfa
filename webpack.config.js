@@ -3,7 +3,6 @@ const webpackConfig = require('@silverstripe/webpack-config');
 
 const {
   resolveJS,
-  externalJS,
   moduleJS,
   pluginJS,
   moduleCSS,
@@ -49,7 +48,9 @@ const config = [
     },
     devtool: (ENV !== 'production') ? 'source-map' : '',
     resolve: resolveJS(ENV, PATHS),
-    externals: externalJS(ENV, PATHS),
+    externals: {
+      'lib/Injector': 'Injector',
+    },
     module: moduleJS(ENV, PATHS),
     plugins: pluginJS(ENV, PATHS),
   },

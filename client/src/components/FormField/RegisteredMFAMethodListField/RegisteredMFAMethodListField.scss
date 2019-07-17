@@ -1,43 +1,72 @@
 .registered-mfa-method-list-field {
+  // Make this a sort of "bootstrap context"
+  @import '~bootstrap/scss/reboot';
+  @import '~bootstrap/scss/buttons';
+
   padding: $input-padding-y 0;
 
-  &__button,
-  &__no-methods {
+  // We need extra specificity here because we've got "reboot" inside this context.
+  & &__button,
+  & &__no-methods {
     margin-bottom: $input-padding-y-lg;
+  }
+
+  .method-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .registered-method-list-item {
+    margin-bottom: $input-padding-y-lg;
+
+    &__control {
+      border: 0;
+      margin: 0;
+      padding: 0;
+      background: none;
+      text-decoration: none;
+      color: $link-color;
+      cursor: pointer;
+
+      &:hover {
+        color: $link-hover-color;
+        text-decoration: underline;
+      }
+    }
   }
 }
 
-.method-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.modal-dialog {
+  // Make this a sort of "bootstrap context"
+  @import '~bootstrap/scss/reboot';
+  @import '~bootstrap/scss/buttons';
+
+  // Various cms overrides to make bootstrap modals look nice in SS3
+  .modal-title {
+    margin-bottom: 0;
+    font-size: 19px;
+    font-weight: normal;
+  }
+
+  .modal-header {
+    .close {
+      font-size: 24px;
+      font-weight: normal;
+      margin-bottom: -16px;
+    }
+  }
+
+  .modal-content {
+    background-color: $tab-panel-texture-color;
+  }
 }
 
 .registered-method-list-item {
-  margin-bottom: $input-padding-y-lg;
-
+  // Ensure there's spacing between two controls
   &__control {
-    border: 0;
-    margin: 0;
-    padding: 0;
-    background: none;
-    text-decoration: none;
-    color: $link-color;
-    cursor: pointer;
-
-    &:hover {
-      color: $link-hover-color;
-      text-decoration: underline;
-    }
-
-    // Ensure there's spacing between two controls
     & + & {
       margin-left: $input-padding-x-lg;
     }
   }
-}
-
-// Work around an issue with modals with lots of content overflowing it's bounds
-.registered-mfa-method-list-field-register-modal {
-  height: initial;
 }
