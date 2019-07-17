@@ -17,7 +17,7 @@ class RegisteredMFAMethodListFieldTest extends SapphireTest
 
         $field = new RegisteredMFAMethodListField('test');
         $field->setValue($member);
-        $schema = $field->getSchemaData();
+        $schema = json_decode($field->getSchemaData(), true);
 
         $this->assertContains('register/', $schema['schema']['endpoints']['register']);
         $this->assertContains('method/{urlSegment}', $schema['schema']['endpoints']['remove']);
