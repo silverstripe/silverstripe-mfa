@@ -48,7 +48,8 @@ default endpoints added by this module. Please refer to the docs for specific in
 functionality:
 
 - [Debugging](docs/en/debugging.md)
-- [Front-end React components](docs/en/react-components.md)
+- [Creating a new MFA method: Front-end](docs/en/creating-mfa-method-frontend.md)
+- [Creating a new MFA method: Back-end](docs/en/creating-mfa-method-backend.md)
 - [Back-end controllers and traits](docs/en/controllers-and-handlers.md)
 - [Local development](docs/en/local-development.md)
 - [Encryption providers](docs/en/encryption.md)
