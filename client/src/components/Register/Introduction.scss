@@ -1,15 +1,17 @@
 $feature-list-action-list-spacing: 45px;
-$feature-list-content-margin: 20px;
+$feature-list-content-margin-bottom: 20px;
+$feature-list-content-margin-top: 45px;
 $feature-list-content-line-height: 20px;
 $feature-list-icon-size: 50px;
-$feature-list-title-font-size: 16px;
+$feature-list-title-font-size: (16 / $font-size-core) + rem;
 $feature-list-title-font-weight: bold;
 
 .mfa-feature-list-title {
   color: $color-grey-text;
   font-size: $feature-list-title-font-size;
   font-weight: $feature-list-title-font-weight;
-  margin-bottom: $feature-list-content-margin;
+  margin-bottom: $feature-list-content-margin-bottom;
+  margin-top: $feature-list-content-margin-top;
 }
 
 .mfa-feature-list {
@@ -24,7 +26,7 @@ $feature-list-title-font-weight: bold;
 
   &__icon {
     height: $feature-list-icon-size;
-    margin-right: $feature-list-content-margin;
+    margin-right: $feature-list-content-margin-bottom;
     width: $feature-list-icon-size;
   }
 
