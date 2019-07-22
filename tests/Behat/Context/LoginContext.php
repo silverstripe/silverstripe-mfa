@@ -3,10 +3,11 @@
 namespace SilverStripe\MFA\Tests\Behat\Context;
 
 use SilverStripe\CMS\Tests\Behaviour\LoginContext as CMSLoginContext;
+use SilverStripe\BehatExtension\Context\LoginContext as BehatLoginContext;
 use SilverStripe\MFA\Extension\SiteConfigExtension;
 use SilverStripe\SiteConfig\SiteConfig;
 
-if (!class_exists(CMSLoginContext::class)) {
+if (!class_exists(CMSLoginContext::class) || !class_exists(BehatLoginContext::class)) {
     return;
 }
 
