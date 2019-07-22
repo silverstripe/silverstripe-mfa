@@ -8,7 +8,7 @@
 ## Requirements
 
 * PHP ^7.1
-* SilverStripe ^4.1
+* SilverStripe ^3.7
 * defuse/php-encryption ^2.2 and OpenSSL PHP extension
 
 ## Installation
@@ -16,7 +16,7 @@
 Install with Composer:
 
 ```
-composer require silverstripe/mfa ^4.0
+composer require silverstripe/mfa ^3.0
 ```
 
 You should also install one of the additional multi factor authenticator modules:
