@@ -1,20 +1,22 @@
-// Hide the template provided h1
+// We provide our own dynamic title so remove 'Log in'
 .login-form__title {
   display: none;
 }
 
-body.mfa {
-  .page-header {
-    margin-bottom: 0;
-  }
+.mfa-app {
+  color: $color-grey-text;
+  font-size: $font-content-size;
+  font-weight: $font-content-weight;
+  margin: auto;
+  max-width: $container-width;
+  width: 100%;
 
-  // Allow the h1 rendered by the React app to display
   .mfa-app-title {
     color: $color-grey-text;
     display: block;
     font-size: $font-app-title-size;
     font-weight: $font-app-title-weight;
-    margin: auto;
+    margin-bottom: 8px;
   }
 
   .mfa-section-title {
@@ -30,13 +32,6 @@ body.mfa {
     font-weight: $font-block-heading-weight;
   }
 
-  .mfa-app,
-  .mfa-app p,
-  .mfa-content {
-    font-size: $font-content-size;
-    font-weight: $font-content-weight;
-  }
-
   a {
     text-decoration: none;
   }
@@ -45,11 +40,4 @@ body.mfa {
   label {
     font-weight: normal;
   }
-}
-
-.mfa-app {
-  width: 100%;
-  margin: auto;
-  max-width: $container-width;
-  color: $color-grey-text;
 }
