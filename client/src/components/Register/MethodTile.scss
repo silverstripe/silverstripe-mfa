@@ -1,34 +1,17 @@
 .mfa-method-tile {
   display: flex;
-  flex: 100%; // mobile size (small)
+  flex: 1;
   margin-bottom: $tile-spacing;
-  position: relative;
+  min-width: 100%;
+  position: relative; // Allows the 'unsupported' message to overlay the top of the tile
 
-  // Always remove the right margin for the last tile, despite rows
-  &:last-child {
-    margin-right: 0;
-  }
-
-  // Medium size
+  // Medium / large size
   @media (min-width: $viewport-small) {
-    flex: calc(50% - #{$tile-spacing});
     margin-right: $tile-spacing;
-    max-width: 50%;
+    min-width: calc(50% - #{$tile-spacing / 2});
 
-    @media (max-width: $viewport-medium) {
-      // Remove right margin on each end of the row
-      &:nth-child(2n) {
-        margin-right: 0;
-      }
-    }
-  }
-
-  // Large size (desktop)
-  @media (min-width: $viewport-medium) {
-    flex: calc(33% - #{$tile-spacing} * 2);
-
-    // Remove right margin on each end of the row
-    &:nth-child(3n) {
+    // Two per row, margin should only exist in the center
+    &:nth-child(2n) {
       margin-right: 0;
     }
   }
@@ -54,14 +37,8 @@
   }
 
   // When the method is highlighted (via clicking it)
-  &--active {
-    .mfa-method-tile__content {
-      box-shadow: $tile-box-shadow-active;
-    }
-  }
-
-  &__container {
-    margin-bottom: 0;
+  &--active .mfa-method-tile__content {
+    box-shadow: $tile-box-shadow-active;
   }
 
   &__description {
@@ -69,7 +46,7 @@
   }
 
   &__thumbnail-container {
-    margin-bottom: 16px;
+    margin-bottom: $tile-spacing;
     text-align: center;
 
     &--unsupported {
@@ -78,6 +55,7 @@
   }
 
   &__thumbnail {
+    height: $tile-thumbnail-size;
     width: $tile-thumbnail-size;
   }
 
@@ -109,21 +87,19 @@
   }
 }
 
-// Custom styles for an even number of authenticators in large screens
+// Fit three authenticators across on large displays if a multiple of 3 are present
 @media (min-width: $viewport-medium) {
-  .mfa-method-tile__container--two-columns {
-    .mfa-method-tile {
-      flex: calc(50% - #{$tile-spacing});
+  .mfa-method-tile-groups--three-columns .mfa-method-tile {
+    width: calc(33% - #{$tile-spacing});
 
-      // Remove right margin on each end of the row
-      &:nth-child(2n) {
-        margin-right: 0;
-      }
+    // Remove right margin on each end of the row
+    &:nth-child(3n) {
+      margin-right: 0;
+    }
 
-      // Restore third item margins removed by previous media queries
-      &:nth-child(3n) {
-        margin-right: $tile-spacing;
-      }
+    // Restore third item margins removed by previous media queries
+    &:nth-child(2n) {
+      margin-right: $tile-spacing;
     }
   }
 }
