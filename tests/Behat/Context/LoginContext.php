@@ -7,7 +7,7 @@ use SilverStripe\BehatExtension\Context\LoginContext as BehatLoginContext;
 use SilverStripe\MFA\Extension\SiteConfigExtension;
 use SilverStripe\SiteConfig\SiteConfig;
 
-if (!class_exists(CMSLoginContext::class) || !class_exists(BehatLoginContext::class)) {
+if (!class_exists(BehatLoginContext::class) || !class_exists(CMSLoginContext::class)) {
     return;
 }
 
