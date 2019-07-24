@@ -28,6 +28,13 @@ class SessionStore implements StoreInterface, Serializable
     protected $member;
 
     /**
+     * MemberID is only used on unserialising from session as we can defer the DB call for the member
+     *
+     * @var int
+     */
+    protected $memberID;
+
+    /**
      * A string representing the current authentication method that is underway
      *
      * @var string
@@ -63,6 +70,10 @@ class SessionStore implements StoreInterface, Serializable
      */
     public function getMember(): ?Member
     {
+        if (!$this->member && $this->memberID) {
+            $this->member = DataObject::get_by_id(Member::class, $this->memberID);
+        }
+
         return $this->member;
     }
 
@@ -81,6 +92,7 @@ class SessionStore implements StoreInterface, Serializable
         $this->resetMethod();
 
         $this->member = $member;
+        $this->memberID = $member->ID;
 
         // When the member changes the list of verified methods should reset
         $this->verifiedMethods = [];
@@ -190,8 +202,16 @@ class SessionStore implements StoreInterface, Serializable
 
     public function serialize(): string
     {
+        // Use the stored member ID by default. We should do this because we can avoid ever fetching the member object
+        // from the database if the member was never accessed during this request.
+        $memberID = $this->memberID;
+
+        if (!$memberID && ($member = $this->getMember())) {
+            $memberID = $this->getMember()->ID;
+        }
+
         $stuff = json_encode([
-            'member' => $this->getMember() ? $this->getMember()->ID : null,
+            'member' => $memberID,
             'method' => $this->getMethod(),
             'state' => $this->getState(),
             'verifiedMethods' => $this->getVerifiedMethods(),
@@ -209,10 +229,7 @@ class SessionStore implements StoreInterface, Serializable
         $state = json_decode($serialized, true);
 
         if (is_array($state) && $state['member']) {
-            /** @var Member $member */
-            $member = DataObject::get_by_id(Member::class, $state['member']);
-
-            $this->setMember($member);
+            $this->memberID = $state['member'];
             $this->setMethod($state['method']);
             $this->setState($state['state']);
 
