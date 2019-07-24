@@ -14,6 +14,7 @@ use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method as BasicMathMethod;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
+use SilverStripe\View\SSViewer;
 
 class RegisteredMethodManagerTest extends SapphireTest
 {
@@ -92,6 +93,7 @@ class RegisteredMethodManagerTest extends SapphireTest
 
     public function testRegisterForMemberSendsNotification()
     {
+        SSViewer::set_themes(['$public', '$default']);
         /** @var Member&MemberExtension $member */
         $member = Member::create(['FirstName' => 'Mike', 'Email' => 'test@example.com']);
         $member->write();
@@ -100,7 +102,12 @@ class RegisteredMethodManagerTest extends SapphireTest
         $manager = RegisteredMethodManager::singleton();
         RegisteredMethodManager::singleton()->registerForMember($member, $method, ['foo', 'bar']);
 
-        $this->assertEmailSent($member->Email, null, '/method was added to your account/');
+        $this->assertEmailSent(
+            $member->Email,
+            null,
+            '/method was added to your account/',
+            '/You have successfully registered/'
+        );
     }
 
     public function testRegisterBackupMethodDoesNotSendEmail()
@@ -146,13 +153,14 @@ class RegisteredMethodManagerTest extends SapphireTest
 
     public function testDeleteFromMemberSendsNotification()
     {
+        SSViewer::set_themes(['$public', '$default']);
         /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'bob_jones');
 
         $manager = RegisteredMethodManager::singleton();
         $manager->deleteFromMember($member, new BasicMathMethod());
 
-        $this->assertEmailSent($member->Email, null, '/method was removed from your account/');
+        $this->assertEmailSent($member->Email, null, '/method was removed from your account/', '/You have removed/');
     }
 
     public function testDeletingLastMethodRemovesBackupCodes()
