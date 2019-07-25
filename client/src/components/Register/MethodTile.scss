@@ -63,6 +63,18 @@
     font-size: $font-size-h1;
   }
 
+  // When the method is not available
+  &--unsupported {
+    .mfa-method-tile__content {
+      &:hover,
+      &:focus {
+        background: inherit;
+        cursor: none;
+      }
+    }
+  }
+
+  // Styles for the dark banner over unsupported methods
   &__unavailable {
     &-mask {
       background: $tile-mask-background;
