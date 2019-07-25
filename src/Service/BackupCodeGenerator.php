@@ -2,8 +2,8 @@
 
 namespace SilverStripe\MFA\Service;
 
-use SilverStripe\MFA\State\BackupCode;
 use Security;
+use SilverStripe\MFA\State\BackupCode;
 use SS_Object;
 
 class BackupCodeGenerator extends SS_Object implements BackupCodeGeneratorInterface

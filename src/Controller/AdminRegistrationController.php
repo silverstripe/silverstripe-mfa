@@ -2,24 +2,21 @@
 
 namespace SilverStripe\MFA\Controller;
 
-use Controller;
-use Session;
-use SilverStripe\MFA\JSONResponse;
-use SS_Log;
-use LeftAndMain;
-use SS_HTTPRequest as HTTPRequest;
-use SS_HTTPResponse as HTTPResponse;
 use Injector;
+use LeftAndMain;
+use Member;
+use SecurityToken;
 use SilverStripe\MFA\Extension\MemberExtension;
+use SilverStripe\MFA\JSONResponse;
 use SilverStripe\MFA\RequestHandler\BaseHandlerTrait;
 use SilverStripe\MFA\RequestHandler\RegistrationHandlerTrait;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\State\AvailableMethodDetailsInterface;
+use SS_HTTPRequest as HTTPRequest;
+use SS_HTTPResponse as HTTPResponse;
+use SS_Log;
 use ValidationException;
-use Member;
-use Security;
-use SecurityToken;
 
 /**
  * This controller handles actions that a user may perform on MFA methods registered on their own account while logged

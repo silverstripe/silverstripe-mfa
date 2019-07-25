@@ -2,12 +2,12 @@
 
 namespace SilverStripe\MFA\Service;
 
-use Config;
+use Member;
+use MFARegisteredMethod as RegisteredMethod;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
-use MFARegisteredMethod as RegisteredMethod;
-use Member;
 use SS_Object;
+use ValidationException;
 
 /**
  * The RegisteredMethodManager service class facilitates the communication of Members and RegisteredMethod instances
@@ -58,7 +58,7 @@ class RegisteredMethodManager extends SS_Object
      * @param MethodInterface $method
      * @param mixed $data
      * @return bool Whether the method was added/replace
-     * @throws \SilverStripe\ORM\ValidationException
+     * @throws ValidationException
      */
     public function registerForMember(Member $member, MethodInterface $method, $data = null): bool
     {

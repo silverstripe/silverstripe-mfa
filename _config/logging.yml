@@ -8,8 +8,3 @@ Injector:
     class: Monolog\Logger
     constructor:
       - 'mfa-log'
-
-  SilverStripe\Dev\State\SapphireTestState:
-    properties:
-      States:
-        mfalogging: '%$SilverStripe\MFA\Dev\State\LoggerTestState'

@@ -2,7 +2,6 @@
 
 namespace SilverStripe\MFA\Authenticator;
 
-use Controller;
 use Member;
 use MemberLoginForm;
 use Security;
@@ -18,10 +17,8 @@ use SilverStripe\MFA\RequestHandler\VerificationHandlerTrait;
 use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\SchemaGenerator;
-use SS_HTTPRequest as HTTPRequest;
 use SS_HTTPResponse as HTTPResponse;
 use ValidationException;
-use ValidationResult;
 
 class LoginForm extends MemberLoginForm
 {

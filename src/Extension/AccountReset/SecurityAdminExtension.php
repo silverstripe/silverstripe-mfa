@@ -2,22 +2,20 @@
 
 namespace SilverStripe\MFA\Extension\AccountReset;
 
-use Exception;
-use SS_Log;
 use Controller;
 use Email;
-use SS_HTTPRequest as HTTPRequest;
-use SS_HTTPResponse as HTTPResponse;
+use Exception;
 use Extension;
-use SecurityAdmin;
-use SilverStripe\MFA\Extension\MemberExtension as BaseMFAMemberExtension;
-use SilverStripe\MFA\JSONResponse;
-use ValidationException;
 use Member;
-use PasswordEncryptor_NotFoundException;
 use Permission;
 use Security;
+use SecurityAdmin;
 use SecurityToken;
+use SilverStripe\MFA\Extension\MemberExtension as BaseMFAMemberExtension;
+use SilverStripe\MFA\JSONResponse;
+use SS_HTTPRequest as HTTPRequest;
+use SS_HTTPResponse as HTTPResponse;
+use SS_Log;
 
 /**
  * This extension is applied to SecurityAdmin to provide an additional endpoint

@@ -3,18 +3,16 @@
 namespace SilverStripe\MFA\Extension;
 
 use Controller;
+use DataExtension;
 use FieldList;
-use SilverStripe\MFA\Authenticator\ChangePasswordHandler;
+use HasManyList;
+use Member;
+use MFARegisteredMethod;
+use Permission;
+use PermissionProvider;
 use SilverStripe\MFA\Exception\InvalidMethodException;
 use SilverStripe\MFA\FormField\RegisteredMFAMethodListField;
 use SilverStripe\MFA\Method\MethodInterface;
-use MFARegisteredMethod;
-use DataExtension;
-use HasManyList;
-use Member;
-use Permission;
-use PermissionProvider;
-use Security;
 
 /**
  * Extend Member to add relationship to registered methods and track some specific preferences
@@ -156,8 +154,7 @@ class MemberExtension extends DataExtension implements PermissionProvider
         }
 
         Controller::curr()
-            ->getRequest()
             ->getSession()
-            ->clear(ChangePasswordHandler::MFA_VERIFIED_ON_CHANGE_PASSWORD);
+            ->clear(ChangePasswordExtension::MFA_VERIFIED_ON_CHANGE_PASSWORD);
     }
 }

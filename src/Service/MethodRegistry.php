@@ -3,7 +3,6 @@
 namespace SilverStripe\MFA\Service;
 
 use Injector;
-use SilverStripe\MFA\BackupCode\Method;
 use SilverStripe\MFA\Method\MethodInterface;
 use SS_Object;
 use UnexpectedValueException;

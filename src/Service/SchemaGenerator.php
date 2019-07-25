@@ -3,17 +3,14 @@
 namespace SilverStripe\MFA\Service;
 
 use Config;
-use Director;
 use Injector;
 use Member;
-use SilverStripe\MFA\Authenticator\LoginHandler;
+use SilverStripe\MFA\Authenticator\LoginForm;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\State\AvailableMethodDetailsInterface;
 use SilverStripe\MFA\State\RegisteredMethodDetailsInterface;
 use SS_Object;
-
-// Not present in SS3
 
 /**
  * Generates a multi-factor authentication frontend app schema from the given request
@@ -143,7 +140,7 @@ class SchemaGenerator extends SS_Object
         $base = '/mfa/';
 
         return [
-            'user_docs_url' => Config::inst()->get(LoginHandler::class, 'user_docs_url'),
+            'user_docs_url' => Config::inst()->get(LoginForm::class, 'user_docs_url'),
             'extra_factor_image_url' => $base . 'client/dist/images/extra-protection.svg',
             'unique_image_url' => $base . 'client/dist/images/unique.svg',
             'more_options_image_url' => $base . 'client/dist/images/more-options.svg',
