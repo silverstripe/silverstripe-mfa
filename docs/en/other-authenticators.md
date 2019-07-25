@@ -24,7 +24,7 @@ class extends the default `MemberAuthenticator` class in order to override the d
 
 silverstripe/activedirectory does essentially the same thing - it recommends that you add the LDAP authenticator,
 and remove the default authenticator. Removing the default authenticator will also remove the MFA logic applied to it,
-so you will need to re-implement it in a way that is applied to LDAP as well.
+so you will need to reimplement it in a way that is applied to LDAP as well.
 
 The `LDAPAuthenticator` has important business logic in it. In order to combine these two authenticators, you may
 choose to add your own `LDAPMFAAuthenticator` class and configure that instead of either MFA or LDAP's
