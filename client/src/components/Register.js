@@ -2,6 +2,7 @@
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import api from 'lib/api';
 import { loadComponent } from 'lib/Injector'; // eslint-disable-line
 import availableMethodType from 'types/availableMethod';
 import registeredMethodType from 'types/registeredMethod';
@@ -86,7 +87,7 @@ class Register extends Component {
     const endpoint = register.replace('{urlSegment}', selectedMethod.urlSegment);
 
     // "start" a registration
-    fetch(endpoint).then(response => response.json().then(result => {
+    api(endpoint).then(response => response.json().then(result => {
       const { SecurityID: token, ...registerProps } = result;
       this.setState({
         registerProps,
@@ -132,15 +133,10 @@ class Register extends Component {
     const { token } = this.state;
     const params = token ? `?SecurityID=${token}` : '';
 
-    fetch(
+    api(
       `${register.replace('{urlSegment}', selectedMethod.urlSegment)}${params}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(registrationData),
-      }
+      'POST',
+      JSON.stringify(registrationData),
     )
       .then(response => {
         switch (response.status) {

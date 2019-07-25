@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import confirm from '@silverstripe/reactstrap-confirm';
 import Config from 'lib/Config'; // eslint-disable-line
+import api from 'lib/api';
 import { addAvailableMethod } from 'state/mfaRegister/actions';
 import { deregisterMethod } from 'state/mfaAdministration/actions';
 import registeredMethodShape from 'types/registeredMethod';
@@ -41,27 +42,26 @@ const Remove = ({
     const token = Config.get('SecurityID');
     const endpoint = `${remove.replace('{urlSegment}', method.urlSegment)}?SecurityID=${token}`;
 
-    fetch(endpoint, {
-      method: 'DELETE',
-    }).then(response => response.json().then(json => {
-      if (response.status === 200) {
-        onDeregisterMethod(method);
-        onAddAvailableMethod(json.availableMethod);
+    api(endpoint, 'DELETE')
+      .then(response => response.json().then(json => {
+        if (response.status === 200) {
+          onDeregisterMethod(method);
+          onAddAvailableMethod(json.availableMethod);
 
-        // If the response indicates there's no backup code registered then we need to ensure that
-        // the backup code isn't contained in our registered methods. If it is we should remove it.
-        if (!json.hasBackupMethod && backupMethod && registeredMethods.find(
-          candidate => candidate.urlSegment === backupMethod.urlSegment
-        )) {
-          onDeregisterMethod(backupMethod);
+          // If the response indicates there's no backup code registered then we need to ensure that
+          // the backup code isn't contained in our registered methods. If it is we should remove it
+          if (!json.hasBackupMethod && backupMethod && registeredMethods.find(
+            candidate => candidate.urlSegment === backupMethod.urlSegment
+          )) {
+            onDeregisterMethod(backupMethod);
+          }
+
+          return;
         }
 
-        return;
-      }
-
-      const message = (json.errors && ` Errors: \n - ${json.errors.join('\n -')}`) || '';
-      throw Error(`Could not delete method. Error code ${response.status}.${message}`);
-    }));
+        const message = (json.errors && ` Errors: \n - ${json.errors.join('\n -')}`) || '';
+        throw Error(`Could not delete method. Error code ${response.status}.${message}`);
+      }));
   };
 
 
