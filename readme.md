@@ -28,17 +28,22 @@ You should also install one of the additional multi-factor authenticator modules
 
 After installing this module _and_ a supported factor method module (e.g. TOTP), the default member authenticator
 will be replaced with the MFA authenticator instead. This will provide no change in the steps taken to log in until
-an MFA Method has also been configured for the site:
+an MFA Method has also been configured for the site. The TOTP and WebAuthn modules will configure themselves
+automatically.
+
+After installing the MFA module and having at least one method configured, MFA will automatically be enabled. By default
+it will be optional (users can skip MFA registration). You can make it mandatory via the Settings tab in the admin area.
+
+### Configuring custom methods
+
+If you have built your own MFA method, you can register it with the `MethodRegistry` to enable it:
 
 ```yaml
 SilverStripe\MFA\Service\MethodRegistry:
   methods:
-    - MyMethod
-    - Another\Method\Here
+    - MyCustomMethod
+    - Another\Custom\Method\Here
 ```
-
-After installing, an option in site configuration will enable MFA for users, which will automatically be added after
-login and to member profiles.
 
 ## Documentation
 
