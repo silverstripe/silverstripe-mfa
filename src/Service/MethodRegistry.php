@@ -48,6 +48,8 @@ class MethodRegistry
      *
      * @return MethodInterface[]
      * @throws UnexpectedValueException When an invalid method is registered
+     * @throws UnexpectedValueException If a method was registered more than once
+     * @throws UnexpectedValueException If multiple registered methods share a common URL segment
      */
     public function getMethods(): array
     {
@@ -57,9 +59,9 @@ class MethodRegistry
 
         $configuredMethods = (array) $this->config()->get('methods');
         $configuredMethods = array_filter($configuredMethods);
+        $this->ensureNoDuplicateMethods($configuredMethods);
 
         $allMethods = [];
-
         foreach ($configuredMethods as $method) {
             $method = Injector::inst()->get($method);
 
@@ -73,6 +75,7 @@ class MethodRegistry
 
             $allMethods[] = $method;
         }
+        $this->ensureNoDuplicateURLSegments($allMethods);
 
         return $this->methodInstances = $allMethods;
     }
@@ -130,5 +133,52 @@ class MethodRegistry
         }
 
         return null;
+    }
+
+    /**
+     * Ensure that attempts to register a method multiple times do not occur
+     *
+     * @param array $configuredMethods
+     * @throws UnexpectedValueException
+     */
+    private function ensureNoDuplicateMethods(array $configuredMethods): void
+    {
+        $uniqueMethods = array_unique($configuredMethods);
+        if ($uniqueMethods === $configuredMethods) {
+            return;
+        }
+
+        // Get the method class names that were added more than once and format them into a string so we can
+        // tell the developer which classes were incorrectly configured
+        $duplicates = array_unique(array_diff_key($configuredMethods, $uniqueMethods));
+        $methodNames = implode('; ', $duplicates);
+        throw new UnexpectedValueException(
+            'Cannot register MFA methods more than once. Check your config: ' . $methodNames
+        );
+    }
+
+    /**
+     * Ensure that all registered methods have a unique URLSegment
+     *
+     * @param array $allMethods
+     * @throws UnexpectedValueException
+     */
+    private function ensureNoDuplicateURLSegments(array $allMethods): void
+    {
+        $allURLSegments = array_map(function (MethodInterface $method) {
+            return $method->getURLSegment();
+        }, $allMethods);
+        $uniqueURLSegments = array_unique($allURLSegments);
+        if ($allURLSegments === $uniqueURLSegments) {
+            return;
+        }
+
+        // Get the method URL segments that were added more than once and format them into a string so we can
+        // tell the developer which classes were incorrectly configured
+        $duplicates = array_unique(array_diff_key($allURLSegments, $uniqueURLSegments));
+        $urlSegments = implode('; ', $duplicates);
+        throw new UnexpectedValueException(
+            'Cannot register multiple MFA methods with the same URL segment: ' . $urlSegments
+        );
     }
 }
