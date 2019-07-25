@@ -53,6 +53,7 @@ functionality:
 - [Local development](docs/en/local-development.md)
 - [Encryption providers](docs/en/encryption.md)
 - [Data store interfaces](docs/en/datastores.md)
+- [Integrating with other authenticators](docs/en/other-authenticators.md)
 
 ## License
 
