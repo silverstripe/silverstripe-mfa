@@ -3,7 +3,7 @@ name: mfa-authenticator
 ---
 Authenticator:
   authenticators:
-   - SilverStripe\MFA\Authenticator\MemberAuthenticator
+    - SilverStripe\MFA\Authenticator\MemberAuthenticator
   default_authenticator: SilverStripe\MFA\Authenticator\MemberAuthenticator
 ---
 name: mfa-memberextension
