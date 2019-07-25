@@ -11,9 +11,4 @@ class MemberAuthenticator extends BaseMemberAuthenticator
         // Use the name of the parent form.
         return LoginForm::create($controller, 'LoginForm');
     }
-
-    public function getChangePasswordHandler($link)
-    {
-        return ChangePasswordHandler::create($link, $this);
-    }
 }

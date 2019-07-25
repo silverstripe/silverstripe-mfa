@@ -4,7 +4,6 @@ namespace SilverStripe\MFA\State;
 
 use JsonSerializable;
 use PasswordEncryptor;
-use PasswordEncryptor_NotFoundException;
 use SS_Object;
 
 /**

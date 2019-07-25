@@ -2,13 +2,12 @@
 
 namespace SilverStripe\MFA\Extension;
 
-use CheckboxField;
 use CompositeField;
+use DataExtension;
 use DateField;
+use DBField;
 use FieldList;
 use OptionsetField;
-use DataExtension;
-use DBField;
 use Requirements;
 
 /**

@@ -3,22 +3,19 @@
 namespace SilverStripe\MFA\Extension\AccountReset;
 
 use Extension;
-use Session;
-use SS_ClassLoader;
-use SS_ClassManifest;
-use SS_HTTPRequest as HTTPRequest;
-use SS_HTTPResponse as HTTPResponse;
 use FieldList;
 use Form;
 use FormAction;
+use Member;
 use PasswordField;
 use RequiredFields;
-use SilverStripe\MFA\JSONResponse;
-use SilverStripe\MFA\RequestHandler\BaseHandlerTrait;
-use SS_Datetime as DBDatetime;
-use ValidationResult;
-use Member;
 use Security;
+use Session;
+use SilverStripe\MFA\RequestHandler\BaseHandlerTrait;
+use SS_ClassLoader;
+use SS_Datetime as DBDatetime;
+use SS_HTTPRequest as HTTPRequest;
+use SS_HTTPResponse as HTTPResponse;
 
 /**
  * Extends the Security controller to support Account Resets. This extension can
@@ -193,8 +190,10 @@ class SecurityExtension extends Extension
         $accountResetHandlers = SS_ClassLoader::instance()->getManifest()
             ->getImplementorsOf(AccountResetHandler::class);
 
-        foreach ($accountResetHandlers as $handler) {
-            (new $handler())->handleAccountReset($member);
+        foreach ($accountResetHandlers as $handlerClass) {
+            /** @var AccountResetHandler $handler */
+            $handler = new $handlerClass();
+            $handler->handleAccountReset($member);
         }
 
         // Send the user along to the login form (allowing any additional factors to kick in as needed)

@@ -3,11 +3,11 @@
 namespace SilverStripe\MFA\RequestHandler;
 
 use Injector;
+use Member;
+use Requirements;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Store\StoreInterface;
-use Member;
 use SilverStripe\SecurityExtensions\Service\SudoModeServiceInterface;
-use Requirements;
 
 trait BaseHandlerTrait
 {

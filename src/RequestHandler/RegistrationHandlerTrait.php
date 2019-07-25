@@ -2,17 +2,16 @@
 
 namespace SilverStripe\MFA\RequestHandler;
 
-use Exception;
-use SS_HTTPRequest as HTTPRequest;
-use SS_HTTPResponse as HTTPResponse;
 use Injector;
+use SecurityToken;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\State\RegisteredMethodDetailsInterface;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
-use ValidationResult;
-use SecurityToken;
+use SS_HTTPRequest as HTTPRequest;
+use SS_HTTPResponse as HTTPResponse;
+use ValidationException;
 
 /**
  * This trait encapsulates logic that can be added to a `RequestHandler` to work with registering MFA authenticators
@@ -73,7 +72,7 @@ trait RegistrationHandlerTrait
      * @param MethodInterface $method
      * @param HTTPRequest $request
      * @return Result
-     * @throws \SilverStripe\ORM\ValidationException
+     * @throws ValidationException
      */
     public function completeRegistrationRequest(
         StoreInterface $store,

@@ -40,6 +40,8 @@ class Result extends SS_Object
      */
     public function __construct(bool $success = true, string $message = '', array $context = [])
     {
+        parent::__construct();
+
         $this->success = $success;
         $this->message = $message;
         $this->context = $context;

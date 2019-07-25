@@ -44,3 +44,7 @@ class MyCustomLoginHandler implements LoginHandlerInterface
     }
 }
 ```
+
+**Please note:** Monolog is not configured for logging by default in SilverStripe 3. If you want to connect it to
+the default `SS_Log` logger, you will need another package such as
+[camspiers/silverstripe-loggerbridge](https://github.com/camspiers/silverstripe-loggerbridge).
