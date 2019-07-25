@@ -4,6 +4,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { loadComponent } from 'lib/Injector'; // eslint-disable-line
+import api from 'lib/api';
 import registeredMethodType from 'types/registeredMethod';
 import LoadingIndicator from 'components/LoadingIndicator';
 import SelectMethod from 'components/Verify/SelectMethod';
@@ -111,7 +112,7 @@ class Verify extends Component {
     });
 
     // "start" a verification
-    fetch(endpoint).then(response => response.json().then(result => {
+    api(endpoint).then(response => response.json().then(result => {
       const { SecurityID: token, ...verifyProps } = result;
       this.setState({
         loading: false,
@@ -137,13 +138,7 @@ class Verify extends Component {
     });
 
     // "complete" a verification
-    fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(verifyData),
-    })
+    api(endpoint, 'POST', JSON.stringify(verifyData))
       .then(response => {
         switch (response.status) {
           case 200:

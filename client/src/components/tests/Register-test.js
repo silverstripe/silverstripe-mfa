@@ -335,10 +335,9 @@ describe('Register', () => {
         completeFunction({ test: 1 });
         expect(fetchMock.mock.calls).toHaveLength(2);
         expect(fetchMock.mock.calls[1]).toEqual(['/fake/aye', {
+          credentials: 'same-origin',
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: {},
           body: '{"test":1}',
         }]);
         done();

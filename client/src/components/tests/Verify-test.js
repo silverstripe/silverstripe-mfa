@@ -98,7 +98,7 @@ describe('Verify', () => {
     );
 
     expect(fetchMock.mock.calls).toHaveLength(1);
-    expect(fetchMock.mock.calls[0]).toEqual(['/fake/aye']);
+    expect(fetchMock.mock.calls[0][0]).toEqual('/fake/aye');
   });
 
   it('loads the default method component', (done) => {
@@ -241,10 +241,9 @@ describe('Verify', () => {
       completionFunction({ test: 1 });
       expect(fetchMock.mock.calls).toHaveLength(2);
       expect(fetchMock.mock.calls[1]).toEqual(['/fake/aye', {
+        credentials: 'same-origin',
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {},
         body: '{"test":1}',
       }]);
       setTimeout(() => {
@@ -302,10 +301,9 @@ describe('Verify', () => {
       completionFunction({ test: 1 });
       expect(fetchMock.mock.calls).toHaveLength(1);
       expect(fetchMock.mock.calls[0]).toEqual(['/fake/aye', {
+        credentials: 'same-origin',
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {},
         body: '{"test":1}',
       }]);
       setTimeout(() => {

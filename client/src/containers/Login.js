@@ -2,6 +2,7 @@
 
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import api from 'lib/api';
 import Verify from 'components/Verify';
 import Register from 'components/Register';
 import LoadingIndicator from 'components/LoadingIndicator';
@@ -37,7 +38,7 @@ class Login extends Component {
   componentDidMount() {
     const { schemaURL, onSetAllMethods } = this.props;
 
-    return fetch(schemaURL)
+    return api(schemaURL)
       .then(response => {
         if (response.status !== 200) {
           this.setState({

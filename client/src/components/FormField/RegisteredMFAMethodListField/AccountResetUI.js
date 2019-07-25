@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Config from 'lib/Config'; // eslint-disable-line
+import api from 'lib/api';
 import confirm from '@silverstripe/reactstrap-confirm';
 import LoadingIndicator from '../../LoadingIndicator';
 import CircleDash from '../../Icons/CircleDash';
@@ -52,7 +53,7 @@ class AccountResetUI extends Component {
 
     const body = JSON.stringify({ csrf_token: Config.get('SecurityID') });
 
-    fetch(this.props.resetEndpoint, { method: 'POST', body })
+    api(this.props.resetEndpoint, 'POST', body)
       .then(response => response.json())
       .then(output => {
         const failed = !!output.error;
