@@ -5,7 +5,7 @@ import { inject } from 'lib/Injector'; // eslint-disable-line
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import Title from 'components/Register/Title';
-import { registerMethod } from 'state/mfaAdministration/actions';
+import { registerMethod, setDefaultMethod } from 'state/mfaAdministration/actions';
 import registeredMethodShape from 'types/registeredMethod';
 import { SCREEN_INTRODUCTION } from 'components/Register';
 
@@ -16,6 +16,12 @@ const fallbacks = require('../../lang/src/en.json');
  * and update redux state accordingly
  */
 class RegisterModal extends Component {
+  constructor(props) {
+    super(props);
+
+    this.handleRegister = this.handleRegister.bind(this);
+  }
+
   componentDidUpdate() {
     const { disallowedScreens, isOpen, registrationScreen, toggle } = this.props;
 
@@ -28,13 +34,22 @@ class RegisterModal extends Component {
     }
   }
 
+  handleRegister(method) {
+    const { onAddRegisteredMethod, onSetDefaultMethod, registeredMethods } = this.props;
+
+    if (!registeredMethods.length) {
+      onSetDefaultMethod(method.urlSegment);
+    }
+
+    onAddRegisteredMethod(method);
+  }
+
   render() {
     const {
       backupMethod,
       endpoints,
       isOpen,
       toggle,
-      onAddRegisteredMethod,
       registeredMethods,
       registrationScreen,
       resources,
@@ -53,7 +68,7 @@ class RegisterModal extends Component {
             backupMethod={backupMethod}
             registeredMethods={registeredMethods}
             onCompleteRegistration={toggle}
-            onRegister={onAddRegisteredMethod}
+            onRegister={this.handleRegister}
             resources={resources}
             endpoints={endpoints}
             showTitle={false}
@@ -90,6 +105,7 @@ RegisterModal.propTypes = {
   registrationScreen: PropTypes.number,
   registeredMethods: PropTypes.arrayOf(registeredMethodShape),
   onAddRegisteredMethod: PropTypes.func,
+  onSetDefaultMethod: PropTypes.func,
 
   // Injector
   RegisterComponent: PropTypes.oneOfType([PropTypes.element, PropTypes.func]),
@@ -107,6 +123,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   onAddRegisteredMethod: method => { dispatch(registerMethod(method)); },
+  onSetDefaultMethod: urlSegment => dispatch(setDefaultMethod(urlSegment)),
 });
 
 export { RegisterModal as Component };

@@ -5,7 +5,7 @@ import confirm from '@silverstripe/reactstrap-confirm';
 import Config from 'lib/Config'; // eslint-disable-line
 import api from 'lib/api';
 import { addAvailableMethod } from 'state/mfaRegister/actions';
-import { deregisterMethod } from 'state/mfaAdministration/actions';
+import { deregisterMethod, setDefaultMethod } from 'state/mfaAdministration/actions';
 import registeredMethodShape from 'types/registeredMethod';
 
 const fallbacks = require('../../../../../lang/src/en.json');
@@ -14,9 +14,11 @@ const Remove = ({
   method,
   onRemove,
 
+  defaultMethod,
   registeredMethods,
   onDeregisterMethod,
   onAddAvailableMethod,
+  onSetDefaultMethod,
 }, { backupMethod, endpoints: { remove } }) => {
   const { ss: { i18n } } = window;
 
@@ -48,8 +50,13 @@ const Remove = ({
           onDeregisterMethod(method);
           onAddAvailableMethod(json.availableMethod);
 
-          // If the response indicates there's no backup code registered then we need to ensure that
-          // the backup code isn't contained in our registered methods. If it is we should remove it
+          if (method.urlSegment === defaultMethod) {
+            onSetDefaultMethod(null);
+          }
+
+          // If the response indicates there's no backup code registered then we
+          // need to ensure that the backup code isn't contained in our registered
+          // methods. If it is we should remove it.
           if (!json.hasBackupMethod && backupMethod && registeredMethods.find(
             candidate => candidate.urlSegment === backupMethod.urlSegment
           )) {
@@ -84,9 +91,11 @@ Remove.propTypes = {
   onRemove: PropTypes.func,
 
   // Redux props:
+  defaultMethod: PropTypes.string.isRequired,
   registeredMethods: PropTypes.arrayOf(registeredMethodShape).isRequired,
   onDeregisterMethod: PropTypes.func.isRequired,
   onAddAvailableMethod: PropTypes.func.isRequired,
+  onSetDefaultMethod: PropTypes.func.isRequired,
 };
 
 Remove.contextTypes = {
@@ -97,9 +106,11 @@ Remove.contextTypes = {
   }),
 };
 
-export default connect(({ mfaAdministration: { registeredMethods } }) => ({
+export default connect(({ mfaAdministration: { defaultMethod, registeredMethods } }) => ({
+  defaultMethod,
   registeredMethods,
 }), dispatch => ({
   onDeregisterMethod: method => { dispatch(deregisterMethod(method)); },
   onAddAvailableMethod: method => { dispatch(addAvailableMethod(method)); },
+  onSetDefaultMethod: urlSegment => dispatch(setDefaultMethod(urlSegment)),
 }))(Remove);
