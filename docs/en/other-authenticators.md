@@ -6,7 +6,7 @@ If your project uses a non-standard authentication module, such as silverstripe/
 need to implement some customisations to connect the modules together. The following notes should serve as a guide
 for parts of the code to be aware of, and things to do in order to achieve this.
 
-For the purposes of comparisons in this document, we will use silverstripe/ldap's authenticator.
+For the purposes of comparisons in this document, we will use [silverstripe/ldap](https://github.com/silverstripe/silverstripe-ldap)'s authenticator.
 
 ## Concepts
 
@@ -25,7 +25,7 @@ form with `SilverStripe\MFA\Authenticator\LoginForm`, and the change password ha
 
 silverstripe/ldap does the same thing - it also configures itself to override the `default` authenticator. Since the
 MFA replacement for the default authenticator has MFA logic added to it, and LDAP has the same with LDAP logic added, 
-you will need to re-implement it in a way that is applied to both MFA and LDAP simultaneously.
+you will need to reimplement it so that both MFA and LDAP apply their logic together.
 
 In order to combine these two authenticators, you may choose to add your own `LDAPMFAAuthenticator` class and
 configure that instead of either MFA or LDAP's authenticators. See further down for a hypothetical example.
@@ -45,7 +45,7 @@ Both the LDAP and MFA modules provide their own implementations of the `ChangePa
 these are referenced from the `MemberAuthenticator` subclass of each module. Similarly to the `LoginForm` example
 above, you will need to subclass and inject a custom implementation of this as well, combining both sets of logic.
 
-Similarly to `LoginForm` above, in order to reduce duplication of code we'd recommend extending
+Similarly to `LoginForm` above, in order to reduce duplication of code we recommend extending
 `\SilverStripe\MFA\Authenticator\LoginHandler` and duplicating the contents of
 `SilverStripe\LDAP\Authenticators\LDAPChangePasswordHandler` which is substantially smaller.
 
