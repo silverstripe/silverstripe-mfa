@@ -54,8 +54,9 @@ const Remove = ({
             onSetDefaultMethod(null);
           }
 
-          // If the response indicates there's no backup code registered then we need to ensure that
-          // the backup code isn't contained in our registered methods. If it is we should remove it.
+          // If the response indicates there's no backup code registered then we
+          // need to ensure that the backup code isn't contained in our registered
+          // methods. If it is we should remove it.
           if (!json.hasBackupMethod && backupMethod && registeredMethods.find(
             candidate => candidate.urlSegment === backupMethod.urlSegment
           )) {
