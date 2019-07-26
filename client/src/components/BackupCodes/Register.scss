@@ -1,7 +1,9 @@
 .mfa-register-backup-codes {
   &__code-grid {
-    display: inline-grid;
-    grid-template-columns: auto auto auto;
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: 350px;
 
     border: 1px dashed $gray-300;
     font-weight: bold;
