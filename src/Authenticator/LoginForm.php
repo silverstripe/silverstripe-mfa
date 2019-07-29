@@ -415,8 +415,8 @@ class LoginForm extends MemberLoginForm
         // This is potentially redundant logic as the member should only be logged in if they've fully registered.
         // They're allowed to login if they can skip - so only do assertions if they're not allowed to skip
         // We'll also check that they've registered the required MFA details
-        if (!$enforcementManager->hasCompletedRegistration($member)
-            && $enforcementManager->shouldRedirectToMFA($member)
+        if (!$enforcementManager->canSkipMFA($member)
+            && !$enforcementManager->hasCompletedRegistration($member)
         ) {
             $member->logOut();
 
@@ -467,7 +467,7 @@ class LoginForm extends MemberLoginForm
     }
 
     /**
-     * Adds another option for the back URL to be returned from a current MFA session store
+     * Adds more options for the back URL - to be returned from a current MFA session store
      *
      * @return string|null
      */

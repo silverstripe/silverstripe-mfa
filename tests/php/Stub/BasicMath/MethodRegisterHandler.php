@@ -44,18 +44,6 @@ class MethodRegisterHandler implements RegisterHandlerInterface, TestOnly
     }
 
     /**
-     * Provide a string (possibly passed through i18n) that names this registration method.
-     *
-     * eg. "Authenticator app"
-     *
-     * @return string
-     */
-    public function getName(): string
-    {
-        return 'Basic math test';
-    }
-
-    /**
      * Provide a string (possibly passed through i18n) that describes this method.
      *
      * eg. "Verification codes are created by an app on your phone"
@@ -75,6 +63,16 @@ class MethodRegisterHandler implements RegisterHandlerInterface, TestOnly
     public function getSupportLink(): string
     {
         return 'https://google.com';
+    }
+
+    /**
+     * Provide a localised string to describe the support link {@see getSupportLink} about this MFA Method.
+     *
+     * @return string
+     */
+    public function getSupportText(): string
+    {
+        return 'What is math?';
     }
 
     /**

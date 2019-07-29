@@ -140,7 +140,7 @@ class SchemaGenerator extends SS_Object
         $base = '/mfa/';
 
         return [
-            'user_docs_url' => Config::inst()->get(LoginForm::class, 'user_docs_url'),
+            'user_help_link' => Config::inst()->get(LoginForm::class, 'user_help_link'),
             'extra_factor_image_url' => $base . 'client/dist/images/extra-protection.svg',
             'unique_image_url' => $base . 'client/dist/images/unique.svg',
             'more_options_image_url' => $base . 'client/dist/images/more-options.svg',

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import registeredMethodShape from 'types/registeredMethod';
 import Config from 'lib/Config'; // eslint-disable-line
 import { connect } from 'react-redux';
+import api from 'lib/api';
 import { setDefaultMethod } from 'state/mfaAdministration/actions';
 
 const fallbacks = require('../../../../../lang/src/en.json');
@@ -24,17 +25,16 @@ class SetDefault extends Component {
     const token = Config.get('SecurityID');
     const endpoint = `${setDefault.replace('{urlSegment}', method.urlSegment)}?SecurityID=${token}`;
 
-    fetch(endpoint, {
-      method: 'PUT',
-    }).then(response => response.json().then(json => {
-      if (response.status === 200) {
-        onSetDefaultMethod(method.urlSegment);
-        return;
-      }
+    api(endpoint, 'PUT')
+      .then(response => response.json().then(json => {
+        if (response.status === 200) {
+          onSetDefaultMethod(method.urlSegment);
+          return;
+        }
 
-      const message = (json.errors && ` Errors: \n - ${json.errors.join('\n -')}`) || '';
-      throw Error(`Could not set default method. Error code ${response.status}.${message}`);
-    }));
+        const message = (json.errors && ` Errors: \n - ${json.errors.join('\n -')}`) || '';
+        throw Error(`Could not set default method. Error code ${response.status}.${message}`);
+      }));
   }
 
   render() {

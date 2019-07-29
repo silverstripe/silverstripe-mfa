@@ -52,7 +52,7 @@ describe('Introduction', () => {
         <Introduction
           onContinue={handleContinueMock}
           resources={{
-            user_docs_url: '#',
+            user_help_link: '#',
           }}
         />
       );

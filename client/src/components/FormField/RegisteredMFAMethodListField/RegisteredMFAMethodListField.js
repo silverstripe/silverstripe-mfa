@@ -52,21 +52,6 @@ class RegisteredMFAMethodListField extends Component {
     onSetDefaultMethod(initialDefaultMethod);
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const { registrationScreen } = this.props;
-    const { modalOpen } = this.state;
-
-    // Toggle the modal if the modal is open and the register screen has changed back to "intro"
-    if (
-      prevProps.registrationScreen !== registrationScreen
-      && registrationScreen === SCREEN_INTRODUCTION
-      && prevState.modalOpen
-      && modalOpen
-    ) {
-      this.handleToggleModal();
-    }
-  }
-
   /**
    * The backup method is rendered separately
    *
@@ -158,6 +143,7 @@ class RegisteredMFAMethodListField extends Component {
    * @return {Array<MethodListItem>}
    */
   renderBaseMethods() {
+    const { isMFARequired } = this.props;
     const baseMethods = this.getBaseMethods();
 
     if (!baseMethods.length) {
@@ -172,7 +158,7 @@ class RegisteredMFAMethodListField extends Component {
           method,
           key: method.urlSegment,
           isDefaultMethod: defaultMethod && method.urlSegment === defaultMethod,
-          canRemove: !readOnly,
+          canRemove: !readOnly && !(isMFARequired && baseMethods.length === 1),
           canReset: !readOnly,
         };
 
@@ -200,6 +186,7 @@ class RegisteredMFAMethodListField extends Component {
         toggle={this.handleToggleModal}
         resources={resources}
         endpoints={endpoints}
+        disallowedScreens={[SCREEN_INTRODUCTION]}
       />
     );
   }
@@ -269,6 +256,7 @@ RegisteredMFAMethodListField.propTypes = {
   backupMethod: registeredMethodShape,
   defaultMethod: PropTypes.string,
   readOnly: PropTypes.bool,
+  isMFARequired: PropTypes.bool,
   initialDefaultMethod: PropTypes.string,
   initialRegisteredMethods: PropTypes.arrayOf(registeredMethodShape),
   initialAvailableMethods: PropTypes.arrayOf(availableMethodShape),

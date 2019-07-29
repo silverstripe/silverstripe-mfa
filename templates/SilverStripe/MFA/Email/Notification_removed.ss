@@ -1,7 +1,7 @@
 <p><% _t('MFANotification.HELLO', 'Hi') %> $Member.Name,</p>
 
 <p>
-	<% sprintf(_t('MFANotification.REGISTERED', 'You have removed the %s authentication method from your account at %s.'), $MethodName, $AbsoluteBaseURL) %>
+	<% sprintf(_t('MFANotification.REMOVED', 'You have removed the %s authentication method from your account at %s.'), $MethodName, $AbsoluteBaseURL) %>
 </p>
 
 <p>

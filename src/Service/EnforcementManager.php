@@ -12,7 +12,7 @@ use SiteConfig;
 use SS_Object;
 
 /**
- * The EnforcementManager class is responsible for making decisions regarding multi factor authentication app flow,
+ * The EnforcementManager class is responsible for making decisions regarding multi-factor authentication app flow,
  * e.g. "should we redirect to the MFA section", "can the user skip MFA registration" etc.
  */
 class EnforcementManager extends SS_Object
@@ -44,7 +44,7 @@ class EnforcementManager extends SS_Object
     private static $enabled = true;
 
     /**
-     * Whether the current member can skip the multi factor authentication registration process.
+     * Whether the current member can skip the multi-factor authentication registration process.
      *
      * This is determined by a combination of:
      *  - Whether MFA is required or optional
@@ -71,7 +71,7 @@ class EnforcementManager extends SS_Object
     }
 
     /**
-     * Whether the authentication process should redirect the user to multi factor authentication registration or
+     * Whether the authentication process should redirect the user to multi-factor authentication registration or
      * login.
      *
      * This is determined by a combination of:
@@ -145,7 +145,7 @@ class EnforcementManager extends SS_Object
     }
 
     /**
-     * Whether multi factor authentication is required for site members. This also takes into account whether a
+     * Whether multi-factor authentication is required for site members. This also takes into account whether a
      * grace period is set and whether we're currently inside the window for it.
      *
      * Note that in determining this, we ignore whether or not MFA is enabled for the site in general.

@@ -2,9 +2,11 @@
 
 namespace SilverStripe\MFA\Tests\Store;
 
+use DB;
 use SapphireTest;
 use SilverStripe\MFA\Store\SessionStore;
 use Member;
+use SS_Database;
 
 class SessionStoreTest extends SapphireTest
 {
@@ -77,5 +79,31 @@ class SessionStoreTest extends SapphireTest
         $store->setMember($member2);
 
         $this->assertEmpty($store->getMethod());
+    }
+
+    public function testDatabaseIsNotAccessedOnDeserialise()
+    {
+        // Create a store
+        $member = new Member();
+        $member->ID = 1;
+        $store = new SessionStore($member);
+        $serialised = $store->serialize();
+
+        // Replace the DB connection with a mock
+        $connection = DB::get_conn();
+        $database = $this->getMockBuilder(SS_Database::class)
+            ->enableProxyingToOriginalMethods()
+            ->setProxyTarget($connection)
+            ->getMock();
+
+        $database->expects($this->never())->method('query');
+        $database->expects($this->never())->method('preparedQuery');
+        DB::set_conn($database);
+
+        // Replicate the deserialisation that happens on session start
+        $store->unserialize($serialised);
+
+        // Finish the test and allow mock assertions to fail the test
+        DB::set_conn($connection);
     }
 }

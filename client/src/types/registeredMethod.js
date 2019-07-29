@@ -7,6 +7,9 @@ import PropTypes from 'prop-types';
 export default PropTypes.shape({
   name: PropTypes.string,
   urlSegment: PropTypes.string,
-  leadInLabel: PropTypes.string,
+  isAvailable: PropTypes.bool,
+  unavailableMessage: PropTypes.string,
   component: PropTypes.string,
+  supportLink: PropTypes.string,
+  thumbnail: PropTypes.string,
 });

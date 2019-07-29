@@ -1,7 +1,7 @@
-import es6promise from 'es6-promise';
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
 
-es6promise.polyfill();
+require('es6-promise').polyfill();
 
-require('babel-polyfill');
 require('../legacy');
 require('../boot/cms');

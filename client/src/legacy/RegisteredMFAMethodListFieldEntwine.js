@@ -20,6 +20,7 @@ window.jQuery.entwine('ss', ($) => {
         endpoints,
         backupCreatedDate,
         resetEndpoint,
+        isMFARequired,
       } } = this.data('schema');
 
       ReactDOM.render(
@@ -36,6 +37,7 @@ window.jQuery.entwine('ss', ($) => {
               endpoints={endpoints}
               backupCreatedDate={backupCreatedDate}
               resetEndpoint={resetEndpoint}
+              isMFARequired={isMFARequired}
             />
           </Provider>
         ),

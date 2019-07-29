@@ -13,7 +13,7 @@ const Complete = ({ onComplete, showTitle, message }) => (
     <p className="mfa-register-confirmation__description">
       {message || window.ss.i18n._t(
         'MFARegister.SETUP_COMPLETE_DESCRIPTION',
-        'You can edit these settings from your profile area in the menu.'
+        'You will be able to edit these settings later from your profile area.'
       )}
     </p>
     <button

@@ -9,18 +9,24 @@ import { Component as SelectMethod } from '../SelectMethod';
 Enzyme.configure({ adapter: new Adapter() });
 
 window.ss = {
-  i18n: { _t: (key, string) => string },
+  i18n: {
+    _t: (key, string) => string,
+    inject: (string, map) => Object.entries(map).reduce(
+      (acc, [key, value]) => acc.replace(key, value),
+      string
+    ),
+  },
 };
 
 const mockRegisteredMethods = [
   {
     urlSegment: 'aye',
-    leadInLabel: 'Login with aye',
+    name: 'aye',
     component: 'Test',
   },
   {
     urlSegment: 'bee',
-    leadInLabel: 'Login with bee',
+    name: 'bee',
     component: 'Test',
   },
 ];
@@ -67,7 +73,7 @@ describe('Verify', () => {
       );
 
       const wrapperText = wrapper.text();
-      expect(wrapperText).toContain(mockRegisteredMethods[0].leadInLabel);
+      expect(wrapperText).toContain(mockRegisteredMethods[0].name);
       expect(wrapperText).toContain('Browser does not support it');
     });
 
@@ -82,7 +88,7 @@ describe('Verify', () => {
         />
       );
 
-      expect(wrapper.text()).toContain(mockRegisteredMethods[0].leadInLabel);
+      expect(wrapper.text()).toContain(mockRegisteredMethods[0].name);
       expect(wrapper.find('li a')).toHaveLength(2);
     });
 
