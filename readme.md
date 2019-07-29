@@ -61,6 +61,7 @@ functionality:
 - [Encryption providers](docs/en/encryption.md)
 - [Data store interfaces](docs/en/datastores.md)
 - [Security](docs/en/security.md)
+- [Integrating with other authenticators](docs/en/other-authenticators.md)
 
 ## License
 
