@@ -80,7 +80,7 @@ class MemberExtension extends DataExtension implements PermissionProvider
             $methodListField = RegisteredMFAMethodListField::create(
                 'MFASettings',
                 _t(__CLASS__ . '.MFA_SETTINGS_FIELD_LABEL', 'Multi-factor authentication settings (MFA)'),
-                $this->owner
+                $this->owner->ID
             )
         );
 
