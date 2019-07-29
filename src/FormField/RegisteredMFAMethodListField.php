@@ -2,6 +2,7 @@
 
 namespace SilverStripe\MFA\FormField;
 
+use DataObject;
 use FormField;
 use Member;
 use MFARegisteredMethod as RegisteredMethod;
@@ -39,7 +40,7 @@ class RegisteredMFAMethodListField extends FormField
         $adminController = AdminRegistrationController::singleton();
         $generator = SchemaGenerator::create();
         /** @var Member $member */
-        $member = Member::get()->byID($this->value);
+        $member = DataObject::get_by_id(Member::class, $this->value);
 
         return json_encode([
             'schema' => $generator->getSchema($member) + [
