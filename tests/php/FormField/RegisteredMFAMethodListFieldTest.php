@@ -4,7 +4,6 @@ namespace SilverStripe\MFA\Tests\FormField;
 
 use SapphireTest;
 use SilverStripe\MFA\FormField\RegisteredMFAMethodListField;
-use Member;
 use TypeError;
 
 class RegisteredMFAMethodListFieldTest extends SapphireTest
@@ -14,9 +13,8 @@ class RegisteredMFAMethodListFieldTest extends SapphireTest
     public function testSchemaContainsEndpoints()
     {
         $memberID = $this->logInWithPermission();
-        $member = Member::get()->byID($memberID);
 
-        $field = new RegisteredMFAMethodListField('test', null, $member);
+        $field = new RegisteredMFAMethodListField('test', null, $memberID);
         $schema = json_decode($field->getSchemaData(), true);
 
         $this->assertContains('register/', $schema['schema']['endpoints']['register']);
@@ -30,21 +28,5 @@ class RegisteredMFAMethodListFieldTest extends SapphireTest
     public function testConstructorRequiresMemberValue()
     {
         new RegisteredMFAMethodListField('test', null, null);
-    }
-
-    public function testSetValueOnlyAcceptsMemberObjects()
-    {
-        $memberID = $this->logInWithPermission();
-        $member = Member::get()->byID($memberID);
-
-        $field = new RegisteredMFAMethodListField('test', null, $member);
-        $this->assertSame($member->ID, $field->Value()->ID);
-
-        $field->setValue(null);
-        $this->assertSame($member->ID, $field->Value()->ID, 'Value should remain unchanged after setting NULL');
-
-        $anotherUser = $this->objFromFixture(Member::class, 'another-user');
-        $field->setValue($anotherUser);
-        $this->assertSame($anotherUser->ID, $field->Value()->ID, 'Value updates when setting a Member');
     }
 }
