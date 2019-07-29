@@ -2,7 +2,6 @@
 
 namespace SilverStripe\MFA\FormField;
 
-use InvalidArgumentException;
 use SilverStripe\Admin\SecurityAdmin;
 use SilverStripe\Forms\FormField;
 use SilverStripe\MFA\Controller\AdminRegistrationController;
@@ -11,6 +10,7 @@ use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Service\SchemaGenerator;
+use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 
@@ -43,7 +43,7 @@ class RegisteredMFAMethodListField extends FormField
         $adminController = AdminRegistrationController::singleton();
         $generator = SchemaGenerator::create();
         /** @var Member $member */
-        $member = Member::get()->byID($this->value);
+        $member = DataObject::get_by_id(Member::class, $this->value);
 
         return array_merge($defaults, [
             'schema' => $generator->getSchema($member) + [
