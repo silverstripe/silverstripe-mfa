@@ -1,18 +1,80 @@
 en:
-  Firesphere\BootstrapMFA\Authenticators\BootstrapMFAAuthenticator:
-    INVALIDTOKEN: 'Invalid token'
-  Firesphere\BootstrapMFA\Extensions\MemberExtension:
-    MFAEnabled: 'MFA Enabled'
-    MFATAB: 'Multi Factor Authentication'
-    RESETMFA: 'Reset MFA codes'
-  Firesphere\BootstrapMFA\Extensions\SiteConfigExtension:
-    ENFORCEMFA: 'Enforce MFA on all users'
-  Firesphere\BootstrapMFA\Models\BackupCode:
-    PLURALNAME: 'Backup Codes'
+  SilverStripe\MFA\Authenticator\LoginHandler:
+    CANNOT_SKIP: 'You cannot skip MFA registration'
+    INVALID_METHOD: 'No such method is available'
+    INVALID_REGISTRATION: 'You must complete MFA registration'
+    LOCKED_OUT: 'Your account is temporarily locked. Please try again later.'
+    MFA_LOGIN_INCOMPLETE: 'You must provide MFA login details'
+    MUST_USE_EXISTING_METHOD: 'This member already has an MFA method'
+    NOT_AUTHENTICATING: 'You must be logged in or logging in. Please refresh the page and try again.'
+    SUDO_MODE_REQUIRED: 'You need to re-verify your account before continuing. Please reload and try again.'
+  SilverStripe\MFA\BackupCode\Method:
+    NAME: 'Recovery codes'
+  SilverStripe\MFA\BackupCode\RegisterHandler:
+    DESCRIPTION: 'Recovery codes enable you to log into your account in the event your primary authentication is not available. Each code can only be used once. Store these codes somewhere safe, as they will not be viewable after this leaving this page.'
+    SUPPORT_LINK_DESCRIPTION: 'Learn about recovery codes.'
+  SilverStripe\MFA\BackupCode\VerifyHandler:
+    INVALID_CODE: 'Invalid code'
+    MFAREMOVED: 'A recovery code was used to access your account'
+  SilverStripe\MFA\Controller\AdminRegistrationController:
+    COULD_NOT_DELETE: 'Could not delete the specified method from the user'
+    COULD_NOT_SET_DEFAULT: 'Could not set the default method for the user'
+    CSRF_FAILURE: 'Request timed out, please try again'
+    INVALID_METHOD: 'No such method is available'
+    INVALID_REGISTERED_METHOD: 'No such registered method is available'
+    INVALID_SESSION: 'Invalid session. Please refresh and try again.'
+    MENUTITLE: SilverStripe\MFA\Controller\AdminRegistrationController
+  SilverStripe\MFA\Email\AccountReset:
+    ACTION: 'Click here to reset your account'
+    DESCRIPTION: 'An account reset has been initiated for your account.'
+    HI: Hi
+  SilverStripe\MFA\Email\Notification:
+    CODESLEFT: 'You now have {count} codes remaining.'
+    HELLO: Hi
+    NOTYOU: 'If you did not take this action, please contact your system administrator immediately.'
+    REGISTERED: 'You have successfully registered {method} as an extra layer of protection for your account at {site}.'
+    REMOVED: 'You have removed the {method} authentication method from your account at {site}.'
+    USEDBACKUPCODE: 'A recovery code was used to gain access to your account at {site}.'
+  SilverStripe\MFA\Extension\AccountReset\SecurityAdminExtension:
+    ACCOUNT_RESET_EMAIL_SUBJECT: 'Reset your account'
+    BAD_REQUEST: 'Invalid request'
+    EMAIL_NOT_SENT: 'Email sending failed'
+    INSUFFICIENT_PERMISSIONS: 'Insufficient permissions to reset user'
+    INVALID_CSRF_TOKEN: 'Invalid or missing CSRF token'
+    INVALID_MEMBER: 'Requested member for reset not found'
+  SilverStripe\MFA\Extension\AccountReset\SecurityExtension:
+    ACCOUNT_RESET_DESCRIPTION: 'Your password will be changed, and any registered MFA methods will be removed.'
+    ACCOUNT_RESET_TITLE: 'Reset account'
+    ALREADYAUTHENTICATEDBODY: 'You must be logged out to reset your account.'
+    ALREADYAUTHENTICATEDTITLE: 'Already authenticated'
+    INVALIDTOKENBODY: 'Your account reset token may have expired. Please contact an administrator.'
+    INVALIDTOKENTITLE: 'Invalid member or token'
+    RESETSUCCESSMESSAGE: 'Reset complete. Please log in with your new password.'
+    RESETTIMEDOUT: 'The account reset process timed out. Please click the link in the email and try again.'
+  SilverStripe\MFA\Extension\MemberExtension:
+    MFA_PERMISSION_DESCRIPTION: 'Ability to view and reset registered MFA methods for other members. Requires the "Access to ''Security'' section" permission.'
+    MFA_PERMISSION_LABEL: 'View/reset MFA configuration for other members'
+    MFA_SETTINGS_FIELD_LABEL: 'Multi-factor authentication settings (MFA)'
+  SilverStripe\MFA\Extension\SiteConfigExtension:
+    MFA_GRACE_DESCRIPTION: 'MFA setup will be optional prior to this date'
+    MFA_GRACE_TITLE: 'MFA will be required from (optional)'
+    MFA_LEARN_MORE: 'Learn about MFA'
+    MFA_OPTIONAL: 'MFA is optional for everyone'
+    MFA_REQUIRED: 'MFA is required for everyone'
+    MULTI_FACTOR_AUTHENTICATION: 'Multi-factor authentication (MFA)'
+  SilverStripe\MFA\Model\RegisteredMethod:
+    PLURALNAME: 'Registered Methods'
     PLURALS:
-      one: 'A Backup Code'
-      other: '{count} Backup Codes'
-    REGENERATIONMAIL: 'Your backup tokens need to be regenerated'
-    REGENERATIONREQUIRED: "<p>Your backup codes for multi factor authentication have been requested to regenerate by someone that is not you. \nPlease visit the <a href='{url}/{segment}'>website to regenerate your backupcodes</a></p>"
-    SESSIONMESSAGE_START: '<p>Here are your tokens, please store them securily. They are stored encrypted and can not be recovered, only reset.</p><p>'
-    SINGULARNAME: 'Backup Code'
+      one: 'A Registered Method'
+      other: '{count} Registered Methods'
+    SINGULARNAME: 'Registered Method'
+  SilverStripe\MFA\RequestHandler:
+    CSRF_FAILURE: 'Your request timed out. Please refresh and try again'
+    METHOD_ALREADY_REGISTERED: 'That method has already been registered against this Member'
+    METHOD_MISMATCH: 'Method does not match registration in progress'
+    METHOD_NOT_PROVIDED: 'No method was provided to login with and the Member has no default'
+    METHOD_NOT_REGISTERED: 'Member does not have this method registered'
+    NO_REGISTRATION_IN_PROGRESS: 'No registration in progress'
+  SilverStripe\MFA\Service\RegisteredMethodManager:
+    MFAADDED: 'A multi-factor authentication method was added to your account'
+    MFAREMOVED: 'A multi-factor authentication method was removed from your account'

@@ -32,15 +32,6 @@ interface RegisterHandlerInterface
     public function register(HTTPRequest $request, StoreInterface $store): Result;
 
     /**
-     * Provide a localised name for this MFA Method.
-     *
-     * eg. "Authenticator app"
-     *
-     * @return string
-     */
-    public function getName(): string;
-
-    /**
      * Provide a localised description of this MFA Method.
      *
      * eg. "Verification codes are created by an app on your phone"
@@ -55,6 +46,13 @@ interface RegisterHandlerInterface
      * @return string
      */
     public function getSupportLink(): string;
+
+    /**
+     * Provide a localised string to describe the support link {@see getSupportLink} about this MFA Method.
+     *
+     * @return string
+     */
+    public function getSupportText(): string;
 
     /**
      * Get the key that a React UI component is registered under (with @silverstripe/react-injector on the front-end)

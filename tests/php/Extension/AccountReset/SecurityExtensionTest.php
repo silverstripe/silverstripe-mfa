@@ -18,6 +18,19 @@ class SecurityExtensionTest extends FunctionalTest
 {
     protected static $fixture_file = 'SecurityExtensionTest.yml';
 
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $validator = Member::password_validator();
+        // Do not let project code rules for password strength break these tests
+        if ($validator) {
+            $validator
+                ->setMinLength(6)
+                ->setMinTestScore(1);
+        }
+    }
+
     public function testResetAccountFailsWhenAlreadyAuthenticated()
     {
         /** @var Member&MemberExtension $member */

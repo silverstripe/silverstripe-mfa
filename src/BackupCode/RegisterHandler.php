@@ -79,18 +79,6 @@ class RegisterHandler implements RegisterHandlerInterface
     }
 
     /**
-     * Provide a localised name for this MFA Method.
-     *
-     * eg. "Authenticator app"
-     *
-     * @return string
-     */
-    public function getName(): string
-    {
-        return _t(__CLASS__ . '.NAME', 'Backup recovery codes');
-    }
-
-    /**
      * Provide a localised description of this MFA Method.
      *
      * eg. "Verification codes are created by an app on your phone"
@@ -115,6 +103,16 @@ class RegisterHandler implements RegisterHandlerInterface
     public function getSupportLink(): string
     {
         return (string) $this->config()->get('user_help_link');
+    }
+
+    /**
+     * Provide a localised string to describe the support link {@see getSupportLink} about this MFA Method.
+     *
+     * @return string
+     */
+    public function getSupportText(): string
+    {
+        return _t(__CLASS__ . '.SUPPORT_LINK_DESCRIPTION', 'Learn about recovery codes.');
     }
 
     /**

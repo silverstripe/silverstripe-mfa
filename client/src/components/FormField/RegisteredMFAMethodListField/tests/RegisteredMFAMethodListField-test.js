@@ -12,7 +12,7 @@ window.ss = {
   i18n: { _t: (key, string) => string },
 };
 
-const altMethod = { name: 'Method', urlSegment: 'method', leadInLabel: '', component: '' };
+const altMethod = { name: 'Method', urlSegment: 'method', component: '' };
 const backupMethod = { ...altMethod, name: 'Backup Method', urlSegment: 'backup' };
 const defaultMethod = { ...altMethod, name: 'Default Method', urlSegment: 'default' };
 const defaultMethodName = 'default';

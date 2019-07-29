@@ -1,7 +1,7 @@
 <p><%t SilverStripe\\MFA\\Email\\Notification.HELLO 'Hi' %> $Member.Name,</p>
 
 <p>
-	<%t SilverStripe\\MFA\\Email\\Notification.REGISTERED 'You have removed the {method} authentication method from your account at {site}.' method=$MethodName site=$AbsoluteBaseURL %>
+	<%t SilverStripe\\MFA\\Email\\Notification.REMOVED 'You have removed the {method} authentication method from your account at {site}.' method=$MethodName site=$AbsoluteBaseURL %>
 </p>
 
 <p>

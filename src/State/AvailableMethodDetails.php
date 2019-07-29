@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace SilverStripe\MFA\State;
 
@@ -19,13 +19,14 @@ class AvailableMethodDetails implements AvailableMethodDetailsInterface
         $this->method = $method;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'urlSegment' => $this->method->getURLSegment(),
-            'name' => $this->method->getRegisterHandler()->getName(),
+            'name' => $this->method->getName(),
             'description' => $this->method->getRegisterHandler()->getDescription(),
             'supportLink' => $this->method->getRegisterHandler()->getSupportLink(),
+            'supportText' => $this->method->getRegisterHandler()->getSupportText(),
             'thumbnail' => $this->method->getThumbnail(),
             'component' => $this->method->getRegisterHandler()->getComponent(),
             'isAvailable' => $this->method->isAvailable(),

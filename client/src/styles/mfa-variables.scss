@@ -17,20 +17,22 @@ $icon-spacing: 1em;
 $method-image-dimensions: 240px;
 
 // Fonts
-$font-size-h1: 15px;
-$font-size-h2: 22px;
-$font-size-small: 10px;
+$font-size-core: 13; // Based on $font-size-root from core - update if this changes
 
-$font-app-title-size: 16px;
+$font-size-h1: (15 / $font-size-core) + rem;
+$font-size-h2: (22 / $font-size-core) + rem;
+$font-size-small: (10 / $font-size-core) + rem;
+
+$font-app-title-size: (16 / $font-size-core) + rem;
 $font-app-title-weight: normal;
 
-$font-section-title-size: 22px;
+$font-section-title-size: (22 / $font-size-core) + rem;
 $font-section-title-weight: normal;
 
-$font-block-heading-size: 14px;
+$font-block-heading-size: (14 / $font-size-core) + rem;
 $font-block-heading-weight: bold;
 
-$font-content-size: 14px;
+$font-content-size: (14 / $font-size-core) + rem;
 $font-content-weight: normal;
 
 // Loading indicator
@@ -53,9 +55,10 @@ $tile-box-shadow: 0 0 0 $tile-border-width $tile-border-color inset;
 $tile-box-shadow-active: 0 0 0 $tile-border-width-active $tile-border-color-active inset;
 
 $tile-padding: 2rem;
-$tile-spacing: .5rem;
+$tile-spacing: 16px;
 $tile-thumbnail-size: 100px;
-$tile-mask-background: rgba(#ffffff, .75);
+$tile-mask-background: #4a4a4a;
+$tile-mask-colour: white;
 
 // Media query breakpoints
 $viewport-small: 480px;

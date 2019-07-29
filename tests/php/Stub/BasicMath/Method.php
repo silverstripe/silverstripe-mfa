@@ -4,11 +4,9 @@ namespace SilverStripe\MFA\Tests\Stub\BasicMath;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\Dev\TestOnly;
-use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
+use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
-use SilverStripe\MFA\State\AvailableMethodDetails;
-use SilverStripe\MFA\State\AvailableMethodDetailsInterface;
 
 class Method implements MethodInterface, TestOnly
 {
@@ -62,5 +60,10 @@ class Method implements MethodInterface, TestOnly
     public function getUnavailableMessage(): string
     {
         return 'This is a test authenticator, only available in dev mode for tests.';
+    }
+
+    public function getName(): string
+    {
+        return 'Math problem';
     }
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace SilverStripe\MFA\State;
 
@@ -19,14 +19,13 @@ class RegisteredMethodDetails implements RegisteredMethodDetailsInterface
         $this->method = $method;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
-            'name' => $this->method->getRegisterHandler()->getName(),
+            'name' => $this->method->getName(),
             'urlSegment' => $this->method->getURLSegment(),
             'isAvailable' => $this->method->isAvailable(),
             'unavailableMessage' => $this->method->getUnavailableMessage(),
-            'leadInLabel' => $this->method->getVerifyHandler()->getLeadInLabel(),
             'component' => $this->method->getVerifyHandler()->getComponent(),
             'supportLink' => $this->method->getRegisterHandler()->getSupportLink(),
             'thumbnail' => $this->method->getThumbnail(),
