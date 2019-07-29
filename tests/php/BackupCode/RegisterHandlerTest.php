@@ -2,27 +2,48 @@
 
 namespace SilverStripe\MFA\Tests\BackupCode;
 
+use Member;
 use PHPUnit_Framework_MockObject_MockObject;
-use SS_HTTPRequest as HTTPRequest;
-use Injector;
 use SapphireTest;
 use SilverStripe\MFA\BackupCode\Method;
 use SilverStripe\MFA\BackupCode\RegisterHandler;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Store\StoreInterface;
-use Member;
-use Security;
+use SilverStripe\MFA\Tests\Stub\BasicMath\Method as BasicMathMethod;
+use SS_HTTPRequest as HTTPRequest;
 
 class RegisterHandlerTest extends SapphireTest
 {
     protected static $fixture_file = 'RegisterHandlerTest.yml';
 
+    /**
+     * @expectedException \SilverStripe\MFA\Exception\RegistrationFailedException
+     * @expectedExceptionMessage Attempted to register backup codes with no registered methods
+     */
+    public function testStartThrowsExceptionForMemberWithoutRegisteredMethods()
+    {
+        /** @var StoreInterface&PHPUnit_Framework_MockObject_MockObject $store */
+        $store = $this->createMock(StoreInterface::class);
+
+        /** @var Member&MemberExtension $member */
+        $member = $this->objFromFixture(Member::class, 'guy');
+        $member->RegisteredMFAMethods()->removeAll();
+        $store->expects($this->once())->method('getMember')->willReturn($member);
+        $handler = new RegisterHandler();
+        $handler->start($store);
+    }
+
     public function testStartReturnsPlainTextCodes()
     {
-        /** @var StoreInterface|PHPUnit_Framework_MockObject_MockObject $store */
+        /** @var Member&MemberExtension $member */
+        $member = Member::currentUser();
+        $method = new BasicMathMethod();
+        RegisteredMethodManager::singleton()->registerForMember($member, $method, ['need' => 'one']);
+
+        /** @var StoreInterface&PHPUnit_Framework_MockObject_MockObject $store */
         $store = $this->createMock(StoreInterface::class);
-        $store->expects($this->once())->method('getMember')->willReturn(Member::currentUser());
+        $store->expects($this->once())->method('getMember')->willReturn($member);
 
         $handler = new RegisterHandler();
 
@@ -34,11 +55,13 @@ class RegisterHandlerTest extends SapphireTest
 
     public function testStartStoresHashesOfBackupCodesOnMember()
     {
-        /** @var StoreInterface|PHPUnit_Framework_MockObject_MockObject $store */
+        /** @var StoreInterface&PHPUnit_Framework_MockObject_MockObject $store */
         $store = $this->createMock(StoreInterface::class);
 
-        /** @var Member|MemberExtension $member */
+        /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'guy');
+        $method = new BasicMathMethod();
+        RegisteredMethodManager::singleton()->registerForMember($member, $method, ['need' => 'one']);
         $store->expects($this->once())->method('getMember')->willReturn($member);
 
         $handler = new RegisterHandler();
@@ -69,7 +92,7 @@ class RegisterHandlerTest extends SapphireTest
 
     public function testRegisterReturnsNoContext()
     {
-        /** @var StoreInterface|PHPUnit_Framework_MockObject_MockObject $store */
+        /** @var StoreInterface&PHPUnit_Framework_MockObject_MockObject $store */
         $store = $this->createMock(StoreInterface::class);
 
         /** @var HTTPRequest|PHPUnit_Framework_MockObject_MockObject $request */
