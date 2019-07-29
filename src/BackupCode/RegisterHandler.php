@@ -3,8 +3,8 @@
 namespace SilverStripe\MFA\BackupCode;
 
 use Exception;
-use SS_HTTPRequest as HTTPRequest;
 use Injector;
+use SilverStripe\MFA\Exception\RegistrationFailedException;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Service\BackupCodeGeneratorInterface;
@@ -12,6 +12,7 @@ use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\State\BackupCode;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
+use SS_HTTPRequest as HTTPRequest;
 use SS_Object;
 
 class RegisterHandler extends SS_Object implements RegisterHandlerInterface
@@ -32,9 +33,17 @@ class RegisterHandler extends SS_Object implements RegisterHandlerInterface
      * @param StoreInterface $store An object that hold session data (and the Member) that can be mutated
      * @return array Props to be passed to a front-end component
      * @throws Exception When there is no valid source of CSPRNG
+     * @throws RegistrationFailedException If no registered methods are defined for the member
      */
     public function start(StoreInterface $store): array
     {
+        $member = $store->getMember();
+        if (!$member || !$member->RegisteredMFAMethods()->exists()) {
+            throw new RegistrationFailedException(
+                'Attempted to register backup codes with no registered methods'
+            );
+        }
+
         // Create or update the RegisteredMethod on the member. This breaks the normal flow as it's created on "start"
         // instead of after receiving a response from the user
 
@@ -46,7 +55,7 @@ class RegisterHandler extends SS_Object implements RegisterHandlerInterface
         $codes = $generator->generate();
 
         RegisteredMethodManager::singleton()->registerForMember(
-            $store->getMember(),
+            $member,
             $method,
             array_map(function (BackupCode $backupCode) {
                 return json_encode($backupCode);
