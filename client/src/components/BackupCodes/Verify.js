@@ -86,6 +86,7 @@ class Verify extends Component {
    */
   renderDescription() {
     const { ss: { i18n } } = window;
+    const { method } = this.props;
 
     return (
       <p>
@@ -93,6 +94,16 @@ class Verify extends Component {
           'MFABackupCodesVerify.DESCRIPTION',
           'Use one of the recovery codes you received'
         )}
+        &nbsp;
+        {method && method.supportLink &&
+          <a
+            href={method.supportLink}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {i18n._t('MFARegister.RECOVERY_HELP', 'How to use recovery codes.')}
+          </a>
+        }
       </p>
     );
   }
@@ -129,7 +140,7 @@ class Verify extends Component {
   }
 
   render() {
-    const { graphic, leadInLabel } = this.props;
+    const { graphic, name } = this.props;
 
     return (
       <form className="mfa-verify-backup-codes__container">
@@ -138,7 +149,7 @@ class Verify extends Component {
           {this.renderInput()}
         </div>
         <div>
-          <img className="mfa-verify-backup-codes__image" src={graphic} alt={leadInLabel} />
+          <img className="mfa-verify-backup-codes__image" src={graphic} alt={name} />
         </div>
         {this.renderControls()}
       </form>

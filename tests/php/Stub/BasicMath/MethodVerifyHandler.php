@@ -68,19 +68,6 @@ class MethodVerifyHandler extends SS_Object implements VerifyHandlerInterface, T
     }
 
     /**
-     * Provide a string (possibly passed through i18n) that serves as a lead in for choosing this option for
-     * authentication
-     *
-     * eg. "Enter one of your recovery codes"
-     *
-     * @return string
-     */
-    public function getLeadInLabel(): string
-    {
-        return 'Verify by solving a complex math problem';
-    }
-
-    /**
      * Get the key that a React UI component is registered under (with @silverstripe/react-injector on the front-end)
      *
      * @return string

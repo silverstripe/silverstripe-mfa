@@ -3,6 +3,7 @@
 namespace SilverStripe\MFA\Tests\Authenticator;
 
 use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit_Framework_TestCase;
 use SS_HTTPRequest as HTTPRequest;
 use SS_HTTPResponse as HTTPResponse;
 use Session;
@@ -28,6 +29,9 @@ use SecurityToken;
 use SilverStripe\SecurityExtensions\Service\SudoModeServiceInterface;
 use SiteConfig;
 
+/**
+ * @mixin PHPUnit_Framework_TestCase
+ */
 class LoginFormTest extends FunctionalTest
 {
     protected static $fixture_file = 'LoginFormTest.yml';
@@ -144,7 +148,7 @@ class LoginFormTest extends FunctionalTest
         $firstMethod = $methods[0];
 
         $this->assertSame($method->getURLSegment(), $firstMethod['urlSegment']);
-        $this->assertSame($registerHandler->getName(), $firstMethod['name']);
+        $this->assertSame($method->getName(), $firstMethod['name']);
         $this->assertSame($registerHandler->getDescription(), $firstMethod['description']);
         $this->assertSame($registerHandler->getSupportLink(), $firstMethod['supportLink']);
         $this->assertContains('client/dist/images', $firstMethod['thumbnail']);
@@ -172,11 +176,10 @@ class LoginFormTest extends FunctionalTest
 
         /** @var MethodInterface $method */
         $method = Injector::inst()->get(Method::class);
-        $verifyHandler = $method->getVerifyHandler();
 
         $result = $response['registeredMethods'][0];
         $this->assertSame($method->getURLSegment(), $result['urlSegment']);
-        $this->assertSame($verifyHandler->getLeadInLabel(), $result['leadInLabel']);
+        $this->assertSame($method->getName(), $result['name']);
         $this->assertSame('BasicMathLogin', $result['component']);
         $this->assertSame('https://google.com', $result['supportLink']);
         $this->assertContains('totp.svg', $result['thumbnail']);
@@ -240,28 +243,79 @@ class LoginFormTest extends FunctionalTest
         ];
     }
 
-    public function testSkipRegistration()
+    /**
+     * @param string $memberFixture
+     * @param bool $mfaRequiredInGrace
+     * @param string|null $expectedRedirect
+     * @dataProvider skipRegistrationProvider
+     */
+    public function testSkipRegistration($memberFixture, $mfaRequiredInGrace = false, $expectedRedirect = null)
     {
-        $this->setSiteConfig(['MFARequired' => false]);
+        if ($mfaRequiredInGrace) {
+            $graceEnd = DBDatetime::now();
+            $graceEnd->setValue(strtotime('+1 day', strtotime(DBDatetime::now()->getValue())));
 
-        $member = new Member();
-        $member->FirstName = 'Some new';
-        $member->Surname = 'member';
-        $memberId = $member->write();
-        $member->logIn();
+            $this->setSiteConfig([
+                'MFARequired' => true,
+                'MFAGracePeriodExpires' => $graceEnd->Rfc2822()
+            ]);
+        } else {
+            $this->setSiteConfig(['MFARequired' => false]);
+        }
+
+        if (!$expectedRedirect) {
+            $expectedRedirect = '/'; // This is different to SS4
+        }
+
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, $memberFixture);
+        $this->scaffoldPartialLogin($member);
 
         $this->autoFollowRedirection = false;
         $response = $this->get(Security::singleton()->Link('LoginForm/mfa/skip'));
-        $this->autoFollowRedirection = false;
 
         $this->assertEquals(302, $response->getStatusCode());
-        $this->assertStringEndsWith(
-            '/',
-            $response->getHeader('Location')
-        );
+        // Assert a redirect is given
+        $this->assertSame(302, $response->getStatusCode());
 
-        $member = Member::get()->byID($memberId);
+        // Assert the redirect is to the expected location
+        $this->assertStringEndsWith($expectedRedirect, $response->getHeader('Location'));
+
+        // Assert the user is now logged in
+        $this->assertSame($member->ID, Member::currentUserID(), 'User is successfully logged in');
+
+        // Assert that the member is tracked as having skipped registration
+        $member = Member::get()->byID($member->ID);
         $this->assertTrue((bool)$member->HasSkippedMFARegistration);
+    }
+
+    public function skipRegistrationProvider()
+    {
+        return [
+            ['guy'],
+            ['guy', true],
+            ['pete', false, 'Security/changepassword'],
+            ['pete', true, 'Security/changepassword'],
+        ];
+    }
+
+    /**
+     * @param string $memberFixture
+     * @dataProvider methodlessMemberFixtureProvider
+     */
+    public function testBackURLIsPreservedWhenSkipping($memberFixture)
+    {
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, $memberFixture);
+        $this->scaffoldPartialLogin($member);
+
+        $this->doLogin($member, 'Password123', 'admin/pages');
+
+        $this->autoFollowRedirection = false;
+        $response = $this->get(Security::singleton()->Link('LoginForm/mfa/skip'));
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertStringEndsWith('admin/pages', $response->getHeader('Location'));
     }
 
     /**
@@ -448,6 +502,50 @@ class LoginFormTest extends FunctionalTest
         $this->assertSame($failedLogins + 1, $member->FailedLoginCount, 'Failed login is registered');
     }
 
+    /**
+     * @param string $memberFixture
+     * @dataProvider methodlessMemberFixtureProvider
+     */
+    public function testFinishVerificationWillRedirectToTheBackURLSetAsLoginIsStarted($memberFixture)
+    {
+        // todo Fix this for SilverStripe 3
+        $this->markTestSkipped('This test fails in SilverStripe 3, needs to be rewritten. Subject works in practice.');
+
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, $memberFixture);
+        $this->scaffoldPartialLogin($member);
+
+        $this->doLogin($member, 'Password123', 'admin/pages');
+
+        /** @var LoginForm|PHPUnit_Framework_MockObject_MockObject $handler */
+        $handler = $this->getMockBuilder(LoginForm::class)
+            ->setMethods(['completeVerificationRequest'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $handler->expects($this->once())->method('completeVerificationRequest')->willReturn(Result::create());
+
+        $request = new HTTPRequest('GET', '/');
+        $handler->setRequest($request);
+
+        $store = new SessionStore($member);
+        $store->setMethod('basic-math');
+        $handler->setStore($store);
+
+        $session = new Session([]);
+        $handler->getController()->setSession($session);
+
+        $response = $handler->finishVerification();
+
+        // Assert "Accepted" response
+        $this->assertSame(202, $response->getStatusCode());
+
+        $this->autoFollowRedirection = false;
+        $response = $this->get(Security::singleton()->Link('LoginForm/mfa/complete'));
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertStringEndsWith('admin/pages', $response->getHeader('location'));
+    }
+
     public function testGetBackURL()
     {
         $handler = new LoginForm(Security::singleton(), $this->createMock(MemberAuthenticator::class));
@@ -460,6 +558,11 @@ class LoginFormTest extends FunctionalTest
         $handler->getController()->setSession($session);
 
         $this->assertSame('foobar', $handler->getBackURL());
+    }
+
+    public function methodlessMemberFixtureProvider()
+    {
+        return [['guy', 'carla']];
     }
 
     /**
@@ -479,19 +582,25 @@ class LoginFormTest extends FunctionalTest
      * @param string $password
      * @return HTTPResponse
      */
-    protected function doLogin(Member $member, $password)
+    protected function doLogin(Member $member, $password, $backUrl = null)
     {
-        $this->get(Config::inst()->get(Security::class, 'login_url'));
+        $url = Security::login_url();
+
+        if ($backUrl) {
+            $url .= '?BackURL=' . $backUrl;
+        }
+
+        $this->get($url);
 
         return $this->submitForm(
             'SilverStripe_MFA_Authenticator_LoginForm_LoginForm',
             null,
-            array(
+            [
                 'Email' => $member->Email,
                 'Password' => $password,
                 'AuthenticationMethod' => MemberAuthenticator::class,
                 'action_doLogin' => 1,
-            )
+            ]
         );
     }
 

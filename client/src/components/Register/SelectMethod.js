@@ -106,8 +106,8 @@ class SelectMethod extends Component {
     const { methods, showTitle } = this.props;
     const { highlightedMethod } = this.state;
 
-    const classes = classnames('mfa-method-tile__container', {
-      'mfa-method-tile__container--two-columns': methods.length % 2 === 0,
+    const classes = classnames('mfa-method-tile-group', {
+      'mfa-method-tile-group--three-columns': methods.length % 3 === 0,
     });
 
     return (

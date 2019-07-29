@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Modal, ModalBody, ModalHeader } from 'reactstrap';
 import { inject } from 'lib/Injector'; // eslint-disable-line
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import Title from 'components/Register/Title';
-import { registerMethod } from 'state/mfaAdministration/actions';
+import { registerMethod, setDefaultMethod } from 'state/mfaAdministration/actions';
 import registeredMethodShape from 'types/registeredMethod';
 import { SCREEN_INTRODUCTION } from 'components/Register';
 
@@ -15,47 +15,87 @@ const fallbacks = require('../../lang/src/en.json');
  * Renders a modal that contains a register component. Given endpoints it will register MFA methods
  * and update redux state accordingly
  */
-const RegisterModal = ({
-  backupMethod,
-  endpoints,
-  isOpen,
-  toggle,
-  onAddRegisteredMethod,
-  registeredMethods,
-  registrationScreen,
-  resources,
-  RegisterComponent
-}) => (
-  <Modal
-    isOpen={isOpen}
-    toggle={toggle}
-    className="registered-mfa-method-list-field-register-modal"
-  >
-    <ModalHeader toggle={toggle}><Title Tag={null} /></ModalHeader>
-    <ModalBody className="registered-mfa-method-list-field-register-modal__content">
-      {registrationScreen !== SCREEN_INTRODUCTION && (<RegisterComponent
-        backupMethod={backupMethod}
-        registeredMethods={registeredMethods}
-        onCompleteRegistration={toggle}
-        onRegister={onAddRegisteredMethod}
-        resources={resources}
-        endpoints={endpoints}
-        showTitle={false}
-        showSubTitle={false}
-        completeMessage={window.ss.i18n._t(
-          'MultiFactorAuthentication.ADMIN_SETUP_COMPLETE_CONTINUE',
-          fallbacks['MultiFactorAuthentication.ADMIN_SETUP_COMPLETE_CONTINUE']
-        )}
-      />)}
-    </ModalBody>
-  </Modal>
-);
+class RegisterModal extends Component {
+  constructor(props) {
+    super(props);
+
+    this.handleRegister = this.handleRegister.bind(this);
+  }
+
+  componentDidUpdate() {
+    const { disallowedScreens, isOpen, registrationScreen, toggle } = this.props;
+
+    if (!isOpen || !disallowedScreens.length) {
+      return;
+    }
+
+    if (disallowedScreens.includes(registrationScreen)) {
+      toggle();
+    }
+  }
+
+  handleRegister(method) {
+    const { onAddRegisteredMethod, onSetDefaultMethod, registeredMethods } = this.props;
+
+    if (!registeredMethods.length) {
+      onSetDefaultMethod(method.urlSegment);
+    }
+
+    onAddRegisteredMethod(method);
+  }
+
+  render() {
+    const {
+      backupMethod,
+      endpoints,
+      isOpen,
+      toggle,
+      registeredMethods,
+      registrationScreen,
+      resources,
+      RegisterComponent
+    } = this.props;
+
+    return (
+      <Modal
+        isOpen={isOpen}
+        toggle={toggle}
+        className="registered-mfa-method-list-field-register-modal"
+      >
+        <ModalHeader toggle={toggle}><Title Tag={null} /></ModalHeader>
+        <ModalBody className="registered-mfa-method-list-field-register-modal__content">
+          {registrationScreen !== SCREEN_INTRODUCTION && (<RegisterComponent
+            backupMethod={backupMethod}
+            registeredMethods={registeredMethods}
+            onCompleteRegistration={toggle}
+            onRegister={this.handleRegister}
+            resources={resources}
+            endpoints={endpoints}
+            showTitle={false}
+            showSubTitle={false}
+            completeMessage={window.ss.i18n._t(
+              'MultiFactorAuthentication.ADMIN_SETUP_COMPLETE_CONTINUE',
+              fallbacks['MultiFactorAuthentication.ADMIN_SETUP_COMPLETE_CONTINUE']
+            )}
+          />)}
+        </ModalBody>
+      </Modal>
+    );
+  }
+}
 
 
 RegisterModal.propTypes = {
-  backupMethod: registeredMethodShape,
+  // Boolean for if the modal is open
   isOpen: PropTypes.bool,
+  // A function that is used to toggle the modal. This should affect the `isOpen` prop
   toggle: PropTypes.func,
+  // Screens of the RegisterComponent that should not show. If they are shown while the modal is
+  // open then the toggle function will be called
+  disallowedScreens: PropTypes.arrayOf(PropTypes.number),
+
+  // RegisterComponent props
+  backupMethod: registeredMethodShape,
   resources: PropTypes.object,
   endpoints: PropTypes.shape({
     register: PropTypes.string,
@@ -65,6 +105,7 @@ RegisterModal.propTypes = {
   registrationScreen: PropTypes.number,
   registeredMethods: PropTypes.arrayOf(registeredMethodShape),
   onAddRegisteredMethod: PropTypes.func,
+  onSetDefaultMethod: PropTypes.func,
 
   // Injector
   RegisterComponent: PropTypes.oneOfType([PropTypes.element, PropTypes.func]),
@@ -72,6 +113,7 @@ RegisterModal.propTypes = {
 
 RegisterModal.defaultProps = {
   isOpen: false,
+  disallowedScreens: [],
 };
 
 const mapStateToProps = state => ({
@@ -81,6 +123,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   onAddRegisteredMethod: method => { dispatch(registerMethod(method)); },
+  onSetDefaultMethod: urlSegment => dispatch(setDefaultMethod(urlSegment)),
 });
 
 export { RegisterModal as Component };

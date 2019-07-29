@@ -2,6 +2,7 @@
 
 namespace SilverStripe\MFA\Service;
 
+use Injector;
 use Member;
 use MFARegisteredMethod as RegisteredMethod;
 use SilverStripe\MFA\Extension\MemberExtension;
@@ -88,9 +89,9 @@ class RegisteredMethodManager extends SS_Object
                 [
                     'subject' => _t(
                         self::class . '.MFAADDED',
-                        'A multi factor authentication method was added to your account'
+                        'A multi-factor authentication method was added to your account'
                     ),
-                    'MethodName' => $method->getRegisterHandler()->getName(),
+                    'MethodName' => $method->getName(),
                 ]
             );
         }
@@ -98,6 +99,36 @@ class RegisteredMethodManager extends SS_Object
         $this->extend('onRegisterMethod', $member, $method);
 
         return true;
+    }
+
+    /**
+     * Determines if a method can be removed
+     *
+     * By default this is false if MFA is required and the method is the last on the Member (besides the backup method)
+     * but the funcation provides a hook point for extensibility e.g. if an site requires a particular method to be in
+     * use by a subset of members - admins must use U2F but normal users can use TOTP.
+     *
+     * @param Member&MemberExtension $member
+     * @param MethodInterface $method
+     * @return bool
+     */
+    public function canRemoveMethod(Member $member, MethodInterface $method): bool
+    {
+        $removable = true;
+        $backupMethodClass = MethodRegistry::config()->get('default_backup_method');
+        $remainingMethods = $member->RegisteredMFAMethods()
+            ->filter('MethodClassName:not', $backupMethodClass)
+            ->count();
+        $mfaIsRequired = Injector::inst()->get(EnforcementManager::class)->isMFARequired();
+
+        // This is the last method (besides the backup method), and MFA is required
+        if ($mfaIsRequired && $remainingMethods === 1) {
+            $removable = false;
+        }
+
+        $this->extend(__FUNCTION__, $removable, $member, $method);
+
+        return $removable;
     }
 
     /**
@@ -110,12 +141,12 @@ class RegisteredMethodManager extends SS_Object
      */
     public function deleteFromMember(Member $member, MethodInterface $method): bool
     {
-        $method = $this->getFromMember($member, $method);
-        if (!$method) {
+        if (!$method || !$this->canRemoveMethod($member, $method)) {
             return false;
         }
 
-        $method->delete();
+        $registeredMethod = $this->getFromMember($member, $method);
+        $registeredMethod->delete();
 
         $backupRemovedToo = false;
 
@@ -150,9 +181,9 @@ class RegisteredMethodManager extends SS_Object
             [
                 'subject' => _t(
                     self::class . '.MFAREMOVED',
-                    'A multi factor authentication method was removed from your account'
+                    'A multi-factor authentication method was removed from your account'
                 ),
-                'MethodName' => $method->getRegisterHandler()->getName(),
+                'MethodName' => $method->getName(),
                 'BackupAlsoRemoved' => $backupRemovedToo,
             ]
         );

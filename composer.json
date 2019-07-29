@@ -1,6 +1,6 @@
 {
     "name": "silverstripe/mfa",
-    "description": "Enable multi factor authentication with fallback codes",
+    "description": "Enable multi-factor authentication with fallback codes",
     "type": "silverstripe-module",
     "license": "BSD-3-Clause",
     "keywords": [
@@ -30,13 +30,18 @@
         "silverstripe/siteconfig": "^3.7",
         "defuse/php-encryption": "^2.2",
         "silverstripe/login-forms": "^3.0",
-        "silverstripe/security-extensions": "^3.0"
+        "silverstripe/security-extensions": "^3.0",
+        "ext-json": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.7",
         "silverstripe/cms": "^3.7",
         "silverstripe/reports": "^3.7",
         "squizlabs/php_codesniffer": "^3.0"
+    },
+    "suggest": {
+        "silverstripe/totp-authenticator": "Adds a method to authenticate with you phone using a time-based one-time password.",
+        "silverstripe/webauthn-authenticator": "Adds a method to authenticate with security keys or built-in platform authenticators."
     },
     "extra": {
         "expose": [

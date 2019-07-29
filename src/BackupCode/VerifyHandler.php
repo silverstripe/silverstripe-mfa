@@ -99,18 +99,6 @@ class VerifyHandler implements VerifyHandlerInterface
     }
 
     /**
-     * Provide a localised string that serves as a lead in for choosing this option for authentication
-     *
-     * eg. "Enter one of your recovery codes"
-     *
-     * @return string
-     */
-    public function getLeadInLabel(): string
-    {
-        return _t(__CLASS__ . '.LEAD_IN', 'Verify with recovery code');
-    }
-
-    /**
      * Get the key that a React UI component is registered under (with @silverstripe/react-injector on the front-end)
      *
      * @return string

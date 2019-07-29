@@ -3,10 +3,12 @@
 namespace SilverStripe\MFA\Tests\Service;
 
 use Config;
+use Injector;
 use SapphireTest;
 use SilverStripe\MFA\BackupCode\Method as BackupCodeMethod;
 use SilverStripe\MFA\Extension\MemberExtension;
 use MFARegisteredMethod as RegisteredMethod;
+use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method as BasicMathMethod;
@@ -98,7 +100,12 @@ class RegisteredMethodManagerTest extends SapphireTest
         $manager = RegisteredMethodManager::singleton();
         RegisteredMethodManager::singleton()->registerForMember($member, $method, ['foo', 'bar']);
 
-        $this->assertEmailSent($member->Email, null, '/method was added to your account/');
+        $this->assertEmailSent(
+            $member->Email,
+            null,
+            '/method was added to your account/',
+            '/You have successfully registered/'
+        );
     }
 
     public function testRegisterBackupMethodDoesNotSendEmail()
@@ -150,7 +157,7 @@ class RegisteredMethodManagerTest extends SapphireTest
         $manager = RegisteredMethodManager::singleton();
         $manager->deleteFromMember($member, new BasicMathMethod());
 
-        $this->assertEmailSent($member->Email, null, '/method was removed from your account/');
+        $this->assertEmailSent($member->Email, null, '/method was removed from your account/', '/You have removed/');
     }
 
     public function testDeletingLastMethodRemovesBackupCodes()
@@ -177,5 +184,46 @@ class RegisteredMethodManagerTest extends SapphireTest
 
         $this->assertFalse(DataObject::get_by_id(RegisteredMethod::class, $backupMethod->ID));
         $this->assertFalse(DataObject::get_by_id(RegisteredMethod::class, $mathMethod->ID));
+    }
+
+    public function testCanRemoveTheOnlyMethodWhenMFAIsOptional()
+    {
+        Config::inst()->remove(MethodRegistry::class, 'default_backup_method');
+        Config::inst()->update(MethodRegistry::class, 'default_backup_method', BackupCodeMethod::class);
+        $this->registerServiceForMFAToBeRequired(false);
+        $jane = $this->objFromFixture(Member::class, 'jane_doe');
+        $method = $this->objFromFixture(RegisteredMethod::class, 'math');
+        $this->assertTrue(RegisteredMethodManager::create()->canRemoveMethod($jane, $method->getMethod()));
+    }
+
+    public function testCannotRemoveTheOnlyMethodWhenMFAIsRequired()
+    {
+        Config::inst()->remove(MethodRegistry::class, 'default_backup_method');
+        Config::inst()->update(MethodRegistry::class, 'default_backup_method', BackupCodeMethod::class);
+        $this->registerServiceForMFAToBeRequired(true);
+        $jane = $this->objFromFixture(Member::class, 'jane_doe');
+        $method = $this->objFromFixture(RegisteredMethod::class, 'math');
+        $this->assertFalse(RegisteredMethodManager::create()->canRemoveMethod($jane, $method->getMethod()));
+    }
+
+    public function testCanRemoveOneOfTwoMethodsWhenMFAIsRequired()
+    {
+        Config::inst()->remove(MethodRegistry::class, 'default_backup_method');
+        Config::inst()->update(MethodRegistry::class, 'default_backup_method', BackupCodeMethod::class);
+        $this->registerServiceForMFAToBeRequired(true);
+        $bob = $this->objFromFixture(Member::class, 'bob_jones');
+        $method = $this->objFromFixture(RegisteredMethod::class, 'math2');
+        $this->assertTrue(RegisteredMethodManager::create()->canRemoveMethod($bob, $method->getMethod()));
+    }
+
+    private function registerServiceForMFAToBeRequired($required = false)
+    {
+        $enforcementMock = $this->getMockBuilder(EnforcementManager::class)
+            ->setMethods(['isMFARequired'])
+            ->getMock();
+        $enforcementMock
+            ->method('isMFARequired')
+            ->willReturn($required);
+        Injector::inst()->registerService($enforcementMock, EnforcementManager::class);
     }
 }

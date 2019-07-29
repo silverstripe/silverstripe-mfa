@@ -3,16 +3,25 @@ MFARegisteredMethod:
     MethodClassName: "SilverStripe\MFA\Tests\Stub\BasicMath\Method"
   robbie-math:
     MethodClassName: "SilverStripe\MFA\Tests\Stub\BasicMath\Method"
+  colin-math:
+    MethodClassName: "SilverStripe\MFA\Tests\Stub\BasicMath\Method"
+
 
 Permission:
   admin:
     Code: ADMIN
+  content:
+    Code: CMS_ACCESS_CMSMain
 
 Group:
   admingroup:
     Title: Create, edit and delete pages
     Code: admingroup
     Permissions: =>Permission.admin
+  contentgroup:
+    Title: Content author
+    Code: contentgroup
+    Permissions: =>Permission.content
 
 Member:
   guy:
@@ -29,4 +38,15 @@ Member:
     RegisteredMFAMethods: =>MFARegisteredMethod.robbie-math
     DefaultRegisteredMethodID: =>MFARegisteredMethod.robbie-math
     Groups: =>Group.admingroup
-
+  colin:
+    Email: colin@example.com
+    RegisteredMFAMethods: =>MFARegisteredMethod.colin-math
+    DefaultRegisteredMethodID: =>MFARegisteredMethod.colin-math
+    Groups: =>Group.contentgroup
+  carla:
+    Email: carla@example.com
+    Groups: =>Group.contentgroup
+  pete:
+    Email: pete@example.com
+    PasswordExpiry: 1990-01-01
+    Groups: =>Group.contentgroup

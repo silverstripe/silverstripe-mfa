@@ -11,7 +11,7 @@ Feature: MFA is enabled for the site
   Scenario: I can set MFA to be required
     Given I go to "/admin/settings"
     And I click the "Access" CMS tab
-    Then I should see "Multi Factor Authentication (MFA)"
+    Then I should see "Multi-factor authentication (MFA)"
     When I select "MFA is required for everyone" from the MFA settings
     And I press "Save"
     Then I should see "Saved"

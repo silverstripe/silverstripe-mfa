@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { SCREEN_REGISTER_METHOD } from 'components/Register';
+import {
+  SCREEN_CHOOSE_METHOD,
+  SCREEN_INTRODUCTION,
+  SCREEN_REGISTER_METHOD,
+} from 'components/Register';
 import { chooseMethod, showScreen } from 'state/mfaRegister/actions';
 import registeredMethodShape from 'types/registeredMethod';
 import availableMethodShape from 'types/availableMethod';
@@ -65,6 +69,7 @@ class Reset extends Component {
           toggle={this.handleToggleModal}
           resources={resources}
           endpoints={endpoints}
+          disallowedScreens={[SCREEN_CHOOSE_METHOD, SCREEN_INTRODUCTION]}
         />
       </button>
     );

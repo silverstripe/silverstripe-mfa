@@ -15,7 +15,13 @@ import { loadComponent } from 'lib/Injector'; // eslint-disable-line
 Enzyme.configure({ adapter: new Adapter() });
 
 window.ss = {
-  i18n: { _t: (key, string) => string },
+  i18n: {
+    _t: (key, string) => string,
+    inject: (string, map) => Object.entries(map).reduce(
+      (acc, [key, value]) => acc.replace(key, value),
+      string
+    ),
+  },
 };
 
 const endpoints = {
@@ -25,12 +31,12 @@ const endpoints = {
 const mockRegisteredMethods = [
   {
     urlSegment: 'aye',
-    leadInLabel: 'Login with aye',
+    name: 'aye',
     component: 'Test',
   },
   {
     urlSegment: 'bee',
-    leadInLabel: 'Login with bee',
+    name: 'bee',
     component: 'Test',
   },
 ];
@@ -62,7 +68,7 @@ describe('Verify', () => {
 
     expect(wrapper.state('selectedMethod')).toEqual({
       urlSegment: 'aye',
-      leadInLabel: 'Login with aye',
+      name: 'aye',
       component: 'Test',
     });
   });
@@ -78,7 +84,7 @@ describe('Verify', () => {
 
     expect(wrapper.state('selectedMethod')).toEqual({
       urlSegment: 'bee',
-      leadInLabel: 'Login with bee',
+      name: 'bee',
       component: 'Test',
     });
   });
@@ -92,7 +98,7 @@ describe('Verify', () => {
     );
 
     expect(fetchMock.mock.calls).toHaveLength(1);
-    expect(fetchMock.mock.calls[0]).toEqual(['/fake/aye']);
+    expect(fetchMock.mock.calls[0][0]).toEqual('/fake/aye');
   });
 
   it('loads the default method component', (done) => {
@@ -235,10 +241,9 @@ describe('Verify', () => {
       completionFunction({ test: 1 });
       expect(fetchMock.mock.calls).toHaveLength(2);
       expect(fetchMock.mock.calls[1]).toEqual(['/fake/aye', {
+        credentials: 'same-origin',
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {},
         body: '{"test":1}',
       }]);
       setTimeout(() => {
@@ -296,10 +301,9 @@ describe('Verify', () => {
       completionFunction({ test: 1 });
       expect(fetchMock.mock.calls).toHaveLength(1);
       expect(fetchMock.mock.calls[0]).toEqual(['/fake/aye', {
+        credentials: 'same-origin',
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {},
         body: '{"test":1}',
       }]);
       setTimeout(() => {

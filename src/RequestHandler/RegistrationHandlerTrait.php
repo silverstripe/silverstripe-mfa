@@ -58,7 +58,6 @@ trait RegistrationHandlerTrait
 
         // Add a CSRF token
         $token = SecurityToken::inst();
-        $token->reset();
         $data[$token->getName()] = $token->getValue();
 
         return $response->setBody(json_encode($data));

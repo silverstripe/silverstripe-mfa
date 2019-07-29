@@ -58,4 +58,9 @@ class Method implements MethodInterface, TestOnly
     {
         return 'This is a test authenticator, only available in dev mode for tests.';
     }
+
+    public function getName(): string
+    {
+        return 'Math problem';
+    }
 }

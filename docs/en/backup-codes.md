@@ -57,8 +57,8 @@ SilverStripe\MFA\Service\BackupCodeGenerator:
 
 ### Adjusting the character sets
 
-By default, backup codes will be generated using upper and lowercase letters and numbers. If you would like to increase
-the entropy of your backup codes by adding special characters, you can do so by adding an extension:
+By default, backup codes will be generated using lowercase letters. If you would like to increase
+the entropy of your backup codes by adding extra character types, you can do so by adding an extension:
 
 ```php
 class BackupCodeGeneratorExtension extends Extension
