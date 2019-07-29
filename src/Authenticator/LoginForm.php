@@ -438,7 +438,9 @@ class LoginForm extends MemberLoginForm
         Session::clear(static::SESSION_KEY . '.mustLogin');
 
         // Force the back url back into the request var (ugly SS3 hacks)
-        $_REQUEST['BackURL'] = $data['BackURL'];
+        if (isset($data['BackURL'])) {
+            $_REQUEST['BackURL'] = $data['BackURL'];
+        }
 
         // Delegate to parent logic
         return parent::logInUserAndRedirect($data);
