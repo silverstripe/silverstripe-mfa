@@ -2,6 +2,7 @@
 
 namespace SilverStripe\MFA\FormField;
 
+use DataObject;
 use FormField;
 use Member;
 use MFARegisteredMethod as RegisteredMethod;
@@ -15,27 +16,15 @@ use SilverStripe\MFA\Service\SchemaGenerator;
 class RegisteredMFAMethodListField extends FormField
 {
     /**
-     * Because {@see setValue()} can do nothing on e.g. form submission, it is of critical importance that this
-     * object is never in existence without a valid Member set as the value - we have set the `$value` parameter as
-     * required, however we still need to ensure that it is a valid value. We do this via type hints, and removing the
-     * optionality of the parameters for this constructor
+     * {@inheritDoc}
+     *
+     * @param string      $name  Field name
+     * @param string|null $title Field title
+     * @param int         $value Member ID to apply this field to
      */
-    public function __construct(string $name, ?string $title, Member $value)
+    public function __construct(string $name, ?string $title, int $value)
     {
         parent::__construct($name, $title, $value);
-    }
-
-    public function setValue($value, $data = null)
-    {
-        // When a form submits, it populates data from POST values.
-        // This field is not really a form field - it is a React JS component that renders interactive controls
-        // for a member to manage their MFA settings. It therefore does not have a value, and `null` is not a valid
-        // instance of Member - this causes a PHP Emeregency error (resulting in a HTTP 500). To this end, only ever
-        // set the value if the value passed in is an instance of Member.
-        if ($value instanceof Member) {
-            $this->value = $value;
-        }
-        return $this;
     }
 
     public function Field($properties = array())
@@ -44,15 +33,17 @@ class RegisteredMFAMethodListField extends FormField
     }
 
     /**
-     * @return array
+     * @return string
      */
     public function getSchemaData()
     {
         $adminController = AdminRegistrationController::singleton();
         $generator = SchemaGenerator::create();
+        /** @var Member $member */
+        $member = DataObject::get_by_id(Member::class, $this->value);
 
         return json_encode([
-            'schema' => $generator->getSchema($this->value) + [
+            'schema' => $generator->getSchema($member) + [
                 'endpoints' => [
                     'register' => $adminController->Link('register/{urlSegment}'),
                     'remove' => $adminController->Link('method/{urlSegment}'),
@@ -63,7 +54,7 @@ class RegisteredMFAMethodListField extends FormField
                 'backupCreationDate' => $this->getBackupMethod()
                     ? $this->getBackupMethod()->Created
                     : null,
-                'resetEndpoint' => SecurityAdmin::singleton()->Link("reset/{$this->value->ID}"),
+                'resetEndpoint' => SecurityAdmin::singleton()->Link("reset/{$this->value}"),
                 'isMFARequired' => EnforcementManager::create()->isMFARequired(),
             ],
             'readOnly' => $this->isReadonly(),
