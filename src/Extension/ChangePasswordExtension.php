@@ -72,7 +72,7 @@ class ChangePasswordExtension extends Extension
             return $this->jsonResponse(
                 array_merge($schema, [
                     'endpoints' => [
-                        'verify' => $this->owner->Link('mfa/login/{urlSegment}'),
+                        'verify' => $this->owner->Link('changepassword/mfa/login/{urlSegment}'),
                         'complete' => $this->owner->Link('changepassword'),
                     ],
                     'shouldRedirect' => false,
