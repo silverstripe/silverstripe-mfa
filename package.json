@@ -23,6 +23,7 @@
   "dependencies": {
     "@silverstripe/react-injector": "^0.2.0",
     "@silverstripe/reactstrap-confirm": "^0.0.4",
+    "bootstrap": "^4.3.1",
     "classnames": "^2.2.6",
     "core-js": "^3.1.4",
     "es6-promise": "^4.2.8",
