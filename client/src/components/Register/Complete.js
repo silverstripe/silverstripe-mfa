@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Title from './Title';
+import Check from 'components/Icons/Check';
 
 /**
  * This component provides a registration confirmation screen to be shown once a member has
@@ -8,7 +9,9 @@ import Title from './Title';
  */
 const Complete = ({ onComplete, showTitle, message }) => (
   <div className="mfa-register-confirmation">
-    <i className="font-icon-check-mark mfa-register-confirmation__icon" />
+    <p className="mfa-register-confirmation__icon">
+      <Check size={'8rem'} />
+    </p>
     { showTitle && <Title className="mfa-register-confirmation__title" /> }
     <p className="mfa-register-confirmation__description">
       {message || window.ss.i18n._t(
