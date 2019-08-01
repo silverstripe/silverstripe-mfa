@@ -231,7 +231,7 @@ class Verify extends Component {
     return (
       <a
         href="#"
-        className={classnames('btn btn-secondary', extraClass)}
+        className={classnames('btn btn-secondary mfa-action-list__item', extraClass)}
         onClick={this.handleShowOtherMethodsPane}
       >
         {i18n._t('MFAVerify.MORE_OPTIONS', 'More options')}
