@@ -10,7 +10,7 @@ re-enter your password to access them.
 
 <img src="../_images/01-05-1-sudo-mode.png" width="1024" />
 
-### Adding additional methods
+## Adding additional methods
 
 1. Go to your profile page, and find the Multi-factor authentication settings
    area. If you are prompted for your password, enter it.
@@ -21,7 +21,7 @@ re-enter your password to access them.
 
 <img src="../_images/01-05-2-add-method.png" width="1024" />
 
-### Removing, resetting and changing default MFA methods
+## Removing, resetting and changing default MFA methods
 
 1. Go to your profile page, and find the Multi-factor authentication settings
    area. If you are prompted for your password, enter it.
@@ -36,7 +36,7 @@ re-enter your password to access them.
 
 <img src="../_images/01-05-3-modify-method.png" width="1024" />
 
-### Resetting recovery codes
+## Resetting recovery codes
 
 1. Go to your profile page, and find the Multi-factor authentication settings
    area. If you are prompted for your password, enter it.

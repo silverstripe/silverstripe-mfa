@@ -2,7 +2,7 @@ title: Multi-factor Authentication (MFA)
 
 # Multi-factor Authentication (MFA)
 
-### What is Multi-factor authentication?
+## What is Multi-factor authentication?
 
 Multi-factor authentication (MFA), often referred to as Two-factor
 authentication (2FA), is an extra layer of security designed to be used
@@ -18,13 +18,13 @@ like your phone or a USB device. Some services can also verify something you are
 
 Two popular verification methods are supported by SilverStripe MFA:
 
-#### Authenticator apps (TOTP)
+### Authenticator apps (TOTP)
 
 An authenticator app is installed on your phone which generates temporary
 single-use passcodes needed for MFA verification. Each code is usable for only a
 short period of time before a new one is automatically generated.
 
-#### Security keys (WebAuthn)
+### Security keys (WebAuthn)
 
 A security key is a physical device, such as a USB key, that is activated during
 MFA verification. This may involve plugging the device into your computer or

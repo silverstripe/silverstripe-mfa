@@ -3,7 +3,7 @@ summary: Steps to recover your account if your primary MFA method is unavailable
 
 # Regaining access when locked out
 
-### Using backup codes
+## Using backup codes
 
 If your phone or security key is lost / damaged, you can use one of the backup
 codes that were generated during the MFA setup process to log in.
@@ -27,7 +27,7 @@ and remove or reset it before logging out. If you are running out of backup
 codes, generate a new set to make sure you don't lose access to your account.
 </div>
 
-### Resetting your account
+## Resetting your account
 
 If your backup codes are also unavailable, you can contact your site
 administrator to have them send you an Account Reset email, which will enable

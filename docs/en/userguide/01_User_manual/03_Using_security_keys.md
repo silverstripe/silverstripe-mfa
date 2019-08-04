@@ -3,7 +3,7 @@ summary: How to set up and use a security key
 
 # Using security keys
 
-### Requirements
+## Requirements
 
 Before you can setup MFA on your account you’ll need a compatible security key
 that supports the WebAuthn standard. Some examples:
@@ -21,7 +21,7 @@ You must also log in via **HTTPS**. If there is no padlock in the address bar
 of your browser, try changing `http://` to `https://` at the beginning of the
 address.
 
-### Setting up with a security key
+## Setting up with a security key
 
 Enter the MFA setup process. Pick **Security key** from the Select Method
 screen, and press Next.
@@ -45,7 +45,7 @@ finish registering the key with your account.
 If you see an error during this process, try reinserting your security key and
 pressing Retry.
 
-### Logging in using a security key
+## Logging in using a security key
 
 Login to your SilverStripe CMS account with your email and password. You’ll then
 be prompted to activate your security key.

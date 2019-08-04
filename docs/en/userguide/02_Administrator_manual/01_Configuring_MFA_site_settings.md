@@ -10,14 +10,14 @@ and select the **Access** tab.
 
 Here, you can select one of two modes of operation for MFA on your site:
 
-### MFA is optional for everyone (default)
+## MFA is optional for everyone (default)
 
 This is the default setting when MFA is installed. Everyone will be prompted to
 set up multi-factor authentication upon their first login, but they can skip the
 setup process and continue to log in as they did before. They will be able to
 set up MFA later via their Profile page in the CMS.
 
-### MFA is required for everyone
+## MFA is required for everyone
 
 Everyone without MFA setup will be prompted with a message requiring them to
 setup MFA when they attempt to log in. If they choose not to proceed with setup,
