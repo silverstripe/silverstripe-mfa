@@ -1,6 +1,6 @@
 title: Multi-factor Authentication (MFA)
 
-# Multi-factor Authentication (MFA)
+# Multi-Factor Authentication (MFA)
 
 ## What is Multi-factor authentication?
 
@@ -36,7 +36,7 @@ in using a supported browser (Chrome 70+, Firefox 60+ or Edge 18+) over HTTPS.
 **Recovery codes**
 
 Recovery codes are a backup verification method. In the event that you lose
-access to your primary verification method, a recovery code can be used to
+access to your other verification methods, a recovery code can be used to
 regain access to your account. A set of codes will be provided to you when you
 first set up an MFA verification method on your account. You can only use each
 of these codes once, and they should be stored somewhere safe.

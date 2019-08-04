@@ -5,7 +5,7 @@ summary: Steps to recover your account if your primary MFA method is unavailable
 
 ## Using backup codes
 
-If your phone or security key is lost / damaged, you can use one of the backup
+If your phone or security key is lost/damaged, you can use one of the backup
 codes that were generated during the MFA setup process to log in.
 
 Login to your SilverStripe CMS account with your email and password. When

@@ -45,7 +45,7 @@ of recovery codes.
 
 If you lose access to your phone or security key you can use one of your
 recovery codes to login and reset your MFA. Each recovery code can be used once
-and are shown to you the first time you setup MFA. Please ensure you back them
+and are shown to you the first time you set up MFA. Please ensure you back them
 up somewhere safe, as they will not be shown again after setup.
 
 <img src="../_images/01-01-3-mfa-backup-codes.png" width="1024" />

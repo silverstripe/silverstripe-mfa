@@ -3,9 +3,9 @@ summary: Steps for adding, removing and resetting MFA methods
 
 # Managing your MFA settings
 
-You can add, reset or remove MFA methods in your CMS Profile, which can be
+You can add, reset, or remove MFA methods in your CMS Profile, which can be
 visited by clicking on your name in the top left area of the CMS interface. The
-MFA settings are protected by **Sudo Mode**, which means you may need to
+MFA settings are protected by "sudo mode", which means you may need to
 re-enter your password to access them.
 
 <img src="../_images/01-05-1-sudo-mode.png" width="1024" />
@@ -30,7 +30,7 @@ re-enter your password to access them.
    - **Remove:** This will delete the method. This action is only available if
      you have multiple methods registered, or if MFA is optional for your site.
    - **Reset:** Takes you through the setup process for the method, replacing
-     the existing method. Useful if you lose access to your old key / device.
+     the existing method. Useful if you lose access to your old key/device.
    - **Set as default method:** Only visible if you have multiple methods, this
      will toggle which method is displayed first during login.
 

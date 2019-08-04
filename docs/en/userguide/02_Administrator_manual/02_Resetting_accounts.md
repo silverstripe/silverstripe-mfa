@@ -18,4 +18,4 @@ their accounts by sending them an Account Reset request via the CMS.
 <img src="../_images/02-02-2-account-reset-confirmation.png" width="1024" />
 
 The account holder will receive an account reset link via email, which will
-enable them to reset their password and MFA.
+enable them to reset their password and MFA settings.

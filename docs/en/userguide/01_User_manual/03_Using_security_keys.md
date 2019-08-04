@@ -43,7 +43,7 @@ finish registering the key with your account.
 <img src="../_images/01-03-4-security-key-verified.png" width="1024" />
 
 If you see an error during this process, try reinserting your security key and
-pressing Retry.
+pressing **Retry**.
 
 ## Logging in using a security key
 

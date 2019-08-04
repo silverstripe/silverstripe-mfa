@@ -5,7 +5,7 @@ summary: How to acquire and configure an Authenticator app for your phone
 
 ## Installing an authenticator app
 
-Before you can setup MFA on your account you’ll need to install an authenticator
+Before you can setup MFA on your account you'll need to install an authenticator
 app on your phone which supports Time-based One-Time Passwords (TOTP), such as:
 
 - [Authy](https://authy.com/download/)
