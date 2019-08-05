@@ -12,8 +12,8 @@ from accessing your account, even if they know your username/email and password.
 
 Unlike your username/email and password, which is something only you know, MFA
 verification asks you to provide something only you have - a physical device,
-like your phone or a USB device. Some services can also verify something you are
-- for example your fingerprint or face. For more information, see
+like your phone or a USB device. Some services can also verify something you
+are - for example your fingerprint or face. For more information, see
 [the CERT NZ guide](https://www.cert.govt.nz/individuals/guides/getting-started-with-cyber-security/two-factor-authentication/).
 
 Two popular verification methods are supported by SilverStripe MFA:
@@ -29,8 +29,9 @@ short period of time before a new one is automatically generated.
 A security key is a physical device, such as a USB key, that is activated during
 MFA verification. This may involve plugging the device into your computer or
 bringing the key in range of a compatible device supporting wireless
-communications (NFC). To use a Security key with SilverStripe MFA, you must log
-in using a supported browser (Chrome 70+, Firefox 60+ or Edge 18+) over HTTPS.
+communications (NFC). To use a security key with SilverStripe MFA, you must log
+in using a supported browser over HTTPS
+(see [Using security keys](user_manual/using_security_keys) for details).
 
 <div class="hint" markdown="1">
 **Recovery codes**

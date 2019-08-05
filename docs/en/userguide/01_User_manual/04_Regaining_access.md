@@ -30,6 +30,6 @@ codes, generate a new set to make sure you don't lose access to your account.
 ## Resetting your account
 
 If your backup codes are also unavailable, you can contact your site
-administrator to have them send you an Account Reset email, which will enable
-you to reset both your password and MFA methods. See
-[Resetting Accounts](../02_Administrator_manual/02_Resetting_accounts.md).
+administrator to have them send you an email to reset your account. This will
+enable you to reset both your password and MFA methods. See
+[Resetting Accounts](../administrator_manual/resetting_accounts).

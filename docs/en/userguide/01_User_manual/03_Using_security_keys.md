@@ -8,7 +8,9 @@ summary: How to set up and use a security key
 Before you can setup MFA on your account you’ll need a compatible security key
 that supports the WebAuthn standard. Some examples:
 
-- Yubico Yubikey 5 NFC
+- Yubico Yubikey 5 series
+- Yubico Yubikey 4 series
+- Google Titan Key
 
 You must use a browser that supports the WebAuthn standard:
 
@@ -24,7 +26,7 @@ address.
 ## Setting up with a security key
 
 Enter the MFA setup process. Pick **Security key** from the Select Method
-screen, and press Next.
+screen, and press **Next**.
 
 <img src="../_images/01-03-1-security-key-selected.png" width="1024" />
 

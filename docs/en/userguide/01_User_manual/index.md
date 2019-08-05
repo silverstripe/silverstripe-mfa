@@ -1,7 +1,7 @@
-title: MFA - User Guide
+title: User manual
 
-# MFA - User Guide
+# User manual
 
-This section includes guidance for setting up and managing MFA for your account.
+This section provides guidance for setting up and managing MFA for your account.
 
 [CHILDREN]

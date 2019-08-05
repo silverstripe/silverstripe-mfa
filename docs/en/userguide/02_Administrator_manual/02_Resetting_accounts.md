@@ -4,7 +4,7 @@ summary: How to reset a user's account if they lose access to it
 # Resetting accounts
 
 As an administrator, you can assist other users that have been locked out of
-their accounts by sending them an Account Reset request via the CMS.
+their accounts by sending them an email to reset their account via the CMS.
 
 <img src="../_images/02-02-1-account-reset.png" width="1024" />
 

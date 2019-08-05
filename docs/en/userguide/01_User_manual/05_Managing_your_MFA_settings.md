@@ -16,8 +16,8 @@ re-enter your password to access them.
    area. If you are prompted for your password, enter it.
 2. Press **Add another MFA method**. If prompted, pick which method to set up.
 3. Follow the relevant guide for setting up the method:
-   - [Authenticator app](02_Using_authenticator_apps.md)
-   - [Security key](03_Using_security_keys.md)
+   - [Authenticator app](using_authenticator_apps)
+   - [Security key](using_security_keys)
 
 <img src="../_images/01-05-2-add-method.png" width="1024" />
 

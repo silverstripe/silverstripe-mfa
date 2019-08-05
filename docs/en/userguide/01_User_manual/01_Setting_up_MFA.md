@@ -23,8 +23,8 @@ The number of available methods will vary depending on what has been installed,
 what has been configured, and what your browser supports. In most cases, one or
 both of the following verification methods will be available:
 
-- Authenticator apps ([Guide](02_Using_authenticator_apps.md))
-- Security keys ([Guide](03_Using_security_keys.md))
+- Authenticator apps ([Guide](using_authenticator_apps))
+- Security keys ([Guide](using_security_keys))
 
 <img src="../_images/01-01-2-mfa-select-method.png" width="1024" />
 
@@ -41,11 +41,12 @@ you lose access to your default method.
 ## 3. Backup your recovery codes
 
 Once you've set up an MFA verification method, you will be presented with a set
-of recovery codes.
+of recovery codes. You can copy, download or print these codes using the actions
+shown beneath them.
 
 If you lose access to your phone or security key you can use one of your
 recovery codes to login and reset your MFA. Each recovery code can be used once
-and are shown to you the first time you set up MFA. Please ensure you back them
-up somewhere safe, as they will not be shown again after setup.
+and are shown to you the first time you set up MFA. Please ensure you store them
+somewhere safe, as this is the only time they will be displayed.
 
 <img src="../_images/01-01-3-mfa-backup-codes.png" width="1024" />
