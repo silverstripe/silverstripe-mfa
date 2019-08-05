@@ -21,7 +21,7 @@ screen, and press Next.
 
 Open your authentication app on your phone, and either:
 
-- Scan the displayed barcode with the app.
+- Scan the displayed barcode with the app, or
 - Manually enter the displayed secret key into the app.
 
 ![A screenshot of the barcode and secret key shown in the Authenticator app setup flow](../_images/01-02-2-totp-scan.png)
