@@ -1,4 +1,4 @@
-SilverStripe\MFA\Model\RegisteredMethod:
+MFARegisteredMethod:
   mfa0:
     MethodClassName: SilverStripe\MFA\BackupCode\Method
   mfa1:
@@ -14,7 +14,7 @@ SilverStripe\MFA\Model\RegisteredMethod:
   mfa6:
     MethodClassName: SilverStripe\MFA\Tests\Stub\Null\Method
 
-SilverStripe\Security\Member:
+Member:
   # SapphireTest will inject "ADMIN User admin@example.org" at setUp - v4.4.1 line 307 (31 July 2019)
   # So although there are only 4 Members defined here, there will be 5 at test runtime.
   admin:
@@ -22,26 +22,26 @@ SilverStripe\Security\Member:
     Surname: "D'Min"
     Email: admin@example.com
     RegisteredMFAMethods:
-      - =>SilverStripe\MFA\Model\RegisteredMethod.mfa5
-      - =>SilverStripe\MFA\Model\RegisteredMethod.mfa6
+      - =>MFARegisteredMethod.mfa5
+      - =>MFARegisteredMethod.mfa6
   priviliged:
     FirstName: Eleanor
     Surname: "Ditor"
     Email: editor@example.com
     RegisteredMFAMethods:
-      - =>SilverStripe\MFA\Model\RegisteredMethod.mfa3
-      - =>SilverStripe\MFA\Model\RegisteredMethod.mfa4
-    DefaultRegisteredMethodID: =>SilverStripe\MFA\Model\RegisteredMethod.mfa3
+      - =>MFARegisteredMethod.mfa3
+      - =>MFARegisteredMethod.mfa4
+    DefaultRegisteredMethodID: =>MFARegisteredMethod.mfa3
     HasSkippedMFARegistration: true
   mfa:
     FirstName: Michelle
     Surname: Fa
     Email: mfa@example.com
     RegisteredMFAMethods:
-      - =>SilverStripe\MFA\Model\RegisteredMethod.mfa0
-      - =>SilverStripe\MFA\Model\RegisteredMethod.mfa1
-      - =>SilverStripe\MFA\Model\RegisteredMethod.mfa2
-    DefaultRegisteredMethodID: =>SilverStripe\MFA\Model\RegisteredMethod.mfa1
+      - =>MFARegisteredMethod.mfa0
+      - =>MFARegisteredMethod.mfa1
+      - =>MFARegisteredMethod.mfa2
+    DefaultRegisteredMethodID: =>MFARegisteredMethod.mfa1
   user:
     FirstName: Ursula
     Surname: Ser

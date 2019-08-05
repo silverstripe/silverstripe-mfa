@@ -2,26 +2,26 @@
 
 namespace SilverStripe\MFA\Report;
 
-use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Forms\DropdownField;
-use SilverStripe\Forms\FieldList;
-use SilverStripe\Forms\NumericField;
-use SilverStripe\Forms\TextField;
+use ArrayData;
+use ArrayList;
+use CheckboxField;
+use DropdownField;
+use FieldList;
+use Member;
+use NumericField;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Service\MethodRegistry;
-use SilverStripe\ORM\ArrayList;
-use SilverStripe\ORM\Filterable;
-use SilverStripe\ORM\SS_List;
-use SilverStripe\Reports\Report;
-use SilverStripe\Security\Member;
-use SilverStripe\View\ArrayData;
+use SS_Filterable;
+use SS_List;
+use SS_Report;
+use TextField;
 
-if (!class_exists(Report::class)) {
+if (!class_exists(SS_Report::class)) {
     return;
 }
 
-class EnabledMembers extends Report
+class EnabledMembers extends SS_Report
 {
     protected $title = 'Multi-factor authentication status of members';
 
@@ -87,7 +87,7 @@ class EnabledMembers extends Report
                 return $methods[$methodClass];
             }, $registeredMethods);
 
-            $memberReportData = ArrayData::create();
+            $memberReportData = ArrayData::create([]);
             foreach ($member->summaryFields() as $field => $name) {
                 $memberReportData->$field = $member->$field;
             }
@@ -143,7 +143,7 @@ class EnabledMembers extends Report
             NumericField::create(
                 'Count',
                 _t(__CLASS__ . '.COLUMN_METHOD_COUNT', 'Number of registered methods')
-            )->setHTML5(true),
+            ),
             DropdownField::create(
                 'Methods',
                 _t(__CLASS__ . '.COLUMN_METHODS_REGISTERED', 'Registered methods'),
@@ -185,15 +185,14 @@ class EnabledMembers extends Report
     /**
      * Applies parameters to source records for filtering purposes.
      *
-     * @param Filterable $params
+     * @param SS_Filterable $params
      * @param array $params
      * @return SS_List
      */
-    protected function applyParams(Filterable $sourceList, array $params): SS_List
+    protected function applyParams(SS_Filterable $sourceList, array $params): SS_List
     {
         $map = [
             'Member' => ['FirstName:PartialMatch', 'Surname:PartialMatch', 'Email:PartialMatch'],
-            'Count' => 'RegisteredMFAMethods.Count()',
             'Methods' => 'RegisteredMFAMethods.MethodClassName',
             'Skipped' => 'HasSkippedMFARegistration',
         ];
