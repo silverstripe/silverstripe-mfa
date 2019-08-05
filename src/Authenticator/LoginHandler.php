@@ -85,9 +85,11 @@ class LoginHandler extends BaseLoginHandler
         $member = $this->checkLogin($data, $request, $result);
         $enforcementManager = EnforcementManager::singleton();
 
-        // If there's no member it's an invalid login. We'll delegate this to the parent
-        // Additionally if there are no MFA methods registered then we will also delegate
-        if (!$member || !$this->getMethodRegistry()->hasMethods()) {
+        // If:
+        //  - there's no member it's an invalid login, or
+        //  - the enforcement manager determines that MFA should not be shown
+        // then we can delegate to the parent as this will just be the normal login flow (without MFA)
+        if (!$member || !$enforcementManager->shouldRedirectToMFA($member)) {
             return parent::doLogin($data, $form, $request);
         }
 
@@ -112,12 +114,13 @@ class LoginHandler extends BaseLoginHandler
         $request->getSession()->clear(static::SESSION_KEY . '.mustLogin');
         if ($member->RegisteredMFAMethods()->count() > 0) {
             $request->getSession()->set(static::SESSION_KEY . '.mustLogin', true);
-        }
-
-        // Bypass the MFA UI if the user can and has skipped it or MFA is not enabled
-        if (!$enforcementManager->shouldRedirectToMFA($member)) {
-            $this->doPerformLogin($request, $member);
-            return $this->redirectAfterSuccessfulLogin();
+        } else {
+            // When there are no methods then the user will be promted to register. We re-generate the session ID to
+            // prevent session fixation on the MFA setup
+            // NB: There's no SilverStripe API for this
+            if (!headers_sent()) {
+                @session_regenerate_id(true);
+            }
         }
 
         // Redirect to the MFA step
