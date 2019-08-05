@@ -21,3 +21,10 @@
     margin-bottom: 10px;
   }
 }
+
+// Tablet only
+@media (max-width: $viewport-medium) {
+  .mfa-verify-backup-codes__image {
+    display: none;
+  }
+}

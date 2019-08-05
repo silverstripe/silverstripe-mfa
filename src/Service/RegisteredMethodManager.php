@@ -138,6 +138,7 @@ class RegisteredMethodManager extends SS_Object
      * @param Member&MemberExtension $member
      * @param MethodInterface $method
      * @return bool Returns false if the given method is not registered for the member
+     * @throws ValidationException
      */
     public function deleteFromMember(Member $member, MethodInterface $method): bool
     {

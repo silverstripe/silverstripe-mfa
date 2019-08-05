@@ -2,10 +2,16 @@
   &__container {
     display: grid;
     grid-template-columns: 50% 50%;
+
+    // Tablet only
+    @media (max-width: $viewport-medium) {
+      // Don't show the second column (containing an image)
+      grid-template-columns: 100%;
+    }
   }
 
   &__content {
-    padding-top: $header-spacing;
+    padding: $header-spacing 0;
   }
 
   &__input-container {

@@ -18,7 +18,7 @@ class Method implements MethodInterface, TestOnly
      */
     public function getName(): string
     {
-        // TODO: Implement getName() method.
+        return 'Null';
     }
 
     /**

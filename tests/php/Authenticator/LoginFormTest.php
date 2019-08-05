@@ -274,7 +274,6 @@ class LoginFormTest extends FunctionalTest
         $this->autoFollowRedirection = false;
         $response = $this->get(Security::singleton()->Link('LoginForm/mfa/skip'));
 
-        $this->assertEquals(302, $response->getStatusCode());
         // Assert a redirect is given
         $this->assertSame(302, $response->getStatusCode());
 

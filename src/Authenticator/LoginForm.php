@@ -70,13 +70,12 @@ class LoginForm extends MemberLoginForm
         $member = call_user_func_array(array($this->authenticator_class, 'authenticate'), array($data, $this));
         $enforcementManager = EnforcementManager::singleton();
 
-        // If there's no member it's an invalid login. We'll delegate this to the parent
-        // Additionally if there are no MFA methods registered then we will also delegate
-        if (!$member
-            || !$this->getMethodRegistry()->hasMethods()
-            || !$enforcementManager->shouldRedirectToMFA($member)
-        ) {
-            return parent::dologin($data);
+        // If:
+        //  - there's no member it's an invalid login, or
+        //  - the enforcement manager determines that MFA should not be shown
+        // then we can delegate to the parent as this will just be the normal login flow (without MFA)
+        if (!$member || !$enforcementManager->shouldRedirectToMFA($member)) {
+            return parent::doLogin($data);
         }
 
         // Enable sudo mode. This would usually be done by the default login handler's afterLogin() hook.
@@ -84,6 +83,11 @@ class LoginForm extends MemberLoginForm
 
         // Create a store for handling MFA for this member
         $store = $this->createStore($member);
+        // We don't need to store the user's password
+        unset($this->request['Password']);
+        // User code may adjust the request properties further if they have their own sensitive data which
+        // should be excluded from the store.
+        $this->extend('onBeforeSaveRequestToStore', $this->request, $store);
         $store->save($this->request);
 
         // Store the BackURL for use after the process is complete
@@ -95,6 +99,13 @@ class LoginForm extends MemberLoginForm
         Session::clear(static::SESSION_KEY . '.mustLogin');
         if ($member->RegisteredMFAMethods()->count() > 0) {
             Session::set(static::SESSION_KEY . '.mustLogin', true);
+        } else {
+            // When there are no methods then the user will be promted to register. We re-generate the session ID to
+            // prevent session fixation on the MFA setup
+            // NB: There's no SilverStripe API for this
+            if (!headers_sent()) {
+                @session_regenerate_id(true);
+            }
         }
 
         // Ensure session attributes are actually saved
@@ -425,6 +436,10 @@ class LoginForm extends MemberLoginForm
                 _t(__CLASS__ . '.INVALID_REGISTRATION', 'You must complete MFA registration')
             );
         }
+
+        // Redirecting after successful login expects a getVar to be set, store it before clearing the session data
+        /** @see HTTPRequest::offsetSet */
+        $request['BackURL'] = $this->getBackURL();
 
         // Clear the "additional data"
         $data = Session::get(static::SESSION_KEY . '.additionalData');

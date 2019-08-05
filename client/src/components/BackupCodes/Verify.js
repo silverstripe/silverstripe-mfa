@@ -117,7 +117,7 @@ class Verify extends Component {
     const { error } = this.props;
     const { ss: { i18n } } = window;
     const label = i18n._t('MFABackupCodesVerify.LABEL', 'Enter recovery code');
-    const formGroupClasses = classnames('mfa-verify-backup-codes__input-container form-group', {
+    const formGroupClasses = classnames('mfa-verify-backup-codes__input-container', {
       'has-error': !!error,
     });
 
