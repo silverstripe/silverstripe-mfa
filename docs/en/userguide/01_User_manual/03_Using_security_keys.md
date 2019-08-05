@@ -28,21 +28,21 @@ address.
 Enter the MFA setup process. Pick **Security key** from the Select Method
 screen, and press **Next**.
 
-<img src="../_images/01-03-1-security-key-selected.png" width="1024" />
+![A screenshot of a user selecting the Security key option in the Select Method step of the MFA setup flow](../_images/01-03-1-security-key-selected.png)
 
 Insert your security key into a USB port and press **Register key**.
 
-<img src="../_images/01-03-2-security-key-setup.png" width="1024" />
+![A screenshot of a user being prompted to insert their security key in the Security key setup flow](../_images/01-03-2-security-key-setup.png)
 
 Then, activate your security key. This is generally done by tapping the gold
 area or button in the centre of the key.
 
-<img src="../_images/01-03-3-security-key-progress.png" width="1024" />
+![A screenshot of the Security key setup flow waiting for the security key to be activated](../_images/01-03-3-security-key-progress.png)
 
 Once you see the message _Key verified_, press **Complete registration** to
 finish registering the key with your account.
 
-<img src="../_images/01-03-4-security-key-verified.png" width="1024" />
+![A screenshot of a successful security key verification in the Security key setup flow](../_images/01-03-4-security-key-verified.png)
 
 If you see an error during this process, try reinserting your security key and
 pressing **Retry**.
@@ -52,7 +52,7 @@ pressing **Retry**.
 Login to your SilverStripe CMS account with your email and password. You’ll then
 be prompted to activate your security key.
 
-<img src="../_images/01-03-5-security-key-login.png" width="1024" />
+![A screenshot of a user being prompted to activate their security key during login](../_images/01-03-5-security-key-login.png)
 
 Insert your security key into a USB port on your computer and activate it. Once
 the key is verified, you will be automatically directed to the CMS.
@@ -60,4 +60,4 @@ the key is verified, you will be automatically directed to the CMS.
 If you see an 'unavailable' message like the one below, make sure you are using
 a supported browser and that you are connecting to the site over HTTPS.
 
-<img src="../_images/01-03-6-security-key-unavailable.png" width="1024" />
+![A screenshot of a 'method unavailable' error message when a user attempts to log in over the insecure HTTP protocol](../_images/01-03-6-security-key-unavailable.png)

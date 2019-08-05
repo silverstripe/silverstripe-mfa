@@ -8,7 +8,7 @@ summary: Running initial configuration of an MFA method for your account
 When MFA is installed on your site, the first time you log in you will be
 prompted to set it up for your account.
 
-<img src="../_images/01-01-1-mfa-setup-intro.png" width="1024" />
+![A screenshot of the introduction step in the MFA setup flow](../_images/01-01-1-mfa-setup-intro.png)
 
 If MFA is optional, you can choose to skip setup, and you won’t be prompted
 again. You can manually add MFA from your profile in the CMS at a later time.
@@ -26,7 +26,7 @@ both of the following verification methods will be available:
 - Authenticator apps ([Guide](using_authenticator_apps))
 - Security keys ([Guide](using_security_keys))
 
-<img src="../_images/01-01-2-mfa-select-method.png" width="1024" />
+![A screenshot of the Select Method step in the MFA setup flow](../_images/01-01-2-mfa-select-method.png)
 
 You can have more than one MFA method configured on your account. The first MFA
 verification you set up will become your default method. This method displays
@@ -49,4 +49,4 @@ recovery codes to login and reset your MFA. Each recovery code can be used once
 and are shown to you the first time you set up MFA. Please ensure you store them
 somewhere safe, as this is the only time they will be displayed.
 
-<img src="../_images/01-01-3-mfa-backup-codes.png" width="1024" />
+![A screenshot of the Backup Codes step in the MFA setup flow](../_images/01-01-3-mfa-backup-codes.png)

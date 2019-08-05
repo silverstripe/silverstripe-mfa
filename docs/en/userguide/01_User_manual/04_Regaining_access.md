@@ -12,14 +12,14 @@ Login to your SilverStripe CMS account with your email and password. When
 prompted for your primary MFA method, press **Other options** and select
 **Verify with backup code**.
 
-<img src="../_images/01-04-1-login-prompt.png" width="1024" />
+![A screenshot of a user being prompted for a verification code during login, with the 'other options' button highlighted](../_images/01-04-1-login-prompt.png)
 
-<img src="../_images/01-04-2-other-options.png" width="1024" />
+![A screenshot of the 'other options' dialog during login, with the 'Verify with backup code' option highlighted](../_images/01-04-2-other-options.png)
 
 Enter a backup code, and press **Verify**. If the backup code is valid, you will
 be logged into the CMS.
 
-<img src="../_images/01-04-3-recovery-code.png" width="1024" />
+![A screenshot of a user being prompted to enter a backup code during login](../_images/01-04-3-recovery-code.png)
 
 <div class="hint" markdown="1">
 If your primary MFA method is permanently lost, make sure you visit your profile

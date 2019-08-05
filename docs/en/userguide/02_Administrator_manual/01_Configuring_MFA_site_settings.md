@@ -6,7 +6,7 @@ summary: Switching between optional or required modes for MFA
 To modify your site's MFA configuration, navigate to the **Settings** section,
 and select the **Access** tab.
 
-<img src="../_images/02-01-1-mfa-settings-ui.png" width="1024" />
+![A screenshot of the site-wide MFA settings UI with the section (Settings) and tab (Access) highlighted](../_images/02-01-1-mfa-settings-ui.png)
 
 Here, you can select one of two modes of operation for MFA on your site:
 
@@ -33,5 +33,5 @@ As an administrator, you can set the date for when MFA will be become mandatory.
 MFA will be optional before this date, however users without MFA configured will
 be prompted with the option to set it up on every login, until MFA is set up.
 
-<img src="../_images/02-01-2-grace-period.png" width="1024" />
+![A screenshot of the site-wide MFA settings UI with the 'MFA is required for everyone' option selected and a date entered in the 'MFA will be required from' field](../_images/02-01-2-grace-period.png)
 </div>

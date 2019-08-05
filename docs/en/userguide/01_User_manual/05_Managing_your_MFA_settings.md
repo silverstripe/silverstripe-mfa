@@ -8,7 +8,7 @@ visited by clicking on your name in the top left area of the CMS interface. The
 MFA settings are protected by "sudo mode", which means you may need to
 re-enter your password to access them.
 
-<img src="../_images/01-05-1-sudo-mode.png" width="1024" />
+![A screenshot of a user being prompted to enter their password before modifying their MFA settings in the CMS](../_images/01-05-1-sudo-mode.png)
 
 ## Adding additional methods
 
@@ -19,7 +19,7 @@ re-enter your password to access them.
    - [Authenticator app](using_authenticator_apps)
    - [Security key](using_security_keys)
 
-<img src="../_images/01-05-2-add-method.png" width="1024" />
+![A screenshot of the MFA settings field on a user's CMS profile, with the 'Add another MFA method' highlighted](../_images/01-05-2-add-method.png)
 
 ## Removing, resetting and changing default MFA methods
 
@@ -34,7 +34,7 @@ re-enter your password to access them.
    - **Set as default method:** Only visible if you have multiple methods, this
      will toggle which method is displayed first during login.
 
-<img src="../_images/01-05-3-modify-method.png" width="1024" />
+![A screenshot of the MFA settings field on a user's CMS profile, with the actions related to a registered method highlighted](../_images/01-05-3-modify-method.png)
 
 ## Resetting recovery codes
 
@@ -44,4 +44,4 @@ re-enter your password to access them.
 3. You will be presented with a new set of backup codes, which you should store
    in a safe place.
 
-<img src="../_images/01-05-4-reset-recovery-codes.png" width="1024" />
+![A screenshot of the dialog presented when a user presses the 'Reset' action on their CMS profile](../_images/01-05-4-reset-recovery-codes.png)
