@@ -57,7 +57,7 @@ class LoginForm extends MemberLoginForm
      * @config
      * @var string
      */
-    private static $user_help_link = '';
+    private static $user_help_link = 'https://userhelp.silverstripe.org/en/4/optional_features/multi-factor_authentication/'; // phpcs-disable-line
 
     /**
      * Override the parent "doLogin" to insert extra steps into the flow

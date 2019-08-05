@@ -19,12 +19,11 @@ class RegisterHandler extends SS_Object implements RegisterHandlerInterface
 {
     /**
      * Provide a user help link that will be available when registering backup codes
-     * TODO Will this have a user help link as a default?
      *
      * @config
      * @var string
      */
-    private static $user_help_link;
+    private static $user_help_link = 'https://userhelp.silverstripe.org/en/4/optional_features/multi-factor_authentication/user_manual/regaining_access/'; // phpcs-disable-line
 
     /**
      * Stores any data required to handle a registration process with a method, and returns relevant state to be applied
