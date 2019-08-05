@@ -1,0 +1,49 @@
+SilverStripe\MFA\Model\RegisteredMethod:
+  mfa0:
+    MethodClassName: SilverStripe\MFA\BackupCode\Method
+  mfa1:
+    MethodClassName: SilverStripe\MFA\Tests\Stub\BasicMath\Method
+  mfa2:
+    MethodClassName: SilverStripe\MFA\Tests\Stub\Null\Method
+  mfa3:
+    MethodClassName: SilverStripe\MFA\BackupCode\Method
+  mfa4:
+    MethodClassName: SilverStripe\MFA\Tests\Stub\BasicMath\Method
+  mfa5:
+    MethodClassName: SilverStripe\MFA\BackupCode\Method
+  mfa6:
+    MethodClassName: SilverStripe\MFA\Tests\Stub\Null\Method
+
+SilverStripe\Security\Member:
+  # SapphireTest will inject "ADMIN User admin@example.org" at setUp - v4.4.1 line 307 (31 July 2019)
+  # So although there are only 4 Members defined here, there will be 5 at test runtime.
+  admin:
+    FirstName: Angela
+    Surname: "D'Min"
+    Email: admin@example.com
+    RegisteredMFAMethods:
+      - =>SilverStripe\MFA\Model\RegisteredMethod.mfa5
+      - =>SilverStripe\MFA\Model\RegisteredMethod.mfa6
+  priviliged:
+    FirstName: Eleanor
+    Surname: "Ditor"
+    Email: editor@example.com
+    RegisteredMFAMethods:
+      - =>SilverStripe\MFA\Model\RegisteredMethod.mfa3
+      - =>SilverStripe\MFA\Model\RegisteredMethod.mfa4
+    DefaultRegisteredMethodID: =>SilverStripe\MFA\Model\RegisteredMethod.mfa3
+    HasSkippedMFARegistration: true
+  mfa:
+    FirstName: Michelle
+    Surname: Fa
+    Email: mfa@example.com
+    RegisteredMFAMethods:
+      - =>SilverStripe\MFA\Model\RegisteredMethod.mfa0
+      - =>SilverStripe\MFA\Model\RegisteredMethod.mfa1
+      - =>SilverStripe\MFA\Model\RegisteredMethod.mfa2
+    DefaultRegisteredMethodID: =>SilverStripe\MFA\Model\RegisteredMethod.mfa1
+  user:
+    FirstName: Ursula
+    Surname: Ser
+    Email: user@example.com
+    HasSkippedMFARegistration: true
