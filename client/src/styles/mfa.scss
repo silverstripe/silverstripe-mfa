@@ -45,8 +45,13 @@
     font-weight: normal;
   }
 
+  pre {
+    color: var(--color-text);
+  }
+
   @media (prefers-color-scheme: dark) {
-    .btn-secondary {
+    .btn-secondary,
+    .btn-link {
       color: var(--color-text);
     }
   }

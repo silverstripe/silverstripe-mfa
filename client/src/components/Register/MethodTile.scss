@@ -31,7 +31,7 @@
     // When the method is hovered or tabbed into
     &:hover,
     &:focus {
-      background: var(--tile-border-color-hover);
+      background: var(--color-tile-border-hover);
       cursor: pointer;
     }
   }
@@ -80,7 +80,7 @@
       background: var(--tile-mask-background);
       border-top-left-radius: $tile-border-radius;
       border-top-right-radius: $tile-border-radius;
-      color: $tile-mask-colour;
+      color: $color-tile-mask-text;
       left: 0;
       padding: $tile-padding/2 $tile-padding;
       position: absolute;

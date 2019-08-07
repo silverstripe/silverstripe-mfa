@@ -2,17 +2,22 @@
 $color-green: rgba(59, 162, 56, 1);
 $color-warning: rgb(246, 196, 69);
 $color-grey: rgba(206,213,225,1);
+$color-grey-border: rgba(214, 218, 224, 1);
 $color-text: rgba(84, 103, 128, 1);
-$color-text-dark: rgba(255, 255, 255, 1);
 $color-dark-text: rgba(67, 83, 109, 1);
-$color-dark-text-dark: rgba(255, 255, 255, 0.9);
 $color-blue: rgba(0,113,196,1);
 $color-loading-indicator: $color-blue;
-$color-loading-indicator-dark: $color-text-dark;
 $color-message-error: rgba(169, 30, 46, 1);
 
-$color-grey-border: rgba(84, 103, 128, 1);
-$color-grey-border-light: rgba(214, 218, 224, 1);
+
+// Dark Mode colour variants
+$dark-color-text: rgba(255, 255, 255, 1);
+$dark-color-dark-text: rgba(255, 255, 255, 0.9);
+$dark-color-grey-border: rgba(84, 103, 128, 1);
+$dark-color-loading-indicator: $dark-color-text;
+$dark-color-blue: rgb(74, 144, 226);
+$dark-color-loading-indicator: $dark-color-blue;
+$dark-color-message-error: rgb(218, 39, 59);
 
 // Sizing
 $container-width: 600px;
@@ -50,25 +55,27 @@ $loading-indicator-speed: 1.1s;
 $loading-indicator-animation: spinner-loader $loading-indicator-speed infinite linear;
 
 // Authentication method tiles
-$tile-border-color: $color-grey-border-light;
-$tile-border-color-dark: $color-grey-border-light;
-$tile-border-color-hover: lighten($tile-border-color, 9.5);
-$tile-border-color-hover-dark: darken($tile-border-color-dark, 40);
-$tile-border-color-active: rgb(0, 111, 199);
-$tile-border-color-active-dark: var(--color-green);
+$color-tile-border: $color-grey-border;
+$color-tile-border-hover: lighten($color-tile-border, 9.5);
+$color-tile-border-active: $color-blue;
+$color-tile-mask-background: #4a4a4a;
+$color-tile-mask-text: white;
+
+$dark-color-tile-border: $dark-color-grey-border;
+$dark-color-tile-border-hover: rgba(255, 255, 255, 0.1);
+$dark-color-tile-border-active: $dark-color-blue;
+$dark-color-tile-mask-background: rgba(0, 0, 0, .75);
+
 $tile-border-width: 1px;
 $tile-border-width-active: 2px;
 $tile-border-radius: .5rem;
-$tile-box-shadow: 0 0 0 $tile-border-width $tile-border-color inset;
-$tile-box-shadow-active: 0 0 0 $tile-border-width-active $tile-border-color-active inset;
-$tile-box-shadow-active-dark: 0 0 0 $tile-border-width-active $tile-border-color-active-dark inset;
+$tile-box-shadow: 0 0 0 $tile-border-width $color-tile-border inset;
+$tile-box-shadow-active: 0 0 0 $tile-border-width-active $color-tile-border-active inset;
+$dark-tile-box-shadow-active: 0 0 0 $tile-border-width-active $dark-color-tile-border-active inset;
 
 $tile-padding: 2rem;
 $tile-spacing: 16px;
 $tile-thumbnail-size: 100px;
-$tile-mask-background: #4a4a4a;
-$tile-mask-colour: white;
-$tile-mask-background-dark: rgba(#000000, .75);
 
 // Media query breakpoints
 $viewport-small: 480px;
@@ -84,23 +91,21 @@ $viewport-medium: 768px;
   --color-blue: #{$color-blue};
   --color-loading-indicator: #{$color-loading-indicator};
   --color-message-error: #{$color-message-error};
-  --color-grey-border: #{$color-grey-border};
-  --color-grey-border-light: #{$color-grey-border-light};
-  --tile-border-color: #{$tile-border-color};
-  --tile-border-color-hover: #{$tile-border-color-hover};
-  --tile-border-color-active: #{$tile-border-color-active};
+  --color-tile-border: #{$color-tile-border};
+  --color-tile-border-hover: #{$color-tile-border-hover};
+  --color-tile-border-active: #{$color-tile-border-active};
   --tile-box-shadow: #{$tile-box-shadow};
   --tile-box-shadow-active: #{$tile-box-shadow-active};
-  --tile-mask-background: #{$tile-mask-background};
+  --tile-mask-background: #{$color-tile-mask-background};
 
   @media (prefers-color-scheme: dark) {
-    --color-text: #{$color-text-dark};
-    --color-dark-text: #{$color-dark-text-dark};
-    --color-loading-indicator: #{$color-loading-indicator-dark};
-    --tile-border-color: #{$tile-border-color-dark};
-    --tile-border-color-hover: #{$tile-border-color-hover-dark};
-    --tile-border-color-active: #{$tile-border-color-active-dark};
-    --tile-box-shadow-active: #{$tile-box-shadow-active-dark};
-    --tile-mask-background: #{$tile-mask-background-dark};
+    --color-text: #{$dark-color-text};
+    --color-dark-text: #{$dark-color-dark-text};
+    --color-loading-indicator: #{$dark-color-loading-indicator};
+    --color-tile-border: #{$dark-color-tile-border};
+    --color-tile-border-hover: #{$dark-color-tile-border-hover};
+    --color-tile-border-active: #{$dark-color-tile-border-active};
+    --tile-box-shadow-active: #{$dark-tile-box-shadow-active};
+    --tile-mask-background: #{$dark-color-tile-mask-background};
   }
 }
