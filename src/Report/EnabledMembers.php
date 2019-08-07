@@ -1,21 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace SilverStripe\MFA\Report;
-
-use ArrayData;
-use ArrayList;
-use CheckboxField;
-use DropdownField;
-use FieldList;
-use Member;
-use NumericField;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Service\MethodRegistry;
-use SS_Filterable;
-use SS_List;
-use SS_Report;
-use TextField;
 
 if (!class_exists(SS_Report::class)) {
     return;
