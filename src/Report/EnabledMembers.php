@@ -127,10 +127,6 @@ class EnabledMembers extends SS_Report
                 __CLASS__ . '.FILTER_MEMBER_DESCRIPTION',
                 'Firstname, Surname, Email partial match search'
             )),
-            NumericField::create(
-                'Count',
-                _t(__CLASS__ . '.COLUMN_METHOD_COUNT', 'Number of registered methods')
-            ),
             DropdownField::create(
                 'Methods',
                 _t(__CLASS__ . '.COLUMN_METHODS_REGISTERED', 'Registered methods'),

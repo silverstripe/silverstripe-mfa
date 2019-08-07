@@ -6,7 +6,7 @@ use Config;
 use DropdownField;
 use SapphireTest;
 use SilverStripe\MFA\BackupCode\Method as BackupMethod;
-use SilverStripe\MFA\Report\EnabledMembers;
+use EnabledMembers;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method as BasicMathMethod;
 use SilverStripe\MFA\Tests\Stub\Null\Method as NullMethod;
