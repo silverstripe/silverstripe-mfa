@@ -82,6 +82,14 @@ class EnabledMembersTest extends SapphireTest
                 ['Methods' => '', 'Member' => '', 'Skipped' => ''],
                 5,
             ],
+            '"none" filter on method names' => [
+                ['Methods' => 'none'],
+                2,
+            ],
+            '"any" filter on method names' => [
+                ['Methods' => 'any'],
+                3,
+            ],
         ];
     }
 }
