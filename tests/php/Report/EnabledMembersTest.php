@@ -49,11 +49,8 @@ class EnabledMembersTest extends SapphireTest
     public function sourceRecordsParamsProvider()
     {
         return [
-            [[], 5, 'Sanity test'],
+            [[], 5],
             [['Skipped' => '1'], 2, 'Skipped setup filter works'],
-            [['Skipped' => '1', 'Count' => '0'], 1, 'Show members that have skipped and do not have a method set up'],
-            [['Count' => '2'], 1, 'Filtering by number of methods set up works'],
-            [['Count' => '2', 'Methods' => BasicMathMethod::class], 1, 'Count and Methods fitlers work together'],
             [
                 ['Member' => 'i'],
                 4,
@@ -62,17 +59,17 @@ class EnabledMembersTest extends SapphireTest
             [['Member' => '.com'], 4, 'Member search includes Email'],
             [['Methods' => BasicMathMethod::class], 2, 'Searching for a particular method works'],
             [
-                ['Methods' => BasicMathMethod::class, 'Member' => 'EDITOR', 'Count' => '1', 'Skipped' => '1'],
+                ['Methods' => BasicMathMethod::class, 'Member' => 'EDITOR', 'Skipped' => '1'],
                 1,
                 'Control test that all filters are conjunctive'
             ],
-            [['Methods' => BasicMathMethod::class, 'Member' => 'EDITOR', 'Count' => '1', 'Skipped' => '0'], 0],
-            [['Methods' => BasicMathMethod::class, 'Member' => 'EDITOR', 'Count' => '2', 'Skipped' => '1'], 0],
-            [['Methods' => BasicMathMethod::class, 'Member' => 'MFA', 'Count' => '1', 'Skipped' => '1'], 0],
-            [['Methods' => NullMethod::class, 'Member' => 'EDITOR', 'Count' => '1', 'Skipped' => '1'], 0],
-            [['Methods' => NullMethod::class, 'Member' => 'MFA', 'Count' => '2', 'Skipped' => '0'], 1],
+            [['Methods' => BasicMathMethod::class, 'Member' => 'EDITOR', 'Skipped' => '0'], 0],
+            [['Methods' => BasicMathMethod::class, 'Member' => 'EDITOR', 'Skipped' => '1'], 0],
+            [['Methods' => BasicMathMethod::class, 'Member' => 'MFA', 'Skipped' => '1'], 0],
+            [['Methods' => NullMethod::class, 'Member' => 'EDITOR', 'Skipped' => '1'], 0],
+            [['Methods' => NullMethod::class, 'Member' => 'MFA', 'Skipped' => '0'], 1],
             [
-                ['Methods' => '', 'Member' => '', 'Count' => '', 'Skipped' => ''],
+                ['Methods' => '', 'Member' => '', 'Skipped' => ''],
                 5,
                 'An empty filter input set does not destroy the result set'
             ],
