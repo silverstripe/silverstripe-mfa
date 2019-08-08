@@ -49,4 +49,4 @@ of these codes once, and they should be stored somewhere safe.
 
 ## Administrator manual
 
-[CHILDREN Folder=02_Admin_manual]
+[CHILDREN Folder=02_Administrator_manual]
