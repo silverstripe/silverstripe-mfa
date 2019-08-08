@@ -1,7 +1,6 @@
 <?php declare(strict_types=1);
 
 use SilverStripe\MFA\Extension\MemberExtension;
-use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Service\MethodRegistry;
 
 if (!class_exists(SS_Report::class)) {
@@ -17,6 +16,14 @@ class EnabledMembers extends SS_Report
 
     protected $dataClass = Member::class;
 
+    /**
+     * Cached registered methods fetched for the current list of members. This should only be populated at render time
+     * as methods will be fetched for the current "records" on the report
+     *
+     * @var DataList|null
+     */
+    private $registeredMethods = null;
+
     public function title(): string
     {
         return _t(__CLASS__ . '.TITLE', parent::title());
@@ -31,66 +38,33 @@ class EnabledMembers extends SS_Report
      * Supplies the list displayed in the report. Required method for {@see Report} to work, but is not inherited API
      *
      * @param array $params
-     * @return SS_List
+     * @return DataList
      */
-    public function sourceRecords($params): SS_List
+    public function sourceRecords($params): DataList
     {
-        $methods = $this->getMethodClassToTitleMapping();
+        $map = [
+            'Member' => ['FirstName:PartialMatch', 'Surname:PartialMatch', 'Email:PartialMatch'],
+            'Methods' => 'RegisteredMFAMethods.MethodClassName',
+            'Skipped' => 'HasSkippedMFARegistration',
+        ];
+        $this->extend('updateParameterMap', $map);
 
-        // Any GridFieldAction will submit all form inputs, regardless of whether or not they have valid values.
-        // This results in zero results when no filters have been set, as the query then filters for empty string
-        // on all parameters. `stlen` is a safe function, as all user input comes through to PHP as strings.
+        $sourceList = Member::get();
+
+        // Cull empty strings from the list of params
         $params = array_filter($params, 'strlen');
 
-        // Having a WHERE limits the results, which means the the COUNT will be off (GROUP BY applied after WHERE)
-        // So clip the count filter and apply it after the database query, only if Methods filter is also set
-        // this way we can delegate to the database where possible, which should be faster.
-        if (isset($params['Count'])) {
-            $desiredCount = (int)$params['Count'];
-            if (isset($params['Methods'])) {
-                $countFilter = $desiredCount;
-                unset($params['Count']);
-            } elseif ($desiredCount) {
-                // When querying SQL COUNT() - this will always factor in the backup method, which is excluded in the
-                // secondary query below to get the list of method names the user has registered. So to compensate we
-                // need to bump up the entered number by 1.
-                $params['Count'] = $desiredCount + 1;
+        foreach ($map as $submissionName => $searchKey) {
+            if (isset($params[$submissionName])) {
+                if (is_array($searchKey)) {
+                    $sourceList = $sourceList->filterAny(array_fill_keys($searchKey, $params[$submissionName]));
+                } else {
+                    $sourceList = $sourceList->filter($searchKey, $params[$submissionName]);
+                }
             }
         }
 
-        $filteredList = ArrayList::create([]);
-        $backupClass = $this->getBackupMethodClass();
-        /** @var Member[]&MemberExtension[] $members */
-        $members = $this->applyParams(Member::get(), $params)->toArray();
-        foreach ($members as $member) {
-            $defaultMethod = $member->getDefaultRegisteredMethod();
-            $defaultMethodClassName = $defaultMethod ? $defaultMethod->MethodClassName : '';
-
-            $registeredMethods = $member
-                ->RegisteredMFAMethods()
-                ->exclude('MethodClassName', $backupClass)
-                ->column('MethodClassName');
-            $registeredMethodNames = array_map(function (string $methodClass) use ($methods): string {
-                return $methods[$methodClass];
-            }, $registeredMethods);
-
-            $memberReportData = ArrayData::create([]);
-            foreach ($member->summaryFields() as $field => $name) {
-                $memberReportData->$field = $member->$field;
-            }
-
-            $memberReportData->methodCount = (string)count($registeredMethods);
-            $memberReportData->registeredMethods = implode(', ', $registeredMethodNames);
-            $memberReportData->defaultMethodName = $methods[$defaultMethodClassName] ?? '';
-            $memberReportData->skippedRegistration = $member->dbObject('HasSkippedMFARegistration')->Nice();
-
-            $filteredList->push($memberReportData);
-        };
-        if (isset($countFilter)) {
-            $filteredList = $filteredList->filter('methodCount', $countFilter);
-        }
-        $this->extend('updateSourceRecords', $filteredList);
-        return $filteredList;
+        return $sourceList;
     }
 
     /**
@@ -101,10 +75,22 @@ class EnabledMembers extends SS_Report
     public function columns(): array
     {
         $columns = singleton(Member::class)->summaryFields() + [
-            'methodCount' => _t(__CLASS__ . '.COLUMN_METHOD_COUNT', '№ methods'),
-            'registeredMethods' => _t(__CLASS__ . '.COLUMN_METHODS_REGISTERED', 'Method names'),
-            'defaultMethodName' => _t(__CLASS__ . '.COLUMN_METHOD_DEFAULT', 'Default method'),
-            'skippedRegistration' => _t(__CLASS__ . '.COLUMN_SKIPPED_REGISTRATION', 'Skipped registration'),
+            'methodCount' => [
+                'title' => _t(__CLASS__ . '.COLUMN_METHOD_COUNT', 'Number of registered methods'),
+                'formatting' => [$this, 'formatMethodCountColumn']
+            ],
+            'registeredMethods' => [
+                'title' => _t(__CLASS__ . '.COLUMN_METHODS_REGISTERED', 'Registered methods'),
+                'formatting' => [$this, 'formatMethodsColumn']
+            ],
+            'defaultMethodName' => [
+                'title' => _t(__CLASS__ . '.COLUMN_METHOD_DEFAULT', 'Default method'),
+                'formatting' => [$this, 'formatDefaultMethodColumn']
+            ],
+            'skippedRegistration' => [
+                'title' => _t(__CLASS__ . '.COLUMN_SKIPPED_REGISTRATION', 'Skipped registration'),
+                'formatting' => function ($_, $record) { return $record->HasSkippedMFARegistration ? 'Yes' : 'No'; }
+            ],
         ];
         $this->extend('updateColumns', $columns);
         return $columns;
@@ -119,7 +105,7 @@ class EnabledMembers extends SS_Report
     {
         $methods = $this->getMethodClassToTitleMapping();
         unset($methods[$this->getBackupMethodClass()]);
-        $parameterFields = FieldList::create(
+        $parameterFields = FieldList::create([
             TextField::create(
                 'Member',
                 singleton(Member::class)->i18n_singular_name()
@@ -130,17 +116,84 @@ class EnabledMembers extends SS_Report
             DropdownField::create(
                 'Methods',
                 _t(__CLASS__ . '.COLUMN_METHODS_REGISTERED', 'Registered methods'),
-                $methods,
-                ''
+                $methods
             )->setHasEmptyDefault(true),
-            CheckboxField::create(
+            DropdownField::create(
                 'Skipped',
-                _t(__CLASS__ . '.COLUMN_SKIPPED_REGISTRATION', 'Skipped registration')
-            )
-        );
+                _t(__CLASS__ . '.COLUMN_SKIPPED_REGISTRATION', 'Skipped registration'),
+                [ 'no' => 'No', 'yes' => 'Yes' ]
+            )->setHasEmptyDefault(true),
+        ]);
         $this->extend('updateParameterFields', $parameterFields);
         return $parameterFields;
     }
+
+    /**
+     * Produce a string that indicates the number of registered MFA methods for a given member
+     *
+     * @param null $_
+     * @param Member $record
+     * @return string
+     */
+    public function formatMethodCountColumn($_, Member $record): string
+    {
+        return (string) $this->getRegisteredMethodsForRecords()->filter('MemberID', $record->ID)->count();
+    }
+
+    /**
+     * Produce a string that indicates the names of registered methods for a given member
+     *
+     * @param null $_
+     * @param Member $record
+     * @return string
+     */
+    public function formatMethodsColumn($_, Member $record): string
+    {
+        /** @var Member&MemberExtension $record */
+        $methods = $this->getRegisteredMethodsForRecords();
+
+        return implode(', ', array_map(function(RegisteredMethod $method) {
+            return $method->getMethod()->getName();
+        }, $methods->filter('MemberID', $record->ID)->toArray()));
+    }
+
+    /**
+     * Produce a string that indicates the name of the default registered method for a member
+     *
+     * @param null $_
+     * @param Member $record
+     * @return string
+     */
+    public function formatDefaultMethodColumn($_, Member $record): string
+    {
+        /** @var Member&MemberExtension $record */
+        /** @var RegisteredMethod|null $method */
+        $method = $this->getRegisteredMethodsForRecords()->byID($record->DefaultRegisteredMethodID);
+
+        if (!$method) {
+            return '';
+        }
+
+        return $method->getMethod()->getName();
+    }
+
+    /**
+     * Override the source params method to ensure boolean fields are filtered correctly. 0 can't be used as a value in
+     * the FormField or the "No" option won't select correctly on page refresh
+     *
+     * @inheritDoc
+     */
+    protected function getSourceParams()
+    {
+        $params = parent::getSourceParams();
+
+        if (isset($params['Skipped'])) {
+            $params['Skipped'] = $params['Skipped'] === 'no' ? 0 : 1;
+        }
+
+        return $params;
+    }
+
 
     /**
      * Create an array mapping authentication method Class Names to Readable Names
@@ -149,47 +202,37 @@ class EnabledMembers extends SS_Report
      */
     protected function getMethodClassToTitleMapping(): array
     {
-        $methods = singleton(MethodRegistry::class)->getMethods();
-        $methodsClasses = array_map(
-            function (MethodInterface $method): string {
-                return get_class($method);
-            },
-            $methods
-        );
-        $methodNames = array_map(
-            function (MethodInterface $method): string {
-                return $method->getName();
-            },
-            $methods
-        );
-        return array_combine($methodsClasses, $methodNames);
+        $mapping = [];
+
+        foreach (MethodRegistry::singleton()->getMethods() as $method) {
+            $mapping[get_class($method)] = $method->getName();
+        }
+
+        return $mapping;
     }
 
     /**
-     * Applies parameters to source records for filtering purposes.
-     *
-     * @param SS_Filterable $params
-     * @param array $params
-     * @return SS_List
+     * @return ArrayList
      */
-    protected function applyParams(SS_Filterable $sourceList, array $params): SS_List
+    protected function getRegisteredMethodsForRecords(): ArrayList
     {
-        $map = [
-            'Member' => ['FirstName:PartialMatch', 'Surname:PartialMatch', 'Email:PartialMatch'],
-            'Methods' => 'RegisteredMFAMethods.MethodClassName',
-            'Skipped' => 'HasSkippedMFARegistration',
-        ];
-        $this->extend('updateParameterMap', $map);
-        foreach ($map as $submissionName => $searchKey) {
-            if (isset($params[$submissionName])) {
-                if (is_array($searchKey)) {
-                    $sourceList = $sourceList->filterAny(array_fill_keys($searchKey, $params[$submissionName]));
-                } else {
-                    $sourceList = $sourceList->filter($searchKey, $params[$submissionName]);
-                }
-            }
+        if ($this->registeredMethods instanceof ArrayList) {
+            return $this->registeredMethods;
         }
-        return $sourceList;
+
+        // Get the members from the generated report field list
+        $members = $this->getReportField()->getList();
+
+        // Filter RegisteredMethods by the IDs of those members and convert it to an ArrayList (to prevent filters ahead
+        // from executing the datalist more than once)
+        $this->registeredMethods = ArrayList::create(
+            MFARegisteredMethod::get()
+                ->filter('MemberID', $members->column())
+                ->exclude('MethodClassName', $this->getBackupMethodClass())
+                ->toArray()
+        );
+
+        return $this->registeredMethods;
     }
 
     /**

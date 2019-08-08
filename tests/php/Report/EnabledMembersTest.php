@@ -54,7 +54,7 @@ class EnabledMembersTest extends SapphireTest
     public function sourceRecordsParamsProvider()
     {
         return [
-            [[], 5, 'Sanity test'],
+            [[], 5],
             [['Skipped' => '1'], 2, 'Skipped setup filter works'],
             [
                 ['Member' => 'i'],
@@ -69,7 +69,7 @@ class EnabledMembersTest extends SapphireTest
                 'Control test that all filters are conjunctive'
             ],
             [['Methods' => BasicMathMethod::class, 'Member' => 'EDITOR', 'Skipped' => '0'], 0],
-            [['Methods' => BasicMathMethod::class, 'Member' => 'EDITOR', 'Skipped' => '1'], 1],
+            [['Methods' => BasicMathMethod::class, 'Member' => 'EDITOR', 'Skipped' => '1'], 0],
             [['Methods' => BasicMathMethod::class, 'Member' => 'MFA', 'Skipped' => '1'], 0],
             [['Methods' => NullMethod::class, 'Member' => 'EDITOR', 'Skipped' => '1'], 0],
             [['Methods' => NullMethod::class, 'Member' => 'MFA', 'Skipped' => '0'], 1],
