@@ -102,7 +102,9 @@ class EnabledMembers extends Report
             ],
             'HasSkippedMFARegistration' => [
                 'title' => _t(__CLASS__ . '.COLUMN_SKIPPED_REGISTRATION', 'Skipped registration'),
-                'formatting' => function ($_, $record) { return $record->HasSkippedMFARegistration ? 'Yes' : 'No'; }
+                'formatting' => function ($_, $record) {
+                    return $record->HasSkippedMFARegistration ? 'Yes' : 'No';
+                },
             ],
         ];
 
@@ -167,7 +169,7 @@ class EnabledMembers extends Report
         /** @var Member&MemberExtension $record */
         $methods = $this->getRegisteredMethodsForRecords();
 
-        return implode(', ', array_map(function(RegisteredMethod $method) {
+        return implode(', ', array_map(function (RegisteredMethod $method) {
             return $method->getMethod()->getName();
         }, $methods->filter('MemberID', $record->ID)->toArray()));
     }
