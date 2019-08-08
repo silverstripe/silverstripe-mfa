@@ -1,17 +1,17 @@
 MFARegisteredMethod:
-  mfa0:
+  backup_code_1:
     MethodClassName: SilverStripe\MFA\BackupCode\Method
-  mfa1:
+  basic_math_1:
     MethodClassName: SilverStripe\MFA\Tests\Stub\BasicMath\Method
-  mfa2:
+  null_method_1:
     MethodClassName: SilverStripe\MFA\Tests\Stub\Null\Method
-  mfa3:
+  backup_code_2:
     MethodClassName: SilverStripe\MFA\BackupCode\Method
-  mfa4:
+  basic_math_2:
     MethodClassName: SilverStripe\MFA\Tests\Stub\BasicMath\Method
-  mfa5:
+  backup_code_3:
     MethodClassName: SilverStripe\MFA\BackupCode\Method
-  mfa6:
+  null_method_3:
     MethodClassName: SilverStripe\MFA\Tests\Stub\Null\Method
 
 Member:
@@ -22,26 +22,26 @@ Member:
     Surname: "D'Min"
     Email: admin@example.com
     RegisteredMFAMethods:
-      - =>MFARegisteredMethod.mfa5
-      - =>MFARegisteredMethod.mfa6
+      - =>MFARegisteredMethod.backup_code_3
+      - =>MFARegisteredMethod.null_method_3
   priviliged:
     FirstName: Eleanor
     Surname: "Ditor"
     Email: editor@example.com
     RegisteredMFAMethods:
-      - =>MFARegisteredMethod.mfa3
-      - =>MFARegisteredMethod.mfa4
-    DefaultRegisteredMethodID: =>MFARegisteredMethod.mfa3
+      - =>MFARegisteredMethod.backup_code_2
+      - =>MFARegisteredMethod.basic_math_2
+    DefaultRegisteredMethodID: =>MFARegisteredMethod.backup_code_2
     HasSkippedMFARegistration: true
   mfa:
     FirstName: Michelle
     Surname: Fa
     Email: mfa@example.com
     RegisteredMFAMethods:
-      - =>MFARegisteredMethod.mfa0
-      - =>MFARegisteredMethod.mfa1
-      - =>MFARegisteredMethod.mfa2
-    DefaultRegisteredMethodID: =>MFARegisteredMethod.mfa1
+      - =>MFARegisteredMethod.backup_code_1
+      - =>MFARegisteredMethod.basic_math_1
+      - =>MFARegisteredMethod.null_method_1
+    DefaultRegisteredMethodID: =>MFARegisteredMethod.basic_math_1
   user:
     FirstName: Ursula
     Surname: Ser

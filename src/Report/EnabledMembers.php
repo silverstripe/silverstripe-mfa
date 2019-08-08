@@ -35,34 +35,41 @@ class EnabledMembers extends SS_Report
     }
 
     /**
-     * Supplies the list displayed in the report. Required method for {@see Report} to work, but is not inherited API
+     * Supplies the list displayed in the report
      *
      * @param array $params
      * @return DataList
      */
     public function sourceRecords($params): DataList
     {
-        $map = [
-            'Member' => ['FirstName:PartialMatch', 'Surname:PartialMatch', 'Email:PartialMatch'],
-            'Methods' => 'RegisteredMFAMethods.MethodClassName',
-            'Skipped' => 'HasSkippedMFARegistration',
-        ];
-        $this->extend('updateParameterMap', $map);
-
         $sourceList = Member::get();
 
-        // Cull empty strings from the list of params
-        $params = array_filter($params, 'strlen');
+        // Reports treat 0 as empty, which is interpreted as "any", so we switch it to "no" and "yes" for filtering
+        if (!empty($params['Skipped'])) {
+            $sourceList = $sourceList->filter('HasSkippedMFARegistration', $params['Skipped'] === 'no' ? 0 : 1);
+        }
 
-        foreach ($map as $submissionName => $searchKey) {
-            if (isset($params[$submissionName])) {
-                if (is_array($searchKey)) {
-                    $sourceList = $sourceList->filterAny(array_fill_keys($searchKey, $params[$submissionName]));
-                } else {
-                    $sourceList = $sourceList->filter($searchKey, $params[$submissionName]);
-                }
+        // Allow partial matching on standard member fields
+        if (!empty($params['Member'])) {
+            $sourceList = $sourceList->filterAny([
+                'FirstName:PartialMatch' => $params['Member'],
+                'Surname:PartialMatch' => $params['Member'],
+                'Email:PartialMatch' => $params['Member'],
+            ]);
+        }
+
+        // Apply "none", "any", or a specific registered method filter
+        if (!empty($params['Methods'])) {
+            if ($params['Methods'] === 'none') {
+                $sourceList = $sourceList->filter('RegisteredMFAMethods.MethodClassName', null);
+            } elseif ($params['Methods'] === 'any') {
+                $sourceList = $sourceList->filter('RegisteredMFAMethods.MethodClassName:not', null);
+            } else {
+                $sourceList = $sourceList->filter('RegisteredMFAMethods.MethodClassName', $params['Methods']);
             }
         }
+
+        $this->extend('updateSourceRecords', $sourceList);
 
         return $sourceList;
     }
@@ -75,10 +82,6 @@ class EnabledMembers extends SS_Report
     public function columns(): array
     {
         $columns = singleton(Member::class)->summaryFields() + [
-            'methodCount' => [
-                'title' => _t(__CLASS__ . '.COLUMN_METHOD_COUNT', 'Number of registered methods'),
-                'formatting' => [$this, 'formatMethodCountColumn']
-            ],
             'registeredMethods' => [
                 'title' => _t(__CLASS__ . '.COLUMN_METHODS_REGISTERED', 'Registered methods'),
                 'formatting' => [$this, 'formatMethodsColumn']
@@ -87,12 +90,14 @@ class EnabledMembers extends SS_Report
                 'title' => _t(__CLASS__ . '.COLUMN_METHOD_DEFAULT', 'Default method'),
                 'formatting' => [$this, 'formatDefaultMethodColumn']
             ],
-            'skippedRegistration' => [
+            'HasSkippedMFARegistration' => [
                 'title' => _t(__CLASS__ . '.COLUMN_SKIPPED_REGISTRATION', 'Skipped registration'),
                 'formatting' => function ($_, $record) { return $record->HasSkippedMFARegistration ? 'Yes' : 'No'; }
             ],
         ];
+
         $this->extend('updateColumns', $columns);
+
         return $columns;
     }
 
@@ -103,8 +108,6 @@ class EnabledMembers extends SS_Report
      */
     public function parameterFields(): FieldList
     {
-        $methods = $this->getMethodClassToTitleMapping();
-        unset($methods[$this->getBackupMethodClass()]);
         $parameterFields = FieldList::create([
             TextField::create(
                 'Member',
@@ -116,7 +119,7 @@ class EnabledMembers extends SS_Report
             DropdownField::create(
                 'Methods',
                 _t(__CLASS__ . '.COLUMN_METHODS_REGISTERED', 'Registered methods'),
-                $methods
+                $this->getRegisteredMethodOptions()
             )->setHasEmptyDefault(true),
             DropdownField::create(
                 'Skipped',
@@ -124,7 +127,9 @@ class EnabledMembers extends SS_Report
                 [ 'no' => 'No', 'yes' => 'Yes' ]
             )->setHasEmptyDefault(true),
         ]);
+
         $this->extend('updateParameterFields', $parameterFields);
+
         return $parameterFields;
     }
 
@@ -161,12 +166,11 @@ class EnabledMembers extends SS_Report
      * Produce a string that indicates the name of the default registered method for a member
      *
      * @param null $_
-     * @param Member $record
+     * @param Member&MemberExtension $record
      * @return string
      */
     public function formatDefaultMethodColumn($_, Member $record): string
     {
-        /** @var Member&MemberExtension $record */
         /** @var RegisteredMethod|null $method */
         $method = $this->getRegisteredMethodsForRecords()->byID($record->DefaultRegisteredMethodID);
 
@@ -176,24 +180,6 @@ class EnabledMembers extends SS_Report
 
         return $method->getMethod()->getName();
     }
-
-    /**
-     * Override the source params method to ensure boolean fields are filtered correctly. 0 can't be used as a value in
-     * the FormField or the "No" option won't select correctly on page refresh
-     *
-     * @inheritDoc
-     */
-    protected function getSourceParams()
-    {
-        $params = parent::getSourceParams();
-
-        if (isset($params['Skipped'])) {
-            $params['Skipped'] = $params['Skipped'] === 'no' ? 0 : 1;
-        }
-
-        return $params;
-    }
-
 
     /**
      * Create an array mapping authentication method Class Names to Readable Names
@@ -221,6 +207,7 @@ class EnabledMembers extends SS_Report
         }
 
         // Get the members from the generated report field list
+        /** @var DataList $members $members */
         $members = $this->getReportField()->getList();
 
         // Filter RegisteredMethods by the IDs of those members and convert it to an ArrayList (to prevent filters ahead
@@ -233,6 +220,22 @@ class EnabledMembers extends SS_Report
         );
 
         return $this->registeredMethods;
+    }
+
+    /**
+     * Adds "None" and "Any" options to the registered method dropdown filter
+     *
+     * @return array
+     */
+    private function getRegisteredMethodOptions(): array
+    {
+        $methods = [
+            'none' => _t(__CLASS__ . '.NONE', 'None'),
+            'any' => _t(__CLASS__ . '.ANY_AT_LEAST_ONE', 'Any (at least one)'),
+        ] + $this->getMethodClassToTitleMapping();
+        unset($methods[$this->getBackupMethodClass()]);
+
+        return $methods;
     }
 
     /**
