@@ -54,5 +54,10 @@
     .btn-link {
       color: var(--color-text);
     }
+
+    .btn-link:focus,
+    .btn-link:hover {
+      color: var(--color-text);
+    }
   }
 }
