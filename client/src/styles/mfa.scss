@@ -4,7 +4,7 @@
 }
 
 .mfa-app {
-  color: $color-grey-text;
+  color: var(--color-text);
   font-size: $font-content-size;
   font-weight: $font-content-weight;
   margin: auto;
@@ -16,7 +16,7 @@
   }
 
   .mfa-app-title {
-    color: $color-grey-text;
+    color: var(--color-text);
     display: block;
     font-size: $font-app-title-size;
     font-weight: $font-app-title-weight;
@@ -27,7 +27,7 @@
     margin-top: 0;
     margin-bottom: $header-spacing;
     font-size: $font-section-title-size;
-    color: $color-grey-text;
+    color: var(--color-text);
     font-weight: $font-section-title-weight;
   }
 
