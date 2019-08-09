@@ -2,8 +2,8 @@
 
 namespace SilverStripe\MFA\Tests\Report;
 
-use FunctionalTest;
 use EnabledMembers;
+use FunctionalTest;
 
 class EnabledMembersFunctionalTest extends FunctionalTest
 {
@@ -37,10 +37,7 @@ class EnabledMembersFunctionalTest extends FunctionalTest
 
     public function testFilterReportByMemberName()
     {
-        $this->get(EnabledMembers::create()->getLink());
-        $response = $this->submitForm('Form_EditForm', 'action_updatereport', [
-            'filters[Member]' => 'Michelle',
-        ]);
+        $response = $this->get(EnabledMembers::create()->getLink() . '?filters[Member]=Michelle');
         $result = (string) $response->getBody();
 
         $this->assertContains('mfa@example.com', $result);
@@ -49,10 +46,7 @@ class EnabledMembersFunctionalTest extends FunctionalTest
 
     public function testFilterReportBySkippedRegistration()
     {
-        $this->get(EnabledMembers::create()->getLink());
-        $response = $this->submitForm('Form_EditForm', 'action_updatereport', [
-            'filters[Skipped]' => 'yes',
-        ]);
+        $response = $this->get(EnabledMembers::create()->getLink() . '?filters[Skipped]=yes');
         $result = (string) $response->getBody();
 
         $this->assertContains('user@example.com', $result);

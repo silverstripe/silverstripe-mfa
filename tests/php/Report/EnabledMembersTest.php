@@ -4,9 +4,9 @@ namespace SilverStripe\MFA\Tests\Report;
 
 use Config;
 use DropdownField;
+use EnabledMembers;
 use SapphireTest;
 use SilverStripe\MFA\BackupCode\Method as BackupMethod;
-use EnabledMembers;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method as BasicMathMethod;
 use SilverStripe\MFA\Tests\Stub\Null\Method as NullMethod;
@@ -84,7 +84,7 @@ class EnabledMembersTest extends SapphireTest
             ],
             '"none" filter on method names' => [
                 ['Methods' => 'none'],
-                2,
+                3,
             ],
             '"any" filter on method names' => [
                 ['Methods' => 'any'],

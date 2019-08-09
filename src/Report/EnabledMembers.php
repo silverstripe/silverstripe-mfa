@@ -61,9 +61,9 @@ class EnabledMembers extends SS_Report
         // Apply "none", "any", or a specific registered method filter
         if (!empty($params['Methods'])) {
             if ($params['Methods'] === 'none') {
-                $sourceList = $sourceList->filter('RegisteredMFAMethods.MethodClassName', null);
+                $sourceList = $sourceList->filter('DefaultRegisteredMethodID', 0);
             } elseif ($params['Methods'] === 'any') {
-                $sourceList = $sourceList->filter('RegisteredMFAMethods.MethodClassName:not', null);
+                $sourceList = $sourceList->filter('RegisteredMFAMethods.ID:GreaterThan', 0);
             } else {
                 $sourceList = $sourceList->filter('RegisteredMFAMethods.MethodClassName', $params['Methods']);
             }
@@ -147,7 +147,7 @@ class EnabledMembers extends SS_Report
         /** @var Member&MemberExtension $record */
         $methods = $this->getRegisteredMethodsForRecords();
 
-        return implode(', ', array_map(function (RegisteredMethod $method) {
+        return implode(', ', array_map(function (MFARegisteredMethod $method) {
             return $method->getMethod()->getName();
         }, $methods->filter('MemberID', $record->ID)->toArray()));
     }
@@ -161,7 +161,7 @@ class EnabledMembers extends SS_Report
      */
     public function formatDefaultMethodColumn($_, Member $record): string
     {
-        /** @var RegisteredMethod|null $method */
+        /** @var MFARegisteredMethod|null $method */
         $method = $this->getRegisteredMethodsForRecords()->byID($record->DefaultRegisteredMethodID);
 
         if (!$method) {
