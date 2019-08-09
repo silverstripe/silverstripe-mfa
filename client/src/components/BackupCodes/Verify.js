@@ -127,7 +127,7 @@ class Verify extends Component {
           { label }
         </label>
         <input
-          className="mfa-verify-backup-codes__input form-control"
+          className="mfa-verify-backup-codes__input text form-control"
           type="text"
           placeholder={label}
           id="backup-code"
