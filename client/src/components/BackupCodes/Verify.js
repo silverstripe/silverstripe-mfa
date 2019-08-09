@@ -60,7 +60,7 @@ class Verify extends Component {
     const { ss: { i18n } } = window;
 
     return (
-      <ul className="mfa-action-list">
+      <ul className="mfa-action-list mfa-action-list--backup-codes">
         <li className="mfa-action-list__item">
           <button
             className="btn btn-primary"
@@ -148,7 +148,7 @@ class Verify extends Component {
           {this.renderDescription()}
           {this.renderInput()}
         </div>
-        <div>
+        <div className="mfa-verify-backup-codes__image-holder">
           <img className="mfa-verify-backup-codes__image" src={graphic} alt={name} />
         </div>
         {this.renderControls()}

@@ -12,6 +12,8 @@
 
   &__content {
     padding: $header-spacing 0;
+    grid-column: 1;
+    grid-row: 1;
   }
 
   &__input-container {
@@ -22,9 +24,18 @@
     display: block;
   }
 
+  &__image-holder {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
   &__image {
     height: $method-image-dimensions;
     width: $method-image-dimensions;
     float: right;
   }
+}
+
+.mfa-action-list--backup-codes {
+  grid-row: 2;
 }
