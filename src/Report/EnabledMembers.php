@@ -146,18 +146,6 @@ class EnabledMembers extends Report
     }
 
     /**
-     * Produce a string that indicates the number of registered MFA methods for a given member
-     *
-     * @param null $_
-     * @param Member $record
-     * @return string
-     */
-    public function formatMethodCountColumn($_, Member $record): string
-    {
-        return (string) $this->getRegisteredMethodsForRecords()->filter('MemberID', $record->ID)->count();
-    }
-
-    /**
      * Produce a string that indicates the names of registered methods for a given member
      *
      * @param null $_
