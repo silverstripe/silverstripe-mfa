@@ -2,6 +2,7 @@
   &__code-grid {
     display: inline-flex;
     flex-wrap: wrap;
+    font-size: 87.5%; // note: in SilverStripe 4 this comes from admin
     justify-content: space-between;
     max-width: 375px;
 
