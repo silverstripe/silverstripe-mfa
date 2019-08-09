@@ -150,14 +150,21 @@ class Register extends Component {
    */
   renderDownloadAction() {
     const { codes, method } = this.props;
-    const { Blob, URL, ss: { i18n } } = window;
+    const { Blob, URL, ss: { i18n }, navigator } = window;
 
+    const filename = `${method.name}.txt`;
     const codesText = codes.join('\r\n');
-    const codesBlob = new Blob([codesText]);
+    const codesBlob = new Blob([codesText], { type: 'text/plain;charset=UTF-8' });
     const codesURL = URL.createObjectURL(codesBlob);
+    const supportInternetExplorer = (e) => {
+      if (navigator.msSaveBlob) {
+        e.preventDefault();
+        navigator.msSaveBlob(codesBlob, filename);
+      }
+    };
 
     return (
-      <a download={`${method.name}.txt`} href={codesURL} className="btn btn-link">
+      <a download={filename} href={codesURL} className="btn btn-link" onClick={supportInternetExplorer}>
         {i18n._t('MFABackupCodesRegister.DOWNLOAD', 'Download')}
       </a>
     );
