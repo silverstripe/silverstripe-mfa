@@ -8,6 +8,7 @@
 
   &__content {
     padding-top: calc(#{$content-spacing} - #{$header-spacing});
+    grid-column: 1;
   }
 
   &__image {
@@ -16,6 +17,7 @@
     }
     height: $method-image-dimensions;
     width: $method-image-dimensions;
+    grid-column: 2;
 
     // Position on the right
     margin-left: auto;
