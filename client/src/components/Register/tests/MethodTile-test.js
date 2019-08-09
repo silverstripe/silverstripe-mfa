@@ -8,7 +8,10 @@ import { Component as MethodTile } from '../MethodTile';
 Enzyme.configure({ adapter: new Adapter() });
 
 window.ss = {
-  i18n: { _t: (key, string) => string },
+  i18n: {
+    _t: (key, string) => string,
+    inject: string => string,
+  },
 };
 
 const firstMethod = {
