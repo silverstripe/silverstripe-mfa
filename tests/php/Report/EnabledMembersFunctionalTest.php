@@ -2,14 +2,14 @@
 
 namespace SilverStripe\MFA\Tests\Report;
 
-use SilverStripe\Dev\FunctionalTest;
-use SilverStripe\MFA\Report\EnabledMembers;
+use FunctionalTest;
+use EnabledMembers;
 
 class EnabledMembersFunctionalTest extends FunctionalTest
 {
     protected static $fixture_file = 'EnabledMembersTest.yml';
 
-    protected function setUp()
+    public function setUp()
     {
         parent::setUp();
 
