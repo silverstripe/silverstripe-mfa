@@ -33,7 +33,9 @@ const Title = ({ screen, method, Tag = 'h2', className = 'mfa-section-title' }) 
       );
       break;
     case SCREEN_REGISTER_METHOD:
-      content = method && method.name;
+      content = method && i18n.inject(i18n._t('MFARegister.REGISTER_WITH', 'Register with {method}'), {
+        method: method.name.toLowerCase(),
+      });
       break;
     default:
       content = false;
