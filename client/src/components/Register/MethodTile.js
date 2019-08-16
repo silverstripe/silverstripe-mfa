@@ -99,6 +99,7 @@ class MethodTile extends Component {
 
   render() {
     const { isActive, method } = this.props;
+    const { ss: { i18n } } = window;
 
     const classes = classnames('mfa-method-tile', {
       'mfa-method-tile--active': isActive,
@@ -107,6 +108,10 @@ class MethodTile extends Component {
 
     const thumbnailClasses = classnames('mfa-method-tile__thumbnail-container', {
       'mfa-method-tile__thumbnail-container--unsupported': !method.isAvailable,
+    });
+
+    const leadInLabel = i18n.inject(i18n._t('MFARegister.REGISTER_WITH', 'Register with {method}'), {
+      method: method.name.toLowerCase(),
     });
 
     return (
@@ -123,7 +128,7 @@ class MethodTile extends Component {
               <img src={method.thumbnail} className="mfa-method-tile__thumbnail" alt={method.name} />
             </div>
           )}
-          <h3 className="mfa-method-tile__title">{method.name}</h3>
+          <h3 className="mfa-method-tile__title">{leadInLabel}</h3>
           <p className="mfa-method-tile__description">
             {method.description && `${method.description}. `}
             {this.renderSupportLink(method)}

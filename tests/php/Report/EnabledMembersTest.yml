@@ -1,17 +1,17 @@
 SilverStripe\MFA\Model\RegisteredMethod:
-  mfa0:
+  backup_code_1:
     MethodClassName: SilverStripe\MFA\BackupCode\Method
-  mfa1:
+  basic_math_1:
     MethodClassName: SilverStripe\MFA\Tests\Stub\BasicMath\Method
-  mfa2:
+  null_method_1:
     MethodClassName: SilverStripe\MFA\Tests\Stub\Null\Method
-  mfa3:
+  backup_code_2:
     MethodClassName: SilverStripe\MFA\BackupCode\Method
-  mfa4:
+  basic_math_2:
     MethodClassName: SilverStripe\MFA\Tests\Stub\BasicMath\Method
-  mfa5:
+  backup_code_3:
     MethodClassName: SilverStripe\MFA\BackupCode\Method
-  mfa6:
+  null_method_3:
     MethodClassName: SilverStripe\MFA\Tests\Stub\Null\Method
 
 SilverStripe\Security\Member:
@@ -22,26 +22,26 @@ SilverStripe\Security\Member:
     Surname: "D'Min"
     Email: admin@example.com
     RegisteredMFAMethods:
-      - =>SilverStripe\MFA\Model\RegisteredMethod.mfa5
-      - =>SilverStripe\MFA\Model\RegisteredMethod.mfa6
+      - =>SilverStripe\MFA\Model\RegisteredMethod.backup_code_3
+      - =>SilverStripe\MFA\Model\RegisteredMethod.null_method_3
   priviliged:
     FirstName: Eleanor
     Surname: "Ditor"
     Email: editor@example.com
     RegisteredMFAMethods:
-      - =>SilverStripe\MFA\Model\RegisteredMethod.mfa3
-      - =>SilverStripe\MFA\Model\RegisteredMethod.mfa4
-    DefaultRegisteredMethodID: =>SilverStripe\MFA\Model\RegisteredMethod.mfa3
+      - =>SilverStripe\MFA\Model\RegisteredMethod.backup_code_2
+      - =>SilverStripe\MFA\Model\RegisteredMethod.basic_math_2
+    DefaultRegisteredMethodID: =>SilverStripe\MFA\Model\RegisteredMethod.backup_code_2
     HasSkippedMFARegistration: true
   mfa:
     FirstName: Michelle
     Surname: Fa
     Email: mfa@example.com
     RegisteredMFAMethods:
-      - =>SilverStripe\MFA\Model\RegisteredMethod.mfa0
-      - =>SilverStripe\MFA\Model\RegisteredMethod.mfa1
-      - =>SilverStripe\MFA\Model\RegisteredMethod.mfa2
-    DefaultRegisteredMethodID: =>SilverStripe\MFA\Model\RegisteredMethod.mfa1
+      - =>SilverStripe\MFA\Model\RegisteredMethod.backup_code_1
+      - =>SilverStripe\MFA\Model\RegisteredMethod.basic_math_1
+      - =>SilverStripe\MFA\Model\RegisteredMethod.null_method_1
+    DefaultRegisteredMethodID: =>SilverStripe\MFA\Model\RegisteredMethod.basic_math_1
   user:
     FirstName: Ursula
     Surname: Ser

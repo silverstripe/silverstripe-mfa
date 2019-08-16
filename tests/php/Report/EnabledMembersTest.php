@@ -37,44 +37,53 @@ class EnabledMembersTest extends SapphireTest
      * @dataProvider sourceRecordsParamsProvider
      * @param array $params
      * @param int $expectedRows
-     * @param string $explanation
      */
-    public function testSourceRecords($params, $expectedRows, $explanation = null)
+    public function testSourceRecords($params, $expectedRows)
     {
         $report = new EnabledMembers();
         $records = $report->sourceRecords($params);
-        $this->assertEquals($expectedRows, $records->count(), $explanation);
+        $this->assertCount($expectedRows, $records);
     }
 
     public function sourceRecordsParamsProvider()
     {
         return [
-            [[], 5, 'Sanity test'],
-            [['Skipped' => '1'], 2, 'Skipped setup filter works'],
-            [['Skipped' => '1', 'Count' => '0'], 1, 'Show members that have skipped and do not have a method set up'],
-            [['Count' => '2'], 1, 'Filtering by number of methods set up works'],
-            [['Count' => '2', 'Methods' => BasicMathMethod::class], 1, 'Count and Methods fitlers work together'],
-            [
-                ['Member' => 'i'],
-                4,
-                'Searching for a member works over FirstName or Surname and is a disjunctive partial match'
-            ],
-            [['Member' => '.com'], 4, 'Member search includes Email'],
-            [['Methods' => BasicMathMethod::class], 2, 'Searching for a particular method works'],
-            [
-                ['Methods' => BasicMathMethod::class, 'Member' => 'EDITOR', 'Count' => '1', 'Skipped' => '1'],
+            'no filters' => [[], 5],
+            'skipped registration' => [['Skipped' => 'yes'], 2],
+            'partial match on member name fields' => [['Member' => 'i'], 4],
+            'includes member email field' => [['Member' => '.com'], 4],
+            'specific registered method' => [['Methods' => BasicMathMethod::class], 2],
+            'method, member name, and skipped filters' => [
+                ['Methods' => BasicMathMethod::class, 'Member' => 'EDITOR', 'Skipped' => 'yes'],
                 1,
-                'Control test that all filters are conjunctive'
             ],
-            [['Methods' => BasicMathMethod::class, 'Member' => 'EDITOR', 'Count' => '1', 'Skipped' => '0'], 0],
-            [['Methods' => BasicMathMethod::class, 'Member' => 'EDITOR', 'Count' => '2', 'Skipped' => '1'], 0],
-            [['Methods' => BasicMathMethod::class, 'Member' => 'MFA', 'Count' => '1', 'Skipped' => '1'], 0],
-            [['Methods' => NullMethod::class, 'Member' => 'EDITOR', 'Count' => '1', 'Skipped' => '1'], 0],
-            [['Methods' => NullMethod::class, 'Member' => 'MFA', 'Count' => '2', 'Skipped' => '0'], 1],
-            [
-                ['Methods' => '', 'Member' => '', 'Count' => '', 'Skipped' => ''],
+            'skipped filter removes record that would otherwise match' => [
+                ['Methods' => BasicMathMethod::class, 'Member' => 'EDITOR', 'Skipped' => 'no'],
+                0,
+            ],
+            'miss match on method, MFA in name, skipped' => [
+                ['Methods' => BasicMathMethod::class, 'Member' => 'MFA', 'Skipped' => 'yes'],
+                0,
+            ],
+            'miss match on method, editor in name, skipped' => [
+                ['Methods' => NullMethod::class, 'Member' => 'EDITOR', 'Skipped' => 'yes'],
+                0,
+            ],
+            'hit match on method, MFA in name, not skipped' => [
+                ['Methods' => NullMethod::class, 'Member' => 'MFA', 'Skipped' => 'no'],
+                1,
+            ],
+            'empty filters returns all records' => [
+                ['Methods' => '', 'Member' => '', 'Skipped' => ''],
                 5,
-                'An empty filter input set does not destroy the result set'
+            ],
+            '"none" filter on method names' => [
+                ['Methods' => 'none'],
+                2,
+            ],
+            '"any" filter on method names' => [
+                ['Methods' => 'any'],
+                3,
             ],
         ];
     }
