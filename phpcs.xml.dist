@@ -7,5 +7,6 @@
         <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps" />
         <!-- tests/Behat/Context/LoginContext returns if the parent class does not exist early, which triggers a warning -->
 		<exclude name="PSR1.Files.SideEffects.FoundWithSymbols" />
+		<exclude name="PSR1.Classes.ClassDeclaration.MissingNamespace" />
     </rule>
 </ruleset>
