@@ -4,17 +4,15 @@ namespace SilverStripe\MFA\Extension\AccountReset;
 
 use Exception;
 use Psr\Log\LoggerInterface;
+use SilverStripe\Admin\SecurityAdmin;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Email\Email;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Core\Extension;
-use SilverStripe\Admin\SecurityAdmin;
 use SilverStripe\MFA\Extension\MemberExtension as BaseMFAMemberExtension;
 use SilverStripe\MFA\JSONResponse;
-use SilverStripe\ORM\ValidationException;
 use SilverStripe\Security\Member;
-use SilverStripe\Security\PasswordEncryptor_NotFoundException;
 use SilverStripe\Security\Permission;
 use SilverStripe\Security\Security;
 use SilverStripe\Security\SecurityToken;
@@ -157,5 +155,15 @@ class SecurityAdminExtension extends Extension
             Security::singleton()->Link('resetaccount'),
             "?m={$member->ID}&t={$token}"
         );
+    }
+
+    /**
+     * @param LoggerInterface|null $logger
+     * @return SecurityAdmin
+     */
+    public function setLogger(?LoggerInterface $logger): ?SecurityAdmin
+    {
+        $this->logger = $logger;
+        return $this->owner;
     }
 }
