@@ -39,8 +39,13 @@ class RegisteredMFAMethodListField extends FormField
     {
         $adminController = AdminRegistrationController::singleton();
         $generator = SchemaGenerator::create();
-        /** @var Member $member */
-        $member = DataObject::get_by_id(Member::class, $this->value);
+
+        if (!$this->value && $this->getForm() && $this->getForm()->getRecord() instanceof Member) {
+            $member = $this->getForm()->getRecord();
+        } else {
+            /** @var Member $member */
+            $member = DataObject::get_by_id(Member::class, $this->value);
+        }
 
         return json_encode([
             'schema' => $generator->getSchema($member) + [
