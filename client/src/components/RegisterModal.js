@@ -108,7 +108,11 @@ RegisterModal.propTypes = {
   onSetDefaultMethod: PropTypes.func,
 
   // Injector
-  RegisterComponent: PropTypes.oneOfType([PropTypes.element, PropTypes.func]),
+  RegisterComponent: PropTypes.oneOfType([
+    PropTypes.element,
+    PropTypes.func,
+    PropTypes.elementType,
+  ]),
 };
 
 RegisterModal.defaultProps = {
