@@ -28,6 +28,7 @@ $feature-list-title-font-weight: bold;
   &__icon {
     grid-column: 1;
     height: $feature-list-icon-size;
+    margin-top: 5px;
     width: $feature-list-icon-size;
   }
 
