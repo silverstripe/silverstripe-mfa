@@ -10,7 +10,7 @@ import Check from 'components/Icons/Check';
 const Complete = ({ onComplete, showTitle, message }) => (
   <div className="mfa-register-confirmation">
     <p className="mfa-register-confirmation__icon">
-      <Check size={'8rem'} />
+      <Check size={'100px'} />
     </p>
     { showTitle && <Title className="mfa-register-confirmation__title" /> }
     <p className="mfa-register-confirmation__description">
