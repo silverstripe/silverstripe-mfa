@@ -16,7 +16,7 @@ window.jQuery.entwine('ss', ($) => {
      * Ensure the "grace period" hide/show handlers wake up when the page does
      */
     onmatch() {
-      this.trigger('change');
+      this.onchange();
     },
   });
 });
