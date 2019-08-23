@@ -26,7 +26,7 @@ use SecurityToken;
  */
 class RegisterHandlerTest extends FunctionalTest
 {
-    const URL = 'Security/LoginForm/mfa/register/basic-math/';
+    private const URL = 'Security/LoginForm/mfa/register/basic-math/';
 
     protected static $fixture_file = 'RegisterHandlerTest.yml';
 

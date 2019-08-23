@@ -27,7 +27,7 @@ class LoginForm extends MemberLoginForm
     use RegistrationHandlerTrait;
     use JSONResponse;
 
-    const SESSION_KEY = 'MFALogin';
+    public const SESSION_KEY = 'MFALogin';
 
     private static $url_handlers = [
         'GET mfa/schema' => 'getSchema', // Provides details about existing registered methods, etc.

@@ -19,7 +19,7 @@ use Member;
  */
 class SessionStore implements StoreInterface, Serializable
 {
-    const SESSION_KEY = 'MFASessionStore';
+    public const SESSION_KEY = 'MFASessionStore';
 
     /**
      * The member that is currently going through the MFA process

@@ -41,7 +41,7 @@ class ChangePasswordExtension extends Extension
      *
      * @var string
      */
-    const MFA_VERIFIED_ON_CHANGE_PASSWORD = 'MultiFactorAuthenticated';
+    public const MFA_VERIFIED_ON_CHANGE_PASSWORD = 'MultiFactorAuthenticated';
 
     private static $url_handlers = [
         'GET changepassword/mfa/schema' => 'getSchema', // Provides details about existing registered methods, etc.
