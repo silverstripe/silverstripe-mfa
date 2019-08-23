@@ -55,7 +55,7 @@ const Introduction = ({ canSkip, onContinue, onSkip, resources, showTitle }) => 
             />
           }
 
-          <div>
+          <div className="mfa-feature-list-item__content">
             <h5 className="mfa-block-heading mfa-feature-list-item__title">
               { i18n._t(
                 'MultiFactorAuthentication.EXTRA_LAYER_TITLE',
@@ -90,7 +90,7 @@ const Introduction = ({ canSkip, onContinue, onSkip, resources, showTitle }) => 
             />
           }
 
-          <div>
+          <div className="mfa-feature-list-item__content">
             <h5 className="mfa-block-heading mfa-feature-list-item__title">
               { i18n._t(
                 'MultiFactorAuthentication.UNIQUE_TITLE',
