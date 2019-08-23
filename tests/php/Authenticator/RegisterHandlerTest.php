@@ -26,7 +26,7 @@ use SilverStripe\Security\SecurityToken;
  */
 class RegisterHandlerTest extends FunctionalTest
 {
-    const URL = 'Security/login/default/mfa/register/basic-math/';
+    private const URL = 'Security/login/default/mfa/register/basic-math/';
 
     protected static $fixture_file = 'RegisterHandlerTest.yml';
 

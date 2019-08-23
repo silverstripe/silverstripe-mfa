@@ -27,7 +27,7 @@ use SilverStripe\Security\Security;
  */
 class MemberExtension extends DataExtension implements PermissionProvider
 {
-    const MFA_ADMINISTER_REGISTERED_METHODS = 'MFA_ADMINISTER_REGISTERED_METHODS';
+    public const MFA_ADMINISTER_REGISTERED_METHODS = 'MFA_ADMINISTER_REGISTERED_METHODS';
 
     private static $has_many = [
         'RegisteredMFAMethods' => RegisteredMethod::class,

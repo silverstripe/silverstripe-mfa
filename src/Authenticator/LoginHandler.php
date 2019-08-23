@@ -30,7 +30,7 @@ class LoginHandler extends BaseLoginHandler
     use VerificationHandlerTrait;
     use RegistrationHandlerTrait;
 
-    const SESSION_KEY = 'MFALogin';
+    public const SESSION_KEY = 'MFALogin';
 
     private static $url_handlers = [
         'GET mfa/schema' => 'getSchema', // Provides details about existing registered methods, etc.
@@ -60,7 +60,9 @@ class LoginHandler extends BaseLoginHandler
      * @config
      * @var string
      */
-    private static $user_help_link = 'https://userhelp.silverstripe.org/en/4/optional_features/multi-factor_authentication/'; // phpcs-disable-line
+    // phpcs:disable
+    private static $user_help_link = 'https://userhelp.silverstripe.org/en/4/optional_features/multi-factor_authentication/';
+    // phpcs:enable
 
     /**
      * @var string[]
