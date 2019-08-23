@@ -36,7 +36,7 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
      *
      * @var string
      */
-    const MFA_VERIFIED_ON_CHANGE_PASSWORD = 'MultiFactorAuthenticated';
+    public const MFA_VERIFIED_ON_CHANGE_PASSWORD = 'MultiFactorAuthenticated';
 
     private static $url_handlers = [
         'GET mfa/schema' => 'getSchema', // Provides details about existing registered methods, etc.
