@@ -3,6 +3,7 @@
 namespace SilverStripe\MFA\Service;
 
 use Config;
+use Director;
 use Injector;
 use Member;
 use SilverStripe\MFA\Authenticator\LoginForm;
@@ -137,7 +138,7 @@ class SchemaGenerator extends SS_Object
      */
     protected function getResources()
     {
-        $base = '/mfa/';
+        $base = Director::absoluteURL('mfa/');
 
         return [
             'user_help_link' => Config::inst()->get(LoginForm::class, 'user_help_link'),
