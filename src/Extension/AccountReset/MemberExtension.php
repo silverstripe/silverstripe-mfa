@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace SilverStripe\MFA\Extension\AccountReset;
 
@@ -45,9 +47,11 @@ class MemberExtension extends DataExtension
         do {
             $token = $generator->randomToken();
             $hash = $this->owner->encryptWithUserSettings($token);
-        } while (DataObject::get_one(Member::class, [
+        } while (
+            DataObject::get_one(Member::class, [
             '"Member"."AccountResetHash"' => $hash,
-        ]));
+            ])
+        );
 
         $expiry = DBDatetime::create();
         $expiry->setValue(

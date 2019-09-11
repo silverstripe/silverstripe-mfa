@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Service\MethodRegistry;

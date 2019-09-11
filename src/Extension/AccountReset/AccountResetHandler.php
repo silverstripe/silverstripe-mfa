@@ -1,6 +1,5 @@
 <?php
 
-
 namespace SilverStripe\MFA\Extension\AccountReset;
 
 use Member;
