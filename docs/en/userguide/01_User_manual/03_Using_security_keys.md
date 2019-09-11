@@ -24,7 +24,7 @@ of your browser, try changing `http://` to `https://` at the beginning of the
 address.
 
 <div class="notice" markdown='1'>
-Security keys are not recommended for use with Subsites. If you intend to log in to a Subsite over a different website domain to your main site, your security key will not be compatible. This is an intentional security requirement of the WebnAuthn standard.
+Security keys are not recommended for use with Subsites. If you intend to log in to a Subsite over a different website domain to your main site, your security key will not be compatible. This is an intentional security requirement of the WebAuthn standard.
 </div>
 
 ## Setting up with a security key
