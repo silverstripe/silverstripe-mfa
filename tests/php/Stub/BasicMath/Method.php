@@ -1,4 +1,5 @@
 <?php
+
 namespace SilverStripe\MFA\Tests\Stub\BasicMath;
 
 use Director;

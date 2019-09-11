@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace SilverStripe\MFA\Extension;
 
@@ -189,7 +191,8 @@ class ChangePasswordExtension extends Extension
         /** @var Member&MemberExtension $member */
         $member = Member::member_from_autologinhash($hash);
 
-        if ($hash
+        if (
+            $hash
             && $member
             && $member->RegisteredMFAMethods()->exists()
             && !$session->get(self::MFA_VERIFIED_ON_CHANGE_PASSWORD)

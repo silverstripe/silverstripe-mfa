@@ -1,4 +1,5 @@
 <?php
+
 namespace SilverStripe\MFA\Authenticator;
 
 use Controller;

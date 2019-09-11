@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace SilverStripe\MFA\Service;
 
@@ -225,7 +227,8 @@ class EnforcementManager extends SS_Object
         // Look through all LeftAndMain subclasses to find if one permits the member to view
         $menu = $leftAndMain->MainMenu();
         foreach ($menu as $candidate) {
-            if ($candidate->Link
+            if (
+                $candidate->Link
                 && $candidate->Link !== $leftAndMain->Link()
                 && $candidate->MenuItem->controller
                 && singleton($candidate->MenuItem->controller)->canView($member)
