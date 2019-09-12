@@ -32,7 +32,8 @@ en:
     CODESLEFT: 'You now have {count} codes remaining.'
     HELLO: Hi
     NOTYOU: 'If you did not take this action, please contact your system administrator immediately.'
-    REGISTERED: 'You have removed the {method} authentication method from your account at {site}.'
+    REGISTERED: 'You have successfully registered {method} as an extra layer of protection for your account at {site}.'
+    REMOVED: 'You have removed the {method} authentication method from your account at {site}.'
     USEDBACKUPCODE: 'A recovery code was used to gain access to your account at {site}.'
   SilverStripe\MFA\Extension\AccountReset\SecurityAdminExtension:
     ACCOUNT_RESET_EMAIL_SUBJECT: 'Reset your account'
