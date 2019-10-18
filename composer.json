@@ -38,7 +38,7 @@
         "squizlabs/php_codesniffer": "^3.0"
     },
     "conflict": {
-        "silverstripe/subsites": "<2.3.1"
+        "silverstripe/subsites": "<2.2.2 || 2.3.0"
     },
     "suggest": {
         "silverstripe/totp-authenticator": "Adds a method to authenticate with you phone using a time-based one-time password.",
