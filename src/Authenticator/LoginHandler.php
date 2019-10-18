@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace SilverStripe\MFA\Authenticator;
 
@@ -188,7 +190,8 @@ class LoginHandler extends BaseLoginHandler
         $sessionMember = $store ? $store->getMember() : null;
         $loggedInMember = Security::getCurrentUser();
 
-        if (($loggedInMember === null && $sessionMember === null)
+        if (
+            ($loggedInMember === null && $sessionMember === null)
             || !$this->getSudoModeService()->check($request->getSession())
         ) {
             return $this->jsonResponse(
@@ -251,7 +254,8 @@ class LoginHandler extends BaseLoginHandler
         $sessionMember = $store ? $store->getMember() : null;
         $loggedInMember = Security::getCurrentUser();
 
-        if (($loggedInMember === null && $sessionMember === null)
+        if (
+            ($loggedInMember === null && $sessionMember === null)
             || !$this->getSudoModeService()->check($request->getSession())
         ) {
             return $this->jsonResponse(
@@ -284,7 +288,8 @@ class LoginHandler extends BaseLoginHandler
         // required to log in though. The "mustLogin" flag is set at the beginning of the MFA process if they have at
         // least one method registered. They should always do that first. In that case we should assert
         // "isLoginComplete"
-        if ((!$mustLogin || $this->isVerificationComplete($store))
+        if (
+            (!$mustLogin || $this->isVerificationComplete($store))
             && $enforcementManager->hasCompletedRegistration($sessionMember)
         ) {
             $this->doPerformLogin($request, $sessionMember);
@@ -447,7 +452,8 @@ class LoginHandler extends BaseLoginHandler
         // This is potentially redundant logic as the member should only be logged in if they've fully registered.
         // They're allowed to login if they can skip - so only do assertions if they're not allowed to skip
         // We'll also check that they've registered the required MFA details
-        if (!$enforcementManager->canSkipMFA($member)
+        if (
+            !$enforcementManager->canSkipMFA($member)
             && !$enforcementManager->hasCompletedRegistration($member)
         ) {
             // Log them out again
