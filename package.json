@@ -21,7 +21,7 @@
     "lint-sass": "sass-lint client/src"
   },
   "dependencies": {
-    "@silverstripe/react-injector": "^0.2.0",
+    "@silverstripe/react-injector": "^0.2.1",
     "@silverstripe/reactstrap-confirm": "^0.0.4",
     "classnames": "^2.2.6",
     "core-js": "^3.1.4",
