@@ -58,7 +58,6 @@ functionality:
 - Creating new MFA methods
   - [Frontend](docs/en/creating-mfa-method-frontend.md)
   - [Backend](docs/en/creating-mfa-method-backend.md)
-- [Back-end controllers and traits](docs/en/controllers-and-handlers.md)
 - [Local development](docs/en/local-development.md)
 - [Encryption providers](docs/en/encryption.md)
 - [Data store interfaces](docs/en/datastores.md)
