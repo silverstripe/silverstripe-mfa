@@ -2,7 +2,7 @@
 
 ## Default behaviour
 
-The [EnforcementManager class](src/Service/EnforcementManager.php) is responsible for making decisions regarding the multi factor authentication app flow, e.g. "should we redirect to the MFA section", "can the user skip MFA registration" etc.
+The EnforcementManager class is responsible for making decisions regarding the multi factor authentication app flow, e.g. "should we redirect to the MFA section", "can the user skip MFA registration" etc.
 
 By default, the MFA flow will only be presented during the login process to members who have access to some part of the CMS or administration area.
 
