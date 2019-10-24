@@ -47,7 +47,7 @@
         },
         "expose": [
             "client/dist",
-            "client/lang",
+            "client/lang"
         ]
     },
     "autoload": {
