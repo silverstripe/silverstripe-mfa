@@ -42,12 +42,12 @@
         "silverstripe/webauthn-authenticator": "Adds a method to authenticate with security keys or built-in platform authenticators."
     },
     "extra": {
-        "branch-alias": {
-            "dev-master": "4.x-dev"
-        },
         "expose": [
             "client/dist"
-        ]
+        ],
+        "branch-alias": {
+            "dev-master": "5.x-dev"
+        }
     },
     "autoload": {
         "psr-4": {
