@@ -16,6 +16,10 @@
     }
   }
 
+  &:last-child {
+    margin-right: 0;
+  }
+
   // Inner content section
   &__content {
     border-radius: $tile-border-radius;
@@ -101,7 +105,8 @@
 
 // Fit three authenticators across on large displays if a multiple of 3 are present
 @media (min-width: $viewport-medium) {
-  .mfa-method-tile-groups--three-columns .mfa-method-tile {
+  .mfa-method-tile-group--three-columns .mfa-method-tile {
+    min-width: calc(33% - #{$tile-spacing / 1.5});
     width: calc(33% - #{$tile-spacing});
 
     // Remove right margin on each end of the row

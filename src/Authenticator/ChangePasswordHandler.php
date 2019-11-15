@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace SilverStripe\MFA\Authenticator;
 
@@ -36,7 +38,7 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
      *
      * @var string
      */
-    const MFA_VERIFIED_ON_CHANGE_PASSWORD = 'MultiFactorAuthenticated';
+    public const MFA_VERIFIED_ON_CHANGE_PASSWORD = 'MultiFactorAuthenticated';
 
     private static $url_handlers = [
         'GET mfa/schema' => 'getSchema', // Provides details about existing registered methods, etc.
@@ -205,7 +207,8 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
         /** @var Member&MemberExtension $member */
         $member = Member::member_from_autologinhash($hash);
 
-        if ($hash
+        if (
+            $hash
             && $member
             && $member->RegisteredMFAMethods()->exists()
             && !$session->get(self::MFA_VERIFIED_ON_CHANGE_PASSWORD)

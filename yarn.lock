@@ -77,10 +77,10 @@
     eslint-plugin-jsx-a11y "^5.1.1"
     eslint-plugin-react "^7.3.0"
 
-"@silverstripe/react-injector@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@silverstripe/react-injector/-/react-injector-0.2.0.tgz#1cdd286975f36fb3a0be15b2065c6f974d05f16b"
-  integrity sha512-tt05g/vAuNduigT7qTnQWlcIJ0G0cEMZ2UaIrMYVQcH3WlR2+Wsp4OeznhAjkNQ712w8Sq1bdcitlDRALn+rsg==
+"@silverstripe/react-injector@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@silverstripe/react-injector/-/react-injector-0.2.1.tgz#b77f9c79c19a7c7e7f1898fafc75056ae9a3bb28"
+  integrity sha512-ZzhT3P7ieQtCFtB8FMrCLB2K6yd0yYkJ66pAujj1qiqIyuHQ7p0y+eWvQ97i/tEHL/iH/e2eSsA2fnZgNuAJkA==
   dependencies:
     classnames "^2.2.6"
     core-js "^3.1.4"

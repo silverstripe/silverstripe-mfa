@@ -34,6 +34,8 @@ automatically.
 After installing the MFA module and having at least one method configured, MFA will automatically be enabled. By default
 it will be optional (users can skip MFA registration). You can make it mandatory via the Settings tab in the admin area.
 
+The MFA flow will only be applied to members with access to the CMS or administration area. See '[Broadening the scope of MFA](docs/en/broadening-the-scope-of-mfa.md)' for more detail.
+
 ### Configuring custom methods
 
 If you have built your own MFA method, you can register it with the `MethodRegistry` to enable it:
@@ -56,7 +58,6 @@ functionality:
 - Creating new MFA methods
   - [Frontend](docs/en/creating-mfa-method-frontend.md)
   - [Backend](docs/en/creating-mfa-method-backend.md)
-- [Back-end controllers and traits](docs/en/controllers-and-handlers.md)
 - [Local development](docs/en/local-development.md)
 - [Encryption providers](docs/en/encryption.md)
 - [Data store interfaces](docs/en/datastores.md)

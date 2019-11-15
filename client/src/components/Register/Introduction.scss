@@ -22,12 +22,18 @@ $feature-list-title-font-weight: bold;
 
 .mfa-feature-list-item {
   color: var(--color-dark-text);
-  display: flex;
+  display: grid;
+  grid-template-columns: $feature-list-icon-size $feature-list-content-margin-bottom auto;
 
   &__icon {
+    grid-column: 1;
     height: $feature-list-icon-size;
-    margin-right: $feature-list-content-margin-bottom;
+    margin-top: 5px;
     width: $feature-list-icon-size;
+  }
+
+  &__content {
+    grid-column: 3;
   }
 
   &__title {

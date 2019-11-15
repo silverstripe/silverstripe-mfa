@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace SilverStripe\MFA\BackupCode;
 
@@ -27,7 +29,9 @@ class RegisterHandler implements RegisterHandlerInterface
      * @config
      * @var string
      */
-    private static $user_help_link = 'https://userhelp.silverstripe.org/en/4/optional_features/multi-factor_authentication/user_manual/regaining_access/'; // phpcs-disable-line
+    // phpcs:disable
+    private static $user_help_link = 'https://userhelp.silverstripe.org/en/4/optional_features/multi-factor_authentication/user_manual/regaining_access/';
+    // phpcs:enable
 
     /**
      * Stores any data required to handle a registration process with a method, and returns relevant state to be applied

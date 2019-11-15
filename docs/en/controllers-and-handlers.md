@@ -1,2 +1,0 @@
-# Controllers and handlers
-

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace SilverStripe\MFA\Controller;
 
@@ -195,7 +197,8 @@ class AdminRegistrationController extends LeftAndMain
     public function setDefaultRegisteredMethod(HTTPRequest $request): HTTPResponse
     {
         // Ensure CSRF and sudo-mode protection
-        if (!SecurityToken::inst()->checkRequest($request)
+        if (
+            !SecurityToken::inst()->checkRequest($request)
             || !$this->getSudoModeService()->check($request->getSession())
         ) {
             return $this->jsonResponse(
