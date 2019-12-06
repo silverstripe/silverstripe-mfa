@@ -1,4 +1,6 @@
+---
 title: Multi-factor Authentication (MFA)
+---
 
 # Multi-Factor Authentication (MFA)
 
@@ -33,7 +35,7 @@ communications (NFC). To use a security key with SilverStripe MFA, you must log
 in using a supported browser over HTTPS
 (see [Using security keys](user_manual/using_security_keys) for details).
 
-<div class="hint" markdown="1">
+[hint]
 **Recovery codes**
 
 Recovery codes are a backup verification method. In the event that you lose
@@ -41,7 +43,7 @@ access to your other verification methods, a recovery code can be used to
 regain access to your account. A set of codes will be provided to you when you
 first set up an MFA verification method on your account. You can only use each
 of these codes once, and they should be stored somewhere safe.
-</div>
+[/hint]
 
 ## User manual
 

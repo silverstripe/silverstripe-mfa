@@ -1,5 +1,7 @@
+---
 title: Resetting accounts
 summary: How to reset a user's account if they lose access to it
+---
 
 # Resetting accounts
 

@@ -1,5 +1,7 @@
+---
 title: Regaining access when locked out
 summary: Steps to recover your account if your primary MFA method is unavailable
+---
 
 # Regaining access when locked out
 
@@ -21,11 +23,11 @@ be logged into the CMS.
 
 ![A screenshot of a user being prompted to enter a backup code during login](../_images/01-04-3-recovery-code.png)
 
-<div class="hint" markdown="1">
+[hint]
 If your primary MFA method is permanently lost, make sure you visit your profile
 and remove or reset it before logging out. If you are running out of backup
 codes, generate a new set to make sure you don't lose access to your account.
-</div>
+[/hint]
 
 ## Resetting your account
 

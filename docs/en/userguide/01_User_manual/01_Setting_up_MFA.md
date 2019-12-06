@@ -1,5 +1,7 @@
+---
 title: Setting Up MFA
 summary: Running initial configuration of an MFA method for your account
+---
 
 # Setting Up MFA
 
@@ -33,10 +35,10 @@ verification you set up will become your default method. This method displays
 first when logging in. You can add more methods or change the default method via
 your CMS profile.
 
-<div class="hint" markdown="1">
+[hint]
 Setting up additional verification methods will give you more ways to log in if
 you lose access to your default method.
-</div>
+[/hint]
 
 ## 3. Backup your recovery codes
 

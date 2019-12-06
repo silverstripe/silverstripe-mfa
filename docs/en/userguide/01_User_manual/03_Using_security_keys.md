@@ -1,5 +1,7 @@
+---
 title: Using security keys
 summary: How to set up and use a security key
+---
 
 # Using security keys
 
@@ -23,9 +25,9 @@ You must also log in via **HTTPS**. If there is no padlock in the address bar
 of your browser, try changing `http://` to `https://` at the beginning of the
 address.
 
-<div class="notice" markdown='1'>
+[notice]
 Security keys are not recommended for use with Subsites. If you intend to log in to a Subsite over a different website domain to your main site, your security key will not be compatible. This is an intentional security requirement of the WebAuthn standard.
-</div>
+[/notice]
 
 ## Setting up with a security key
 
