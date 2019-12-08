@@ -21,3 +21,5 @@ their accounts by sending them an email to reset their account via the CMS.
 
 The account holder will receive an account reset link via email, which will
 enable them to reset their password and MFA settings.
+
+[CHILDREN]

@@ -47,3 +47,5 @@ re-enter your password to access them.
    in a safe place.
 
 ![A screenshot of the dialog presented when a user presses the 'Reset' action on their CMS profile](../_images/01-05-4-reset-recovery-codes.png)
+
+[CHILDREN]

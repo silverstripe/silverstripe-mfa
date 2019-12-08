@@ -37,3 +37,5 @@ be prompted with the option to set it up on every login, until MFA is set up.
 
 ![A screenshot of the site-wide MFA settings UI with the 'MFA is required for everyone' option selected and a date entered in the 'MFA will be required from' field](../_images/02-01-2-grace-period.png)
 [/hint]
+
+[CHILDREN]

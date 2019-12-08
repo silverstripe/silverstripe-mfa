@@ -52,3 +52,5 @@ Please ensure you store them somewhere safe, as this is the only time they will
 be displayed.
 
 ![A screenshot of the Backup Codes step in the MFA setup flow](../_images/01-01-3-mfa-backup-codes.png)
+
+[CHILDREN]

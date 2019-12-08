@@ -67,3 +67,5 @@ If you see an 'unavailable' message like the one below, make sure you are using
 a supported browser and that you are connecting to the site over HTTPS.
 
 ![A screenshot of a 'method unavailable' error message when a user attempts to log in over the insecure HTTP protocol](../_images/01-03-6-security-key-unavailable.png)
+
+[CHILDREN]
