@@ -164,7 +164,7 @@ class AccountResetUI extends Component {
         <span className="account-reset-action__message">
           {
             i18n._t(
-              'MultiFactorAuthentication.ACCOUNT_RESET_SENDING',
+              'MultiFactorAuthentication.ACCOUNT_RESET_SENDING_SUCCESS',
               fallbacks['MultiFactorAuthentication.ACCOUNT_RESET_SENDING_SUCCESS']
             )
           }
