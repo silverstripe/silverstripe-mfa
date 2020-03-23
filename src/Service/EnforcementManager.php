@@ -98,8 +98,13 @@ class EnforcementManager
             return false;
         }
 
-        if ($this->config()->get('requires_admin_access') && !$this->hasAdminAccess($member)) {
-            return false;
+        if ($this->config()->get('requires_admin_access')) {
+            $hasAdminAccess = Member::actAs($member, function () use ($member) {
+                return $this->hasAdminAccess($member);
+            });
+            if (!$hasAdminAccess) {
+                return false;
+            }
         }
 
         $methodRegistry = MethodRegistry::singleton();
@@ -229,7 +234,7 @@ class EnforcementManager
         }
 
         // Look through all LeftAndMain subclasses to find if one permits the member to view
-        $menu = $leftAndMain->MainMenu();
+        $menu = $leftAndMain->MainMenu(false);
         foreach ($menu as $candidate) {
             if (
                 $candidate->Link
