@@ -6,6 +6,9 @@ namespace SilverStripe\MFA\Service;
 
 use LeftAndMain;
 use Config;
+use Security;
+use Session;
+use SilverStripe\MFA\Authenticator\MemberAuthenticator;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Extension\SiteConfigExtension;
 use Date as DBDate;
@@ -94,8 +97,21 @@ class EnforcementManager extends SS_Object
             return false;
         }
 
-        if ($this->config()->get('requires_admin_access') && !$this->hasAdminAccess($member)) {
-            return false;
+        if ($this->config()->get('requires_admin_access')) {
+            // DANGER ZONE: CMS 3 has no 'Member::actAs' functionality, so we have to replicate it as closely as
+            // possible. This comes in the form of marking the member as logged in via the session for the duration
+            // of the permission checking operation.
+            $currentMemberID = Session::get("loggedInAs");
+            try {
+                Session::set('loggedInAs', $member->ID);
+                $hasAdminAccess = $this->hasAdminAccess($member);
+            } finally {
+                Session::set('loggedInAs', $currentMemberID);
+            }
+
+            if (!$hasAdminAccess) {
+                return false;
+            }
         }
 
         $methodRegistry = MethodRegistry::singleton();
@@ -225,7 +241,7 @@ class EnforcementManager extends SS_Object
         }
 
         // Look through all LeftAndMain subclasses to find if one permits the member to view
-        $menu = $leftAndMain->MainMenu();
+        $menu = $leftAndMain->MainMenu(false);
         foreach ($menu as $candidate) {
             if (
                 $candidate->Link
