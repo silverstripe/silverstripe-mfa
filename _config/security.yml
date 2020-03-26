@@ -1,0 +1,7 @@
+---
+name: mfasecurity
+---
+Member:
+  # Default lifetime of auto login token. This is the maximum allowed period between a user requesting
+  # a password reset link and using it to reset their password. Backported from SilverStripe 4.5.
+  auto_login_token_lifetime: 172800
