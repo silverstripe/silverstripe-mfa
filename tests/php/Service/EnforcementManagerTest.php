@@ -2,6 +2,7 @@
 
 namespace SilverStripe\MFA\Tests\Service;
 
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Service\EnforcementManager;
@@ -28,11 +29,35 @@ class EnforcementManagerTest extends SapphireTest
         EnforcementManager::config()->set('requires_admin_access', true);
     }
 
+    public function testUserWithoutCMSAccessCanSkipWhenCMSAccessIsRequired()
+    {
+        $this->setSiteConfig(['MFARequired' => true]);
+
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, 'sammy_smith');
+        $this->assertTrue(EnforcementManager::create()->canSkipMFA($member));
+    }
+
+    public function testUserWithoutCMSAccessCannotSkipWhenCMSAccessIsNotRequired()
+    {
+        Config::nest();
+
+        $this->setSiteConfig(['MFARequired' => true]);
+        EnforcementManager::config()->set('requires_admin_access', false);
+
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, 'sammy_smith');
+        $this->assertFalse(EnforcementManager::create()->canSkipMFA($member));
+
+        Config::unnest();
+    }
+
     public function testCannotSkipWhenMFAIsRequiredWithNoGracePeriod()
     {
         $this->setSiteConfig(['MFARequired' => true]);
 
-        $member = new Member();
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, 'reports_user');
         $this->assertFalse(EnforcementManager::create()->canSkipMFA($member));
     }
 
@@ -40,7 +65,8 @@ class EnforcementManagerTest extends SapphireTest
     {
         $this->setSiteConfig(['MFARequired' => true, 'MFAGracePeriodExpires' => '2019-01-30']);
 
-        $member = new Member();
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, 'reports_user');
         $this->assertTrue(EnforcementManager::create()->canSkipMFA($member));
     }
 
@@ -48,7 +74,8 @@ class EnforcementManagerTest extends SapphireTest
     {
         $this->setSiteConfig(['MFARequired' => true, 'MFAGracePeriodExpires' => '2018-12-25']);
 
-        $member = new Member();
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, 'reports_user');
         $this->assertFalse(EnforcementManager::create()->canSkipMFA($member));
     }
 
@@ -84,12 +111,14 @@ class EnforcementManagerTest extends SapphireTest
 
     public function testShouldRedirectToMFAWhenUserDoesNotHaveCMSAccessButTheCheckIsDisabledWithConfig()
     {
+        Config::nest();
         EnforcementManager::config()->set('requires_admin_access', false);
 
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'sammy_smith');
         $this->logInAs($member);
         $this->assertTrue(EnforcementManager::create()->shouldRedirectToMFA($member));
+        Config::unnest();
     }
 
     public function testShouldRedirectToMFAWhenUserHasAccessToReportsOnly()
@@ -124,6 +153,32 @@ class EnforcementManagerTest extends SapphireTest
         $this->logInAs($member);
 
         $this->assertTrue(EnforcementManager::create()->shouldRedirectToMFA($member));
+    }
+
+    public function testShouldRedirectToMFAWhenMFAIsRequiredWithGracePeriodExpiringInFuture()
+    {
+        $this->setSiteConfig(['MFARequired' => false, 'MFAGracePeriodExpires' => '2019-01-30']);
+
+        /** @var Member&MemberExtension $member */
+        $member = $this->objFromFixture(Member::class, 'sammy_smith');
+        $member->HasSkippedMFARegistration = true;
+        $member->write();
+        $this->logInAs($member);
+
+        $this->assertFalse(EnforcementManager::create()->shouldRedirectToMFA($member));
+    }
+
+    public function testShouldRedirectToMFAWhenMFAIsRequiredWithGracePeriodExpiringInPast()
+    {
+        $this->setSiteConfig(['MFARequired' => false, 'MFAGracePeriodExpires' => '2018-12-25']);
+
+        /** @var Member&MemberExtension $member */
+        $member = $this->objFromFixture(Member::class, 'sammy_smith');
+        $member->HasSkippedMFARegistration = true;
+        $member->write();
+        $this->logInAs($member);
+
+        $this->assertFalse(EnforcementManager::create()->shouldRedirectToMFA($member));
     }
 
     public function testShouldRedirectToMFAWhenMFAIsOptionalAndHasNotBeenSkipped()
