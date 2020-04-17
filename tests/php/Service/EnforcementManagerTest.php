@@ -40,16 +40,12 @@ class EnforcementManagerTest extends SapphireTest
 
     public function testUserWithoutCMSAccessCannotSkipWhenCMSAccessIsNotRequired()
     {
-        Config::nest();
-
         $this->setSiteConfig(['MFARequired' => true]);
         EnforcementManager::config()->set('requires_admin_access', false);
 
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'sammy_smith');
         $this->assertFalse(EnforcementManager::create()->canSkipMFA($member));
-
-        Config::unnest();
     }
 
     public function testCannotSkipWhenMFAIsRequiredWithNoGracePeriod()
@@ -111,14 +107,12 @@ class EnforcementManagerTest extends SapphireTest
 
     public function testShouldRedirectToMFAWhenUserDoesNotHaveCMSAccessButTheCheckIsDisabledWithConfig()
     {
-        Config::nest();
         EnforcementManager::config()->set('requires_admin_access', false);
 
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'sammy_smith');
         $this->logInAs($member);
         $this->assertTrue(EnforcementManager::create()->shouldRedirectToMFA($member));
-        Config::unnest();
     }
 
     public function testShouldRedirectToMFAWhenUserHasAccessToReportsOnly()
