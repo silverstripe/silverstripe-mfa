@@ -196,9 +196,7 @@ class EnforcementManagerTest extends SapphireTest
         $this->setSiteConfig(['MFARequired' => false]);
 
         /** @var Member&MemberExtension $member */
-        $member = $this->objFromFixture(Member::class, 'sammy_smith');
-        $member->HasSkippedMFARegistration = true;
-        $member->write();
+        $member = $this->objFromFixture(Member::class, 'sully_smith');
         $member->logIn();
 
         $this->assertFalse(EnforcementManager::create()->shouldRedirectToMFA($member));
@@ -231,6 +229,16 @@ class EnforcementManagerTest extends SapphireTest
     {
         $this->setSiteConfig(['MFARequired' => true]);
         $this->assertFalse(EnforcementManager::create()->isGracePeriodInEffect());
+    }
+
+    public function testUserHasCompletedRegistrationWhenBackupMethodIsDisabled()
+    {
+        Config::inst()->update(MethodRegistry::class, 'default_backup_method', null);
+
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, 'sally_smith');
+
+        $this->assertTrue(EnforcementManager::create()->hasCompletedRegistration($member));
     }
 
     /**
