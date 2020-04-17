@@ -85,7 +85,8 @@ class EnforcementManager extends SS_Object
      *  - Whether MFA is enabled and there are methods available for use
      *  - Whether the user has admin access (MFA is disabled by default for users that don't)
      *  - Whether the user has existing MFA methods registered
-     *  - Whether the grace period is in effect (we always redirect eligible users in this case)
+     *  - Whether a grace period is in effect (we always redirect eligible users in this case)
+     *  - Whether MFA is mandatory (without a grace period or after it has expired)
      *  - Whether the user has previously opted to skip the registration process
      *
      * @param Member&MemberExtension $member
@@ -112,11 +113,11 @@ class EnforcementManager extends SS_Object
             return true;
         }
 
-        if ($this->isMFARequired()) {
+        if ($this->isGracePeriodInEffect()) {
             return true;
         }
 
-        if ($this->isGracePeriodInEffect()) {
+        if ($this->isMFARequired()) {
             return true;
         }
 

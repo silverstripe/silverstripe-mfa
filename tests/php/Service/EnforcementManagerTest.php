@@ -150,7 +150,7 @@ class EnforcementManagerTest extends SapphireTest
     {
         $this->setSiteConfig(['MFARequired' => true]);
         /** @var Member $member */
-        $member = $this->objFromFixture(Member::class, 'sally_smith');
+        $member = $this->objFromFixture(Member::class, 'sully_smith');
         $member->logIn();
 
         $this->assertTrue(EnforcementManager::create()->shouldRedirectToMFA($member));
@@ -158,28 +158,24 @@ class EnforcementManagerTest extends SapphireTest
 
     public function testShouldRedirectToMFAWhenMFAIsRequiredWithGracePeriodExpiringInFuture()
     {
-        $this->setSiteConfig(['MFARequired' => false, 'MFAGracePeriodExpires' => '2019-01-30']);
+        $this->setSiteConfig(['MFARequired' => true, 'MFAGracePeriodExpires' => '2019-01-30']);
 
         /** @var Member&MemberExtension $member */
-        $member = $this->objFromFixture(Member::class, 'sammy_smith');
-        $member->HasSkippedMFARegistration = true;
-        $member->write();
-        $this->logInAs($member);
+        $member = $this->objFromFixture(Member::class, 'sully_smith');
+        $member->logIn();
 
-        $this->assertFalse(EnforcementManager::create()->shouldRedirectToMFA($member));
+        $this->assertTrue(EnforcementManager::create()->shouldRedirectToMFA($member));
     }
 
     public function testShouldRedirectToMFAWhenMFAIsRequiredWithGracePeriodExpiringInPast()
     {
-        $this->setSiteConfig(['MFARequired' => false, 'MFAGracePeriodExpires' => '2018-12-25']);
+        $this->setSiteConfig(['MFARequired' => true, 'MFAGracePeriodExpires' => '2018-12-25']);
 
         /** @var Member&MemberExtension $member */
-        $member = $this->objFromFixture(Member::class, 'sammy_smith');
-        $member->HasSkippedMFARegistration = true;
-        $member->write();
-        $this->logInAs($member);
+        $member = $this->objFromFixture(Member::class, 'sully_smith');
+        $member->logIn();
 
-        $this->assertFalse(EnforcementManager::create()->shouldRedirectToMFA($member));
+        $this->assertTrue(EnforcementManager::create()->shouldRedirectToMFA($member));
     }
 
     public function testShouldRedirectToMFAWhenMFAIsOptionalAndHasNotBeenSkipped()
@@ -229,6 +225,12 @@ class EnforcementManagerTest extends SapphireTest
         $member->logIn();
 
         $this->assertFalse(EnforcementManager::create()->shouldRedirectToMFA($member));
+    }
+
+    public function testGracePeriodIsNotInEffectWhenMFAIsRequiredButNoGracePeriodIsSet()
+    {
+        $this->setSiteConfig(['MFARequired' => true]);
+        $this->assertFalse(EnforcementManager::create()->isGracePeriodInEffect());
     }
 
     /**
