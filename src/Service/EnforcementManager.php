@@ -50,44 +50,45 @@ class EnforcementManager
     private static $enabled = true;
 
     /**
-     * Whether the current member can skip the multi-factor authentication registration process.
+     * Whether the provided member can skip the MFA registration process.
      *
      * This is determined by a combination of:
-     *  - Whether MFA is required or optional
-     *  - If MFA is required, whether there is a grace period
-     *  - If MFA is required and there is a grace period, whether we're currently within that timeframe
+     *
+     *  - Whether the user has admin access (MFA is disabled by default for users that don't)
+     *  - Whether MFA is required - @see EnforcementManager::isMFARequired()
+     *  - Whether the user has registered MFA methods already
      *
      * @param Member&MemberExtension $member
      * @return bool
      */
     public function canSkipMFA(Member $member): bool
     {
+        if ($this->config()->get('requires_admin_access') && !$this->hasAdminAccess($member)) {
+            return true;
+        }
+
         if ($this->isMFARequired()) {
             return false;
         }
 
-        // If they've already registered MFA methods we will not allow them to skip the authentication process
-        $registeredMethods = $member->RegisteredMFAMethods();
-        if ($registeredMethods->exists()) {
+        if ($member->RegisteredMFAMethods()->exists()) {
             return false;
         }
 
-        // MFA is optional, or is required but might be within a grace period (see isMFARequired)
         return true;
     }
 
     /**
-     * Whether the authentication process should redirect the user to multi-factor authentication registration or
-     * login.
+     * Whether the authentication process should redirect the provided user to MFA registration or login.
      *
      * This is determined by a combination of:
-     *  - Whether MFA is enabled
-     *  - Whether MFA is required or optional
-     *  - Whether the user has registered MFA methods already
-     *  - If the user doesn't have any registered MFA methods already, and MFA is optional, whether the user has opted
-     *    to skip the registration process
      *
-     * Note that in determining this, we ignore whether or not MFA is enabled for the site in general.
+     *  - Whether MFA is enabled and there are methods available for use
+     *  - Whether the user has admin access (MFA is disabled by default for users that don't)
+     *  - Whether the user has existing MFA methods registered
+     *  - Whether a grace period is in effect (we always redirect eligible users in this case)
+     *  - Whether MFA is mandatory (without a grace period or after it has expired)
+     *  - Whether the user has previously opted to skip the registration process
      *
      * @param Member&MemberExtension $member
      * @return bool
@@ -98,15 +99,6 @@ class EnforcementManager
             return false;
         }
 
-        if ($this->config()->get('requires_admin_access')) {
-            $hasAdminAccess = Member::actAs($member, function () use ($member) {
-                return $this->hasAdminAccess($member);
-            });
-            if (!$hasAdminAccess) {
-                return false;
-            }
-        }
-
         $methodRegistry = MethodRegistry::singleton();
         $methods = $methodRegistry->getMethods();
         // If there are no methods available excluding backup codes, do not redirect
@@ -114,15 +106,19 @@ class EnforcementManager
             return false;
         }
 
+        if ($this->config()->get('requires_admin_access') && !$this->hasAdminAccess($member)) {
+            return false;
+        }
+
         if ($member->RegisteredMFAMethods()->exists()) {
             return true;
         }
 
-        if ($this->isMFARequired()) {
+        if ($this->isGracePeriodInEffect()) {
             return true;
         }
 
-        if ($this->isGracePeriodInEffect()) {
+        if ($this->isMFARequired()) {
             return true;
         }
 
@@ -134,9 +130,8 @@ class EnforcementManager
     }
 
     /**
-     * Check if the provided member has registered the required MFA methods. This includes a "back-up" method set in
-     * configuration plus at least one other method.
-     * Note that this method returns true if there is no backup method registered (and they have one other method
+     * Check if the provided member has registered the required MFA methods. This includes the default backup method
+     * if configured, and at least one other method.
      *
      * @param Member&MemberExtension $member
      * @return bool
@@ -156,8 +151,8 @@ class EnforcementManager
     }
 
     /**
-     * Whether multi-factor authentication is required for site members. This also takes into account whether a
-     * grace period is set and whether we're currently inside the window for it.
+     * Whether MFA is required for eligible users. This takes into account whether a grace period is set and whether
+     * we're currently inside the window for it.
      *
      * Note that in determining this, we ignore whether or not MFA is enabled for the site in general.
      *
@@ -218,35 +213,36 @@ class EnforcementManager
     }
 
     /**
-     * Decides whether the current user has access to any LeftAndMain controller, which indicates some level
+     * Decides whether the provided user has access to any LeftAndMain controller, which indicates some level
      * of access to the CMS.
      *
-     * See LeftAndMain::init().
-     *
+     * @see LeftAndMain::init()
      * @param Member $member
      * @return bool
      */
     protected function hasAdminAccess(Member $member): bool
     {
-        $leftAndMain = LeftAndMain::singleton();
-        if ($leftAndMain->canView($member)) {
-            return true;
-        }
-
-        // Look through all LeftAndMain subclasses to find if one permits the member to view
-        $menu = $leftAndMain->MainMenu(false);
-        foreach ($menu as $candidate) {
-            if (
-                $candidate->Link
-                && $candidate->Link !== $leftAndMain->Link()
-                && $candidate->MenuItem->controller
-                && singleton($candidate->MenuItem->controller)->canView($member)
-            ) {
+        return Member::actAs($member, function () use ($member) {
+            $leftAndMain = LeftAndMain::singleton();
+            if ($leftAndMain->canView($member)) {
                 return true;
             }
-        }
 
-        return false;
+            // Look through all LeftAndMain subclasses to find if one permits the member to view
+            $menu = $leftAndMain->MainMenu(false);
+            foreach ($menu as $candidate) {
+                if (
+                    $candidate->Link
+                    && $candidate->Link !== $leftAndMain->Link()
+                    && $candidate->MenuItem->controller
+                    && singleton($candidate->MenuItem->controller)->canView($member)
+                ) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
     }
 
     /**
