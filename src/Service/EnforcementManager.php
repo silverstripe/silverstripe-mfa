@@ -53,6 +53,7 @@ class EnforcementManager extends SS_Object
      *
      * This is determined by a combination of:
      *
+     *  - Whether MFA is enabled and there are methods available for use
      *  - Whether the user has admin access (MFA is disabled by default for users that don't)
      *  - Whether MFA is required - @see EnforcementManager::isMFARequired()
      *  - Whether the user has registered MFA methods already
@@ -62,6 +63,10 @@ class EnforcementManager extends SS_Object
      */
     public function canSkipMFA(Member $member): bool
     {
+        if (!$this->isEnabled()) {
+            return true;
+        }
+
         if ($this->config()->get('requires_admin_access') && !$this->hasAdminAccess($member)) {
             return true;
         }
@@ -95,13 +100,6 @@ class EnforcementManager extends SS_Object
     public function shouldRedirectToMFA(Member $member): bool
     {
         if (!$this->isEnabled()) {
-            return false;
-        }
-
-        $methodRegistry = MethodRegistry::singleton();
-        $methods = $methodRegistry->getMethods();
-        // If there are no methods available excluding backup codes, do not redirect
-        if (!count($methods) || (count($methods) === 1 && $methodRegistry->getBackupMethod() !== null)) {
             return false;
         }
 
@@ -253,10 +251,26 @@ class EnforcementManager extends SS_Object
     }
 
     /**
+     * MFA is enabled if:
+     *
+     * - The EnforcementManager::enabled configuration is set to true
+     * - There is at least one non-backup method available to register
+     *
      * @return bool
      */
     protected function isEnabled(): bool
     {
-        return (bool) $this->config()->get('enabled');
+        if (!$this->config()->get('enabled')) {
+            return false;
+        }
+
+        $methodRegistry = MethodRegistry::singleton();
+        $methods = $methodRegistry->getMethods();
+        // If there are no methods available excluding backup codes, do not redirect
+        if (!count($methods) || (count($methods) === 1 && $methodRegistry->getBackupMethod() !== null)) {
+            return false;
+        }
+
+        return true;
     }
 }
