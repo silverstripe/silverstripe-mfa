@@ -27,6 +27,27 @@ class EnforcementManagerTest extends SapphireTest
         ]);
 
         EnforcementManager::config()->set('requires_admin_access', true);
+        EnforcementManager::config()->set('enabled', true);
+    }
+
+    public function testUserCanSkipWhenMFAIsDisabled()
+    {
+        $this->setSiteConfig(['MFARequired' => true]);
+        EnforcementManager::config()->set('enabled', false);
+
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, 'sally_smith');
+        $this->assertTrue(EnforcementManager::create()->canSkipMFA($member));
+    }
+
+    public function testUserCanSkipWhenNoMethodsAreAvailable()
+    {
+        $this->setSiteConfig(['MFARequired' => true]);
+        MethodRegistry::config()->set('methods', null);
+
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, 'sally_smith');
+        $this->assertTrue(EnforcementManager::create()->canSkipMFA($member));
     }
 
     public function testUserWithoutCMSAccessCanSkipWhenCMSAccessIsRequired()
