@@ -67,6 +67,7 @@ class EnforcementManager extends SS_Object
             return true;
         }
 
+        // Users without admin access must skip MFA when it's limited to admin users
         if ($this->config()->get('requires_admin_access') && !$this->hasAdminAccess($member)) {
             return true;
         }
@@ -103,6 +104,7 @@ class EnforcementManager extends SS_Object
             return false;
         }
 
+        // Users without admin access must not be redirected to MFA when it's limited to admin users
         if ($this->config()->get('requires_admin_access') && !$this->hasAdminAccess($member)) {
             return false;
         }
