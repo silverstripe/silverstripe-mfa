@@ -3,8 +3,8 @@ summary: Steps for adding, removing and resetting MFA methods
 
 # Managing your MFA settings
 
-You can add, reset, or remove MFA methods in your CMS Profile, which can be
-visited by clicking on your name in the top left area of the CMS interface. The
+You can add, reset, or remove MFA methods in your Silverstripe CMS Profile, which can be
+visited by clicking on your name in the top left area of the CMS. The
 MFA settings are protected by "sudo mode", which means you may need to
 re-enter your password to access them.
 

@@ -1,6 +1,6 @@
 # Integrating with other authenticators
 
-**This version relates to SilverStripe 4.x configuration.**
+**This version relates to Silverstripe CMS 4.x configuration.**
 
 If your project uses a non-standard authentication module, such as silverstripe/ldap, you will
 need to implement some customisations to connect the modules together. The following notes should serve as a guide

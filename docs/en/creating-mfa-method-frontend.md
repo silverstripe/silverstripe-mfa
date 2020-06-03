@@ -8,7 +8,7 @@ with React / Redux is recommended.
 
 The front-end components of MFA make use of [`react-injector`](https://github.com/silverstripe/react-injector/)
 (Injector) to allow sharing of React components and Redux reducers between separate JS bundles. You can find more
-documentation on the Injector API in the [SilverStripe docs](https://docs.silverstripe.org/en/4/developer_guides/customising_the_admin_interface/reactjs_redux_and_graphql/#the-injector-api).
+documentation on the Injector API in the [Silverstripe docs](https://docs.silverstripe.org/en/4/developer_guides/customising_the_admin_interface/reactjs_redux_and_graphql/#the-injector-api).
 
 You'll find it easiest to get up and running by matching the NPM dependencies and Webpack configuration used in the TOTP
 and WebAuthn modules, with a single entry point that handles registering your components with Injector. We also suggest

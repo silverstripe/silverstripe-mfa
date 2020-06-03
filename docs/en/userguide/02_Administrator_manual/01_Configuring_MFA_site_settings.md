@@ -15,7 +15,7 @@ Here, you can select one of two modes of operation for MFA on your site:
 This is the default setting when MFA is installed. Everyone will be prompted to
 set up multi-factor authentication upon their first login, but they can skip the
 setup process and continue to log in as they did before. They will be able to
-set up MFA later via their Profile page in the CMS.
+set up MFA later via their Profile page in Silverstripe CMS.
 
 ## MFA is required for everyone
 
