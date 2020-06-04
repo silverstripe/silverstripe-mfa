@@ -16,7 +16,7 @@ like your phone or a USB device. Some services can also verify something you
 are - for example your fingerprint or face. For more information, see
 [the CERT NZ guide](https://www.cert.govt.nz/individuals/guides/getting-started-with-cyber-security/two-factor-authentication/).
 
-Two popular verification methods are supported by SilverStripe MFA:
+Two popular verification methods are supported by the MFA feature of Silverstripe CMS:
 
 ### Authenticator apps (TOTP)
 
@@ -29,7 +29,7 @@ short period of time before a new one is automatically generated.
 A security key is a physical device, such as a USB key, that is activated during
 MFA verification. This may involve plugging the device into your computer or
 bringing the key in range of a compatible device supporting wireless
-communications (NFC). To use a security key with SilverStripe MFA, you must log
+communications (NFC). To use a security key for MFA within Silverstripe CMS, you must log
 in using a supported browser over HTTPS
 (see [Using security keys](user_manual/using_security_keys) for details).
 

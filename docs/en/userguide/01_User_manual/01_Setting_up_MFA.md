@@ -11,7 +11,7 @@ prompted to set it up for your account.
 ![A screenshot of the introduction step in the MFA setup flow](../_images/01-01-1-mfa-setup-intro.png)
 
 If MFA is optional, you can choose to skip setup, and you won’t be prompted
-again. You can manually add MFA from your profile in the CMS at a later time.
+again. You can manually add MFA from your profile in Silverstripe CMS at a later time.
 
 If an administrator has configured MFA as _required_, it will prompt you every
 time you attempt to log in. You will be unable to access the CMS until you have

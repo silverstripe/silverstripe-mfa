@@ -27,4 +27,4 @@ It is important that you only choose to use this option on a device you know to 
 **A device shared between multiple people would not be considered secure and you should not use this option.**
 </div>
 
-This functionality is provided by default with the SilverStripe CMS however it may be disabled by a Developer in some projects.
+This functionality is provided by default with the Silverstripe CMS however it may be disabled by a Developer in some projects.

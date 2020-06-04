@@ -53,7 +53,7 @@ pressing **Retry**.
 
 ## Logging in using a security key
 
-Login to your SilverStripe CMS account with your email and password. You’ll then
+Login to your Silverstripe CMS account with your email and password. You’ll then
 be prompted to activate your security key.
 
 ![A screenshot of a user being prompted to activate their security key during login](../_images/01-03-5-security-key-login.png)
