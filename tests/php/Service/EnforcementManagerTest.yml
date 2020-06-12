@@ -31,6 +31,12 @@ SilverStripe\Security\Member:
     FirstName: Sammy
     Surname: Smith
     Email: sammy.smith@example.com
+  sully_smith:
+    FirstName: Sully
+    Surname: Smith
+    Email: sully.smith@example.com
+    Groups: =>SilverStripe\Security\Group.reportsgroup
+    HasSkippedMFARegistration: true
   reports_user:
     FirstName: Reports
     Surname: User
