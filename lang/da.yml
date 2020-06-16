@@ -33,6 +33,7 @@ da:
     HELLO: ''
     NOTYOU: ''
     REGISTERED: ''
+    REMOVED: ''
     USEDBACKUPCODE: ''
   SilverStripe\MFA\Extension\AccountReset\SecurityAdminExtension:
     ACCOUNT_RESET_EMAIL_SUBJECT: ''

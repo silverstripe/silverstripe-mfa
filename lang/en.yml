@@ -68,6 +68,13 @@ en:
       one: 'A Registered Method'
       other: '{count} Registered Methods'
     SINGULARNAME: 'Registered Method'
+  SilverStripe\MFA\Report\EnabledMembers:
+    ANY_AT_LEAST_ONE: 'Any (at least one)'
+    COLUMN_METHODS_REGISTERED: 'Registered methods'
+    COLUMN_METHOD_DEFAULT: 'Default method'
+    COLUMN_SKIPPED_REGISTRATION: 'Skipped registration'
+    FILTER_MEMBER_DESCRIPTION: 'Firstname, Surname, Email partial match search'
+    NONE: None
   SilverStripe\MFA\RequestHandler:
     CSRF_FAILURE: 'Your request timed out. Please refresh and try again'
     METHOD_ALREADY_REGISTERED: 'That method has already been registered against this Member'

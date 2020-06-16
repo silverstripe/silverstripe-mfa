@@ -32,7 +32,8 @@ eo:
     CODESLEFT: 'Vi nun havas {count} kodojn restantajn.'
     HELLO: Saluton
     NOTYOU: 'Se vi ne tiel agis, bonvolu tuj kontakti vian sisteman administranton.'
-    REGISTERED: 'Vi forigis la {method} aŭtentigan metodon el via konto ĉe {site}.'
+    REGISTERED: ''
+    REMOVED: ''
     USEDBACKUPCODE: 'Iu uzis realiran kodon por aliri vian konton ĉe {site}.'
   SilverStripe\MFA\Extension\AccountReset\SecurityAdminExtension:
     ACCOUNT_RESET_EMAIL_SUBJECT: 'Reagordi vian konton.'
