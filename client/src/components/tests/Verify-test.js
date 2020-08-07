@@ -316,6 +316,86 @@ describe('Verify', () => {
     });
   });
 
+  it('will provide a try-again message for a 429 rate limiting code', done => {
+    const onCompleteVerification = jest.fn();
+    const wrapper = shallow(
+      <Verify
+        endpoints={endpoints}
+        registeredMethods={mockRegisteredMethods}
+        onCompleteVerification={onCompleteVerification}
+      />
+    );
+
+    setTimeout(() => {
+      expect(fetchMock.mock.calls).toHaveLength(1);
+
+      fetchMock.mockImplementation(() => Promise.resolve({
+        status: 429,
+        json: () => Promise.resolve({
+          message: 'Something went wrong. Please try again.',
+        }),
+      }));
+      fetchMock.mockClear();
+
+      const completionFunction = wrapper.find('Test').prop('onCompleteVerification');
+      completionFunction({ test: 1 });
+      expect(fetchMock.mock.calls).toHaveLength(1);
+      expect(fetchMock.mock.calls[0]).toEqual(['/fake/aye', {
+        credentials: 'same-origin',
+        method: 'POST',
+        headers: {},
+        body: '{"test":1}',
+      }]);
+      setTimeout(() => {
+        expect(onCompleteVerification.mock.calls).toHaveLength(0);
+        expect(wrapper.find('Test').props()).toEqual(expect.objectContaining({
+          error: 'Something went wrong. Please try again.',
+        }));
+        done();
+      });
+    });
+  });
+
+  it('will provide an unknown message for a 500 rate limiting code', done => {
+    const onCompleteVerification = jest.fn();
+    const wrapper = shallow(
+      <Verify
+        endpoints={endpoints}
+        registeredMethods={mockRegisteredMethods}
+        onCompleteVerification={onCompleteVerification}
+      />
+    );
+
+    setTimeout(() => {
+      expect(fetchMock.mock.calls).toHaveLength(1);
+
+      fetchMock.mockImplementation(() => Promise.resolve({
+        status: 500,
+        json: () => Promise.resolve({
+          message: 'An unknown error occurred.',
+        }),
+      }));
+      fetchMock.mockClear();
+
+      const completionFunction = wrapper.find('Test').prop('onCompleteVerification');
+      completionFunction({ test: 1 });
+      expect(fetchMock.mock.calls).toHaveLength(1);
+      expect(fetchMock.mock.calls[0]).toEqual(['/fake/aye', {
+        credentials: 'same-origin',
+        method: 'POST',
+        headers: {},
+        body: '{"test":1}',
+      }]);
+      setTimeout(() => {
+        expect(onCompleteVerification.mock.calls).toHaveLength(0);
+        expect(wrapper.find('Test').props()).toEqual(expect.objectContaining({
+          error: 'An unknown error occurred.',
+        }));
+        done();
+      });
+    });
+  });
+
   describe('renderSelectedMethod()', () => {
     it('renders an unavailable screen when the selected method is unavailable', done => {
       const wrapper = shallow(
