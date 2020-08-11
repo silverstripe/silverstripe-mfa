@@ -11,6 +11,8 @@ import SelectMethod from 'components/Verify/SelectMethod';
 import withMethodAvailability from 'state/methodAvailability/withMethodAvailability';
 import LoadingError from 'components/LoadingError';
 
+const fallbacks = require('../../lang/src/en.json');
+
 class Verify extends Component {
   constructor(props) {
     super(props);
@@ -132,6 +134,7 @@ class Verify extends Component {
     const { selectedMethod, token } = this.state;
     const params = token ? `?SecurityID=${token}` : '';
     const endpoint = `${verify.replace('{urlSegment}', selectedMethod.urlSegment)}${params}`;
+    const { ss: { i18n } } = window;
 
     this.setState({
       loading: true
@@ -150,9 +153,28 @@ class Verify extends Component {
               loading: false,
             });
             return null;
+          case 429:
+            this.setState({
+              loading: false,
+              message: i18n._t(
+                'MultiFactorAuthentication.TRY_AGAIN_ERROR',
+                fallbacks['MultiFactorAuthentication.TRY_AGAIN_ERROR']
+              )
+            });
+            return null;
           default:
+            if (response.status.toString().match(/^5[0-9]{2}$/)) {
+              this.setState({
+                loading: false,
+                message: i18n._t(
+                  'MultiFactorAuthentication.UNKNOWN_ERROR',
+                  fallbacks['MultiFactorAuthentication.UNKNOWN_ERROR']
+                )
+              });
+              return null;
+            }
+            return response.json();
         }
-        return response.json();
       })
       .then(result => {
         if (result) {
