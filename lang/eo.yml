@@ -68,6 +68,13 @@ eo:
       one: 'Unu  registrita metodo'
       other: '{count} registritaj metodoj'
     SINGULARNAME: 'Registrita metodo'
+  SilverStripe\MFA\Report\EnabledMembers:
+    ANY_AT_LEAST_ONE: ''
+    COLUMN_METHODS_REGISTERED: ''
+    COLUMN_METHOD_DEFAULT: ''
+    COLUMN_SKIPPED_REGISTRATION: ''
+    FILTER_MEMBER_DESCRIPTION: ''
+    NONE: ''
   SilverStripe\MFA\RequestHandler:
     CSRF_FAILURE: 'Via peto eltempiĝis. Bonvolu refreŝigi kaj reprovi.'
     METHOD_ALREADY_REGISTERED: 'Tiu metodo jam estas registrita kontraŭ ĉi tiu membro.'

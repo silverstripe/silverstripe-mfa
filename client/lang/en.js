@@ -44,8 +44,6 @@ if (typeof(ss) === 'undefined' || typeof(ss.i18n) === 'undefined') {
     "MultiFactorAuthentication.DELETE_CONFIRMATION_BUTTON": "Remove method",
     "MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION": "All existing codes will be made invalid and new codes will be created",
     "MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION_BUTTON": "Reset codes",
-    "MultiFactorAuthentication.ADMIN_SETUP_COMPLETE_CONTINUE": "Your settings have been updated",
-    "MultiFactorAuthentication.TRY_AGAIN_ERROR": "Something went wrong. Please try again.",
-    "MultiFactorAuthentication.UNKNOWN_ERROR": "An unknown error occurred."
+    "MultiFactorAuthentication.ADMIN_SETUP_COMPLETE_CONTINUE": "Your settings have been updated"
 });
 }

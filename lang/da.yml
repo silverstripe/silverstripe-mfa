@@ -68,6 +68,13 @@ da:
       one: ''
       other: ''
     SINGULARNAME: ''
+  SilverStripe\MFA\Report\EnabledMembers:
+    ANY_AT_LEAST_ONE: ''
+    COLUMN_METHODS_REGISTERED: ''
+    COLUMN_METHOD_DEFAULT: ''
+    COLUMN_SKIPPED_REGISTRATION: ''
+    FILTER_MEMBER_DESCRIPTION: ''
+    NONE: ''
   SilverStripe\MFA\RequestHandler:
     CSRF_FAILURE: ''
     METHOD_ALREADY_REGISTERED: ''
