@@ -5,6 +5,12 @@
 [![codecov](https://codecov.io/gh/silverstripe/silverstripe-mfa/branch/master/graph/badge.svg)](https://codecov.io/gh/silverstripe/silverstripe-mfa)
 [![SilverStripe supported module](https://img.shields.io/badge/silverstripe-supported-0071C4.svg)](https://www.silverstripe.org/software/addons/silverstripe-commercially-supported-module-list/)
 
+### With thanks to Simon `Firesphere` Erkelens
+
+This module was based on pioneering work by Simon. It differs from the original implementation in its use of a pluggable
+React UI + JSON API architecture, and its enhanced management UI within the CMS. You can find Simon's original module
+[here](https://github.com/firesphere/silverstripe-mfa).
+
 ## Requirements
 
 * PHP ^7.1
