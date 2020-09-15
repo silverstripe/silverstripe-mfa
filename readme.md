@@ -9,7 +9,7 @@
 
 This module was based on pioneering work by Simon. It differs from the original implementation in its use of a pluggable
 React UI + JSON API architecture, and its enhanced management UI within the CMS. You can find Simon's original module
-[here](https://github.com/firesphere/silverstripe-mfa).
+[here](https://github.com/firesphere/silverstripe-bootstrapmfa).
 
 ## Requirements
 
