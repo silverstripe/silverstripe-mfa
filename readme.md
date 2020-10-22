@@ -70,6 +70,13 @@ functionality:
 - [Security](docs/en/security.md)
 - [Integrating with other authenticators](docs/en/other-authenticators.md)
 
+## Module development
+
+When adding translatable content to front-end UIs in the MFA module, you must ensure that these translations are pushed
+to Transifex. If this doesn't happen, they will be automatically removed in the next module released. See the
+[translation docs](https://docs.silverstripe.org/en/4/contributing/translation_process/#javascript-translations)
+for more information.
+
 ## License
 
 See [license](LICENSE.md).
