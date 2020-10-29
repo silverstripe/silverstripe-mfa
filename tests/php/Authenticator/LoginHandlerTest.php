@@ -26,6 +26,7 @@ use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\MFA\Tests\Stub\Store\TestStore;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
 use SilverStripe\ORM\FieldType\DBDatetime;
+use SilverStripe\Security\Group;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 use SilverStripe\Security\SecurityToken;
@@ -570,6 +571,44 @@ class LoginHandlerTest extends FunctionalTest
         $session->set(LoginHandler::SESSION_KEY . '.additionalData', ['BackURL' => 'foobar']);
 
         $this->assertSame('foobar', $handler->getBackURL());
+    }
+
+
+    public function testMFAGroupRestriction()
+    {
+        $config = SiteConfig::current_site_config();
+
+        /** @var Group $group */
+        $group = $this->objFromFixture(Group::class, 'admingroup');
+        $config->MFAGroupRestrictions()->add($group);
+
+        // Test that MFA is required for a member of a group that has been set in SiteConfig
+        /** @var Member&MemberExtension $member */
+        $member = $this->objFromFixture(Member::class, 'guy');
+
+        $this->autoFollowRedirection = false;
+        $response = $this->doLogin($member, 'Password123');
+        $this->autoFollowRedirection = true;
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertStringEndsWith(
+            Controller::join_links(Security::login_url(), 'default/mfa'),
+            $response->getHeader('location')
+        );
+
+        // Test that MFA is not required for a member that does not belong to any of the selected groups
+        /** @var Member&MemberExtension $member */
+        $member = $this->objFromFixture(Member::class, 'colin');
+
+        $this->autoFollowRedirection = false;
+        $response = $this->doLogin($member, 'Password123');
+        $this->autoFollowRedirection = true;
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertStringEndsWith(
+            Security::login_url(),
+            $response->getHeader('location')
+        );
     }
 
     public function methodlessMemberFixtureProvider()
