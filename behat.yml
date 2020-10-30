@@ -8,7 +8,7 @@ default:
   suites:
     mfa:
       paths:
-        - %paths.modules.mfa%/tests/Behat/features
+        - '%paths.modules.mfa%/tests/Behat/features'
       contexts:
         - SilverStripe\Framework\Tests\Behaviour\FeatureContext
         - SilverStripe\Framework\Tests\Behaviour\CmsFormsContext
@@ -27,5 +27,5 @@ default:
       browser_name: chrome
     SilverStripe\BehatExtension\Extension:
       bootstrap_file: vendor/silverstripe/cms/tests/behat/serve-bootstrap.php
-      screenshot_path: %paths.base%/artifacts/screenshots
+      screenshot_path: '%paths.base%/artifacts/screenshots'
       retry_seconds: 4 # default is 2
