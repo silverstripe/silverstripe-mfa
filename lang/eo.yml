@@ -9,10 +9,10 @@ eo:
     NOT_AUTHENTICATING: 'Vi devas esti ensalutinta aŭ ensalutanta. Bonvolu refreŝigi la paĝon kaj reprovi.'
     SUDO_MODE_REQUIRED: 'Antaŭ ol daŭrigi, vi devas ree konfirmi vian konton. Bonvolu reŝargi kaj reprovi.'
   SilverStripe\MFA\BackupCode\Method:
-    NAME: ''
+    NAME: 'Realiraj kodoj'
   SilverStripe\MFA\BackupCode\RegisterHandler:
     DESCRIPTION: 'Realiraj kodoj ebligas al vi ensaluti vian konton, se okazos ke via ĉefa aŭtentigo ne haveblas. Ĉiu kodo estas uzebla nur unufoje. Konservu ĉi tiujn kodojn en sekura loko, ĉar ili ne estos videblaj post kiam vi lasos ĉi tiun paĝon.'
-    SUPPORT_LINK_DESCRIPTION: ''
+    SUPPORT_LINK_DESCRIPTION: 'Lerni pri realiraj kodoj'
   SilverStripe\MFA\BackupCode\VerifyHandler:
     INVALID_CODE: 'Nevalida kodo'
     MFAREMOVED: 'Iu uzis realiran kodon por aliri vian konton'
@@ -20,8 +20,8 @@ eo:
     COULD_NOT_DELETE: 'Ne povis forigi la indikitan metodon el la uzanto'
     COULD_NOT_SET_DEFAULT: 'Ne povis agordi la aprioran metodon por la uzanto'
     CSRF_FAILURE: 'Peto eltempiĝis, bonvolu reprovi.'
-    INVALID_METHOD: ''
-    INVALID_REGISTERED_METHOD: ''
+    INVALID_METHOD: 'Tia metodo ne disponeblas.'
+    INVALID_REGISTERED_METHOD: 'Tia metodo registrita ne disponeblas.'
     INVALID_SESSION: 'Nevalida seanco. Bonvolu refreŝigi kaj reprovi.'
     MENUTITLE: SilverStripe\MFA\Controller\AdminRegistrationController
   SilverStripe\MFA\Email\AccountReset:
@@ -32,8 +32,8 @@ eo:
     CODESLEFT: 'Vi nun havas {count} kodojn restantajn.'
     HELLO: Saluton
     NOTYOU: 'Se vi ne tiel agis, bonvolu tuj kontakti vian sisteman administranton.'
-    REGISTERED: ''
-    REMOVED: ''
+    REGISTERED: 'Vi sukcese registris je {method} kiel ekstra nivelo de protekto por via konto ĉe {site}.'
+    REMOVED: 'Vi sukcese forigis {method} aŭtentigan metodon el via konto ĉe {site}.'
     USEDBACKUPCODE: 'Iu uzis realiran kodon por aliri vian konton ĉe {site}.'
   SilverStripe\MFA\Extension\AccountReset\SecurityAdminExtension:
     ACCOUNT_RESET_EMAIL_SUBJECT: 'Reagordi vian konton.'
@@ -69,12 +69,12 @@ eo:
       other: '{count} registritaj metodoj'
     SINGULARNAME: 'Registrita metodo'
   SilverStripe\MFA\Report\EnabledMembers:
-    ANY_AT_LEAST_ONE: ''
-    COLUMN_METHODS_REGISTERED: ''
-    COLUMN_METHOD_DEFAULT: ''
-    COLUMN_SKIPPED_REGISTRATION: ''
-    FILTER_MEMBER_DESCRIPTION: ''
-    NONE: ''
+    ANY_AT_LEAST_ONE: 'Iu(j) (almenaŭ unu)'
+    COLUMN_METHODS_REGISTERED: 'Registritaj metodoj'
+    COLUMN_METHOD_DEFAULT: 'Apriora metodo'
+    COLUMN_SKIPPED_REGISTRATION: 'Preterlasis registri'
+    FILTER_MEMBER_DESCRIPTION: 'Persona nomo, familia nomo, retpoŝto, serĉi partan kongruon'
+    NONE: Neniu
   SilverStripe\MFA\RequestHandler:
     CSRF_FAILURE: 'Via peto eltempiĝis. Bonvolu refreŝigi kaj reprovi.'
     METHOD_ALREADY_REGISTERED: 'Tiu metodo jam estas registrita kontraŭ ĉi tiu membro.'
