@@ -42,6 +42,7 @@
     "@silverstripe/eslint-config": "^0.0.5",
     "@silverstripe/webpack-config": "^1.1.0",
     "babel-jest": "^23.6.0",
+    "copy-webpack-plugin": "^4",
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.10.0",
     "jest-cli": "^23.6.0"
