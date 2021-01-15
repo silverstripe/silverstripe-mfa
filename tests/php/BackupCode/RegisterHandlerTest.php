@@ -9,7 +9,7 @@ use SilverStripe\MFA\BackupCode\Method;
 use SilverStripe\MFA\BackupCode\RegisterHandler;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
-use SilverStripe\MFA\Store\StoreInterface;
+use SilverStripe\MFA\Tests\Stub\Store\TestStore;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method as BasicMathMethod;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
@@ -24,8 +24,8 @@ class RegisterHandlerTest extends SapphireTest
      */
     public function testStartThrowsExceptionForMemberWithoutRegisteredMethods()
     {
-        /** @var StoreInterface&PHPUnit_Framework_MockObject_MockObject $store */
-        $store = $this->createMock(StoreInterface::class);
+        /** @var TestStore&PHPUnit_Framework_MockObject_MockObject $store */
+        $store = $this->createMock(TestStore::class);
 
         /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'guy');
@@ -43,8 +43,8 @@ class RegisterHandlerTest extends SapphireTest
         $method = new BasicMathMethod();
         RegisteredMethodManager::singleton()->registerForMember($member, $method, ['need' => 'one']);
 
-        /** @var StoreInterface&PHPUnit_Framework_MockObject_MockObject $store */
-        $store = $this->createMock(StoreInterface::class);
+        /** @var TestStore&PHPUnit_Framework_MockObject_MockObject $store */
+        $store = $this->createMock(TestStore::class);
         $store->expects($this->once())->method('getMember')->willReturn($member);
 
         $handler = new RegisterHandler();
@@ -57,8 +57,8 @@ class RegisterHandlerTest extends SapphireTest
 
     public function testStartStoresHashesOfBackupCodesOnMember()
     {
-        /** @var StoreInterface&PHPUnit_Framework_MockObject_MockObject $store */
-        $store = $this->createMock(StoreInterface::class);
+        /** @var TestStore&PHPUnit_Framework_MockObject_MockObject $store */
+        $store = $this->createMock(TestStore::class);
 
         /** @var Member&MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'guy');
@@ -94,8 +94,8 @@ class RegisterHandlerTest extends SapphireTest
 
     public function testRegisterReturnsNoContext()
     {
-        /** @var StoreInterface&PHPUnit_Framework_MockObject_MockObject $store */
-        $store = $this->createMock(StoreInterface::class);
+        /** @var TestStore&PHPUnit_Framework_MockObject_MockObject $store */
+        $store = $this->createMock(TestStore::class);
 
         /** @var HTTPRequest|PHPUnit_Framework_MockObject_MockObject $request */
         $request = $this->createMock(HTTPRequest::class);

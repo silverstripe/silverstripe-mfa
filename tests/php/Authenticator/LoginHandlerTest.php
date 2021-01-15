@@ -20,7 +20,7 @@ use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\SessionStore;
-use SilverStripe\MFA\Store\StoreInterface;
+use SilverStripe\MFA\Tests\Stub\Store\TestStore;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
 use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverStripe\Security\Member;
@@ -382,7 +382,7 @@ class LoginHandlerTest extends FunctionalTest
         $handler = new LoginHandler('mfa', $this->createMock(MemberAuthenticator::class));
         $handler->setRequest(new HTTPRequest('GET', '/'));
         $handler->getRequest()->setSession(new Session([]));
-        $handler->setStore($this->createMock(StoreInterface::class));
+        $handler->setStore($this->createMock(TestStore::class));
 
         $response = $handler->startVerification($handler->getRequest());
         $this->assertSame(403, $response->getStatusCode());
