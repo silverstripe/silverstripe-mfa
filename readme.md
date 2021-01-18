@@ -37,8 +37,9 @@ will be replaced with the MFA authenticator instead. This will provide no change
 an MFA Method has also been configured for the site. The TOTP and WebAuthn modules will configure themselves
 automatically.
 
-After installing the MFA module and having at least one method configured, MFA will automatically be enabled. By default
-it will be optional (users can skip MFA registration). You can make it mandatory via the Settings tab in the admin area.
+After installing the MFA module and having at least one method configured, MFA will automatically be enabled
+in non-dev environments. You can optionally [enable MFA in dev environments](docs/local-development).
+When enabled, users can skip MFA registration. You can make it mandatory via the Settings tab in the admin area.
 
 The MFA flow will only be applied to members with access to the CMS or administration area. See '[Broadening the scope of MFA](docs/en/broadening-the-scope-of-mfa.md)' for more detail.
 

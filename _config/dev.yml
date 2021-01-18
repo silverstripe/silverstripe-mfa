@@ -1,0 +1,7 @@
+---
+Name: mfa-devconfig
+Only:
+  environment: dev
+---
+SilverStripe\MFA\Service\EnforcementManager:
+  enabled: false

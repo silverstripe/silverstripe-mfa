@@ -16,6 +16,7 @@ use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
+use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\State\Result;
@@ -37,6 +38,8 @@ class LoginHandlerTest extends FunctionalTest
     {
         parent::setUp();
         Config::modify()->set(MethodRegistry::class, 'methods', [Method::class]);
+
+        EnforcementManager::config()->set('enabled', true);
 
         Injector::inst()->load([
             Security::class => [
