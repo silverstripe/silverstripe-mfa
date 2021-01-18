@@ -16,10 +16,11 @@ use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\SessionStore;
-use SilverStripe\MFA\Store\StoreInterface;
+use SilverStripe\MFA\Tests\Stub\Store\TestStore;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
 use SilverStripe\Security\Member;
 use SilverStripe\SiteConfig\SiteConfig;
+use Test;
 
 class ChangePasswordHandlerTest extends FunctionalTest
 {
@@ -138,7 +139,7 @@ class ChangePasswordHandlerTest extends FunctionalTest
             ->setMethods(['getStore'])
             ->getMock();
 
-        $store = $this->createMock(StoreInterface::class);
+        $store = $this->createMock(TestStore::class);
 
         $handler->expects($this->once())->method('getStore')->willReturn($store);
         $store->expects($this->once())->method('getMember')->willReturn(null);
@@ -155,10 +156,13 @@ class ChangePasswordHandlerTest extends FunctionalTest
             ->setMethods(['getStore', 'createStartVerificationResponse'])
             ->getMock();
 
-        $store = $this->createMock(StoreInterface::class);
+        $store = $this->createMock(TestStore::class);
 
         $handler->expects($this->once())->method('getStore')->willReturn($store);
         $store->expects($this->once())->method('getMember')->willReturn($this->createMock(Member::class));
+
+        // Need to specify willReturn() otherwise mock will attempt to an interface which causes a fatal error in PHP8
+        $store->expects($this->once())->method('save')->willReturn($store);
 
         $expectedResponse = new HTTPResponse();
         $handler->expects($this->once())->method('createStartVerificationResponse')->willReturn($expectedResponse);
@@ -182,7 +186,7 @@ class ChangePasswordHandlerTest extends FunctionalTest
         $logger->expects($this->once())->method('debug');
         $handler->setLogger($logger);
 
-        $store = $this->createMock(StoreInterface::class);
+        $store = $this->createMock(TestStore::class);
 
         $handler->expects($this->once())->method('getStore')->willReturn($store);
         $handler->expects($this->once())->method('completeVerificationRequest')->willThrowException(
@@ -201,7 +205,7 @@ class ChangePasswordHandlerTest extends FunctionalTest
             ->setMethods(['getStore', 'completeVerificationRequest'])
             ->getMock();
 
-        $store = $this->createMock(StoreInterface::class);
+        $store = $this->createMock(TestStore::class);
         $handler->expects($this->once())->method('getStore')->willReturn($store);
 
         $handler->expects($this->once())->method('completeVerificationRequest')->willReturn(
@@ -221,7 +225,7 @@ class ChangePasswordHandlerTest extends FunctionalTest
             ->setMethods(['getStore', 'completeVerificationRequest', 'isVerificationComplete'])
             ->getMock();
 
-        $store = $this->createMock(StoreInterface::class);
+        $store = $this->createMock(TestStore::class);
 
         $handler->expects($this->once())->method('getStore')->willReturn($store);
         $handler->expects($this->once())->method('completeVerificationRequest')->willReturn(new Result());

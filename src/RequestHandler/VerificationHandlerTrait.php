@@ -75,6 +75,10 @@ trait VerificationHandlerTrait
         $token->reset();
         $data[$token->getName()] = $token->getValue();
 
+        // prevent caching of response
+        $response->addHeader('Pragma', 'no-cache');
+        $response->addHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+
         // Respond with our method
         return $response->setBody(json_encode($data));
     }
