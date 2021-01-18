@@ -6,7 +6,7 @@ use PHPUnit_Framework_MockObject_MockObject;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\MFA\Model\RegisteredMethod;
-use SilverStripe\MFA\Store\StoreInterface;
+use SilverStripe\MFA\Tests\Stub\Store\TestStore;
 use SilverStripe\MFA\Tests\Stub\BasicMath\MethodVerifyHandler;
 
 class MethodVerifyHandlerTest extends SapphireTest
@@ -15,9 +15,11 @@ class MethodVerifyHandlerTest extends SapphireTest
     {
         $handler = new MethodVerifyHandler();
 
-        /** @var StoreInterface|PHPUnit_Framework_MockObject_MockObject $store */
-        $store = $this->createMock(StoreInterface::class);
-        $store->expects($this->once())->method('setState');
+        /** @var TestStore|PHPUnit_Framework_MockObject_MockObject $store */
+        $store = $this->createMock(TestStore::class);
+
+        // Need to specify willReturn() otherwise mock will attempt to an interface which causes a fatal error in PHP8
+        $store->expects($this->once())->method('setState')->willReturn($store);
 
         $mockRegisteredMethod = RegisteredMethod::create();
 
@@ -32,8 +34,8 @@ class MethodVerifyHandlerTest extends SapphireTest
         $request = $this->createMock(HTTPRequest::class);
         $request->expects($this->once())->method('getBody')->willReturn('{"answer":"10"}');
 
-        /** @var StoreInterface|PHPUnit_Framework_MockObject_MockObject $store */
-        $store = $this->createMock(StoreInterface::class);
+        /** @var TestStore|PHPUnit_Framework_MockObject_MockObject $store */
+        $store = $this->createMock(TestStore::class);
         $store->expects($this->once())->method('getState')->willReturn([
             'answer' => 10,
         ]);

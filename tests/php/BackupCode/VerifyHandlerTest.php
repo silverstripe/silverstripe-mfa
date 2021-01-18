@@ -9,7 +9,7 @@ use SilverStripe\MFA\BackupCode\VerifyHandler;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\Notification;
-use SilverStripe\MFA\Store\StoreInterface;
+use SilverStripe\MFA\Tests\Stub\Store\TestStore;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
 
@@ -77,8 +77,8 @@ class VerifyHandlerTest extends SapphireTest
         $request = $this->createMock(HTTPRequest::class);
         $request->expects($this->once())->method('getBody')->willReturn("{\"code\":\"{$userInput}\"}");
 
-        /** @var StoreInterface|PHPUnit_Framework_MockObject_MockObject $store */
-        $store = $this->createMock(StoreInterface::class);
+        /** @var TestStore|PHPUnit_Framework_MockObject_MockObject $store */
+        $store = $this->createMock(TestStore::class);
         $store->expects($this->any())->method('getMember')->willReturn($member);
 
         /** @var RegisteredMethod $registeredMethod */
