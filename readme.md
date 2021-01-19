@@ -42,6 +42,9 @@ it will be optional (users can skip MFA registration). You can make it mandatory
 
 The MFA flow will only be applied to members with access to the CMS or administration area. See '[Broadening the scope of MFA](docs/en/broadening-the-scope-of-mfa.md)' for more detail.
 
+You can disable MFA on an environment by setting a `BYPASS_MFA=1` environment variable,
+or via YAML config - see [local development](docs/en/local-development) for details.
+
 ### Configuring custom methods
 
 If you have built your own MFA method, you can register it with the `MethodRegistry` to enable it:

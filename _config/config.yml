@@ -21,3 +21,10 @@ SilverStripe\Security\Security:
 SilverStripe\MFA\Extension\AccountReset\SecurityExtension:
   extensions:
     mfaResetExtension: SilverStripe\MFA\Extension\AccountReset\MFAResetExtension
+---
+name: mfa-devconfig
+Only:
+  envvarset: 'BYPASS_MFA'
+---
+SilverStripe\MFA\Service\EnforcementManager:
+  enabled: false
