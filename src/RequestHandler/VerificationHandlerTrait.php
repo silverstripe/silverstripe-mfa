@@ -4,6 +4,7 @@ namespace SilverStripe\MFA\RequestHandler;
 
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
+use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\MFA\Exception\InvalidMethodException;
 use SilverStripe\MFA\Method\MethodInterface;
@@ -74,6 +75,9 @@ trait VerificationHandlerTrait
         $token = SecurityToken::inst();
         $token->reset();
         $data[$token->getName()] = $token->getValue();
+
+        // Prevent caching of response
+        HTTPCacheControlMiddleware::singleton()->disableCache(true);
 
         // Respond with our method
         return $response->setBody(json_encode($data));
