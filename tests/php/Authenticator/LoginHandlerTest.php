@@ -6,6 +6,7 @@ use PHPUnit_Framework_MockObject_MockObject;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
+use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
 use SilverStripe\Control\Session;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
@@ -335,6 +336,27 @@ class LoginHandlerTest extends FunctionalTest
 
         $this->assertNotNull($response->SecurityID);
         $this->assertTrue(SecurityToken::inst()->check($response->SecurityID));
+    }
+
+    // This is testing that HTTP caching headers that disable caching are set
+    // in VerificationHandlerTrait::createStartVerificationResponse()
+    // VerificationHandlerTrait is used by LoginHandler
+    public function testStartVerificationHttpCacheHeadersDisabled()
+    {
+        /** @var Member $member */
+        SecurityToken::enable();
+        $handler = new LoginHandler('mfa', $this->createMock(MemberAuthenticator::class));
+        $member = $this->objFromFixture(Member::class, 'robbie');
+        $store = new SessionStore($member);
+        $handler->setStore($store);
+        $request = new HTTPRequest('GET', '/');
+        $request->setSession(new Session([]));
+        $request->setRouteParams(['Method' => 'basic-math']);
+        $middleware = HTTPCacheControlMiddleware::singleton();
+        $middleware->enableCache(true);
+        $this->assertSame('enabled', $middleware->getState());
+        $handler->startVerification($request);
+        $this->assertSame('disabled', $middleware->getState());
     }
 
     public function testVerifyAssertsValidCSRFToken()
