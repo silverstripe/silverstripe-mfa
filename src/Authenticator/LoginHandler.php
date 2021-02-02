@@ -7,6 +7,7 @@ namespace SilverStripe\MFA\Authenticator;
 use Psr\Log\LoggerInterface;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
+use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\MFA\Exception\InvalidMethodException;
 use SilverStripe\MFA\Exception\MemberNotFoundException;
@@ -159,9 +160,13 @@ class LoginHandler extends BaseLoginHandler
      */
     public function getSchema(): HTTPResponse
     {
+        // Prevent caching of response
+        HTTPCacheControlMiddleware::singleton()->disableCache(true);
+
         try {
             $member = $this->getMember();
             $schema = SchemaGenerator::create()->getSchema($member);
+
             return $this->jsonResponse(
                 $schema + [
                     'endpoints' => [
@@ -186,6 +191,9 @@ class LoginHandler extends BaseLoginHandler
      */
     public function startRegistration(HTTPRequest $request): HTTPResponse
     {
+        // Prevent caching of response
+        HTTPCacheControlMiddleware::singleton()->disableCache(true);
+
         $store = $this->getStore();
         $sessionMember = $store ? $store->getMember() : null;
         $loggedInMember = Security::getCurrentUser();
@@ -344,6 +352,9 @@ class LoginHandler extends BaseLoginHandler
      */
     public function startVerification(HTTPRequest $request): HTTPResponse
     {
+        // Prevent caching of response
+        HTTPCacheControlMiddleware::singleton()->disableCache(true);
+
         $store = $this->getStore();
         // If we don't have a valid member we shouldn't be here, or if sudo mode is not active yet.
         if (!$store || !$store->getMember() || !$this->getSudoModeService()->check($request->getSession())) {
