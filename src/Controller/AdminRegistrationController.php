@@ -8,6 +8,7 @@ use Psr\Log\LoggerInterface;
 use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
+use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\RequestHandler\BaseHandlerTrait;
@@ -66,6 +67,9 @@ class AdminRegistrationController extends LeftAndMain
      */
     public function startRegistration(HTTPRequest $request): HTTPResponse
     {
+        // Prevent caching of response
+        HTTPCacheControlMiddleware::singleton()->disableCache(true);
+
         // Create a fresh store from the current logged in user
         $member = Security::getCurrentUser();
         $store = $this->createStore($member);

@@ -7,6 +7,7 @@ use Psr\Log\LoggerInterface;
 use SilverStripe\Admin\AdminRootController;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\FunctionalTest;
@@ -82,6 +83,19 @@ class AdminRegistrationControllerTest extends FunctionalTest
         );
 
         $this->assertSame(200, $result->getStatusCode());
+    }
+
+    /**
+     * Test that HTTP caching is disabled in requests to the registration endpoint
+     */
+    public function testStartRegistrationDisablesHTTPCaching()
+    {
+        $middleware = HTTPCacheControlMiddleware::singleton();
+        $middleware->enableCache(true);
+        $this->assertSame('enabled', $middleware->getState());
+
+        $this->get(Controller::join_links(AdminRootController::admin_url(), 'mfa', 'register/foo'));
+        $this->assertSame('disabled', $middleware->getState());
     }
 
     public function testFinishRegistrationGracefullyHandlesInvalidSessions()
