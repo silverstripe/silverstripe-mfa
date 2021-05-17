@@ -1,0 +1,87 @@
+nl:
+  SilverStripe\MFA\Authenticator\LoginHandler:
+    CANNOT_SKIP: 'Het instellen van tweestapsverificatie kan niet overgeslagen worden'
+    INVALID_METHOD: 'Methode is onbekend'
+    INVALID_REGISTRATION: 'De registratie van de tweestapsverificatie moet eerst worden afgerond'
+    LOCKED_OUT: 'Dit account is tijdelijk vergrendeld. Probeer het later nog eens.'
+    MFA_LOGIN_INCOMPLETE: 'Er ontbreken Multi Factor inloggegevens'
+    MUST_USE_EXISTING_METHOD: 'Deze gebruiker gebruikt al een tweestapsverificatie-methode'
+    NOT_AUTHENTICATING: 'U moet ingelogd zijn of bezig met inloggen. Ververs a.u.b. de pagina en probeer het nogmaals.'
+    SUDO_MODE_REQUIRED: 'Het is noodzakelijk om dit account opnieuw te verifiëren voordat we verder kunnen. Ververs a.u.b. de pagina en probeer het nogmaals.'
+  SilverStripe\MFA\BackupCode\Method:
+    NAME: Herstelcodes
+  SilverStripe\MFA\BackupCode\RegisterHandler:
+    DESCRIPTION: 'Herstelcodes maken het mogelijk om in te loggen als de primaire inlogmethode niet beschikbaar is. Elke code kan eenmalig gebruikt worden. Sla deze codes op een veilige plek op, aangezien deze na het verlaten van de pagina nooit meer opnieuw ingezien kunnen worden.'
+    SUPPORT_LINK_DESCRIPTION: 'Lees meer over herstelcodes.'
+  SilverStripe\MFA\BackupCode\VerifyHandler:
+    INVALID_CODE: 'Ongeldige code'
+    MFAREMOVED: 'Een herstelcode is gebruikt om toegang te krijgen tot uw account'
+  SilverStripe\MFA\Controller\AdminRegistrationController:
+    COULD_NOT_DELETE: 'Deze methode kon niet verwijderd worden voor dit account.'
+    COULD_NOT_SET_DEFAULT: 'Voor dit account kon de standaard methode niet ingesteld worden'
+    CSRF_FAILURE: 'Het verwerken duurde te lang. Probeer het aub later nogmaals.'
+    INVALID_METHOD: 'Die functionaliteit is niet beschikbaar'
+    INVALID_REGISTERED_METHOD: 'Die registratiemethode is niet beschikbaar'
+    INVALID_SESSION: 'Ongeldige sessie. Ververs aub de pagina en probeer het nogmaals.'
+    MENUTITLE: SilverStripe\MFA\Controller\AdminRegistrationController
+  SilverStripe\MFA\Email\AccountReset:
+    ACTION: 'Klik hier om het account te resetten'
+    DESCRIPTION: 'Er is een aanvraag gestart om uw account te resetten.'
+    HI: Hallo
+  SilverStripe\MFA\Email\Notification:
+    CODESLEFT: 'U heeft nog {count} ongebruikte codes.'
+    HELLO: Hallo
+    NOTYOU: 'Als u dit niet in gang hebt gezet, neem dan direct contact op met een beheerder.'
+    REGISTERED: 'Het is gelukt om de tweestapsverificatie {method} toe te voegen aan uw account op {site}'
+    REMOVED: 'U heeft de tweestapsverificatie {method} van uw account verwijderd op {site}.'
+    USEDBACKUPCODE: 'Er is met een recovery code ingelogd op uw {site} account.'
+  SilverStripe\MFA\Extension\AccountReset\SecurityAdminExtension:
+    ACCOUNT_RESET_EMAIL_SUBJECT: 'Reset uw account'
+    BAD_REQUEST: 'Ongeldige aanvraag'
+    EMAIL_NOT_SENT: 'Er kon geen e-mail gestuurd worden'
+    INSUFFICIENT_PERMISSIONS: 'Er was een probleem met de rechten om het account te resetten'
+    INVALID_CSRF_TOKEN: 'Ongeldige of ontbrekende CSRF token'
+    INVALID_MEMBER: 'Het account om te resetten kon niet gevonden worden'
+  SilverStripe\MFA\Extension\AccountReset\SecurityExtension:
+    ACCOUNT_RESET_DESCRIPTION: 'Uw wachtwoord wordt gewijzigd en eventueel geregistreerde tweestapsverificaties worden verwijderd.'
+    ACCOUNT_RESET_TITLE: 'Reset account'
+    ALREADYAUTHENTICATEDBODY: 'U moet ingelogd zijn om het account te resetten.'
+    ALREADYAUTHENTICATEDTITLE: 'U bent al ingelogd'
+    INVALIDTOKENBODY: 'Het kan zijn dat het token om dit account te resetten is verlopen. Neem a.u.b. contact op met een beheerder.'
+    INVALIDTOKENTITLE: 'Account of token kon niet gevonden worden'
+    RESETSUCCESSMESSAGE: 'Reset afgerond. Log a.u.b. in met uw nieuwe wachtwoord.'
+    RESETTIMEDOUT: 'Het duurde te lang om uw account te resetten. Klik a.u.b. op de link in de e-mail en probeer het nogmaals.'
+  SilverStripe\MFA\Extension\MemberExtension:
+    MFA_PERMISSION_DESCRIPTION: 'Om de tweestapsverificatie instellingen van andere gebruikers te kunnen zien, is de permissie "Toegang tot het ''Beveiliging'' gedeelte" nodig.'
+    MFA_PERMISSION_LABEL: 'Tweestapsverificatie voor andere gebruikers zien/resetten'
+    MFA_SETTINGS_FIELD_LABEL: 'Tweestapsverificatie instellingen (MFA)'
+  SilverStripe\MFA\Extension\SiteConfigExtension:
+    MFA_GRACE_DESCRIPTION: 'MFA is voor deze datum nog facultatief'
+    MFA_GRACE_TITLE: 'MFA is verplicht vanaf (optioneel)'
+    MFA_LEARN_MORE: 'Meer over MFA'
+    MFA_OPTIONAL: 'MFA is optioneel'
+    MFA_REQUIRED: 'MFA is voor iedereen die inlogt in het CMS verplicht'
+    MULTI_FACTOR_AUTHENTICATION: 'Multi Factor Authenticatie (MFA)'
+  SilverStripe\MFA\Model\RegisteredMethod:
+    PLURALNAME: 'Geregistreerde methodes'
+    PLURALS:
+      one: 'Een Geregistreerde Methode'
+      other: '{count} geregistreerde methodes'
+    SINGULARNAME: 'Geregistreerde methode'
+  SilverStripe\MFA\Report\EnabledMembers:
+    ANY_AT_LEAST_ONE: 'Tenminste één'
+    COLUMN_METHODS_REGISTERED: 'Geregistreerde methodes'
+    COLUMN_METHOD_DEFAULT: 'Standaard methode'
+    COLUMN_SKIPPED_REGISTRATION: 'Registratie overgeslagen'
+    FILTER_MEMBER_DESCRIPTION: 'Voornaam, achternaam, e-mail doorzoeken'
+    NONE: Geen
+  SilverStripe\MFA\RequestHandler:
+    CSRF_FAILURE: 'De aanvraag duurde te lang om te verwerken. Ververs aub de pagina en probeer het nogmaals.'
+    METHOD_ALREADY_REGISTERED: 'Die methode is voor dit account al geregistreerd'
+    METHOD_MISMATCH: 'Deze methode komt niet overeen met het huidige loginproces.'
+    METHOD_NOT_PROVIDED: 'Het was niet duidelijk met welke methode moest worden ingelogd en er is geen standaard ingesteld.'
+    METHOD_NOT_REGISTERED: 'Deze methode is niet geregistreerd voor dit account'
+    NO_REGISTRATION_IN_PROGRESS: 'Geen registratie bezig'
+  SilverStripe\MFA\Service\RegisteredMethodManager:
+    MFAADDED: 'Er is een tweestapsverificatie methode toegevoegd aan uw account'
+    MFAREMOVED: 'Er is een tweestapsverificatie methode verwijderd van uw account'
