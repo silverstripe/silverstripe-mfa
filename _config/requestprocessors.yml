@@ -1,0 +1,11 @@
+---
+Name: mfarequestprocessors
+After:
+  - '#requestprocessors'
+---
+SilverStripe\Core\Injector\Injector:
+  SecurityRateLimitMiddleware:
+    properties:
+      # Increase MaxAttempts from 10 to 20 because MFA requires an extra POST request in addition to
+      # the POST request required for username/password authentication
+      MaxAttempts: 20
