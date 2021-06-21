@@ -14,4 +14,4 @@ Feature: MFA is enabled for the site
     Then I should see "Multi-factor authentication (MFA)"
     When I select "MFA is required for everyone" from the MFA settings
     And I press "Save"
-    Then I should see "Saved"
+    Then I should see a "Saved" success toast

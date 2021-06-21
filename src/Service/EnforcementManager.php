@@ -108,6 +108,10 @@ class EnforcementManager
             return false;
         }
 
+        if (!$this->isUserInMFAEnabledGroup($member) && !$this->hasCompletedRegistration($member)) {
+            return false;
+        }
+
         if ($member->RegisteredMFAMethods()->exists()) {
             return true;
         }
@@ -265,5 +269,24 @@ class EnforcementManager
         }
 
         return true;
+    }
+
+    protected function isUserInMFAEnabledGroup(Member $member): bool
+    {
+        /** @var SiteConfig&SiteConfigExtension $siteConfig */
+        $siteConfig = SiteConfig::current_site_config();
+
+        $groups = $siteConfig->MFAGroupRestrictions();
+
+        // If no groups are set in the Site Config MFAGroupRestrictions field, MFA is enabled for all users
+        if ($groups->count() === 0) {
+            return true;
+        }
+        foreach ($groups as $group) {
+            if ($member->inGroup($group)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

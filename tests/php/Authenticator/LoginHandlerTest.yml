@@ -40,6 +40,8 @@ SilverStripe\Security\Member:
     Groups: =>SilverStripe\Security\Group.admingroup
   colin:
     Email: colin@example.com
+    Password: Password123
+    PasswordExpiry: 2030-01-01
     RegisteredMFAMethods: =>SilverStripe\MFA\Model\RegisteredMethod.colin-math
     DefaultRegisteredMethodID: =>SilverStripe\MFA\Model\RegisteredMethod.colin-math
     Groups: =>SilverStripe\Security\Group.contentgroup

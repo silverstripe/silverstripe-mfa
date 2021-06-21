@@ -9,6 +9,7 @@ use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method as BasicMathMethod;
 use SilverStripe\ORM\FieldType\DBDatetime;
+use SilverStripe\Security\Group;
 use SilverStripe\Security\Member;
 use SilverStripe\SiteConfig\SiteConfig;
 
@@ -251,6 +252,34 @@ class EnforcementManagerTest extends SapphireTest
         $member = $this->objFromFixture(Member::class, 'sally_smith');
 
         $this->assertTrue(EnforcementManager::create()->hasCompletedRegistration($member));
+    }
+
+    public function testShouldRedirectToMFAWhenUserIsInMFARestrictedGroup()
+    {
+        $this->setSiteConfig(['MFARequired' => true]);
+        $config = SiteConfig::current_site_config();
+        $group = $this->objFromFixture(Group::class, 'admingroup');
+        $config->MFAGroupRestrictions()->add($group);
+
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, 'sally_smith');
+        $this->logInAs($member);
+
+        $this->assertTrue(EnforcementManager::create()->shouldRedirectToMFA($member));
+    }
+
+    public function testShouldNotRedirectToMFAWhenUserIsNotInMFARestrictedGroup()
+    {
+        $this->setSiteConfig(['MFARequired' => true]);
+        $config = SiteConfig::current_site_config();
+        $group = $this->objFromFixture(Group::class, 'admingroup');
+        $config->MFAGroupRestrictions()->add($group);
+
+        /** @var Member $member */
+        $member = $this->objFromFixture(Member::class, 'sully_smith');
+        $this->logInAs($member);
+
+        $this->assertFalse(EnforcementManager::create()->shouldRedirectToMFA($member));
     }
 
     /**

@@ -6,9 +6,11 @@ use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DateField;
 use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\ListboxField;
 use SilverStripe\Forms\OptionsetField;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\FieldType\DBField;
+use SilverStripe\Security\Group;
 use SilverStripe\View\Requirements;
 
 /**
@@ -32,6 +34,10 @@ class SiteConfigExtension extends DataExtension
     private static $db = [
         'MFARequired' => 'Boolean',
         'MFAGracePeriodExpires' => 'Date',
+    ];
+
+    private static $many_many = [
+      'MFAGroupRestrictions' => Group::class
     ];
 
     private static $defaults = [
@@ -63,7 +69,29 @@ class SiteConfigExtension extends DataExtension
         ));
         $mfaGraceEnd->addExtraClass('mfa-settings__grace-period');
 
-        $mfaOptions = CompositeField::create($mfaOptions, $mfaGraceEnd)
+        $groupsMap = [];
+        foreach (Group::get() as $group) {
+            // Listboxfield values are escaped, use ASCII char instead of &raquo;
+            $groupsMap[$group->ID] = $group->getBreadcrumbs(' > ');
+        }
+        asort($groupsMap);
+
+        $mfaGroupRestrict = ListboxField::create(
+            "MFAGroupRestrictions",
+            _t(__CLASS__ . '.MFA_GROUP_RESTRICTIONS', "MFA Groups")
+        )
+            ->setSource($groupsMap)
+            ->setAttribute(
+                'data-placeholder',
+                _t(__CLASS__ . '.MFA_GROUP_RESTRICTIONS_PLACEHOLDER', 'Click to select group')
+            )
+            ->setDescription(_t(
+                __CLASS__ . '.MFA_GROUP_RESTRICTIONS_DESCRIPTION',
+                'MFA will only be enabled for members of these selected groups. ' .
+                'If no groups are selected, MFA will be enabled for all users'
+            ));
+
+        $mfaOptions = CompositeField::create($mfaOptions, $mfaGraceEnd, $mfaGroupRestrict)
             ->setTitle(DBField::create_field(
                 'HTMLFragment',
                 _t(__CLASS__ . '.MULTI_FACTOR_AUTHENTICATION', 'Multi-factor authentication (MFA)')
