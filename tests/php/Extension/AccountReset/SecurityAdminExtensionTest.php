@@ -17,14 +17,14 @@ class SecurityAdminExtensionTest extends FunctionalTest
 {
     protected static $fixture_file = 'SecurityAdminExtensionTest.yml';
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
         SecurityToken::enable();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
 
@@ -41,7 +41,7 @@ class SecurityAdminExtensionTest extends FunctionalTest
         $response = $this->post(SecurityAdmin::singleton()->Link("reset/{$member->ID}"), [true]);
 
         $this->assertEquals(400, $response->getStatusCode(), $response->getBody());
-        $this->assertContains('Invalid or missing CSRF', $response->getBody());
+        $this->assertStringContainsString('Invalid or missing CSRF', $response->getBody());
     }
 
     public function testResetCanBeInitiatedByAdmin()
@@ -79,6 +79,6 @@ class SecurityAdminExtensionTest extends FunctionalTest
         );
 
         $this->assertEquals(403, $response->getStatusCode(), $response->getBody());
-        $this->assertContains('Insufficient permissions', $response->getBody());
+        $this->assertStringContainsString('Insufficient permissions', $response->getBody());
     }
 }

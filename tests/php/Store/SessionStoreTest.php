@@ -10,12 +10,10 @@ use SilverStripe\Security\Member;
 
 class SessionStoreTest extends SapphireTest
 {
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessageRegExp /possibly incorrectly encoded/
-     */
     public function testSerializeThrowsExceptionOnFailure()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessageMatches('/possibly incorrectly encoded/');
         $store = new SessionStore($this->createMock(Member::class));
         $store->setState(['some binary' => random_bytes(32)]);
         $store->serialize();
@@ -36,12 +34,10 @@ class SessionStoreTest extends SapphireTest
         $this->assertSame(['foo' => 'baz', 'bar' => 'baz'], $store->getState());
     }
 
-    /**
-     * @expectedException \SilverStripe\MFA\Exception\InvalidMethodException
-     * @expectedExceptionMessage You cannot verify with a method you have already verified
-     */
     public function testSetMethodWithVerifiedMethod()
     {
+        $this->expectException(\SilverStripe\MFA\Exception\InvalidMethodException::class);
+        $this->expectExceptionMessage('You cannot verify with a method you have already verified');
         $store = new SessionStore($this->createMock(Member::class));
         $store->addVerifiedMethod('foobar');
         $store->setMethod('foobar');

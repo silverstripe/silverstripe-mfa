@@ -9,7 +9,7 @@ class EnabledMembersFunctionalTest extends FunctionalTest
 {
     protected static $fixture_file = 'EnabledMembersTest.yml';
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -20,12 +20,12 @@ class EnabledMembersFunctionalTest extends FunctionalTest
     {
         $result = (string) $this->get(EnabledMembers::create()->getLink())->getBody();
 
-        $this->assertContains('Eleanor', $result);
-        $this->assertContains('Ditor', $result);
-        $this->assertContains('Michelle', $result);
-        $this->assertContains('Fa', $result);
-        $this->assertContains('Ursula', $result);
-        $this->assertContains('Ser', $result);
+        $this->assertStringContainsString('Eleanor', $result);
+        $this->assertStringContainsString('Ditor', $result);
+        $this->assertStringContainsString('Michelle', $result);
+        $this->assertStringContainsString('Fa', $result);
+        $this->assertStringContainsString('Ursula', $result);
+        $this->assertStringContainsString('Ser', $result);
     }
 
     public function testReportHasRegisteredMethods()
@@ -34,7 +34,7 @@ class EnabledMembersFunctionalTest extends FunctionalTest
 
         $result = (string) $this->get(EnabledMembers::create()->getLink())->getBody();
 
-        $this->assertContains('Math problem, Null', $result);
+        $this->assertStringContainsString('Math problem, Null', $result);
     }
 
     public function testFilterReportByMemberName()
@@ -45,8 +45,8 @@ class EnabledMembersFunctionalTest extends FunctionalTest
         ]);
         $result = (string) $response->getBody();
 
-        $this->assertContains('mfa@example.com', $result);
-        $this->assertNotContains('admin@example.com', $result);
+        $this->assertStringContainsString('mfa@example.com', $result);
+        $this->assertStringNotContainsString('admin@example.com', $result);
     }
 
     public function testFilterReportBySkippedRegistration()
@@ -57,7 +57,7 @@ class EnabledMembersFunctionalTest extends FunctionalTest
         ]);
         $result = (string) $response->getBody();
 
-        $this->assertContains('user@example.com', $result);
-        $this->assertNotContains('admin@example.com', $result);
+        $this->assertStringContainsString('user@example.com', $result);
+        $this->assertStringNotContainsString('admin@example.com', $result);
     }
 }

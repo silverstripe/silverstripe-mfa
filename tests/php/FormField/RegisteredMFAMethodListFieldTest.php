@@ -17,16 +17,14 @@ class RegisteredMFAMethodListFieldTest extends SapphireTest
         $field = new RegisteredMFAMethodListField('test', null, $memberID);
         $schema = $field->getSchemaDataDefaults();
 
-        $this->assertContains('register/', $schema['schema']['endpoints']['register']);
-        $this->assertContains('method/{urlSegment}', $schema['schema']['endpoints']['remove']);
-        $this->assertContains('method/{urlSegment}/default', $schema['schema']['endpoints']['setDefault']);
+        $this->assertStringContainsString('register/', $schema['schema']['endpoints']['register']);
+        $this->assertStringContainsString('method/{urlSegment}', $schema['schema']['endpoints']['remove']);
+        $this->assertStringContainsString('method/{urlSegment}/default', $schema['schema']['endpoints']['setDefault']);
     }
 
-    /**
-     * @expectedException TypeError
-     */
     public function testConstructorRequiresMemberValue()
     {
+        $this->expectException(TypeError::class);
         new RegisteredMFAMethodListField('test', null, null);
     }
 }

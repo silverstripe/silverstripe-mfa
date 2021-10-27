@@ -2,7 +2,7 @@
 
 namespace SilverStripe\MFA\Tests\BackupCode;
 
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\MFA\BackupCode\Method;
@@ -18,13 +18,11 @@ class RegisterHandlerTest extends SapphireTest
 {
     protected static $fixture_file = 'RegisterHandlerTest.yml';
 
-    /**
-     * @expectedException \SilverStripe\MFA\Exception\RegistrationFailedException
-     * @expectedExceptionMessage Attempted to register backup codes with no registered methods
-     */
     public function testStartThrowsExceptionForMemberWithoutRegisteredMethods()
     {
-        /** @var TestStore&PHPUnit_Framework_MockObject_MockObject $store */
+        $this->expectException(\SilverStripe\MFA\Exception\RegistrationFailedException::class);
+        $this->expectExceptionMessage('Attempted to register backup codes with no registered methods');
+        /** @var TestStore&MockObject $store */
         $store = $this->createMock(TestStore::class);
 
         /** @var Member&MemberExtension $member */
@@ -43,7 +41,7 @@ class RegisterHandlerTest extends SapphireTest
         $method = new BasicMathMethod();
         RegisteredMethodManager::singleton()->registerForMember($member, $method, ['need' => 'one']);
 
-        /** @var TestStore&PHPUnit_Framework_MockObject_MockObject $store */
+        /** @var TestStore&MockObject $store */
         $store = $this->createMock(TestStore::class);
         $store->expects($this->once())->method('getMember')->willReturn($member);
 
@@ -57,7 +55,7 @@ class RegisterHandlerTest extends SapphireTest
 
     public function testStartStoresHashesOfBackupCodesOnMember()
     {
-        /** @var TestStore&PHPUnit_Framework_MockObject_MockObject $store */
+        /** @var TestStore&MockObject $store */
         $store = $this->createMock(TestStore::class);
 
         /** @var Member&MemberExtension $member */
@@ -94,10 +92,10 @@ class RegisterHandlerTest extends SapphireTest
 
     public function testRegisterReturnsNoContext()
     {
-        /** @var TestStore&PHPUnit_Framework_MockObject_MockObject $store */
+        /** @var TestStore&MockObject $store */
         $store = $this->createMock(TestStore::class);
 
-        /** @var HTTPRequest|PHPUnit_Framework_MockObject_MockObject $request */
+        /** @var HTTPRequest|MockObject $request */
         $request = $this->createMock(HTTPRequest::class);
 
         $handler = new RegisterHandler();

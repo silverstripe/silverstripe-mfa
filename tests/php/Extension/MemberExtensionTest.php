@@ -56,12 +56,10 @@ class MemberExtensionTest extends SapphireTest
         $this->assertTrue($targetMember->currentUserCanEditMFAConfig(), 'Can Edit');
     }
 
-    /**
-     * @expectedException \SilverStripe\MFA\Exception\InvalidMethodException
-     * @expectedExceptionMessage The provided method does not belong to this member
-     */
     public function testSetDefaultRegisteredMethodThrowsExceptionWhenSettingSomeoneElsesMethodAsDefault()
     {
+        $this->expectException(\SilverStripe\MFA\Exception\InvalidMethodException::class);
+        $this->expectExceptionMessage('The provided method does not belong to this member');
         /** @var Member&MemberExtension $targetMember */
         $targetMember = $this->objFromFixture(Member::class, 'admin');
         $method = new Method();

@@ -2,7 +2,7 @@
 
 namespace SilverStripe\MFA\Tests\Authenticator;
 
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\FunctionalTest;
@@ -30,7 +30,7 @@ class RegisterHandlerTest extends FunctionalTest
 
     protected static $fixture_file = 'RegisterHandlerTest.yml';
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         Config::modify()->set(MethodRegistry::class, 'methods', [Method::class]);
@@ -45,7 +45,7 @@ class RegisterHandlerTest extends FunctionalTest
             ]
         ]);
 
-        /** @var SudoModeServiceInterface&PHPUnit_Framework_MockObject_MockObject $sudoModeService */
+        /** @var SudoModeServiceInterface&MockObject $sudoModeService */
         $sudoModeService = $this->createMock(SudoModeServiceInterface::class);
         $sudoModeService->expects($this->any())->method('check')->willReturn(true);
         Injector::inst()->registerService($sudoModeService, SudoModeServiceInterface::class);
@@ -82,7 +82,7 @@ class RegisterHandlerTest extends FunctionalTest
 
         $response = $this->get('Security/login/default/mfa/register/inert/');
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertContains('No such method is available', $response->getBody());
+        $this->assertStringContainsString('No such method is available', $response->getBody());
     }
 
     /**
@@ -97,7 +97,7 @@ class RegisterHandlerTest extends FunctionalTest
 
         $response = $this->get(self::URL);
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertContains('This member already has an MFA method', $response->getBody());
+        $this->assertStringContainsString('This member already has an MFA method', $response->getBody());
     }
 
     /**
@@ -109,7 +109,10 @@ class RegisterHandlerTest extends FunctionalTest
 
         $response = $this->get(self::URL);
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertContains('That method has already been registered against this Member', $response->getBody());
+        $this->assertStringContainsString(
+            'That method has already been registered against this Member',
+            $response->getBody()
+        );
     }
 
     /**
@@ -152,7 +155,7 @@ class RegisterHandlerTest extends FunctionalTest
 
         $response = $this->post(self::URL, ['dummy' => 'data'], null, $this->session(), json_encode(['number' => 7]));
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertContains('No registration in progress', $response->getBody());
+        $this->assertStringContainsString('No registration in progress', $response->getBody());
     }
 
     /**
@@ -167,7 +170,7 @@ class RegisterHandlerTest extends FunctionalTest
 
         $response = $this->post(self::URL, ['dummy' => 'data'], null, $this->session(), json_encode(['number' => 7]));
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertContains('Method does not match registration in progress', $response->getBody());
+        $this->assertStringContainsString('Method does not match registration in progress', $response->getBody());
     }
 
     public function testFinishRegistrationFailsWhenMethodCannotBeRegistered()
@@ -203,7 +206,7 @@ class RegisterHandlerTest extends FunctionalTest
 
         $response = $this->post(self::URL, ['dummy' => 'data'], null, $this->session(), json_encode(['number' => 7]));
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertContains('No. Bad user', $response->getBody());
+        $this->assertStringContainsString('No. Bad user', $response->getBody());
     }
 
     /**
@@ -236,7 +239,7 @@ class RegisterHandlerTest extends FunctionalTest
 
         $response = $this->post(self::URL, ['dummy' => 'data'], null, $this->session(), json_encode(['number' => 7]));
         $this->assertEquals(403, $response->getStatusCode());
-        $this->assertContains('Your request timed out', $response->getBody());
+        $this->assertStringContainsString('Your request timed out', $response->getBody());
 
         $this->scaffoldPartialLogin($freshMember, 'basic-math');
 
@@ -262,7 +265,7 @@ class RegisterHandlerTest extends FunctionalTest
 
         $response = $this->post(self::URL, ['dummy' => 'data'], null, $this->session(), json_encode(['number' => 7]));
         $this->assertSame(403, $response->getStatusCode());
-        $this->assertContains('You must be logged in or logging in', (string) $response->getBody());
+        $this->assertStringContainsString('You must be logged in or logging in', (string) $response->getBody());
     }
 
     /**

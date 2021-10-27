@@ -18,11 +18,9 @@ class PHPEncryptionAdapterTest extends SapphireTest
         $this->assertSame('Hello World', $plaintext);
     }
 
-    /**
-     * @expectedException \SilverStripe\MFA\Exception\EncryptionAdapterException
-     */
     public function testExceptionThrownWhenDecryptionFails()
     {
+        $this->expectException(\SilverStripe\MFA\Exception\EncryptionAdapterException::class);
         (new DefusePHPEncryptionAdapter())->decrypt('892g359gohsdf', '');
     }
 }

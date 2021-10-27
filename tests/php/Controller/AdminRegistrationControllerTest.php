@@ -2,7 +2,7 @@
 
 namespace SilverStripe\MFA\Tests\Controller;
 
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use SilverStripe\Admin\AdminRootController;
 use SilverStripe\Control\Controller;
@@ -29,7 +29,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
 {
     protected static $fixture_file = 'AdminRegistrationControllerTest.yml';
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -37,7 +37,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
             BasicMathMethod::class,
         ]);
 
-        /** @var SudoModeServiceInterface&PHPUnit_Framework_MockObject_MockObject $sudoModeService */
+        /** @var SudoModeServiceInterface&MockObject $sudoModeService */
         $sudoModeService = $this->createMock(SudoModeServiceInterface::class);
         $sudoModeService->expects($this->any())->method('check')->willReturn(true);
         Injector::inst()->registerService($sudoModeService, SudoModeServiceInterface::class);
@@ -50,14 +50,14 @@ class AdminRegistrationControllerTest extends FunctionalTest
         $result = $this->get(Controller::join_links(AdminRootController::admin_url(), 'mfa', 'register/foo'));
 
         $this->assertSame(400, $result->getStatusCode());
-        $this->assertContains('No such method is available', $result->getBody());
+        $this->assertStringContainsString('No such method is available', $result->getBody());
     }
 
     public function testStartRegistrationEnforcesSudoMode()
     {
         $this->logInAs($this->objFromFixture(Member::class, 'sally_smith'));
 
-        /** @var SudoModeServiceInterface&PHPUnit_Framework_MockObject_MockObject $sudoModeService */
+        /** @var SudoModeServiceInterface&MockObject $sudoModeService */
         $sudoModeService = $this->createMock(SudoModeServiceInterface::class);
         $sudoModeService->expects($this->any())->method('check')->willReturn(false);
         Injector::inst()->registerService($sudoModeService, SudoModeServiceInterface::class);
@@ -65,7 +65,10 @@ class AdminRegistrationControllerTest extends FunctionalTest
         $result = $this->get(Controller::join_links(AdminRootController::admin_url(), 'mfa', 'register/foo'));
 
         $this->assertSame(400, $result->getStatusCode());
-        $this->assertContains('Invalid session. Please refresh and try again.', (string) $result->getBody());
+        $this->assertStringContainsString(
+            'Invalid session. Please refresh and try again.',
+            (string) $result->getBody()
+        );
     }
 
     public function testStartRegistrationReturns200Response()
@@ -114,7 +117,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
         );
 
         $this->assertSame(400, $result->getStatusCode());
-        $this->assertContains('Invalid session', $result->getBody());
+        $this->assertStringContainsString('Invalid session', $result->getBody());
     }
 
     public function testFinishRegistrationAssertsValidMethod()
@@ -139,7 +142,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
         );
 
         $this->assertSame(400, $result->getStatusCode());
-        $this->assertContains('No such method is available', $result->getBody());
+        $this->assertStringContainsString('No such method is available', $result->getBody());
     }
 
     public function testFinishRegistrationCompletesWhenValid()
@@ -178,14 +181,14 @@ class AdminRegistrationControllerTest extends FunctionalTest
         $response = $controller->removeRegisteredMethod($request);
 
         $this->assertSame(400, $response->getStatusCode());
-        $this->assertContains('Request timed out', $response->getBody());
+        $this->assertStringContainsString('Request timed out', $response->getBody());
 
         $token = SecurityToken::inst();
         $request = new HTTPRequest('DELETE', '', [$token->getName() => $token->getValue()]);
 
         $response = $controller->removeRegisteredMethod($request);
 
-        $this->assertNotContains('Request timed out', $response->getBody());
+        $this->assertStringNotContainsString('Request timed out', $response->getBody());
     }
 
     public function testRemoveRegistrationRequiresMethod()
@@ -202,7 +205,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
         $response = $controller->removeRegisteredMethod($request);
 
         $this->assertSame(400, $response->getStatusCode());
-        $this->assertContains('No such method is available', $response->getBody());
+        $this->assertStringContainsString('No such method is available', $response->getBody());
 
         // Method provided but non-existing
         $request = new HTTPRequest('DELETE', '');
@@ -210,7 +213,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
         $response = $controller->removeRegisteredMethod($request);
 
         $this->assertSame(400, $response->getStatusCode());
-        $this->assertContains('No such method is available', $response->getBody());
+        $this->assertStringContainsString('No such method is available', $response->getBody());
 
         // Existing method
         $request = new HTTPRequest('DELETE', '');
@@ -246,7 +249,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
         $response = $controller->removeRegisteredMethod($request);
 
         $this->assertSame(400, $response->getStatusCode());
-        $this->assertContains('Could not delete the specified method from the user', $response->getBody());
+        $this->assertStringContainsString('Could not delete the specified method from the user', $response->getBody());
     }
 
     public function testRemoveRegistrationSuccessResponseIncludesTheNowAvailableMethod()
@@ -344,7 +347,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
         );
 
         $this->assertSame(400, $result->getStatusCode());
-        $this->assertContains('Invalid session', $result->getBody());
+        $this->assertStringContainsString('Invalid session', $result->getBody());
     }
 
     /**
@@ -369,14 +372,14 @@ class AdminRegistrationControllerTest extends FunctionalTest
         $response = $controller->setDefaultRegisteredMethod($request);
 
         $this->assertSame(400, $response->getStatusCode());
-        $this->assertContains('Request timed out', $response->getBody());
+        $this->assertStringContainsString('Request timed out', $response->getBody());
 
         $token = SecurityToken::inst();
         $request = new HTTPRequest('POST', '', [$token->getName() => $token->getValue()]);
         $request->setSession($this->session());
 
         $response = $controller->setDefaultRegisteredMethod($request);
-        $this->assertNotContains('Request timed out', $response->getBody());
+        $this->assertStringNotContainsString('Request timed out', $response->getBody());
     }
 
     public function testSetDefaultRegisteredMethodFailsWhenMethodWasNotFound()
@@ -389,7 +392,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
         $response = $controller->setDefaultRegisteredMethod($request);
 
         $this->assertSame(400, $response->getStatusCode());
-        $this->assertContains('No such method is available', $response->getBody());
+        $this->assertStringContainsString('No such method is available', $response->getBody());
     }
 
     public function testSetDefaultRegisteredMethodFailsWhenRegisteredMethodWasNotFoundForUser()
@@ -406,7 +409,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
         $response = $controller->setDefaultRegisteredMethod($request);
 
         $this->assertSame(400, $response->getStatusCode());
-        $this->assertContains('No such registered method is available', $response->getBody());
+        $this->assertStringContainsString('No such registered method is available', $response->getBody());
     }
 
     public function testSetDefaultRegisteredMethodHandlesExceptionsOnWrite()
@@ -414,7 +417,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
         $registeredMethodManager = $this->scaffoldRegisteredMethodManagerMock();
 
         $controller = new AdminRegistrationController();
-        /** @var LoggerInterface&PHPUnit_Framework_MockObject_MockObject $loggerMock */
+        /** @var LoggerInterface&MockObject $loggerMock */
         $loggerMock = $this->createMock(LoggerInterface::class);
         $controller->setLogger($loggerMock);
 
@@ -428,7 +431,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
             ->method('getFromMember')
             ->willReturn(new RegisteredMethod());
 
-        /** @var Member&PHPUnit_Framework_MockObject_MockObject $memberMock */
+        /** @var Member&MockObject $memberMock */
         $memberMock = $this->createMock(Member::class);
         $memberMock->method('write')->willThrowException(new ValidationException());
         Security::setCurrentUser($memberMock);
@@ -436,7 +439,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
         $loggerMock->expects($this->once())->method('debug');
         $response = $controller->setDefaultRegisteredMethod($request);
         $this->assertSame(400, $response->getStatusCode());
-        $this->assertContains('Could not set the default method for the user', $response->getBody());
+        $this->assertStringContainsString('Could not set the default method for the user', $response->getBody());
     }
 
     public function testSetDefaultRegisteredMethod()

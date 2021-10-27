@@ -2,7 +2,7 @@
 
 namespace SilverStripe\MFA\Tests\Authenticator;
 
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
@@ -14,6 +14,7 @@ use SilverStripe\Dev\FunctionalTest;
 use SilverStripe\MFA\Authenticator\LoginHandler;
 use SilverStripe\MFA\Authenticator\MemberAuthenticator;
 use SilverStripe\MFA\Extension\MemberExtension;
+use SilverStripe\MFA\Exception\MemberNotFoundException;
 use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
@@ -35,7 +36,7 @@ class LoginHandlerTest extends FunctionalTest
 {
     protected static $fixture_file = 'LoginHandlerTest.yml';
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         Config::modify()->set(MethodRegistry::class, 'methods', [Method::class]);
@@ -52,7 +53,7 @@ class LoginHandlerTest extends FunctionalTest
             ]
         ]);
 
-        /** @var SudoModeServiceInterface&PHPUnit_Framework_MockObject_MockObject $sudoModeService */
+        /** @var SudoModeServiceInterface&MockObject $sudoModeService */
         $sudoModeService = $this->createMock(SudoModeServiceInterface::class);
         $sudoModeService->expects($this->any())->method('check')->willReturn(true);
         Injector::inst()->registerService($sudoModeService, SudoModeServiceInterface::class);
@@ -76,7 +77,7 @@ class LoginHandlerTest extends FunctionalTest
 
     public function testMFARedirectsBackWhenSudoModeIsInactive()
     {
-        /** @var SudoModeServiceInterface&PHPUnit_Framework_MockObject_MockObject $sudoModeService */
+        /** @var SudoModeServiceInterface&MockObject $sudoModeService */
         $sudoModeService = $this->createMock(SudoModeServiceInterface::class);
         $sudoModeService->expects($this->once())->method('check')->willReturn(false);
         Injector::inst()->registerService($sudoModeService, SudoModeServiceInterface::class);
@@ -150,7 +151,7 @@ class LoginHandlerTest extends FunctionalTest
         $this->assertSame($method->getName(), $firstMethod['name']);
         $this->assertSame($registerHandler->getDescription(), $firstMethod['description']);
         $this->assertSame($registerHandler->getSupportLink(), $firstMethod['supportLink']);
-        $this->assertContains('client/dist/images', $firstMethod['thumbnail']);
+        $this->assertStringContainsString('client/dist/images', $firstMethod['thumbnail']);
         $this->assertSame('BasicMathRegister', $firstMethod['component']);
     }
 
@@ -181,7 +182,7 @@ class LoginHandlerTest extends FunctionalTest
         $this->assertSame($method->getName(), $result['name']);
         $this->assertSame('BasicMathLogin', $result['component']);
         $this->assertSame('https://google.com', $result['supportLink']);
-        $this->assertContains('totp.svg', $result['thumbnail']);
+        $this->assertStringContainsString('totp.svg', $result['thumbnail']);
     }
 
     public function testMFASchemaEndpointProvidesDefaultMethodIfSet()
@@ -221,7 +222,7 @@ class LoginHandlerTest extends FunctionalTest
         }
 
         $response = $this->get(Controller::join_links(Security::login_url(), 'default/mfa/skip'));
-        $this->assertContains('You cannot skip MFA registration', $response->getBody());
+        $this->assertStringContainsString('You cannot skip MFA registration', $response->getBody());
     }
 
     /**
@@ -308,11 +309,9 @@ class LoginHandlerTest extends FunctionalTest
         $this->assertStringEndsWith('admin/pages', $response->getHeader('location'));
     }
 
-    /**
-     * @expectedException \SilverStripe\MFA\Exception\MemberNotFoundException
-     */
     public function testGetMemberThrowsExceptionWithoutMember()
     {
+        $this->expectException(MemberNotFoundException::class);
         $this->logOut();
         $handler = new LoginHandler('foo', $this->createMock(MemberAuthenticator::class));
         $handler->setRequest(new HTTPRequest('GET', '/'));
@@ -393,7 +392,7 @@ class LoginHandlerTest extends FunctionalTest
         $response = $handler->finishVerification($request);
 
         $this->assertSame(403, $response->getStatusCode());
-        $this->assertContains('Your request timed out', $response->getBody());
+        $this->assertStringContainsString('Your request timed out', $response->getBody());
 
         $request = new HTTPRequest('GET', '/', [
             SecurityToken::inst()->getName() => SecurityToken::inst()->getValue()
@@ -437,7 +436,7 @@ class LoginHandlerTest extends FunctionalTest
         $member = $this->objFromFixture(Member::class, 'robbie');
         $this->scaffoldPartialLogin($member);
 
-        /** @var SudoModeServiceInterface&PHPUnit_Framework_MockObject_MockObject $sudoModeService */
+        /** @var SudoModeServiceInterface&MockObject $sudoModeService */
         $sudoModeService = $this->createMock(SudoModeServiceInterface::class);
         $sudoModeService->method('check')->willReturn(false);
         Injector::inst()->registerService($sudoModeService, SudoModeServiceInterface::class);
@@ -472,7 +471,7 @@ class LoginHandlerTest extends FunctionalTest
 
         $response = $handler->finishVerification($request);
         $this->assertEquals(403, $response->getStatusCode());
-        $this->assertContains('Your account is temporarily locked', (string) $response->getBody());
+        $this->assertStringContainsString('Your account is temporarily locked', (string) $response->getBody());
     }
 
     public function testFinishVerificationChecksSudoModeIsActive()
@@ -488,14 +487,17 @@ class LoginHandlerTest extends FunctionalTest
         $store->setMethod('basic-math');
         $handler->setStore($store);
 
-        /** @var SudoModeServiceInterface&PHPUnit_Framework_MockObject_MockObject $sudoModeService */
+        /** @var SudoModeServiceInterface&MockObject $sudoModeService */
         $sudoModeService = $this->createMock(SudoModeServiceInterface::class);
         $sudoModeService->method('check')->willReturn(false);
         Injector::inst()->registerService($sudoModeService, SudoModeServiceInterface::class);
 
         $response = $handler->finishVerification($request);
         $this->assertEquals(403, $response->getStatusCode());
-        $this->assertContains('You need to re-verify your account before continuing', (string) $response->getBody());
+        $this->assertStringContainsString(
+            'You need to re-verify your account before continuing',
+            (string) $response->getBody()
+        );
     }
 
     public function testFinishVerificationPassesExceptionMessagesThroughFromMethodsWithValidationFailures()
@@ -505,7 +507,7 @@ class LoginHandlerTest extends FunctionalTest
         $member->config()->set('lock_out_after_incorrect_logins', 5);
         $failedLogins = $member->FailedLoginCount;
 
-        /** @var LoginHandler|PHPUnit_Framework_MockObject_MockObject $handler */
+        /** @var LoginHandler|MockObject $handler */
         $handler = $this->getMockBuilder(LoginHandler::class)
             ->setMethods(['completeVerificationRequest'])
             ->disableOriginalConstructor()
@@ -524,7 +526,7 @@ class LoginHandlerTest extends FunctionalTest
         $response = $handler->finishVerification($request);
 
         $this->assertEquals(401, $response->getStatusCode());
-        $this->assertContains('It failed because it\'s mocked', (string) $response->getBody());
+        $this->assertStringContainsString('It failed because it\'s mocked', (string) $response->getBody());
         $this->assertSame($failedLogins + 1, $member->FailedLoginCount, 'Failed login is registered');
     }
 
@@ -540,7 +542,7 @@ class LoginHandlerTest extends FunctionalTest
 
         $this->doLogin($member, 'Password123', 'admin/pages');
 
-        /** @var LoginHandler|PHPUnit_Framework_MockObject_MockObject $handler */
+        /** @var LoginHandler|MockObject $handler */
         $handler = $this->getMockBuilder(LoginHandler::class)
             ->setMethods(['completeVerificationRequest'])
             ->disableOriginalConstructor()
