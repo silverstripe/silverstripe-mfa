@@ -2,7 +2,8 @@
 
 namespace SilverStripe\MFA\Tests\Authenticator;
 
-use PHPUnit_Framework_MockObject_MockObject;
+use LogicException;
+use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
@@ -26,7 +27,7 @@ class ChangePasswordHandlerTest extends FunctionalTest
 {
     protected static $fixture_file = 'ChangePasswordHandlerTest.yml';
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -60,7 +61,7 @@ class ChangePasswordHandlerTest extends FunctionalTest
     {
         $this->logInAs('simon');
         $response = $this->get('Security/changepassword');
-        $this->assertContains('OldPassword', $response->getBody());
+        $this->assertStringContainsString('OldPassword', $response->getBody());
     }
 
     public function testMFADoesNotLoadWhenAUserDoesNotHaveRegisteredMethods()
@@ -71,8 +72,12 @@ class ChangePasswordHandlerTest extends FunctionalTest
         $token = $member->generateAutologinTokenAndStoreHash();
         $response = $this->get("Security/changepassword?m={$memberId}&t={$token}");
 
-        $this->assertContains('NewPassword1', $response->getBody(), 'There should be a new password field');
-        $this->assertContains('NewPassword2', $response->getBody(), 'There should be a confirm new password field');
+        $this->assertStringContainsString('NewPassword1', $response->getBody(), 'There should be a new password field');
+        $this->assertStringContainsString(
+            'NewPassword2',
+            $response->getBody(),
+            'There should be a confirm new password field'
+        );
     }
 
     public function testMFALoadsWhenAUserHasConfiguredMethods()
@@ -83,8 +88,12 @@ class ChangePasswordHandlerTest extends FunctionalTest
         $token = $member->generateAutologinTokenAndStoreHash();
         $response = $this->get("Security/changepassword?m={$memberId}&t={$token}");
 
-        $this->assertNotContains('type="password"', $response->getBody(), 'Password form should be circumvented');
-        $this->assertContains('id="mfa-app"', $response->getBody(), 'MFA screen should be displayed');
+        $this->assertStringNotContainsString(
+            'type="password"',
+            $response->getBody(),
+            'Password form should be circumvented'
+        );
+        $this->assertStringContainsString('id="mfa-app"', $response->getBody(), 'MFA screen should be displayed');
     }
 
     public function testGetSchema()
@@ -114,13 +123,11 @@ class ChangePasswordHandlerTest extends FunctionalTest
         $this->assertEquals(302, $response->getStatusCode());
     }
 
-    /**
-     * @expectedException \LogicException
-     * @expectedExceptionMessage Store not found, please create one first.
-     */
     public function testStartMfaCheckThrowsExceptionWithoutStore()
     {
-        /** @var ChangePasswordHandler&PHPUnit_Framework_MockObject_MockObject $handler */
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('Store not found, please create one first.');
+        /** @var ChangePasswordHandler&MockObject $handler */
         $handler = $this->getMockBuilder(ChangePasswordHandler::class)
             ->disableOriginalConstructor()
             ->setMethods(['getStore'])
@@ -133,7 +140,7 @@ class ChangePasswordHandlerTest extends FunctionalTest
 
     public function testStartMfaReturnsForbiddenWithoutMember()
     {
-        /** @var ChangePasswordHandler&PHPUnit_Framework_MockObject_MockObject $handler */
+        /** @var ChangePasswordHandler&MockObject $handler */
         $handler = $this->getMockBuilder(ChangePasswordHandler::class)
             ->disableOriginalConstructor()
             ->setMethods(['getStore'])
@@ -150,7 +157,7 @@ class ChangePasswordHandlerTest extends FunctionalTest
 
     public function testMfaStartsVerificationResponse()
     {
-        /** @var ChangePasswordHandler&PHPUnit_Framework_MockObject_MockObject $handler */
+        /** @var ChangePasswordHandler&MockObject $handler */
         $handler = $this->getMockBuilder(ChangePasswordHandler::class)
             ->disableOriginalConstructor()
             ->setMethods(['getStore', 'createStartVerificationResponse'])
@@ -175,13 +182,13 @@ class ChangePasswordHandlerTest extends FunctionalTest
 
     public function testVerifyMfaCheckReturnsForbiddenOnVerificationFailure()
     {
-        /** @var ChangePasswordHandler&PHPUnit_Framework_MockObject_MockObject $handler */
+        /** @var ChangePasswordHandler&MockObject $handler */
         $handler = $this->getMockBuilder(ChangePasswordHandler::class)
             ->disableOriginalConstructor()
             ->setMethods(['getStore', 'completeVerificationRequest'])
             ->getMock();
 
-        /** @var LoggerInterface&PHPUnit_Framework_MockObject_MockObject $logger */
+        /** @var LoggerInterface&MockObject $logger */
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects($this->once())->method('debug');
         $handler->setLogger($logger);
@@ -199,7 +206,7 @@ class ChangePasswordHandlerTest extends FunctionalTest
 
     public function testVerifyMfaCheckReturnsUnsuccessfulValidationResult()
     {
-        /** @var ChangePasswordHandler&PHPUnit_Framework_MockObject_MockObject $handler */
+        /** @var ChangePasswordHandler&MockObject $handler */
         $handler = $this->getMockBuilder(ChangePasswordHandler::class)
             ->disableOriginalConstructor()
             ->setMethods(['getStore', 'completeVerificationRequest'])
@@ -214,12 +221,12 @@ class ChangePasswordHandlerTest extends FunctionalTest
 
         $response = $handler->verifyMFACheck(new HTTPRequest('GET', ''));
         $this->assertEquals(401, $response->getStatusCode());
-        $this->assertContains('It is a test', $response->getBody());
+        $this->assertStringContainsString('It is a test', $response->getBody());
     }
 
     public function testVerifyMfaReturnsWhenVerificationIsNotComplete()
     {
-        /** @var ChangePasswordHandler&PHPUnit_Framework_MockObject_MockObject $handler */
+        /** @var ChangePasswordHandler&MockObject $handler */
         $handler = $this->getMockBuilder(ChangePasswordHandler::class)
             ->disableOriginalConstructor()
             ->setMethods(['getStore', 'completeVerificationRequest', 'isVerificationComplete'])
@@ -233,12 +240,12 @@ class ChangePasswordHandlerTest extends FunctionalTest
 
         $response = $handler->verifyMFACheck(new HTTPRequest('GET', ''));
         $this->assertEquals(202, $response->getStatusCode());
-        $this->assertContains('Additional authentication required', $response->getBody());
+        $this->assertStringContainsString('Additional authentication required', $response->getBody());
     }
 
     public function testVerifyMfaResultSuccessful()
     {
-        /** @var ChangePasswordHandler&PHPUnit_Framework_MockObject_MockObject $handler */
+        /** @var ChangePasswordHandler&MockObject $handler */
         $handler = $this->getMockBuilder(ChangePasswordHandler::class)
             ->disableOriginalConstructor()
             ->setMethods(['getStore', 'completeVerificationRequest', 'isVerificationComplete'])
@@ -255,6 +262,6 @@ class ChangePasswordHandlerTest extends FunctionalTest
         $response = $handler->verifyMFACheck($request);
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertContains('Multi-factor authenticated', $response->getBody());
+        $this->assertStringContainsString('Multi-factor authenticated', $response->getBody());
     }
 }

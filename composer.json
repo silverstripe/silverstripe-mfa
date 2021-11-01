@@ -25,8 +25,8 @@
         }
     ],
     "require": {
-        "php": ">=7.1.0",
-        "silverstripe/framework": "^4.1",
+        "php": "^7.3 || ^8.0",
+        "silverstripe/framework": "^4.10",
         "silverstripe/admin": "^1.1",
         "silverstripe/siteconfig": "^4.1",
         "defuse/php-encryption": "^2.2",
@@ -34,7 +34,7 @@
         "silverstripe/security-extensions": "^4.0"
     },
     "require-dev": {
-        "sminnee/phpunit": "^5.7",
+        "phpunit/phpunit": "^9.5",
         "squizlabs/php_codesniffer": "^3.0"
     },
     "conflict": {

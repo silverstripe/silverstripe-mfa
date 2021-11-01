@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SilverStripe\MFA\Tests\Behat\Context;
 
+use PHPUnit\Framework\Assert;
 use SilverStripe\CMS\Tests\Behaviour\LoginContext as CMSLoginContext;
 use SilverStripe\BehatExtension\Context\LoginContext as BehatLoginContext;
 use SilverStripe\MFA\Extension\SiteConfigExtension;
@@ -32,7 +33,7 @@ class LoginContext extends CMSLoginContext
     {
         /** @var SiteConfig&SiteConfigExtension $siteConfig */
         $siteConfig = SiteConfig::current_site_config();
-        assertNotNull($siteConfig, 'Current SiteConfig record could not be found!');
+        Assert::assertNotNull($siteConfig, 'Current SiteConfig record could not be found!');
 
         $siteConfig->MFARequired = false;
         $siteConfig->write();

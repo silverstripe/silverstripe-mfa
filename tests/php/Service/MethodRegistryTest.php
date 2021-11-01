@@ -22,27 +22,24 @@ class MethodRegistryTest extends SapphireTest
         $this->assertInstanceOf(Method::class, reset($methods));
     }
 
-    /**
-     * @expectedException UnexpectedValueException
-     * phpcs:disable
-     * @expectedExceptionMessage Given method "SilverStripe\Security\Member" does not implement SilverStripe\MFA\Method\MethodInterface
-     * phpcs:enable
-     */
     public function testInvalidMethodsThrowExceptions()
     {
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage(
+            'Given method "SilverStripe\Security\Member" does not implement SilverStripe\MFA\Method\MethodInterface'
+        );
         Config::modify()->set(MethodRegistry::class, 'methods', [Member::class]);
         $registry = MethodRegistry::singleton();
         $registry->getMethods();
     }
 
-    /**
-     * @expectedException UnexpectedValueException
-     * phpcs:disable
-     * @expectedExceptionMessage Cannot register MFA methods more than once. Check your config: SilverStripe\MFA\Tests\Stub\BasicMath\Method
-     * phpcs:enable
-     */
     public function testRegisteringMethodMultipleTimesThrowsException()
     {
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage(
+            'Cannot register MFA methods more than once. ' .
+            'Check your config: SilverStripe\MFA\Tests\Stub\BasicMath\Method'
+        );
         Config::modify()->set(MethodRegistry::class, 'methods', [
             Method::class,
             Method::class,
@@ -52,12 +49,12 @@ class MethodRegistryTest extends SapphireTest
         MethodRegistry::singleton()->getMethods();
     }
 
-    /**
-     * @expectedException UnexpectedValueException
-     * @expectedExceptionMessage Cannot register multiple MFA methods with the same URL segment: basic-math
-     */
     public function testRegisteringMethodsWithSameURLSegmentThrowsException()
     {
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage(
+            'Cannot register multiple MFA methods with the same URL segment: basic-math'
+        );
         Config::modify()->set(MethodRegistry::class, 'methods', [
             Method::class,
             DuplicatedBasicMath\Method::class,

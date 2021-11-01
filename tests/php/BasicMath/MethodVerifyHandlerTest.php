@@ -2,7 +2,7 @@
 
 namespace SilverStripe\MFA\Tests\BasicMath;
 
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\MFA\Model\RegisteredMethod;
@@ -15,7 +15,7 @@ class MethodVerifyHandlerTest extends SapphireTest
     {
         $handler = new MethodVerifyHandler();
 
-        /** @var TestStore|PHPUnit_Framework_MockObject_MockObject $store */
+        /** @var TestStore|MockObject $store */
         $store = $this->createMock(TestStore::class);
 
         // Need to specify willReturn() otherwise mock will attempt to an interface which causes a fatal error in PHP8
@@ -30,11 +30,11 @@ class MethodVerifyHandlerTest extends SapphireTest
     {
         $handler = new MethodVerifyHandler();
 
-        /** @var HTTPRequest|PHPUnit_Framework_MockObject_MockObject $request */
+        /** @var HTTPRequest|MockObject $request */
         $request = $this->createMock(HTTPRequest::class);
         $request->expects($this->once())->method('getBody')->willReturn('{"answer":"10"}');
 
-        /** @var TestStore|PHPUnit_Framework_MockObject_MockObject $store */
+        /** @var TestStore|MockObject $store */
         $store = $this->createMock(TestStore::class);
         $store->expects($this->once())->method('getState')->willReturn([
             'answer' => 10,

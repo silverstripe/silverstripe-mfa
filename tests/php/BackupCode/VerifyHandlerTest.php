@@ -2,7 +2,7 @@
 
 namespace SilverStripe\MFA\Tests\BackupCode;
 
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\MFA\BackupCode\VerifyHandler;
@@ -73,11 +73,11 @@ class VerifyHandlerTest extends SapphireTest
         /** @var Member|MemberExtension $member */
         $member = $this->objFromFixture(Member::class, 'guy');
 
-        /** @var HTTPRequest|PHPUnit_Framework_MockObject_MockObject $request */
+        /** @var HTTPRequest|MockObject $request */
         $request = $this->createMock(HTTPRequest::class);
         $request->expects($this->once())->method('getBody')->willReturn("{\"code\":\"{$userInput}\"}");
 
-        /** @var TestStore|PHPUnit_Framework_MockObject_MockObject $store */
+        /** @var TestStore|MockObject $store */
         $store = $this->createMock(TestStore::class);
         $store->expects($this->any())->method('getMember')->willReturn($member);
 

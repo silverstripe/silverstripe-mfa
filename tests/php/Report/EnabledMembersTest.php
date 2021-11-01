@@ -15,7 +15,7 @@ class EnabledMembersTest extends SapphireTest
 {
     protected static $fixture_file = 'EnabledMembersTest.yml';
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         Config::modify()

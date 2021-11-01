@@ -18,7 +18,7 @@ class SecurityExtensionTest extends FunctionalTest
 {
     protected static $fixture_file = 'SecurityExtensionTest.yml';
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -43,7 +43,7 @@ class SecurityExtensionTest extends FunctionalTest
         $response = $this->get($url);
 
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertContains('Already authenticated', $response->getBody());
+        $this->assertStringContainsString('Already authenticated', $response->getBody());
     }
 
     public function testResetAccountFailsWithInvalidToken()
@@ -56,7 +56,7 @@ class SecurityExtensionTest extends FunctionalTest
         $response = $this->get($url);
 
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertContains('Invalid member or token', $response->getBody());
+        $this->assertStringContainsString('Invalid member or token', $response->getBody());
     }
 
     public function testResetAccountFailsWithExpiredToken()
@@ -73,7 +73,7 @@ class SecurityExtensionTest extends FunctionalTest
         $response = $this->get($url);
 
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertContains('Invalid member or token', $response->getBody());
+        $this->assertStringContainsString('Invalid member or token', $response->getBody());
     }
 
     public function testResetAccountSubmissionFailsWithExpiredSession()
@@ -96,7 +96,7 @@ class SecurityExtensionTest extends FunctionalTest
             ['NewPassword1' => 'testtest', 'NewPassword2' => 'testtest']
         );
 
-        $this->assertContains('The account reset process timed out', $response->getBody());
+        $this->assertStringContainsString('The account reset process timed out', $response->getBody());
     }
 
     public function testResetAccountSubmissionPasses()
@@ -117,7 +117,7 @@ class SecurityExtensionTest extends FunctionalTest
         );
 
         // User should have been redirected to Login form with session message
-        $this->assertContains('Login', $response->getBody());
-        $this->assertContains('Reset complete', $response->getBody());
+        $this->assertStringContainsString('Login', $response->getBody());
+        $this->assertStringContainsString('Reset complete', $response->getBody());
     }
 }

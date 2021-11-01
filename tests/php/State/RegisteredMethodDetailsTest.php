@@ -2,15 +2,16 @@
 
 namespace SilverStripe\MFA\Tests\State;
 
-use PHPUnit_Framework_MockObject_MockObject;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use SilverStripe\MFA\Method\Handler\VerifyHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\State\RegisteredMethodDetails;
 
-class RegisteredMethodDetailsTest extends \PHPUnit_Framework_TestCase
+class RegisteredMethodDetailsTest extends TestCase
 {
     /**
-     * @var MethodInterface|PHPUnit_Framework_MockObject_MockObject
+     * @var MethodInterface|MockObject
      */
     protected $method;
 
@@ -19,7 +20,7 @@ class RegisteredMethodDetailsTest extends \PHPUnit_Framework_TestCase
      */
     protected $details;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -35,6 +36,6 @@ class RegisteredMethodDetailsTest extends \PHPUnit_Framework_TestCase
     {
         $this->method->expects($this->once())->method('getURLSegment')->willReturn('foo-bar');
         $result = json_encode($this->details);
-        $this->assertContains('foo-bar', $result);
+        $this->assertStringContainsString('foo-bar', $result);
     }
 }
