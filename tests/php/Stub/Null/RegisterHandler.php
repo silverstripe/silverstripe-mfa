@@ -10,7 +10,6 @@ use SilverStripe\MFA\Store\StoreInterface;
 
 class RegisterHandler implements RegisterHandlerInterface, TestOnly
 {
-
     /**
      * Stores any data required to handle a registration process with a method, and returns relevant state to be applied
      * to the front-end application managing the process.

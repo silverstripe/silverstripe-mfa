@@ -9,5 +9,4 @@ use SilverStripe\MFA\Tests\Stub\BasicMath\Method as BasicMathMethod;
  */
 class Method extends BasicMathMethod
 {
-
 }
