@@ -10,5 +10,4 @@ use JsonSerializable;
  */
 interface AvailableMethodDetailsInterface extends JsonSerializable
 {
-
 }
