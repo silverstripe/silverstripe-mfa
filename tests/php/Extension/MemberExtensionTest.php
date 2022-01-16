@@ -70,4 +70,27 @@ class MemberExtensionTest extends SapphireTest
         $anotherMember = $this->objFromFixture(Member::class, 'squib');
         $anotherMember->setDefaultRegisteredMethod($registeredMethod);
     }
+
+    public function testGetDefaultRegisteredMethodName()
+    {
+        $member = $this->createMemberWithRegisteredMethods();
+        $this->assertSame('Recovery codes', $member->getDefaultRegisteredMethodName());
+    }
+
+    public function testGetRegisteredMethodNames()
+    {
+        $member = $this->createMemberWithRegisteredMethods();
+        $this->assertSame('Recovery codes, MemberExtensionTestMethod2', $member->getRegisteredMethodNames());
+    }
+
+    private function createMemberWithRegisteredMethods(): Member
+    {
+        $manager = RegisteredMethodManager::singleton();
+        $member = $this->objFromFixture(Member::class, 'squib');
+        $method = new Method();
+        $method2 = new MemberExtensionTestMethod2();
+        $manager->registerForMember($member, $method, ['foo' => 'bar']);
+        $manager->registerForMember($member, $method2, ['abc' => 'xyz']);
+        return $member;
+    }
 }
