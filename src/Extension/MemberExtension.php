@@ -69,6 +69,26 @@ class MemberExtension extends DataExtension implements PermissionProvider
         return $this->owner;
     }
 
+    /**
+     * @return string
+     */
+    public function getDefaultRegisteredMethodName(): string
+    {
+        $method = $this->getDefaultRegisteredMethod();
+        return $method ? $method->getMethod()->getName() : '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getRegisteredMethodNames(): string
+    {
+        $arr = array_map(function ($method) {
+            return $method->getMethod()->getName();
+        }, $this->owner->RegisteredMFAMethods()->toArray());
+        return implode(', ', $arr);
+    }
+
     public function updateCMSFields(FieldList $fields): FieldList
     {
         $fields->removeByName(['DefaultRegisteredMethodID', 'HasSkippedMFARegistration', 'RegisteredMFAMethods']);

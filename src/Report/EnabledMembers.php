@@ -94,13 +94,11 @@ class EnabledMembers extends Report
     public function columns(): array
     {
         $columns = singleton(Member::class)->summaryFields() + [
-            'registeredMethods' => [
-                'title' => _t(__CLASS__ . '.COLUMN_METHODS_REGISTERED', 'Registered methods'),
-                'formatting' => [$this, 'formatMethodsColumn']
+            'RegisteredMethodNames' => [
+                'title' => _t(__CLASS__ . '.COLUMN_METHODS_REGISTERED', 'Registered methods')
             ],
-            'defaultMethodName' => [
-                'title' => _t(__CLASS__ . '.COLUMN_METHOD_DEFAULT', 'Default method'),
-                'formatting' => [$this, 'formatDefaultMethodColumn']
+            'DefaultRegisteredMethodName' => [
+                'title' => _t(__CLASS__ . '.COLUMN_METHOD_DEFAULT', 'Default method')
             ],
             'HasSkippedMFARegistration' => [
                 'title' => _t(__CLASS__ . '.COLUMN_SKIPPED_REGISTRATION', 'Skipped registration'),
@@ -153,6 +151,7 @@ class EnabledMembers extends Report
      * @param null $_
      * @param Member $record
      * @return string
+     * @deprecated Will be removed in 5.0 use MemberExtension::getRegisteredMethodNames() instead
      */
     public function formatMethodsColumn($_, Member $record): string
     {
@@ -170,6 +169,7 @@ class EnabledMembers extends Report
      * @param null $_
      * @param Member&MemberExtension $record
      * @return string
+     * @deprecated Will be removed in 5.0 use MemberExtension::getDefaultRegisteredMethodName() instead
      */
     public function formatDefaultMethodColumn($_, Member $record): string
     {
