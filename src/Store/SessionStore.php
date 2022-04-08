@@ -202,42 +202,62 @@ class SessionStore implements StoreInterface, Serializable
         return $this;
     }
 
-    public function serialize(): string
+    public function __serialize(): array
     {
-        // Use the stored member ID by default. We should do this because we can avoid ever fetching the member object
+        // Use the stored member ID by default.
+        // We should do this because we can avoid ever fetching the member object
         // from the database if the member was never accessed during this request.
         $memberID = $this->memberID;
 
-        if (!$memberID && ($member = $this->getMember())) {
+        if (!$memberID && $this->getMember()) {
             $memberID = $this->getMember()->ID;
         }
 
-        $stuff = json_encode([
+        return [
             'member' => $memberID,
             'method' => $this->getMethod(),
             'state' => $this->getState(),
             'verifiedMethods' => $this->getVerifiedMethods(),
-        ]);
-
-        if (!$stuff) {
-            throw new RuntimeException(json_last_error_msg());
-        }
-
-        return $stuff;
+        ];
     }
 
+    public function __unserialize(array $data): void
+    {
+        $this->memberID = $data['member'];
+        $this->setMethod($data['method']);
+        $this->setState($data['state']);
+        foreach ($data['verifiedMethods'] as $method) {
+            $this->addVerifiedMethod($method);
+        }
+    }
+
+    /**
+     * The __serialize() magic method will be automatically used instead of this
+     *
+     * @return string
+     * @deprecated will be removed in 5.0
+     */
+    public function serialize(): string
+    {
+        $data = $this->__serialize();
+        $str = json_encode($data);
+        if (!$str) {
+            throw new RuntimeException(json_last_error_msg());
+        }
+        return $str;
+    }
+
+    /**
+     * The __unserialize() magic method will be automatically used instead of this almost all the time
+     * This method will be automatically used if existing serialized data was not saved as an associative array
+     * and the PHP version used in less than PHP 9.0
+     *
+     * @param string $serialized
+     * @deprecated will be removed in 5.0
+     */
     public function unserialize($serialized): void
     {
-        $state = json_decode($serialized, true);
-
-        if (is_array($state) && $state['member']) {
-            $this->memberID = $state['member'];
-            $this->setMethod($state['method']);
-            $this->setState($state['state']);
-
-            foreach ($state['verifiedMethods'] as $method) {
-                $this->addVerifiedMethod($method);
-            }
-        }
+        $data = json_decode($serialized, true);
+        $this->__unserialize($data);
     }
 }
