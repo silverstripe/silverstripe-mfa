@@ -59,7 +59,7 @@ class VerifyHandler implements VerifyHandlerInterface
      */
     public function verify(HTTPRequest $request, StoreInterface $store, RegisteredMethod $registeredMethod): Result
     {
-        $bodyJSON = json_decode($request->getBody(), true);
+        $bodyJSON = json_decode($request->getBody() ?? '', true);
 
         if (!isset($bodyJSON['code'])) {
             throw new RuntimeException(
@@ -69,10 +69,10 @@ class VerifyHandler implements VerifyHandlerInterface
 
         $code = $bodyJSON['code'];
 
-        $candidates = json_decode($registeredMethod->Data, true);
+        $candidates = json_decode($registeredMethod->Data ?? '', true);
 
         foreach ($candidates as $index => $candidate) {
-            $candidateData = json_decode($candidate, true) ?? [];
+            $candidateData = json_decode($candidate ?? '', true) ?? [];
             $backupCode = BackupCode::create(
                 $code,
                 $candidateData['hash'] ?? '',
@@ -85,7 +85,7 @@ class VerifyHandler implements VerifyHandlerInterface
 
 
             // Remove the verified code from the valid list of codes
-            array_splice($candidates, $index, 1);
+            array_splice($candidates, $index ?? 0, 1);
             $registeredMethod->Data = json_encode($candidates);
             $registeredMethod->write();
             $this->notification->send(
@@ -93,7 +93,7 @@ class VerifyHandler implements VerifyHandlerInterface
                 'SilverStripe/MFA/Email/Notification_backupcodeused',
                 [
                     'subject' => _t(self::class . '.MFAREMOVED', 'A recovery code was used to access your account'),
-                    'CodesRemaining' => count($candidates),
+                    'CodesRemaining' => count($candidates ?? []),
                 ]
             );
             return Result::create();

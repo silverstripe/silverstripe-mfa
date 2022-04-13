@@ -85,7 +85,7 @@ class MemberExtension extends DataExtension implements PermissionProvider
     {
         $arr = array_map(function ($method) {
             return $method->getMethod()->getName();
-        }, $this->owner->RegisteredMFAMethods()->toArray());
+        }, $this->owner->RegisteredMFAMethods()->toArray() ?? []);
         return implode(', ', $arr);
     }
 

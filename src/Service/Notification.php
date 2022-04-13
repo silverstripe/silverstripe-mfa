@@ -77,7 +77,7 @@ class Notification
 
             foreach (['to', 'from', 'subject'] as $header) {
                 if (isset($data[$header])) {
-                    $method = 'set' . ucwords($header);
+                    $method = 'set' . ucwords($header ?? '');
                     $email->$method($data[$header]);
                 }
             }

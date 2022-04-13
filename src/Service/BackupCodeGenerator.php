@@ -46,10 +46,10 @@ class BackupCodeGenerator implements BackupCodeGeneratorInterface
         $charset = $this->getCharacterSet();
 
         $codes = [];
-        while (count($codes) < $codeCount) {
+        while (count($codes ?? []) < $codeCount) {
             $code = $this->generateCode($charset, $codeLength);
 
-            if (!in_array($code, $codes)) {
+            if (!in_array($code, $codes ?? [])) {
                 $hashData = Security::encrypt_password($code);
                 $codes[] = BackupCode::create($code, $hashData['password'], $hashData['algorithm'], $hashData['salt']);
             }
@@ -77,11 +77,11 @@ class BackupCodeGenerator implements BackupCodeGeneratorInterface
     protected function generateCode(array $charset, int $codeLength): string
     {
         $characters = [];
-        $numberOfOptions = count($charset);
-        while (count($characters) < $codeLength) {
+        $numberOfOptions = count($charset ?? []);
+        while (count($characters ?? []) < $codeLength) {
             $key = random_int(0, $numberOfOptions - 1); // zero based array
             $characters[] = $charset[$key];
         }
-        return implode($characters);
+        return implode($characters ?? '');
     }
 }

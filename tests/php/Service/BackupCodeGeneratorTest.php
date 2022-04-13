@@ -28,7 +28,7 @@ class BackupCodeGeneratorTest extends SapphireTest
         foreach ($result as $backupCode) {
             $this->assertSame(
                 6,
-                strlen($backupCode->getCode()),
+                strlen($backupCode->getCode() ?? ''),
                 'Generated codes are of configured length'
             );
         }

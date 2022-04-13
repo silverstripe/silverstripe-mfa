@@ -260,7 +260,7 @@ class EnforcementManager
         $methodRegistry = MethodRegistry::singleton();
         $methods = $methodRegistry->getMethods();
         // If there are no methods available excluding backup codes, do not redirect
-        if (!count($methods) || (count($methods) === 1 && $methodRegistry->getBackupMethod() !== null)) {
+        if (!count($methods ?? []) || (count($methods ?? []) === 1 && $methodRegistry->getBackupMethod() !== null)) {
             return false;
         }
 

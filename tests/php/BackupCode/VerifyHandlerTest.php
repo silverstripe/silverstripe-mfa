@@ -46,7 +46,7 @@ class VerifyHandlerTest extends SapphireTest
         $this->assertTrue($handler->verify($request, $store, $method)->isSuccessful());
 
         $method = DataObject::get_by_id(RegisteredMethod::class, $method->ID);
-        $codes = json_decode($method->Data, true);
+        $codes = json_decode($method->Data ?? '', true);
 
         $this->assertCount(3, $codes, 'Only 3 codes remain against the method');
 

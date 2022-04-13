@@ -66,14 +66,14 @@ class RegisterHandler implements RegisterHandlerInterface
             $method,
             array_map(function (BackupCode $backupCode) {
                 return json_encode($backupCode);
-            }, $codes)
+            }, $codes ?? [])
         );
 
         // Return un-hashed codes for the front-end UI
         return [
             'codes' => array_map(function (BackupCode $backupCode) {
                 return $backupCode->getCode();
-            }, $codes),
+            }, $codes ?? []),
         ];
     }
 

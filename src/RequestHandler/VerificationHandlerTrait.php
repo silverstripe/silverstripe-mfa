@@ -133,10 +133,11 @@ trait VerificationHandlerTrait
         $successfulMethods = $store->getVerifiedMethods();
 
         // Zero is "not complete". There's different config for optional MFA
-        if (!is_array($successfulMethods) || !count($successfulMethods)) {
+        if (!is_array($successfulMethods) || !count($successfulMethods ?? [])) {
             return false;
         }
 
-        return count($successfulMethods) >= Config::inst()->get(EnforcementManager::class, 'required_mfa_methods');
+        $required = Config::inst()->get(EnforcementManager::class, 'required_mfa_methods');
+        return count($successfulMethods ?? []) >= $required;
     }
 }
