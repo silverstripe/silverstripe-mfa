@@ -93,6 +93,7 @@ class AdminRegistrationControllerTest extends FunctionalTest
      */
     public function testStartRegistrationDisablesHTTPCaching()
     {
+        $this->logInAs($this->objFromFixture(Member::class, 'sally_smith'));
         $middleware = HTTPCacheControlMiddleware::singleton();
         $middleware->enableCache(true);
         $this->assertSame('enabled', $middleware->getState());
