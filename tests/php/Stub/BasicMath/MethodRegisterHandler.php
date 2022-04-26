@@ -36,9 +36,9 @@ class MethodRegisterHandler implements RegisterHandlerInterface, TestOnly
      */
     public function register(HTTPRequest $request, StoreInterface $store): Result
     {
-        $parameters = json_decode($request->getBody(), true);
+        $parameters = json_decode($request->getBody() ?? '', true);
 
-        if (!array_key_exists('number', $parameters)) {
+        if (!array_key_exists('number', $parameters ?? [])) {
             return Result::create(false, 'The required user input was not provided to register this method');
         }
 

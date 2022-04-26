@@ -160,7 +160,7 @@ class EnabledMembers extends Report
 
         return implode(', ', array_map(function (RegisteredMethod $method) {
             return $method->getMethod()->getName();
-        }, $methods->filter('MemberID', $record->ID)->toArray()));
+        }, $methods->filter('MemberID', $record->ID)->toArray() ?? []));
     }
 
     /**

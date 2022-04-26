@@ -36,7 +36,7 @@ class SchemaGenerator
         // Skip registration details if the user has already registered this method
         $exclude = array_map(function (RegisteredMethodDetailsInterface $methodDetails) {
             return $methodDetails->jsonSerialize()['urlSegment'];
-        }, $registeredMethods);
+        }, $registeredMethods ?? []);
 
         // Also skip the backup method
         $backupMethod = MethodRegistry::singleton()->getBackupMethod();
@@ -80,7 +80,7 @@ class SchemaGenerator
         // Compile details for methods that aren't already registered to the user
         foreach ($allMethods as $method) {
             // Omit specified exclusions or methods that are configured as back-up methods
-            if (in_array($method->getURLSegment(), $exclude)) {
+            if (in_array($method->getURLSegment(), $exclude ?? [])) {
                 continue;
             }
             $availableMethods[] = Injector::inst()->create(AvailableMethodDetailsInterface::class, $method);

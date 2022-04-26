@@ -129,7 +129,7 @@ class LoginHandlerTest extends FunctionalTest
 
         $result = $this->get(Controller::join_links(Security::login_url(), 'default/mfa/schema'));
 
-        $response = json_decode($result->getBody(), true);
+        $response = json_decode($result->getBody() ?? '', true);
 
         $this->assertArrayHasKey('registeredMethods', $response);
         $this->assertArrayHasKey('availableMethods', $response);
@@ -164,7 +164,7 @@ class LoginHandlerTest extends FunctionalTest
 
         $result = $this->get(Controller::join_links(Security::login_url(), 'default/mfa/schema'));
 
-        $response = json_decode($result->getBody(), true);
+        $response = json_decode($result->getBody() ?? '', true);
 
         $this->assertArrayHasKey('registeredMethods', $response);
         $this->assertArrayHasKey('availableMethods', $response);
@@ -194,7 +194,7 @@ class LoginHandlerTest extends FunctionalTest
 
         $result = $this->get(Controller::join_links(Security::login_url(), 'default/mfa/schema'));
 
-        $response = json_decode($result->getBody(), true);
+        $response = json_decode($result->getBody() ?? '', true);
 
         $this->assertArrayHasKey('registeredMethods', $response);
         $this->assertArrayHasKey('availableMethods', $response);
@@ -331,7 +331,7 @@ class LoginHandlerTest extends FunctionalTest
         $request = new HTTPRequest('GET', '/');
         $request->setSession(new Session([]));
         $request->setRouteParams(['Method' => 'basic-math']);
-        $response = json_decode($handler->startVerification($request)->getBody());
+        $response = json_decode($handler->startVerification($request)->getBody() ?? '');
 
         $this->assertNotNull($response->SecurityID);
         $this->assertTrue(SecurityToken::inst()->check($response->SecurityID));

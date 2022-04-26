@@ -54,7 +54,7 @@ class RegisteredMethodManagerTest extends SapphireTest
         RegisteredMethodManager::singleton()->registerForMember($member, $method, ['foo' => 'bar']);
 
         $this->assertCount(1, $member->RegisteredMFAMethods());
-        $this->assertSame(['foo' => 'bar'], json_decode($member->RegisteredMFAMethods()->first()->Data, true));
+        $this->assertSame(['foo' => 'bar'], json_decode($member->RegisteredMFAMethods()->first()->Data ?? '', true));
     }
 
     public function testRegisterForMemberCreatesNewMethod()

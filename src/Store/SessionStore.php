@@ -116,7 +116,7 @@ class SessionStore implements StoreInterface, Serializable
      */
     public function setMethod(?string $method): StoreInterface
     {
-        if (in_array($method, $this->getVerifiedMethods())) {
+        if (in_array($method, $this->getVerifiedMethods() ?? [])) {
             throw new InvalidMethodException('You cannot verify with a method you have already verified');
         }
 
@@ -144,7 +144,7 @@ class SessionStore implements StoreInterface, Serializable
 
     public function addVerifiedMethod(string $method): StoreInterface
     {
-        if (!in_array($method, $this->verifiedMethods)) {
+        if (!in_array($method, $this->verifiedMethods ?? [])) {
             $this->verifiedMethods[] = $method;
         }
 
@@ -257,7 +257,7 @@ class SessionStore implements StoreInterface, Serializable
      */
     public function unserialize($serialized): void
     {
-        $data = json_decode($serialized, true);
+        $data = json_decode($serialized ?? '', true);
         $this->__unserialize($data);
     }
 }

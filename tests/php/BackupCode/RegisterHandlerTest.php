@@ -50,7 +50,7 @@ class RegisterHandlerTest extends SapphireTest
         $props = $handler->start($store);
 
         $this->assertArrayHasKey('codes', $props, 'Codes are returned from the start method');
-        $this->assertGreaterThan(0, count($props['codes']), 'At least one code is provided');
+        $this->assertGreaterThan(0, count($props['codes'] ?? []), 'At least one code is provided');
     }
 
     public function testStartStoresHashesOfBackupCodesOnMember()
@@ -81,9 +81,13 @@ class RegisterHandlerTest extends SapphireTest
         $this->assertJson($registeredMethod->Data, 'Backup codes are stored as valid JSON');
 
         // Parse the stored codes on the member to compare with what was given to the UI
-        $storedCodes = json_decode($registeredMethod->Data, true);
+        $storedCodes = json_decode($registeredMethod->Data ?? '', true);
 
-        $this->assertCount(count($codes), $storedCodes, 'Stored code count matches that of those returned to the UI');
+        $this->assertCount(
+            count($codes ?? []),
+            $storedCodes,
+            'Stored code count matches that of those returned to the UI'
+        );
 
         foreach ($codes as $code) {
             $this->assertNotContains($code, $storedCodes, 'Codes returned to UI are plaintext (different from stored)');

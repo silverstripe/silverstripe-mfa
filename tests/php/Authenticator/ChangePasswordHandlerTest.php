@@ -107,7 +107,7 @@ class ChangePasswordHandlerTest extends FunctionalTest
         $response = $this->get('Security/changepassword/mfa/schema');
 
         $this->assertSame('application/json', $response->getHeader('Content-Type'));
-        $schema = json_decode($response->getBody(), true);
+        $schema = json_decode($response->getBody() ?? '', true);
 
         $this->assertArrayHasKey('endpoints', $schema);
         $this->assertArrayHasKey('verify', $schema['endpoints']);

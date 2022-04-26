@@ -39,7 +39,7 @@ class MethodVerifyHandler implements VerifyHandlerInterface, TestOnly
         }
 
         $store->setState([
-            'answer' => array_sum($numbers),
+            'answer' => array_sum($numbers ?? []),
         ]);
 
         return [
@@ -57,7 +57,7 @@ class MethodVerifyHandler implements VerifyHandlerInterface, TestOnly
      */
     public function verify(HTTPRequest $request, StoreInterface $store, RegisteredMethod $registeredMethod): Result
     {
-        $body = json_decode($request->getBody(), true);
+        $body = json_decode($request->getBody() ?? '', true);
 
         if (!$body['answer']) {
             return Result::create(false, 'Answer was missing');
