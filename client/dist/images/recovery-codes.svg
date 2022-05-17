@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
     <defs>
         <style>
-            .a{isolation:isolate;}.b{fill:#dce8ef;}.c{fill:#e25a3b;}.d{fill:#8ca1c4;mix-blend-mode:multiply;}.e{fill:#aabdd3;}.f{fill:#af4934;}.g{fill:#333a48;}.h{fill:#ffcf6e;}
+            .a{isolation:isolate;}.b{fill:#dce8ef;}.c{fill:#e25a3b;}.d{fill:#8ca1c4;mix-blend-mode:multiply;}.e{fill:#aabdd3;}.f{fill:#af4934;}.g{fill:#dce8ef;}.h{fill:#333333;}
             @media (prefers-color-scheme: dark) {
-                .g {
-                    fill: #dce8ef;
+                .dark-mode-enabled .g {
+                    fill: #333a48;
                 }
-                .h {
-                    fill: #333333;
+                .dark-mode-enabled .h {
+                    fill: #ffcf6e;
                 }
             }
         </style>

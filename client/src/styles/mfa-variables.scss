@@ -8,6 +8,7 @@ $color-dark-text: rgba(67, 83, 109, 1);
 $color-blue: rgba(0,113,196,1);
 $color-loading-indicator: $color-blue;
 $color-message-error: rgba(169, 30, 46, 1);
+$color-primary-button-focus-outline: rgba(38, 143, 255, 0.5);
 
 
 // Dark Mode colour variants
@@ -92,17 +93,23 @@ $viewport-medium: 768px;
   --color-blue: #{$color-blue};
   --color-loading-indicator: #{$color-loading-indicator};
   --color-message-error: #{$color-message-error};
+  --color-unavailable-icon: #{$color-blue};
+  --color-primary-button-focus-outline: #{$color-primary-button-focus-outline};
   --color-tile-border: #{$color-tile-border};
   --color-tile-border-hover: #{$color-tile-border-hover};
   --color-tile-border-active: #{$color-tile-border-active};
   --tile-box-shadow: #{$tile-box-shadow};
   --tile-box-shadow-active: #{$tile-box-shadow-active};
   --tile-mask-background: #{$color-tile-mask-background};
+}
 
-  @media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
+  .dark-mode-enabled {
     --color-text: #{$dark-color-text};
     --color-dark-text: #{$dark-color-dark-text};
     --color-loading-indicator: #{$dark-color-loading-indicator};
+    --color-unavailable-icon: #{$color-warning};
+    --color-primary-button-focus-outline: #{$dark-color-primary-button-focus-outline};
     --color-tile-border: #{$dark-color-tile-border};
     --color-tile-border-hover: #{$dark-color-tile-border-hover};
     --color-tile-border-active: #{$dark-color-tile-border-active};

@@ -49,19 +49,17 @@
     color: var(--color-text);
   }
 
-  @media (prefers-color-scheme: dark) {
-    .btn-secondary,
-    .btn-link {
-      color: var(--color-text);
-    }
+  .btn-secondary,
+  .btn-link {
+    color: var(--color-text);
+  }
 
-    .btn-primary:focus {
-      box-shadow: 0 0 0 2px $dark-color-primary-button-focus-outline;
-    }
+  .btn-primary:focus {
+    box-shadow: 0 0 0 2px var(--color-primary-button-focus-outline);
+  }
 
-    .btn-link:focus,
-    .btn-link:hover {
-      color: var(--color-text);
-    }
+  .btn-link:focus,
+  .btn-link:hover {
+    color: var(--color-text);
   }
 }
