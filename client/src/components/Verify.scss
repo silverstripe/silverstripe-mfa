@@ -13,10 +13,8 @@
   &--unavailable {
     color: var(--color-blue);
 
-    @media (prefers-color-scheme: dark) {
-      .mfa-icon-circle-warning {
-        color: var(--color-warning);
-      }
+    .mfa-icon-circle-warning {
+      color: var(--color-unavailable-icon);
     }
   }
 }
