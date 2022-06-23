@@ -1,0 +1,9 @@
+---
+Name: mfa-backtrace
+---
+SilverStripe\Dev\Backtrace:
+  ignore_function_args:
+    - ['SilverStripe\MFA\Extension\AccountReset\MemberExtension', 'verifyAccountResetToken']
+    - ['SilverStripe\MFA\Extension\AccountReset\SecurityAdminExtension', 'getAccountResetLink']
+    - ['SilverStripe\MFA\Service\EncryptionAdapterInterface', 'encrypt']
+    - ['SilverStripe\MFA\Service\EncryptionAdapterInterface', 'decrypt']
