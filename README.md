@@ -1,9 +1,7 @@
 # MultiFactor Authentication for SilverStripe
 
 [![CI](https://github.com/silverstripe/silverstripe-mfa/actions/workflows/ci.yml/badge.svg)](https://github.com/silverstripe/silverstripe-mfa/actions/workflows/ci.yml)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/silverstripe/silverstripe-mfa/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/silverstripe/silverstripe-mfa/?branch=master)
-[![codecov](https://codecov.io/gh/silverstripe/silverstripe-mfa/branch/master/graph/badge.svg)](https://codecov.io/gh/silverstripe/silverstripe-mfa)
-[![SilverStripe supported module](https://img.shields.io/badge/silverstripe-supported-0071C4.svg)](https://www.silverstripe.org/software/addons/silverstripe-commercially-supported-module-list/)
+[![Silverstripe supported module](https://img.shields.io/badge/silverstripe-supported-0071C4.svg)](https://www.silverstripe.org/software/addons/silverstripe-commercially-supported-module-list/)
 
 ### With thanks to Simon `Firesphere` Erkelens
 
@@ -14,7 +12,7 @@ React UI + JSON API architecture, and its enhanced management UI within the CMS.
 ## Requirements
 
 * PHP ^7.1
-* SilverStripe ^4.1
+* Silverstripe ^4.1
 * defuse/php-encryption ^2.2 and OpenSSL PHP extension
 
 ## Installation
