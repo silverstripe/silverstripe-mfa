@@ -1,5 +1,7 @@
+---
 title: Using authenticator apps
 summary: How to acquire and configure an Authenticator app for your phone
+---
 
 # Using authenticator apps
 

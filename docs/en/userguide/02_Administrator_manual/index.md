@@ -1,4 +1,6 @@
+---
 title: Administrator manual
+---
 
 # Administrator manual
 

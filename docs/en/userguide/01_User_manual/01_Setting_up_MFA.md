@@ -1,5 +1,7 @@
+---
 title: Setting Up MFA
 summary: Running initial configuration of an MFA method for your account
+---
 
 # Setting Up MFA
 

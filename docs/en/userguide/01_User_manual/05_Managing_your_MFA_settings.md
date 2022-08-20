@@ -1,5 +1,7 @@
+---
 title: Managing your MFA settings
 summary: Steps for adding, removing and resetting MFA methods
+---
 
 # Managing your MFA settings
 
