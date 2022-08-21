@@ -1,5 +1,7 @@
+---
 title: Remember trusted devices
 summary: Steps to stay signed in on a trusted device
+---
 
 # Remember trusted devices
 

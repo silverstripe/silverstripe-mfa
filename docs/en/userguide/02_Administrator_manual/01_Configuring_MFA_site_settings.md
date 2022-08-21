@@ -1,5 +1,7 @@
+---
 title: Configuring MFA for your site
 summary: Switching between optional or required modes for MFA
+---
 
 # Configuring MFA for your site
 

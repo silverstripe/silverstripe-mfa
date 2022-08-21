@@ -1,5 +1,7 @@
+---
 title: Regaining access when locked out
 summary: Steps to recover your account if your primary MFA method is unavailable
+---
 
 # Regaining access when locked out
 
