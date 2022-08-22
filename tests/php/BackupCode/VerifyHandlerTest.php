@@ -65,6 +65,7 @@ class VerifyHandlerTest extends SapphireTest
             [false, null, 'Null input is handled'],
             [false, str_pad('', 10000, 'code'), 'Long codes are handled'],
             [true, '123456', 'Valid codes are valid'],
+            [true, '123 456', 'Spaces are stripped out'],
         ];
     }
 
