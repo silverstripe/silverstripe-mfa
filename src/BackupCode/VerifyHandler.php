@@ -67,7 +67,7 @@ class VerifyHandler implements VerifyHandlerInterface
             );
         }
 
-        $code = $bodyJSON['code'];
+        $code = str_replace(' ', '', $bodyJSON['code']);
 
         $candidates = json_decode($registeredMethod->Data ?? '', true);
 
