@@ -21,11 +21,11 @@ use SilverStripe\Security\Security;
 /**
  * Extend Member to add relationship to registered methods and track some specific preferences
  *
- * @method RegisteredMethod[]|HasManyList RegisteredMFAMethods
- * @property MethodInterface DefaultRegisteredMethod
- * @property string DefaultRegisteredMethodID
- * @property bool HasSkippedMFARegistration
- * @property Member|MemberExtension owner
+ * @method RegisteredMethod[]|HasManyList RegisteredMFAMethods()
+ * @property MethodInterface $DefaultRegisteredMethod
+ * @property string $DefaultRegisteredMethodID
+ * @property bool $HasSkippedMFARegistration
+ * @property Member|MemberExtension $owner
  */
 class MemberExtension extends DataExtension implements PermissionProvider
 {
