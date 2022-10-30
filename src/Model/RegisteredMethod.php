@@ -14,10 +14,10 @@ use SilverStripe\Security\Member;
 /**
  * @package SilverStripe\MFA\Model
  *
- * @property int ID
- * @property string MethodClassName
- * @property string Data
- * @method Member Member
+ * @property int $ID
+ * @property string $MethodClassName
+ * @property string $Data
+ * @method Member Member()
  */
 class RegisteredMethod extends DataObject
 {

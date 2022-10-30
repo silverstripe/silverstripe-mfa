@@ -15,9 +15,9 @@ use SilverStripe\Security\RandomGenerator;
  * Provides DB columns / methods for account resets on Members
  *
  * @package SilverStripe\MFA\Extension
- * @property Member&MemberExtension owner
- * @property string AccountResetHash
- * @property DBDatetime AccountResetExpired
+ * @property Member&MemberExtension $owner
+ * @property string $AccountResetHash
+ * @property DBDatetime $AccountResetExpired
  */
 class MemberExtension extends DataExtension
 {

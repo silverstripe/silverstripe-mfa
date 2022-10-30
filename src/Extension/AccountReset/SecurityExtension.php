@@ -26,7 +26,7 @@ use SilverStripe\Security\Security;
  * additional authentication factors, sending alerts, etc.)
  *
  * @package SilverStripe\MFA\Extension
- * @property Security owner
+ * @property Security $owner
  */
 class SecurityExtension extends Extension
 {
