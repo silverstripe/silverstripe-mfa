@@ -1,0 +1,87 @@
+sv:
+  SilverStripe\MFA\Authenticator\LoginHandler:
+    CANNOT_SKIP: 'Du kan inte hoppa över MFA-registrering'
+    INVALID_METHOD: 'Ingen sådan metod är tillgänglig'
+    INVALID_REGISTRATION: 'Du måste färdigställa din MFA-registrering'
+    LOCKED_OUT: 'Ditt konto är tillfälligt låst. Vänligen försök igen senare.'
+    MFA_LOGIN_INCOMPLETE: 'Du måste ange dina MFA-inloggningsuppgifter'
+    MUST_USE_EXISTING_METHOD: 'Den här medlemmen har redan en MFA-metod'
+    NOT_AUTHENTICATING: 'Du måste vara inloggad eller logga in. Uppdatera sidan och försök igen.'
+    SUDO_MODE_REQUIRED: 'Du måste verifiera ditt konto igen innan du fortsätter. Ladda om och försök igen.'
+  SilverStripe\MFA\BackupCode\Method:
+    NAME: Återställningskoder
+  SilverStripe\MFA\BackupCode\RegisterHandler:
+    DESCRIPTION: 'Återställningskoder gör att du kan logga in på ditt konto om din primära autentisering inte är tillgänglig. Varje kod kan endast användas en gång. Förvara dessa koder på ett säkert ställe, eftersom de inte kommer att vara synliga efter att du lämnat den här sidan.'
+    SUPPORT_LINK_DESCRIPTION: 'Lär dig mer om återställningskoder.'
+  SilverStripe\MFA\BackupCode\VerifyHandler:
+    INVALID_CODE: 'Ogiltig kod'
+    MFAREMOVED: 'En återställningskod användes för att komma åt ditt konto'
+  SilverStripe\MFA\Controller\AdminRegistrationController:
+    COULD_NOT_DELETE: 'Det gick inte att ta bort den angivna metoden från användaren'
+    COULD_NOT_SET_DEFAULT: 'Det gick inte att ange standardmetoden för användaren'
+    CSRF_FAILURE: 'Begäran tog för lång tid, vänligen försök igen'
+    INVALID_METHOD: 'Ingen sådan metod är tillgänglig'
+    INVALID_REGISTERED_METHOD: 'Ingen sådan registrerad metod är tillgänglig'
+    INVALID_SESSION: 'Ogiltig session. Vänligen uppdatera och försök igen.'
+    MENUTITLE: SilverStripe\MFA\Controller\AdminRegistrationController
+  SilverStripe\MFA\Email\AccountReset:
+    ACTION: 'Klicka här för att återställa ditt konto'
+    DESCRIPTION: 'En kontoåterställning har påbörjats för ditt konto.'
+    HI: Hej
+  SilverStripe\MFA\Email\Notification:
+    CODESLEFT: 'Du har nu {count} koder kvar.'
+    HELLO: Hej
+    NOTYOU: 'Om du inte vidtog den här åtgärden, vänligen kontakta din systemadministratör omedelbart.'
+    REGISTERED: 'Du har nu registrerat {metod} som ett extra lager skydd för ditt konto på {site}'
+    REMOVED: 'Du har raderat {method} autentiseringsmetod från ditt konto på {site}.'
+    USEDBACKUPCODE: 'En återställningskod användes för att få åtkomst till ditt konto på {site}.'
+  SilverStripe\MFA\Extension\AccountReset\SecurityAdminExtension:
+    ACCOUNT_RESET_EMAIL_SUBJECT: 'Återställ ditt konto'
+    BAD_REQUEST: 'Felaktig begäran'
+    EMAIL_NOT_SENT: 'Ett fel uppstod då e-postmeddelandet skulle skickas'
+    INSUFFICIENT_PERMISSIONS: 'Otillräckliga behörigheter för att återställa användaren'
+    INVALID_CSRF_TOKEN: 'Felaktig eller så saknas CSRF kod'
+    INVALID_MEMBER: 'Den begärda medlemmen för återställning hittades inte'
+  SilverStripe\MFA\Extension\AccountReset\SecurityExtension:
+    ACCOUNT_RESET_DESCRIPTION: 'Ditt lösenord kommer att ändras och alla registrerade MFA-metoder kommer att tas bort.'
+    ACCOUNT_RESET_TITLE: 'Återställ konto'
+    ALREADYAUTHENTICATEDBODY: 'Du måste vara utloggad för att återställa ditt konto.'
+    ALREADYAUTHENTICATEDTITLE: 'Redan autentiserad'
+    INVALIDTOKENBODY: 'Din kontoåterställningstoken kan ha gått ut. Vänligen kontakta en administratör.'
+    INVALIDTOKENTITLE: 'Felaktig medlem eller kod'
+    RESETSUCCESSMESSAGE: 'Återställningen är klar. Logga in med ditt nya lösenord.'
+    RESETTIMEDOUT: 'Kontoåterställningsprocessen tog för lång tid. Vänligen klicka på länken i e-postmeddelandet och försök igen.'
+  SilverStripe\MFA\Extension\MemberExtension:
+    MFA_PERMISSION_DESCRIPTION: 'Möjlighet att se och återställa registrerade MFA-metoder för andra medlemmar. Kräver behörigheten "Åtkomst till "Säkerhet".'
+    MFA_PERMISSION_LABEL: 'Visa/återställ MFA-konfiguration för andra medlemmar'
+    MFA_SETTINGS_FIELD_LABEL: 'Inställningar för multifaktorautentisering (MFA)'
+  SilverStripe\MFA\Extension\SiteConfigExtension:
+    MFA_GRACE_DESCRIPTION: 'MFA-inställningar kommer att vara valfri före detta datum'
+    MFA_GRACE_TITLE: 'MFA kommer att krävas från (valfritt)'
+    MFA_LEARN_MORE: 'Lär dig mer om MFA'
+    MFA_OPTIONAL: 'MFA är valfritt för alla'
+    MFA_REQUIRED: 'MFA krävs för alla'
+    MULTI_FACTOR_AUTHENTICATION: 'Multifaktorautentisering (MFA)'
+  SilverStripe\MFA\Model\RegisteredMethod:
+    PLURALNAME: 'Registrerade metoder'
+    PLURALS:
+      one: 'En registrerad metod'
+      other: '{count} Registrerade metoder'
+    SINGULARNAME: 'Registrerad metod'
+  SilverStripe\MFA\Report\EnabledMembers:
+    ANY_AT_LEAST_ONE: 'Vilka som helst (åtminstone en)'
+    COLUMN_METHODS_REGISTERED: 'Registrerade metoder'
+    COLUMN_METHOD_DEFAULT: Standardmetod
+    COLUMN_SKIPPED_REGISTRATION: 'Hoppade över registreringen'
+    FILTER_MEMBER_DESCRIPTION: 'Förnamn, Efternamn, E-post partiell matchsökning'
+    NONE: Ingen
+  SilverStripe\MFA\RequestHandler:
+    CSRF_FAILURE: 'Din begäran tog för lång tid. Vänligen ladda om sidan och försök igen'
+    METHOD_ALREADY_REGISTERED: 'Den metoden har redan registrerats mot detta konto'
+    METHOD_MISMATCH: 'Metoden matchar inte pågående registrering'
+    METHOD_NOT_PROVIDED: 'Ingen metod gavs för att logga in med och kontot har ingen standardmetod'
+    METHOD_NOT_REGISTERED: 'Kontot har inte denna metod registrerad'
+    NO_REGISTRATION_IN_PROGRESS: 'Ingen registrering pågår'
+  SilverStripe\MFA\Service\RegisteredMethodManager:
+    MFAADDED: 'En multifaktorautentiseringsmetod har lagts till ditt konto'
+    MFAREMOVED: 'En multifaktorautentiseringsmetod togs bort från ditt konto'

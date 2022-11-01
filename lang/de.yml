@@ -1,0 +1,87 @@
+de:
+  SilverStripe\MFA\Authenticator\LoginHandler:
+    CANNOT_SKIP: 'Sie können die MFA-Registrierung nicht überspringen'
+    INVALID_METHOD: 'Eine solche Methode ist nicht verfügbar'
+    INVALID_REGISTRATION: 'Sie müssen die MFA-Registrierung abschließen'
+    LOCKED_OUT: 'Ihr Konto ist vorübergehend gesperrt. Bitte versuchen Sie es später erneut.'
+    MFA_LOGIN_INCOMPLETE: 'Sie müssen MFA-Anmeldedaten angeben'
+    MUST_USE_EXISTING_METHOD: 'Dieses Mitglied hat bereits eine MFA-Methode'
+    NOT_AUTHENTICATING: 'Sie müssen eingeloggt sein oder sich anmelden. Bitte aktualisieren Sie die Seite und versuchen Sie es erneut.'
+    SUDO_MODE_REQUIRED: 'Sie müssen Ihr Konto erneut bestätigen, bevor Sie fortfahren können. Bitte laden Sie neu und versuchen Sie es erneut.'
+  SilverStripe\MFA\BackupCode\Method:
+    NAME: Wiederherstellungscodes
+  SilverStripe\MFA\BackupCode\RegisterHandler:
+    DESCRIPTION: 'Mit Wiederherstellungscodes können Sie sich bei Ihrem Konto anmelden, wenn Ihre primäre Authentifizierung nicht verfügbar ist. Jeder Code kann nur einmal verwendet werden. Bewahren Sie diese Codes an einem sicheren Ort auf, da sie nach Verlassen dieser Seite nicht mehr einsehbar sind.'
+    SUPPORT_LINK_DESCRIPTION: 'Erfahren Sie mehr über Wiederherstellungscodes.'
+  SilverStripe\MFA\BackupCode\VerifyHandler:
+    INVALID_CODE: 'Ungültiger Code'
+    MFAREMOVED: 'Ein Wiederherstellungscode wurde verwendet, um auf Ihr Konto zuzugreifen'
+  SilverStripe\MFA\Controller\AdminRegistrationController:
+    COULD_NOT_DELETE: 'Die angegebene Methode konnte nicht beim Benutzer gelöscht werden'
+    COULD_NOT_SET_DEFAULT: 'Die Standardmethode für den Benutzer konnte nicht festgelegt werden'
+    CSRF_FAILURE: 'Anfrage wurde abgebrochen, bitte versuchen Sie es erneut'
+    INVALID_METHOD: 'Eine solche Methode ist nicht verfügbar'
+    INVALID_REGISTERED_METHOD: 'Eine solche registrierte Methode ist nicht verfügbar'
+    INVALID_SESSION: 'Ungültige Sitzung. Bitte aktualisieren Sie die Seite und versuchen Sie es erneut.'
+    MENUTITLE: SilverStripe\MFA\Controller\AdminRegistrationController
+  SilverStripe\MFA\Email\AccountReset:
+    ACTION: 'Klicken Sie hier, um Ihr Konto zurückzusetzen'
+    DESCRIPTION: 'Für Ihr Konto wurde eine Rücksetzung veranlasst.'
+    HI: Hallo
+  SilverStripe\MFA\Email\Notification:
+    CODESLEFT: 'Sie haben jetzt noch {count} Codes übrig.'
+    HELLO: Hallo
+    NOTYOU: 'Wenn Sie diese Maßnahme nicht ergriffen haben, wenden Sie sich bitte umgehend an Ihren Systemadministrator.'
+    REGISTERED: 'Sie haben {method} erfolgreich als zusätzliche Schutzmaßnahme für Ihr Konto bei {site} registriert.'
+    REMOVED: 'Sie haben die Authentifizierungsmethode {method} aus Ihrem Konto bei {site} entfernt.'
+    USEDBACKUPCODE: 'Ein Wiederherstellungscode wurde verwendet, um Zugang zu Ihrem Konto bei {site} zu erhalten.'
+  SilverStripe\MFA\Extension\AccountReset\SecurityAdminExtension:
+    ACCOUNT_RESET_EMAIL_SUBJECT: 'Setzen Sie Ihr Konto zurück'
+    BAD_REQUEST: 'Ungültige Anfrage'
+    EMAIL_NOT_SENT: 'E-Mail Versand fehlgeschlagen'
+    INSUFFICIENT_PERMISSIONS: 'Unzureichende Berechtigungen zum Zurücksetzen des Benutzers'
+    INVALID_CSRF_TOKEN: 'Ungültiges oder fehlendes CSRF-Token'
+    INVALID_MEMBER: 'Gewünschtes Mitglied für die Rücksetzung nicht gefunden'
+  SilverStripe\MFA\Extension\AccountReset\SecurityExtension:
+    ACCOUNT_RESET_DESCRIPTION: 'Ihr Passwort wird geändert, und alle registrierten MFA-Methoden werden entfernt.'
+    ACCOUNT_RESET_TITLE: 'Konto zurücksetzen'
+    ALREADYAUTHENTICATEDBODY: 'Sie müssen abgemeldet sein, um Ihr Konto zurückzusetzen.'
+    ALREADYAUTHENTICATEDTITLE: 'Bereits authentifiziert'
+    INVALIDTOKENBODY: 'Ihr Token zum Zurücksetzen des Kontos ist möglicherweise abgelaufen. Bitte kontaktieren Sie einen Administrator.'
+    INVALIDTOKENTITLE: 'Ungültiger Nutzer oder Token'
+    RESETSUCCESSMESSAGE: 'Zurücksetzen abgeschlossen. Bitte melden Sie sich mit Ihrem neuen Passwort an.'
+    RESETTIMEDOUT: 'Der Vorgang zum Zurücksetzen des Kontos wurde abgebrochen. Bitte klicken Sie auf den Link in der E-Mail und versuchen Sie es erneut.'
+  SilverStripe\MFA\Extension\MemberExtension:
+    MFA_PERMISSION_DESCRIPTION: 'Möglichkeit, registrierte MFA-Methoden für andere Nutzer einzusehen und zurückzusetzen. Erfordert die Berechtigung "Zugriff auf den Bereich ''Sicherheit''".'
+    MFA_PERMISSION_LABEL: 'MFA-Konfiguration für andere Mitglieder anzeigen/zurücksetzen'
+    MFA_SETTINGS_FIELD_LABEL: 'Einstellungen für die Multi-Faktor-Authentifizierung (MFA)'
+  SilverStripe\MFA\Extension\SiteConfigExtension:
+    MFA_GRACE_DESCRIPTION: 'Die Einrichtung der MFA ist vor diesem Datum optional.'
+    MFA_GRACE_TITLE: 'MFA wird verlangt von (optional)'
+    MFA_LEARN_MORE: 'Erfahren Sie mehr über MFA'
+    MFA_OPTIONAL: 'MFA ist für alle optional'
+    MFA_REQUIRED: 'MFA ist für alle erforderlich'
+    MULTI_FACTOR_AUTHENTICATION: 'Multi-Faktor-Authentifizierung (MFA)'
+  SilverStripe\MFA\Model\RegisteredMethod:
+    PLURALNAME: 'Registrierte Methoden'
+    PLURALS:
+      one: 'Eine Registrierte Methode'
+      other: '{count} Registrierte Methoden'
+    SINGULARNAME: 'Registrierte Methoden'
+  SilverStripe\MFA\Report\EnabledMembers:
+    ANY_AT_LEAST_ONE: 'Beliebig (mindestens eine)'
+    COLUMN_METHODS_REGISTERED: 'Registrierte Methoden'
+    COLUMN_METHOD_DEFAULT: Standardmethode
+    COLUMN_SKIPPED_REGISTRATION: 'Übersprungene Registrierung'
+    FILTER_MEMBER_DESCRIPTION: 'Vorname, Nachname, E-Mail Teiltreffer-Suche'
+    NONE: Keine
+  SilverStripe\MFA\RequestHandler:
+    CSRF_FAILURE: 'Ihre Anfrage wurde abgebrochen. Bitte aktualisieren und erneut versuchen'
+    METHOD_ALREADY_REGISTERED: 'Diese Methode ist bereits für dieses Mitglied registriert worden'
+    METHOD_MISMATCH: 'Methode stimmt nicht mit der aktuellen Registrierung überein'
+    METHOD_NOT_PROVIDED: 'Es wurde keine Methode für die Anmeldung angegeben und das Mitglied hat keinen Standard definiert'
+    METHOD_NOT_REGISTERED: 'Das Mitglied hat diese Methode nicht registriert'
+    NO_REGISTRATION_IN_PROGRESS: 'Keine Registrierung in Arbeit'
+  SilverStripe\MFA\Service\RegisteredMethodManager:
+    MFAADDED: 'Eine Multi-Faktor-Authentifizierungsmethode wurde zu Ihrem Konto hinzugefügt'
+    MFAREMOVED: 'Eine Multi-Faktor-Authentifizierungsmethode wurde aus Ihrem Konto entfernt'

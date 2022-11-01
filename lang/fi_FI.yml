@@ -1,0 +1,87 @@
+fi_FI:
+  SilverStripe\MFA\Authenticator\LoginHandler:
+    CANNOT_SKIP: 'Et pysty ohittamaan monivaiheista tunnistautumistavan rekisteröimistä'
+    INVALID_METHOD: 'Vastaavaa tunnistautumistapaa ei ole käytettävissä'
+    INVALID_REGISTRATION: 'Sinun on loppuun suoritettava monivaihenen tunnistautuminen'
+    LOCKED_OUT: 'Käyttäjätilisi on väliaikaisesti lukittu. Ystävällisesti kokeile uudelleen myöhemmin.'
+    MFA_LOGIN_INCOMPLETE: 'Sinun on annettava monivaiheisen tunnistautumisen tiedot'
+    MUST_USE_EXISTING_METHOD: 'Tällä käyttäjällä on jos käytössä monivaiheinen tunnistautumistapa'
+    NOT_AUTHENTICATING: 'Sinun on oltava kirjautunut tai kirjautumassa. Ystävälliesti päivitä sivu ja kokeile uudelleen.'
+    SUDO_MODE_REQUIRED: 'Sinun on uudelleen-varmistettava käyttäjätilisi ennen jatkamista. Ystävällisesti päivitä sivu ja kokeile uudelleen.'
+  SilverStripe\MFA\BackupCode\Method:
+    NAME: Palautuskoodit
+  SilverStripe\MFA\BackupCode\RegisterHandler:
+    DESCRIPTION: 'Palautuskoodien avulla pystyt kirjautumaan käyttäjätilillesi jos varmennustapa ei ole käytettävissä. Jokaisen koodin pystyy käyttämään vain kerran. Tallenna nämä koodit johonkin turvallisesti, koska niitä ei ole enää nähtävissä tältä sivulta poistuttua.'
+    SUPPORT_LINK_DESCRIPTION: 'Lue lisää palautuskoodeista.'
+  SilverStripe\MFA\BackupCode\VerifyHandler:
+    INVALID_CODE: 'Virheellinen koodi'
+    MFAREMOVED: 'Palautuskoodi oli käytetty käyttäjätilillesi kirjautuessa'
+  SilverStripe\MFA\Controller\AdminRegistrationController:
+    COULD_NOT_DELETE: 'Valittua varmennustapaa ei pystytty poistamaan käyttäjältä'
+    COULD_NOT_SET_DEFAULT: 'Oletuksena olevaa varmennustapaa ei pystytty asettaamaan käyttäjälle'
+    CSRF_FAILURE: 'Pyynnön aika päättyi, kokeile uudelleen'
+    INVALID_METHOD: 'Varmennustapaa ei ole käytössä'
+    INVALID_REGISTERED_METHOD: 'Rekiteröityä varmennustapaa ei ole käytössä'
+    INVALID_SESSION: 'Virheellinen istunto. Ystävällisesti päivitä sivu ja kokeile uudelleen.'
+    MENUTITLE: SilverStripe\MFA\Controller\AdminRegistrationController
+  SilverStripe\MFA\Email\AccountReset:
+    ACTION: 'Klikkaa tästä asettamaksesi käyttäjätilisi uudelleen'
+    DESCRIPTION: 'Käyttäjätilisi uudelleenasennus on aloitettu'
+    HI: Hei
+  SilverStripe\MFA\Email\Notification:
+    CODESLEFT: 'Sinulla on {count} koodeja jäljellä.'
+    HELLO: Hei
+    NOTYOU: 'Jos et tehnyt tätä pyyntöä, ota heti yhteyttä järjestelmävalvojaasi.'
+    REGISTERED: 'Olet onnistuneesti rekisteröinyt {method} lisäturvallisuutena käyttäjätilillesi sivustolla: {site}.'
+    REMOVED: 'Olet poistaunut varmennustavan {method} käyttäjätililtäsi sivustolla: {site}.'
+    USEDBACKUPCODE: 'Palautuskoodia on käytetty käyttäjätilille kirjautuessa, sivustolle {site}.'
+  SilverStripe\MFA\Extension\AccountReset\SecurityAdminExtension:
+    ACCOUNT_RESET_EMAIL_SUBJECT: 'Palauta käyttäjätilisi'
+    BAD_REQUEST: 'Virheellinen pyyntö'
+    EMAIL_NOT_SENT: 'Sähköpostin lähettäminen epäonnistui'
+    INSUFFICIENT_PERMISSIONS: 'Riittämättömät oikeudet käyttäjän uudelleen asetukseen'
+    INVALID_CSRF_TOKEN: 'Virheellinen tai puuttuva CSRF merkki'
+    INVALID_MEMBER: 'Uudelleen asetettavaa käyttäjää ei löytynyt'
+  SilverStripe\MFA\Extension\AccountReset\SecurityExtension:
+    ACCOUNT_RESET_DESCRIPTION: 'Salasanasi tulee pävittymään ja rekisteröidyt monivaiheisen tunnistamisen tavat poistetaan.'
+    ACCOUNT_RESET_TITLE: 'Palauta käyttäjätili'
+    ALREADYAUTHENTICATEDBODY: 'Sinun on kirjauduttava ulos jotta pystyt palauttamaan käyttäjätilisi.'
+    ALREADYAUTHENTICATEDTITLE: 'Aiemmin varmennettu'
+    INVALIDTOKENBODY: 'Käyttäjätilisi palautus -merkki on umpeutunut. Ystävällisesti ota yhteyttä järjestelmävalvojaasi.'
+    INVALIDTOKENTITLE: 'Virheellinen käyttäjä tai merkki'
+    RESETSUCCESSMESSAGE: 'Palautus suoritettu. Ole hyvä ja kirjaudu uudella salasanallasi.'
+    RESETTIMEDOUT: 'Käyttäjätilin palautusprosessi umpeutui. Ystävällisesti klikkaa sähköpostiviestin linkkiä ja kokeile uudelleen.'
+  SilverStripe\MFA\Extension\MemberExtension:
+    MFA_PERMISSION_DESCRIPTION: 'Kyky nähdä ja nollata rekisteröityjä monivaiheisia tunnistautumistapoja muille käyttäjille. Vaatii käyttäjien muokkaus oikeuden.'
+    MFA_PERMISSION_LABEL: 'Nähdä/nollata monivaiheisia tunnistautumistapoja muille käyttäjille'
+    MFA_SETTINGS_FIELD_LABEL: 'Monivaiheisen tunnistautumisen asetukset (MFA)'
+  SilverStripe\MFA\Extension\SiteConfigExtension:
+    MFA_GRACE_DESCRIPTION: 'Monivaiheinen tunnistautuminen on vapaavalintainen ennen tätä päivämäärää'
+    MFA_GRACE_TITLE: 'Monivaiheinen tunnistautuminen on vaadittu alkaen (vapaavalintainen)'
+    MFA_LEARN_MORE: 'Lue lisää monivaiheisesta tunnistautumisesta'
+    MFA_OPTIONAL: 'Monivaiheinen tunnistautuminen on vapaavalintainen kaikille'
+    MFA_REQUIRED: 'Monivaiheinen tunnistautuminen on vaadittu kaikilta'
+    MULTI_FACTOR_AUTHENTICATION: 'Monivaiheinen tunnistautuminen (Mutli-factor authentication MFA)'
+  SilverStripe\MFA\Model\RegisteredMethod:
+    PLURALNAME: 'Rekisteröidyt tunnistautumisvaihtoehdot'
+    PLURALS:
+      one: 'Rekisteröity tunnistusvaihtoehto'
+      other: '{count} rekisteröityä tunnistusvaihtoehtoa'
+    SINGULARNAME: 'Rekisteröity tunnistusvaihtoehto'
+  SilverStripe\MFA\Report\EnabledMembers:
+    ANY_AT_LEAST_ONE: 'Mikä tahansa (vähintään yksi)'
+    COLUMN_METHODS_REGISTERED: 'Rekisteröidyt tunnistusvaihtoehdot'
+    COLUMN_METHOD_DEFAULT: 'Oletuksena käytettävä tunnistusvaihtoehto'
+    COLUMN_SKIPPED_REGISTRATION: 'Ohitti rekisteröinnin'
+    FILTER_MEMBER_DESCRIPTION: 'Etunimi, Sukunimi, Sähköposti osittainen haku'
+    NONE: 'Ei tuloksia'
+  SilverStripe\MFA\RequestHandler:
+    CSRF_FAILURE: 'Pyyntösi umpeutui. Ystävällisesti päivitä sivu ja kokeile uudelleen'
+    METHOD_ALREADY_REGISTERED: 'Tunnistusvaihtoehto on jo rekisteröity tälle käyttäjälle'
+    METHOD_MISMATCH: 'Tunnistusvaihtoehto ei ole sama joka on jo rekisteröinti prosessissa'
+    METHOD_NOT_PROVIDED: 'Tunnistusvaihtoehtoa ei ole asetettu, eikä käyttäjällä ole oletusta asetettuna'
+    METHOD_NOT_REGISTERED: 'Käyttäjällä ei ole tätä tunnistusvaihtoehtoa rekisteröitynä'
+    NO_REGISTRATION_IN_PROGRESS: 'Rekisteröinti prosessia ei ole käynnissä'
+  SilverStripe\MFA\Service\RegisteredMethodManager:
+    MFAADDED: 'Monivaiheinen tunnistautumistapa on lisätty käyttäjätillesi'
+    MFAREMOVED: 'Monivaiheinen tunnistautumistapa poistettiin käyttäjätililtäsi'
