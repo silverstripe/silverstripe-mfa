@@ -1,0 +1,88 @@
+fr:
+  SilverStripe\MFA\Authenticator\LoginHandler:
+    CANNOT_SKIP: 'Vous ne pouvez pas ignorer l''inscription de MFA'
+    INVALID_METHOD: 'Aucune méthode de ce type est disponible'
+    INVALID_REGISTRATION: 'Vous devez terminer l''inscription de MFA'
+    LOCKED_OUT: 'Votre compte est temporairement bloqué. Veuillez réessayer plus tard.'
+    MFA_LOGIN_INCOMPLETE: 'Vous devez fournir les détails d''identification de MFA'
+    MUST_USE_EXISTING_METHOD: 'Ce membre a déjà une méthode MFA'
+    NOT_AUTHENTICATING: 'Vous devez être connecté ou vous connecter. Veuillez actualiser la page et réessayer.'
+    SUDO_MODE_REQUIRED: 'Vous devez revérifier votre compte avant de continuer. Veuillez recharger la page et réessayer.'
+  SilverStripe\MFA\BackupCode\Method:
+    NAME: 'Codes de récupération'
+  SilverStripe\MFA\BackupCode\RegisterHandler:
+    DESCRIPTION: 'Les codes de récupération vous permettent de vous connecter à votre compte dans le cas où votre authentification principale ne serait plus disponible. Chaque code ne peut être utilisé qu''une seule fois. Conservez ces codes dans un endroit sûr, car ils ne seront pas visibles après avoir quitté cette page.'
+    SUPPORT_LINK_DESCRIPTION: 'En savoir plus sur les codes de récupération.'
+  SilverStripe\MFA\BackupCode\VerifyHandler:
+    INVALID_CODE: 'Code invalide'
+    MFAREMOVED: 'Un code de récupération a été utilisé pour accéder à votre compte'
+  SilverStripe\MFA\Controller\AdminRegistrationController:
+    COULD_NOT_DELETE: 'Impossible de supprimer la méthode spécifiée de l''utilisateur'
+    COULD_NOT_SET_DEFAULT: 'Impossible de définir la méthode par défaut pour l''utilisateur'
+    CSRF_FAILURE: 'La demande a expiré, veuillez réessayer'
+    INVALID_METHOD: 'Aucune méthode de ce type n''est disponible'
+    INVALID_REGISTERED_METHOD: 'Aucune méthode enregistrée de ce type n''est disponible'
+    INVALID_SESSION: 'Session non valide. Veuillez rafraîchir et réessayer.'
+    MENUTITLE: SilverStripe\MFA\Controller\AdminRegistrationController
+  SilverStripe\MFA\Email\AccountReset:
+    ACTION: 'Cliquez ici pour réinitialiser votre compte'
+    DESCRIPTION: 'Une réinitialisation du compte a été lancée pour votre compte.'
+    HI: Bonjour
+  SilverStripe\MFA\Email\Notification:
+    CODESLEFT: 'Il vous reste maintenant {count} codes.'
+    HELLO: Bonjour
+    NOTYOU: 'Si vous n''avez pas fait cette action, veuillez contacter '
+    REGISTERED: 'Vous avez enregistré avec succès {method} comme couche de protection supplémentaire pour votre compte sur {site}.'
+    REMOVED: 'Vous avez supprimé la méthode d''authentification {method} de votre compte sur {site}.'
+    USEDBACKUPCODE: 'Un code de récupération a été utilisé pour accéder à votre compte sur {site}.'
+  SilverStripe\MFA\Extension\AccountReset\SecurityAdminExtension:
+    ACCOUNT_RESET_EMAIL_SUBJECT: 'Réinitialiser votre compte'
+    BAD_REQUEST: 'Demande non valide'
+    EMAIL_NOT_SENT: 'Échec de l''envoi de l''email'
+    INSUFFICIENT_PERMISSIONS: 'Permissions insuffisantes pour réinitialiser l''utilisateur'
+    INVALID_CSRF_TOKEN: 'Jeton CSRF invalide ou manquant'
+    INVALID_MEMBER: 'Membre demandé pour la réinitialisation non trouvé'
+  SilverStripe\MFA\Extension\AccountReset\SecurityExtension:
+    ACCOUNT_RESET_DESCRIPTION: 'Votre mot de passe sera modifié et toutes les méthodes MFA enregistrées seront supprimées.'
+    ACCOUNT_RESET_TITLE: 'Réinitialisation du compte'
+    ALREADYAUTHENTICATEDBODY: 'Vous devez être déconnecté pour réinitialiser votre compte.'
+    ALREADYAUTHENTICATEDTITLE: 'Déjà authentifié'
+    INVALIDTOKENBODY: 'Le jeton de réinitialisation de votre compte a peut-être expiré. Veuillez contacter un administrateur'
+    INVALIDTOKENTITLE: 'Membre ou jeton invalide'
+    RESETSUCCESSMESSAGE: 'Réinitialisation terminée. Veuillez vous connecter avec votre nouveau mot de passe.'
+    RESETTIMEDOUT: 'Le processus de réinitialisation du compte a expiré. Veuillez cliquer sur le lien dans l''e-mail et réessayer.'
+  SilverStripe\MFA\Extension\MemberExtension:
+    MFA_PERMISSION_DESCRIPTION: 'Possibilité d''afficher et de réinitialiser les méthodes MFA enregistrées pour d''autres membres. Requiert l''autorisation "Accès à la section ''Sécurité''".'
+    MFA_PERMISSION_LABEL: 'Visualiser/réinitialiser la configuration MFA pour d''autres membres.'
+    MFA_SETTINGS_FIELD_LABEL: 'Paramètres d''authentification multi-facteurs (MFA)'
+  SilverStripe\MFA\Extension\SiteConfigExtension:
+    MFA_GRACE_DESCRIPTION: 'La configuration MFA sera facultative avant cette date'
+    MFA_GRACE_TITLE: 'MFA sera obligatoire à partir de (facultatif)'
+    MFA_LEARN_MORE: 'En savoir plus sur MFA'
+    MFA_OPTIONAL: 'MFA est facultatif pour tous'
+    MFA_REQUIRED: 'MFA est obligatoire pour tous'
+    MULTI_FACTOR_AUTHENTICATION: 'Multi-factor authentication (MFA)'
+  SilverStripe\MFA\Model\RegisteredMethod:
+    PLURALNAME: 'Méthodes enregistrées'
+    PLURALS:
+      one: 'Une méthode enregistrée'
+      many: '{count} Méthodes enregistrées'
+      other: '{count} Méthodes enregistrées'
+    SINGULARNAME: 'Méthode enregistrée'
+  SilverStripe\MFA\Report\EnabledMembers:
+    ANY_AT_LEAST_ONE: 'N''importe lequel (au moins une)'
+    COLUMN_METHODS_REGISTERED: 'Méthodes enregistrées'
+    COLUMN_METHOD_DEFAULT: 'Méthode par défaut'
+    COLUMN_SKIPPED_REGISTRATION: 'Enregistrement ignoré'
+    FILTER_MEMBER_DESCRIPTION: 'Recherche de correspondance partielle du prénom, du nom et l''adresse e-mail'
+    NONE: Aucun
+  SilverStripe\MFA\RequestHandler:
+    CSRF_FAILURE: 'Votre demande a expiré. Veuillez rafraîchir et réessayer'
+    METHOD_ALREADY_REGISTERED: 'Cette méthode a déjà été enregistrée pour ce membre'
+    METHOD_MISMATCH: 'La méthode ne correspond pas à l''enregistrement en cours'
+    METHOD_NOT_PROVIDED: 'Aucune méthode n''a été fournie pour se connecter et le membre n''a pas de méthode par défaut.'
+    METHOD_NOT_REGISTERED: 'Le membre n''a pas enregistré cette méthode'
+    NO_REGISTRATION_IN_PROGRESS: 'Pas d''inscription en cours'
+  SilverStripe\MFA\Service\RegisteredMethodManager:
+    MFAADDED: 'Une méthode d''authentification multi-facteur a été ajoutée à votre compte'
+    MFAREMOVED: 'Une méthode d''authentification multifactorielle a été supprimée de votre compte.'
