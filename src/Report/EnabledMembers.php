@@ -14,6 +14,7 @@ use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataList;
 use SilverStripe\Reports\Report;
 use SilverStripe\Security\Member;
+use SilverStripe\Dev\Deprecation;
 
 if (!class_exists(Report::class)) {
     return;
@@ -151,10 +152,11 @@ class EnabledMembers extends Report
      * @param null $_
      * @param Member $record
      * @return string
-     * @deprecated Will be removed in 5.0 use MemberExtension::getRegisteredMethodNames() instead
+     * @deprecated 4.7.0 Use MemberExtension::getRegisteredMethodNames() instead
      */
     public function formatMethodsColumn($_, Member $record): string
     {
+        Deprecation::notice('4.7.0', 'Use MemberExtension::getRegisteredMethodNames() instead');
         /** @var Member&MemberExtension $record */
         $methods = $this->getRegisteredMethodsForRecords();
 
@@ -169,10 +171,11 @@ class EnabledMembers extends Report
      * @param null $_
      * @param Member&MemberExtension $record
      * @return string
-     * @deprecated Will be removed in 5.0 use MemberExtension::getDefaultRegisteredMethodName() instead
+     * @deprecated 4.7.0 Use MemberExtension::getDefaultRegisteredMethodName() instead
      */
     public function formatDefaultMethodColumn($_, Member $record): string
     {
+        Deprecation::notice('4.7.0', 'Use MemberExtension::getDefaultRegisteredMethodName() instead');
         /** @var RegisteredMethod|null $method */
         $method = $this->getRegisteredMethodsForRecords()->byID($record->DefaultRegisteredMethodID);
 

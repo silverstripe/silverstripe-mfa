@@ -11,6 +11,7 @@ use SilverStripe\MFA\Exception\InvalidMethodException;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
+use SilverStripe\Dev\Deprecation;
 
 /**
  * This class provides an interface to store data in session during an MFA process. This is implemented as a measure to
@@ -235,10 +236,11 @@ class SessionStore implements StoreInterface, Serializable
      * The __serialize() magic method will be automatically used instead of this
      *
      * @return string
-     * @deprecated will be removed in 5.0
+     * @deprecated 4.7.0 Use __serialize() instead
      */
     public function serialize(): string
     {
+        Deprecation::notice('4.7.0', 'Use __serialize() instead');
         $data = $this->__serialize();
         $str = json_encode($data);
         if (!$str) {
@@ -253,10 +255,11 @@ class SessionStore implements StoreInterface, Serializable
      * and the PHP version used in less than PHP 9.0
      *
      * @param string $serialized
-     * @deprecated will be removed in 5.0
+     * @deprecated 4.7.0 Use __unserialize() instead
      */
     public function unserialize($serialized): void
     {
+        Deprecation::notice('4.7.0', 'Use __unserialize() instead');
         $data = json_decode($serialized ?? '', true);
         $this->__unserialize($data);
     }
