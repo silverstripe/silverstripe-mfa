@@ -7,15 +7,21 @@ use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\ORM\Connect\Database;
 use SilverStripe\ORM\DB;
 use SilverStripe\Security\Member;
+use SilverStripe\Dev\Deprecation;
 
 class SessionStoreTest extends SapphireTest
 {
     public function testSerializeThrowsExceptionOnFailure()
     {
+        if (Deprecation::isEnabled()) {
+            $this->markTestSkipped('Test calls deprecated code');
+        }
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessageMatches('/possibly incorrectly encoded/');
         $store = new SessionStore($this->createMock(Member::class));
         $store->setState(['some binary' => random_bytes(32)]);
+        // changing this to __serialize() won't cause RunTimeException to
+        // be thrown because __serialize() does not use json_encode()
         $store->serialize();
     }
 
@@ -83,7 +89,7 @@ class SessionStoreTest extends SapphireTest
         $member = new Member();
         $member->ID = 1;
         $store = new SessionStore($member);
-        $serialised = $store->serialize();
+        $serialised = $store->__serialize();
 
         // Replace the DB connection with a mock
         $connection = DB::get_conn();
@@ -97,7 +103,7 @@ class SessionStoreTest extends SapphireTest
         DB::set_conn($database);
 
         // Replicate the deserialisation that happens on session start
-        $store->unserialize($serialised);
+        $store->__unserialize($serialised);
 
         // Finish the test and allow mock assertions to fail the test
         DB::set_conn($connection);
