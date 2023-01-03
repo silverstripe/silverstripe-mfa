@@ -104,7 +104,8 @@ $viewport-medium: 768px;
 }
 
 @media (prefers-color-scheme: dark) {
-  .dark-mode-enabled {
+  .dark-mode-enabled,
+  :root {
     --color-text: #{$dark-color-text};
     --color-dark-text: #{$dark-color-dark-text};
     --color-loading-indicator: #{$dark-color-loading-indicator};
