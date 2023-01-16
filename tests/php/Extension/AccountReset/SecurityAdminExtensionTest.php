@@ -38,7 +38,7 @@ class SecurityAdminExtensionTest extends FunctionalTest
         /** @var Member $member */
         $member = $this->objFromFixture(Member::class, 'squib');
 
-        $response = $this->post(SecurityAdmin::singleton()->Link("reset/{$member->ID}"), [true]);
+        $response = $this->post(SecurityAdmin::singleton()->Link("users/reset/{$member->ID}"), [true]);
 
         $this->assertEquals(400, $response->getStatusCode(), $response->getBody());
         $this->assertStringContainsString('Invalid or missing CSRF', $response->getBody());
@@ -52,7 +52,7 @@ class SecurityAdminExtensionTest extends FunctionalTest
         $member = $this->objFromFixture(Member::class, 'squib');
 
         $response = $this->post(
-            SecurityAdmin::singleton()->Link("reset/{$member->ID}"),
+            SecurityAdmin::singleton()->Link("users/reset/{$member->ID}"),
             [true],
             null,
             null,
@@ -71,7 +71,7 @@ class SecurityAdminExtensionTest extends FunctionalTest
         $member = $this->objFromFixture(Member::class, 'admin');
 
         $response = $this->post(
-            SecurityAdmin::singleton()->Link("reset/{$member->ID}"),
+            SecurityAdmin::singleton()->Link("users/reset/{$member->ID}"),
             [true],
             null,
             null,

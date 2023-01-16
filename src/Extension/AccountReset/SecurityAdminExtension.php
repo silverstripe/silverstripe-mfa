@@ -34,6 +34,10 @@ class SecurityAdminExtension extends Extension
         'reset',
     ];
 
+    private static $url_handlers = [
+        'users/reset/$ID' => 'reset',
+    ];
+
     /**
      * @var string[]
      */
