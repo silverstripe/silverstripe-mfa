@@ -62,7 +62,7 @@ class RegisteredMFAMethodListField extends FormField
                 'backupCreationDate' => $this->getBackupMethod()
                     ? $this->getBackupMethod()->Created
                     : null,
-                'resetEndpoint' => SecurityAdmin::singleton()->Link("reset/{$this->value}"),
+                'resetEndpoint' => SecurityAdmin::singleton()->Link("users/reset/{$this->value}"),
                 'isMFARequired' => EnforcementManager::create()->isMFARequired(),
             ],
         ]);

@@ -60,7 +60,7 @@ class RegisteredMethodManagerTest extends SapphireTest
     public function testRegisterForMemberCreatesNewMethod()
     {
         /** @var Member&MemberExtension $member */
-        $member = Member::create(['FirstName' => 'Mike']);
+        $member = Member::create(['FirstName' => 'Mike', 'Email' => 'test@example.com']);
         $member->write();
         $method = new BackupCodeMethod();
 
@@ -72,7 +72,7 @@ class RegisteredMethodManagerTest extends SapphireTest
     public function testRegisterForMemberAssignsDefaultRegisteredMethod()
     {
         /** @var Member&MemberExtension $member */
-        $member = Member::create(['FirstName' => 'Mike']);
+        $member = Member::create(['FirstName' => 'Mike', 'Email' => 'test@example.com']);
         $member->write();
         $method = new BackupCodeMethod();
 
@@ -127,7 +127,7 @@ class RegisteredMethodManagerTest extends SapphireTest
     public function testRegisterForMemberDoesNothingWithNoData()
     {
         /** @var Member&MemberExtension $member */
-        $member = Member::create(['FirstName' => 'Michelle']);
+        $member = Member::create(['FirstName' => 'Michelle', 'Email' => 'test@example.com']);
         $member->write();
         $method = new BackupCodeMethod();
 
