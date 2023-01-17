@@ -139,12 +139,13 @@ class SecurityAdminExtension extends Extension
                 ->addData('AccountResetLink', $this->getAccountResetLink($member, $token))
                 ->addData('Member', $member)
                 ->setTo($member->Email);
-
-            return $email->send();
+            $email->send();
         } catch (Exception $e) {
             $this->logger->info('WARNING: Account Reset Email failed to send: ' . $e->getMessage());
             return false;
         }
+
+        return true;
     }
 
     /**
