@@ -7,14 +7,12 @@ namespace SilverStripe\MFA\Report;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
-use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Model\RegisteredMethod;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataList;
 use SilverStripe\Reports\Report;
 use SilverStripe\Security\Member;
-use SilverStripe\Dev\Deprecation;
 
 if (!class_exists(Report::class)) {
     return;
@@ -144,46 +142,6 @@ class EnabledMembers extends Report
         $this->extend('updateParameterFields', $parameterFields);
 
         return $parameterFields;
-    }
-
-    /**
-     * Produce a string that indicates the names of registered methods for a given member
-     *
-     * @param null $_
-     * @param Member $record
-     * @return string
-     * @deprecated 4.7.0 Use MemberExtension::getRegisteredMethodNames() instead
-     */
-    public function formatMethodsColumn($_, Member $record): string
-    {
-        Deprecation::notice('4.7.0', 'Use MemberExtension::getRegisteredMethodNames() instead');
-        /** @var Member&MemberExtension $record */
-        $methods = $this->getRegisteredMethodsForRecords();
-
-        return implode(', ', array_map(function (RegisteredMethod $method) {
-            return $method->getMethod()->getName();
-        }, $methods->filter('MemberID', $record->ID)->toArray() ?? []));
-    }
-
-    /**
-     * Produce a string that indicates the name of the default registered method for a member
-     *
-     * @param null $_
-     * @param Member&MemberExtension $record
-     * @return string
-     * @deprecated 4.7.0 Use MemberExtension::getDefaultRegisteredMethodName() instead
-     */
-    public function formatDefaultMethodColumn($_, Member $record): string
-    {
-        Deprecation::notice('4.7.0', 'Use MemberExtension::getDefaultRegisteredMethodName() instead');
-        /** @var RegisteredMethod|null $method */
-        $method = $this->getRegisteredMethodsForRecords()->byID($record->DefaultRegisteredMethodID);
-
-        if (!$method) {
-            return '';
-        }
-
-        return $method->getMethod()->getName();
     }
 
     /**

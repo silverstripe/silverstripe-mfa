@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace SilverStripe\MFA\Store;
 
-use RuntimeException;
-use Serializable;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\MFA\Exception\InvalidMethodException;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
-use SilverStripe\Dev\Deprecation;
 
 /**
  * This class provides an interface to store data in session during an MFA process. This is implemented as a measure to
@@ -19,7 +16,7 @@ use SilverStripe\Dev\Deprecation;
  *
  * @package SilverStripe\MFA
  */
-class SessionStore implements StoreInterface, Serializable
+class SessionStore implements StoreInterface
 {
     public const SESSION_KEY = 'MFASessionStore';
 
@@ -230,37 +227,5 @@ class SessionStore implements StoreInterface, Serializable
         foreach ($data['verifiedMethods'] as $method) {
             $this->addVerifiedMethod($method);
         }
-    }
-
-    /**
-     * The __serialize() magic method will be automatically used instead of this
-     *
-     * @return string
-     * @deprecated 4.7.0 Use __serialize() instead
-     */
-    public function serialize(): string
-    {
-        Deprecation::notice('4.7.0', 'Use __serialize() instead');
-        $data = $this->__serialize();
-        $str = json_encode($data);
-        if (!$str) {
-            throw new RuntimeException(json_last_error_msg());
-        }
-        return $str;
-    }
-
-    /**
-     * The __unserialize() magic method will be automatically used instead of this almost all the time
-     * This method will be automatically used if existing serialized data was not saved as an associative array
-     * and the PHP version used in less than PHP 9.0
-     *
-     * @param string $serialized
-     * @deprecated 4.7.0 Use __unserialize() instead
-     */
-    public function unserialize($serialized): void
-    {
-        Deprecation::notice('4.7.0', 'Use __unserialize() instead');
-        $data = json_decode($serialized ?? '', true);
-        $this->__unserialize($data);
     }
 }
