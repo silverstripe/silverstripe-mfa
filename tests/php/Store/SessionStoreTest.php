@@ -7,24 +7,9 @@ use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\ORM\Connect\Database;
 use SilverStripe\ORM\DB;
 use SilverStripe\Security\Member;
-use SilverStripe\Dev\Deprecation;
 
 class SessionStoreTest extends SapphireTest
 {
-    public function testSerializeThrowsExceptionOnFailure()
-    {
-        if (Deprecation::isEnabled()) {
-            $this->markTestSkipped('Test calls deprecated code');
-        }
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessageMatches('/possibly incorrectly encoded/');
-        $store = new SessionStore($this->createMock(Member::class));
-        $store->setState(['some binary' => random_bytes(32)]);
-        // changing this to __serialize() won't cause RunTimeException to
-        // be thrown because __serialize() does not use json_encode()
-        $store->serialize();
-    }
-
     public function testSetState()
     {
         $store = new SessionStore($this->createMock(Member::class));
