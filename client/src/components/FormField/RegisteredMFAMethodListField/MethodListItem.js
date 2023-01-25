@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import confirm from '@silverstripe/reactstrap-confirm';
+import confirm from 'reactstrap-confirm';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import moment from 'moment';
@@ -8,7 +8,7 @@ import Reset from './MethodListItem/Reset';
 import SetDefault from './MethodListItem/SetDefault';
 import methodShape from 'types/registeredMethod';
 
-const fallbacks = require('../../../../lang/src/en.json');
+import fallbacks from '../../../../lang/src/en.json';
 
 /**
  * Renders a single Registered MFA Method for a Member
@@ -88,7 +88,7 @@ class MethodListItem extends PureComponent {
       );
 
       props.onReset = async callback => {
-        if (!await confirm(confirmMessage, { title: confirmTitle, confirmLabel: buttonLabel })) {
+        if (!await confirm({ title: confirmTitle, message: confirmMessage, confirmText: buttonLabel })) {
           return;
         }
         callback();

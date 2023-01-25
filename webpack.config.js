@@ -1,92 +1,62 @@
 const Path = require('path');
-const webpackConfig = require('@silverstripe/webpack-config');
+const { JavascriptWebpackConfig, CssWebpackConfig } = require('@silverstripe/webpack-config');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-
-const {
-  resolveJS,
-  externalJS,
-  moduleJS,
-  pluginJS,
-  moduleCSS,
-  pluginCSS,
-} = webpackConfig;
 
 const ENV = process.env.NODE_ENV;
 const PATHS = {
   MODULES: 'node_modules',
-  FILES_PATH: '../',
   ROOT: Path.resolve(),
   SRC: Path.resolve('client/src'),
   DIST: Path.resolve('client/dist'),
 };
 
+// Frontend JS bundle
+const frontendJsConfig = new JavascriptWebpackConfig('js-frontend', PATHS, 'silverstripe/mfa')
+  .setEntry({
+    bundle: `${PATHS.SRC}/bundles/bundle.js`,
+  })
+  .mergeConfig({
+    plugins: [
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: `${PATHS.SRC}/images`,
+            to: `${PATHS.DIST}/images`,
+          },
+          {
+            from: `${PATHS.MODULES}/@silverstripe/react-injector/dist/injector.js`,
+            to: `${PATHS.DIST}/js`,
+          },
+        ]
+      }),
+    ],
+  })
+  .getConfig();
+
+// Only include a single "external" which is actually addedto the DOM separately
+// Don't include any other externals as this will be used on the frontend
+frontendJsConfig.externals = {
+  'lib/Injector': 'Injector',
+};
+
 const config = [
-  {
-    name: 'js',
-    entry: {
-      bundle: `${PATHS.SRC}/bundles/bundle.js`,
-      injector: `${PATHS.MODULES}/@silverstripe/react-injector/dist/injector.js`,
-    },
-    output: {
-      path: PATHS.DIST,
-      filename: 'js/[name].js',
-    },
-    devtool: (ENV !== 'production') ? 'source-map' : '',
-    resolve: resolveJS(ENV, PATHS),
-    externals: {
-      'lib/Injector': 'Injector',
-    },
-    module: moduleJS(ENV, PATHS),
-    plugins: pluginJS(ENV, PATHS).concat([
-      new CopyWebpackPlugin([
-        { from: 'client/src/images', to: 'images' },
-      ])
-    ])
-  },
-  {
-    name: 'js-cms',
-    entry: {
+  frontendJsConfig,
+  // Main JS bundle
+  new JavascriptWebpackConfig('js-cms', PATHS, 'silverstripe/mfa')
+    .setEntry({
       'bundle-cms': `${PATHS.SRC}/bundles/bundle-cms.js`,
-    },
-    output: {
-      path: PATHS.DIST,
-      filename: 'js/[name].js',
-    },
-    devtool: (ENV !== 'production') ? 'source-map' : '',
-    resolve: resolveJS(ENV, PATHS),
-    externals: externalJS(ENV, PATHS),
-    module: moduleJS(ENV, PATHS),
-    plugins: pluginJS(ENV, PATHS),
-  },
-  {
-    name: 'css',
-    entry: {
+    })
+    .getConfig(),
+  // sass to css
+  new CssWebpackConfig('css', PATHS)
+    .setEntry({
       bundle: `${PATHS.SRC}/bundles/bundle.scss`,
-    },
-    output: {
-      path: PATHS.DIST,
-      filename: 'styles/[name].css',
-    },
-    devtool: (ENV !== 'production') ? 'source-map' : '',
-    module: moduleCSS(ENV, PATHS),
-    plugins: pluginCSS(ENV, PATHS),
-  },
-  {
-    name: 'css-cms',
-    entry: {
       'bundle-cms': `${PATHS.SRC}/bundles/bundle-cms.scss`,
-    },
-    output: {
-      path: PATHS.DIST,
-      filename: 'styles/[name].css',
-    },
-    devtool: (ENV !== 'production') ? 'source-map' : '',
-    module: moduleCSS(ENV, PATHS),
-    plugins: pluginCSS(ENV, PATHS),
-  },
+    })
+    .getConfig(),
 ];
 
 // Use WEBPACK_CHILD=js or WEBPACK_CHILD=css env var to run a single config
 module.exports = (process.env.WEBPACK_CHILD)
   ? config.find((entry) => entry.name === process.env.WEBPACK_CHILD)
-  : module.exports = config;
+  : config;

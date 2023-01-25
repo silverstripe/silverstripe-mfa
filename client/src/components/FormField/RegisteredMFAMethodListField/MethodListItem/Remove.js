@@ -1,14 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import confirm from '@silverstripe/reactstrap-confirm';
+import confirm from 'reactstrap-confirm';
 import Config from 'lib/Config'; // eslint-disable-line
 import api from 'lib/api';
 import { addAvailableMethod } from 'state/mfaRegister/actions';
 import { deregisterMethod, setDefaultMethod } from 'state/mfaAdministration/actions';
 import registeredMethodShape from 'types/registeredMethod';
 
-const fallbacks = require('../../../../../lang/src/en.json');
+import fallbacks from '../../../../../lang/src/en.json';
 
 const Remove = ({
   method,
@@ -37,7 +37,7 @@ const Remove = ({
       fallbacks['MultiFactorAuthentication.DELETE_CONFIRMATION_BUTTON']
     );
 
-    if (!await confirm(confirmMessage, { title: confirmTitle, confirmLabel: buttonLabel })) {
+    if (!await confirm({ title: confirmTitle, message: confirmMessage, confirmText: buttonLabel })) {
       return;
     }
 

@@ -11,7 +11,7 @@ import SelectMethod from 'components/Verify/SelectMethod';
 import withMethodAvailability from 'state/methodAvailability/withMethodAvailability';
 import LoadingError from 'components/LoadingError';
 
-const fallbacks = require('../../lang/src/en.json');
+import fallbacks from '../../lang/src/en.json';
 
 class Verify extends Component {
   constructor(props) {

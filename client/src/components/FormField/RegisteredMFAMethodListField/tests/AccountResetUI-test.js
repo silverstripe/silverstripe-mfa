@@ -7,9 +7,9 @@ import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import AccountResetUI from '../AccountResetUI';
 
-import confirm from '@silverstripe/reactstrap-confirm';
+import confirm from 'reactstrap-confirm';
 
-jest.mock('@silverstripe/reactstrap-confirm', () => jest.fn().mockImplementation(
+jest.mock('reactstrap-confirm', () => jest.fn().mockImplementation(
   () => Promise.resolve(true)
 ));
 

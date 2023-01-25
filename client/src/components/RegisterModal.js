@@ -9,7 +9,7 @@ import { registerMethod, setDefaultMethod } from 'state/mfaAdministration/action
 import registeredMethodShape from 'types/registeredMethod';
 import { SCREEN_INTRODUCTION } from 'components/Register';
 
-const fallbacks = require('../../lang/src/en.json');
+import fallbacks from '../../lang/src/en.json';
 
 /**
  * Renders a modal that contains a register component. Given endpoints it will register MFA methods

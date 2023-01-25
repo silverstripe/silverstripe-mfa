@@ -1,2 +1,2 @@
-require('./RegisteredMFAMethodListFieldEntwine');
-require('./SiteConfig');
+import './RegisteredMFAMethodListFieldEntwine';
+import './SiteConfig';
