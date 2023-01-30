@@ -291,15 +291,15 @@ class Register extends Component {
     let content;
 
     switch (screen) {
-      default:
-      case SCREEN_INTRODUCTION:
-        content = this.renderIntroduction();
-        break;
       case SCREEN_CHOOSE_METHOD:
         content = this.renderOptions();
         break;
       case SCREEN_REGISTER_METHOD:
         content = this.renderMethod();
+        break;
+      case SCREEN_INTRODUCTION:
+      default:
+        content = this.renderIntroduction();
         break;
     }
 

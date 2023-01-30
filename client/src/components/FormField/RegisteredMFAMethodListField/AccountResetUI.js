@@ -2,12 +2,12 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Config from 'lib/Config'; // eslint-disable-line
 import api from 'lib/api';
-import confirm from '@silverstripe/reactstrap-confirm';
+import confirm from 'reactstrap-confirm';
 import LoadingIndicator from '../../LoadingIndicator';
 import CircleDash from '../../Icons/CircleDash';
 import CircleTick from '../../Icons/CircleTick';
 
-const fallbacks = require('../../../../lang/src/en.json');
+import fallbacks from '../../../../lang/src/en.json';
 
 /**
  * The AccountResetUI component is used to submit an Account Reset request.
@@ -45,7 +45,7 @@ class AccountResetUI extends Component {
       'MultiFactorAuthentication.ACCOUNT_RESET_CONFIRMATION_BUTTON',
       fallbacks['MultiFactorAuthentication.ACCOUNT_RESET_CONFIRMATION_BUTTON']
     );
-    if (!await confirm(confirmMessage, { title: confirmTitle, confirmLabel: buttonLabel })) {
+    if (!await confirm({ title: confirmTitle, message: confirmMessage, confirmText: buttonLabel })) {
       return;
     }
 

@@ -19,7 +19,7 @@ import {
 } from 'components/Register';
 import RegisterModal from '../../RegisterModal';
 
-const fallbacks = require('../../../../lang/src/en.json');
+import fallbacks from '../../../../lang/src/en.json';
 
 class RegisteredMFAMethodListField extends Component {
   constructor(props) {

@@ -7,7 +7,7 @@ import {
 } from '../Register';
 import { connect } from 'react-redux';
 
-const fallbacks = require('../../../lang/src/en.json');
+import fallbacks from '../../../lang/src/en.json';
 
 const Title = ({ screen, method, Tag = 'h2', className = 'mfa-section-title' }) => {
   const { ss: { i18n } } = window;

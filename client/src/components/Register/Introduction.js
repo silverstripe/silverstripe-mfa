@@ -7,7 +7,7 @@ import { SCREEN_REGISTER_METHOD } from '../Register';
 import { connect } from 'react-redux';
 import Title from './Title';
 
-const fallbacks = require('../../../lang/src/en.json');
+import fallbacks from '../../../lang/src/en.json';
 
 export const ActionList = ({ canSkip, onContinue, onSkip }) => {
   const { ss: { i18n } } = window;

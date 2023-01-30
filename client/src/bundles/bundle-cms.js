@@ -1,2 +1,2 @@
-require('../legacy');
-require('../boot/cms');
+import '../legacy';
+import '../boot/cms';

@@ -22,7 +22,7 @@ const onUpdateAvailableMethods = jest.fn();
 const onSetRegisteredMethods = jest.fn();
 const onSetDefaultMethod = jest.fn();
 
-const translationStrings = require('../../../../../lang/src/en.json');
+import translationStrings from '../../../../../lang/src/en.json';
 
 describe('RegisteredMFAMethodListField', () => {
   describe('baseMethods()', () => {

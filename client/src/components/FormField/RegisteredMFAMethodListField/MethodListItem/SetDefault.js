@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import api from 'lib/api';
 import { setDefaultMethod } from 'state/mfaAdministration/actions';
 
-const fallbacks = require('../../../../../lang/src/en.json');
+import fallbacks from '../../../../../lang/src/en.json';
 
 /**
  * An action to set the current method as the default registered method for a user

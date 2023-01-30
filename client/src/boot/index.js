@@ -1,6 +1,6 @@
 /* global window */
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import Login from '../containers/Login';
 import registerComponents from 'boot/registerComponents';
 import registerReducers from 'boot/registerReducers';
@@ -22,11 +22,10 @@ window.document.addEventListener('DOMContentLoaded', () => {
       window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
     );
 
-    ReactDOM.render(
+    createRoot(element).render(
       <Provider store={store}>
         <Login schemaURL={schemaURL} />
-      </Provider>,
-      element
+      </Provider>
     );
   });
 

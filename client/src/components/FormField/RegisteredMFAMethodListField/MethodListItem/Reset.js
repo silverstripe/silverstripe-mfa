@@ -11,7 +11,7 @@ import registeredMethodShape from 'types/registeredMethod';
 import availableMethodShape from 'types/availableMethod';
 import RegisterModal from 'components/RegisterModal';
 
-const fallbacks = require('../../../../../lang/src/en.json');
+import fallbacks from '../../../../../lang/src/en.json';
 
 class Reset extends Component {
   constructor(props) {

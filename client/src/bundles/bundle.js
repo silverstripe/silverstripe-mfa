@@ -1,7 +1,7 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 
-require('es6-promise').polyfill();
-require('isomorphic-fetch');
+import 'es6-promise/auto';
+import 'isomorphic-fetch';
 
-require('boot');
+import 'boot';

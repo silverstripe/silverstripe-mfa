@@ -1,12 +1,14 @@
 // Manages rendering RegisteredMFAMethodListFields in lieu of React support in ModelAdmin
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { loadComponent } from 'lib/Injector'; // eslint-disable-line
 
 const FIELD_SELECTOR = '.js-injector-boot [data-field-type="registered-mfa-method-list-field"]';
 
 window.jQuery.entwine('ss', ($) => {
   $(FIELD_SELECTOR).entwine({
+    ReactRoot: null,
+
     onmatch() {
       const RegisteredMFAMethodListField = loadComponent('RegisteredMFAMethodListField');
       const { readOnly, schema: {
@@ -22,7 +24,12 @@ window.jQuery.entwine('ss', ($) => {
         isMFARequired,
       } } = this.data('schema');
 
-      ReactDOM.render(
+      let root = this.getReactRoot();
+      if (!root) {
+        root = createRoot(this[0]);
+        this.setReactRoot(root);
+      }
+      root.render(
         <RegisteredMFAMethodListField
           backupMethod={backupMethod}
           readOnly={readOnly}
@@ -35,9 +42,16 @@ window.jQuery.entwine('ss', ($) => {
           backupCreatedDate={backupCreatedDate}
           resetEndpoint={resetEndpoint}
           isMFARequired={isMFARequired}
-        />,
-        this[0]
+        />
       );
+    },
+
+    onunmatch() {
+      const root = this.getReactRoot();
+      if (root) {
+        root.unmount();
+        this.setReactRoot(null);
+      }
     }
   });
 });
