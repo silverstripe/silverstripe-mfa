@@ -23,7 +23,7 @@ use SilverStripe\ORM\ValidationException;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 use SilverStripe\Security\SecurityToken;
-use SilverStripe\SecurityExtensions\Service\SudoModeServiceInterface;
+use SilverStripe\Security\SudoMode\SudoModeServiceInterface;
 
 class AdminRegistrationControllerTest extends FunctionalTest
 {

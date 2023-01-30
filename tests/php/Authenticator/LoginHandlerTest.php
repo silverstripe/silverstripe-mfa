@@ -29,7 +29,7 @@ use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 use SilverStripe\Security\SecurityToken;
-use SilverStripe\SecurityExtensions\Service\SudoModeServiceInterface;
+use SilverStripe\Security\SudoMode\SudoModeServiceInterface;
 use SilverStripe\SiteConfig\SiteConfig;
 
 class LoginHandlerTest extends FunctionalTest
@@ -42,16 +42,6 @@ class LoginHandlerTest extends FunctionalTest
         Config::modify()->set(MethodRegistry::class, 'methods', [Method::class]);
 
         EnforcementManager::config()->set('enabled', true);
-
-        Injector::inst()->load([
-            Security::class => [
-                'properties' => [
-                    'authenticators' => [
-                        'default' => '%$' . MemberAuthenticator::class,
-                    ]
-                ]
-            ]
-        ]);
 
         /** @var SudoModeServiceInterface&MockObject $sudoModeService */
         $sudoModeService = $this->createMock(SudoModeServiceInterface::class);

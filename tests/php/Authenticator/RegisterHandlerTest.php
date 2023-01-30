@@ -6,7 +6,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\FunctionalTest;
-use SilverStripe\MFA\Authenticator\MemberAuthenticator;
 use SilverStripe\MFA\Extension\MemberExtension;
 use SilverStripe\MFA\Method\Handler\RegisterHandlerInterface;
 use SilverStripe\MFA\Method\MethodInterface;
@@ -15,9 +14,8 @@ use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
 use SilverStripe\Security\Member;
-use SilverStripe\Security\Security;
-use SilverStripe\SecurityExtensions\Service\SudoModeServiceInterface;
 use SilverStripe\Security\SecurityToken;
+use SilverStripe\Security\SudoMode\SudoModeServiceInterface;
 
 /**
  * Class RegisterHandlerTest
@@ -34,16 +32,6 @@ class RegisterHandlerTest extends FunctionalTest
     {
         parent::setUp();
         Config::modify()->set(MethodRegistry::class, 'methods', [Method::class]);
-
-        Injector::inst()->load([
-            Security::class => [
-                'properties' => [
-                    'authenticators' => [
-                        'default' => '%$' . MemberAuthenticator::class,
-                    ]
-                ]
-            ]
-        ]);
 
         /** @var SudoModeServiceInterface&MockObject $sudoModeService */
         $sudoModeService = $this->createMock(SudoModeServiceInterface::class);
