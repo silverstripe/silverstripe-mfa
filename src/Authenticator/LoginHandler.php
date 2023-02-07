@@ -98,9 +98,6 @@ class LoginHandler extends BaseLoginHandler
             return parent::doLogin($data, $form, $request);
         }
 
-        // Enable sudo mode. This would usually be done by the default login handler's afterLogin() hook.
-        $this->getSudoModeService()->activate($request->getSession());
-
         // Create a store for handling MFA for this member
         $store = $this->createStore($member);
         // We don't need to store the user's password

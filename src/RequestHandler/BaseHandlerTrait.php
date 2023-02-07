@@ -6,7 +6,7 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Store\StoreInterface;
 use SilverStripe\Security\Member;
-use SilverStripe\SecurityExtensions\Service\SudoModeServiceInterface;
+use SilverStripe\Security\SudoMode\SudoModeServiceInterface;
 use SilverStripe\View\Requirements;
 
 trait BaseHandlerTrait

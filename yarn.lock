@@ -1551,10 +1551,10 @@
     react-dom "^16.8.3"
     toposort "^2.0.2"
 
-"@silverstripe/webpack-config@^2.0.0-alpha5":
-  version "2.0.0-alpha7"
-  resolved "https://registry.yarnpkg.com/@silverstripe/webpack-config/-/webpack-config-2.0.0-alpha7.tgz#c825f30fa0991222ac3e89a114bdc4cca2b2c254"
-  integrity sha512-XkqdnED1E072QXxFSovP8KrJuVtZGIeW9fLMdLI8tJwzf6651ziwYFWYwep72C0Eb+jpUabxNQl7eqlAHO52xA==
+"@silverstripe/webpack-config@^2.0.0-alpha9":
+  version "2.0.0-alpha9"
+  resolved "https://registry.yarnpkg.com/@silverstripe/webpack-config/-/webpack-config-2.0.0-alpha9.tgz#b2e309735f958fd3905d1f09d9bc4014d0a3ba79"
+  integrity sha512-8AsoC+eYrIQO/5KD4xah+qV4h5nPz16DdfUQZoDr5WQH03QDTsZMEjemrMYqDEEJtMKYs/SDkK1ZnlfRo3ubsw==
   dependencies:
     "@babel/core" "^7.19.6"
     "@babel/preset-env" "^7.19.4"
