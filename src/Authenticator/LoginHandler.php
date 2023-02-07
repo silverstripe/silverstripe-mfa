@@ -98,6 +98,10 @@ class LoginHandler extends BaseLoginHandler
             return parent::doLogin($data, $form, $request);
         }
 
+        // We need to call getSudoModeService()->activate() here otherwise the check in
+        // mfa() to getSudoModeService()->check($request->getSession()) will fail
+        $this->getSudoModeService()->activate($request->getSession());
+
         // Create a store for handling MFA for this member
         $store = $this->createStore($member);
         // We don't need to store the user's password
