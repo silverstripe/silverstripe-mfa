@@ -20,7 +20,7 @@ da:
     COULD_NOT_DELETE: ''
     COULD_NOT_SET_DEFAULT: ''
     CSRF_FAILURE: ''
-    INVALID_METHOD: ''
+    INVALID_METHOD: 'Ingen sådan metode tilgængelig'
     INVALID_REGISTERED_METHOD: ''
     INVALID_SESSION: ''
     MENUTITLE: ''
