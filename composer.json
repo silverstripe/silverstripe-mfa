@@ -26,12 +26,12 @@
     ],
     "require": {
         "php": "^7.4 || ^8.0",
-        "silverstripe/framework": "4.13.x-dev",
-        "silverstripe/admin": "1.13.x-dev",
-        "silverstripe/siteconfig": "4.13.x-dev",
+        "silverstripe/framework": "^4.10",
+        "silverstripe/admin": "^1.1",
+        "silverstripe/siteconfig": "^4.1",
         "defuse/php-encryption": "^2.2",
-        "silverstripe/login-forms": "4.9.x-dev",
-        "silverstripe/security-extensions": "4.5.x-dev"
+        "silverstripe/login-forms": "^4.0",
+        "silverstripe/security-extensions": "^4.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
