@@ -7,6 +7,12 @@ import LoadingIndicator from '../../LoadingIndicator';
 import CircleDash from '../../Icons/CircleDash';
 import CircleTick from '../../Icons/CircleTick';
 
+/**
+ * regeneratorRuntime is not used explicitly in the code,
+ * but this import is necessary for the async handleSendReset method to work correctly
+ */
+import regeneratorRuntime from 'regenerator-runtime'; // eslint-disable-line
+
 import fallbacks from '../../../../lang/src/en.json';
 
 /**
