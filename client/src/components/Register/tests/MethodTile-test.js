@@ -1,11 +1,25 @@
-/* global jest, describe, it, expect */
+/* global jest, test, describe, it, expect */
 
 import React from 'react';
-import Enzyme, { shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
 import { Component as MethodTile } from '../MethodTile';
+import { fireEvent, render } from '@testing-library/react';
 
-Enzyme.configure({ adapter: new Adapter() });
+function makeProps(obj = {}) {
+  return {
+    method: {
+      urlSegment: 'aye',
+      name: 'Aye',
+      description: 'Register using aye',
+      supportLink: 'https://google.com',
+      component: 'Test',
+      isAvailable: true
+    },
+    onClick: () => {},
+    isAvailable: () => true,
+    getUnavailableMessage: () => {},
+    ...obj
+  };
+}
 
 window.ss = {
   i18n: {
@@ -14,123 +28,69 @@ window.ss = {
   },
 };
 
-const firstMethod = {
-  urlSegment: 'aye',
-  name: 'Aye',
-  description: 'Register using aye',
-  supportLink: 'https://google.com',
-  component: 'Test',
-  isAvailable: true,
-};
+test('MethodTile passes click to handler prop if method is available', () => {
+  const onClick = jest.fn();
+  const { container } = render(
+    <MethodTile {...makeProps({
+      onClick
+    })}
+    />
+  );
+  fireEvent.click(container.querySelector('.mfa-method-tile__content'));
+  expect(onClick).toHaveBeenCalled();
+});
 
-const clickHandlerMock = jest.fn();
-const isAvailableMock = () => true;
-const getUnavailableMessageMock = () => 'Testing';
+test('MethodTile click doesn\t do anything when method not available', () => {
+  const onClick = jest.fn();
+  const { container } = render(
+    <MethodTile {...makeProps({
+      method: {
+        ...makeProps().method,
+        isAvailable: false
+      }
+    })}
+    />
+  );
+  fireEvent.click(container.querySelector('.mfa-method-tile__content'));
+  expect(onClick).not.toHaveBeenCalled();
+});
 
-describe('MethodTile', () => {
-  beforeEach(() => {
-    clickHandlerMock.mockClear();
-  });
+test('MethodTile renders does not render a mask when is available', () => {
+  const { container } = render(
+    <MethodTile {...makeProps()}/>
+  );
+  expect(container.querySelector('.mfa-method-tile__unavailable-mask')).toBeNull();
+});
 
-  describe('handleClick()', () => {
-    it('passes click to handler prop if method is available', () => {
-      firstMethod.isAvailable = true;
-      const wrapper = shallow(
-        <MethodTile
-          method={firstMethod}
-          onClick={clickHandlerMock}
-          isAvailable={isAvailableMock}
-          getUnavailableMessage={getUnavailableMessageMock}
-        />
-      );
-      wrapper.instance().handleClick({});
-      expect(clickHandlerMock.mock.calls).toHaveLength(1);
-    });
+test('MethodTile renders a mask when is not available', () => {
+  const { container } = render(
+    <MethodTile {...makeProps({
+      isAvailable: () => false,
+      getUnavailableMessage: () => 'Test message here'
+    })}
+    />
+  );
+  expect(container.querySelector('.mfa-method-tile__unavailable-mask').textContent).toBe('Unsupported: Test message here');
+});
 
-    it('doesn\'t do anything when method is not available', () => {
-      firstMethod.isAvailable = false;
-      const wrapper = shallow(
-        <MethodTile
-          method={firstMethod}
-          onClick={clickHandlerMock}
-          isAvailable={isAvailableMock}
-          getUnavailableMessage={getUnavailableMessageMock}
-        />
-      );
-      wrapper.instance().handleClick({});
-      expect(clickHandlerMock.mock.calls).toHaveLength(0);
-    });
-  });
+test('MethodTile treats the enter key as a click', () => {
+  const onClick = jest.fn();
+  const { container } = render(
+    <MethodTile {...makeProps({
+      onClick
+    })}
+    />
+  );
+  fireEvent.keyUp(container.querySelector('.mfa-method-tile__content'), { keyCode: 13 });
+  expect(onClick).toHaveBeenCalled();
+});
 
-  describe('renderUnavailableMask()', () => {
-    it('does nothing when the method is available', () => {
-      firstMethod.isAvailable = true;
-      const wrapper = shallow(
-        <MethodTile
-          method={firstMethod}
-          onClick={clickHandlerMock}
-          isAvailable={isAvailableMock}
-          getUnavailableMessage={getUnavailableMessageMock}
-        />
-      );
-      expect(wrapper.find('.mfa-method-tile__unavailable-mask')).toHaveLength(0);
-    });
-
-    it('renders a mask with message via props when unavailable', () => {
-      const wrapper = shallow(
-        <MethodTile
-          method={firstMethod}
-          onClick={clickHandlerMock}
-          isAvailable={() => false}
-          getUnavailableMessage={() => 'Test message here'}
-        />
-      );
-      const mask = wrapper.find('.mfa-method-tile__unavailable-mask');
-      expect(mask).toHaveLength(1);
-      expect(mask.text()).toContain('Test message here');
-    });
-  });
-
-  describe('render()', () => {
-    it('has a clickable interface', () => {
-      firstMethod.isAvailable = true;
-      const wrapper = shallow(
-        <MethodTile
-          method={firstMethod}
-          onClick={clickHandlerMock}
-          isAvailable={isAvailableMock}
-          getUnavailableMessage={getUnavailableMessageMock}
-        />
-      );
-      wrapper.find('.mfa-method-tile__content').simulate('click');
-      expect(clickHandlerMock.mock.calls).toHaveLength(1);
-    });
-
-    it('treats the enter key as a click', () => {
-      firstMethod.isAvailable = true;
-      const wrapper = shallow(
-        <MethodTile
-          method={firstMethod}
-          onClick={clickHandlerMock}
-          isAvailable={isAvailableMock}
-          getUnavailableMessage={getUnavailableMessageMock}
-        />
-      );
-      wrapper.find('.mfa-method-tile__content').simulate('keyUp', { keyCode: 13 });
-      expect(clickHandlerMock.mock.calls).toHaveLength(1);
-    });
-
-    it('attaches an active state when active', () => {
-      const wrapper = shallow(
-        <MethodTile
-          isActive
-          method={firstMethod}
-          onClick={clickHandlerMock}
-          isAvailable={isAvailableMock}
-          getUnavailableMessage={getUnavailableMessageMock}
-        />
-      );
-      expect(wrapper.find('.mfa-method-tile--active')).toHaveLength(1);
-    });
-  });
+test('MethodTile attaches an active state when active', () => {
+  const { container } = render(
+    <MethodTile {...makeProps({
+      isActive: true
+    })}
+    />
+  );
+  expect(container.querySelector('.mfa-method-tile--active')).not.toBeNull();
 });

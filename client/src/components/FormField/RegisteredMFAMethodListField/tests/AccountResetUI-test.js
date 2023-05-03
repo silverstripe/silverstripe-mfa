@@ -1,151 +1,93 @@
-/* global jest, describe, it, expect */
+/* global jest, test, describe, it, expect */
 
 // eslint-disable-next-line no-unused-vars
-import fetch from 'isomorphic-fetch';
 import React from 'react';
-import Enzyme, { shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
 import AccountResetUI from '../AccountResetUI';
+import { render, screen, fireEvent } from '@testing-library/react';
 
-import confirm from 'reactstrap-confirm';
+let resolveApiCall;
+let rejectApiCall;
+let lastApiCallArgs;
 
-jest.mock('reactstrap-confirm', () => jest.fn().mockImplementation(
-  () => Promise.resolve(true)
-));
-
-Enzyme.configure({ adapter: new Adapter() });
+jest.mock('lib/api', () => ({
+  __esModule: true,
+  default: (endpoint, method, body, headers) => {
+    lastApiCallArgs = { endpoint, method, body, headers };
+    return new Promise((resolve, reject) => {
+      resolveApiCall = resolve;
+      rejectApiCall = reject;
+    });
+  }
+}));
 
 window.ss = {
   i18n: { _t: (key, string) => string },
 };
 
-const fetchMock = jest.spyOn(global, 'fetch');
+jest.mock('reactstrap-confirm', () => jest.fn().mockImplementation(
+  () => Promise.resolve(true)
+));
 
-describe('AccountResetUI', () => {
-  beforeEach(() => {
-    fetchMock.mockImplementation(() => Promise.resolve({
-      status: 200,
-      json: () => Promise.resolve({ success: true }),
-    }));
+function makeProps(obj = {}) {
+  return {
+    // this is mocked to prevent a "<div> cannot appear as a descendant of <p>" warning
+    LoadingIndicatorComponent: () => <em>loading</em>,
+    ...obj
+  };
+}
 
-    fetchMock.mockClear();
-    confirm.mockClear();
+test('AccountResetUI is disabled when an endpoint has not been supplied', () => {
+  const { container } = render(<AccountResetUI {...makeProps()} />);
+  expect(container.querySelector('.account-reset-action .btn').disabled).toBe(true);
+});
+
+test('AccountResetUI is enabled when an endpoint has been supplied', () => {
+  const { container } = render(
+    <AccountResetUI {...makeProps({
+      resetEndpoint: '/reset/1'
+    })}
+    />
+  );
+  expect(container.querySelector('.account-reset-action .btn').disabled).toBe(false);
+});
+
+test('AccountResetUI submits the reset request when clicked and hides the button', async () => {
+  const { container } = render(
+    <AccountResetUI {...makeProps({
+      resetEndpoint: '/reset/1'
+    })}
+    />
+  );
+  fireEvent.click(container.querySelector('.account-reset-action .btn'));
+  await screen.findByText('Sending...');
+  expect(container.querySelector('.account-reset-action .btn')).toBeNull();
+  resolveApiCall({
+    json: () => Promise.resolve({})
   });
-
-  describe('renderAction()', () => {
-    it('is disabled when an endpoint has not been supplied', () => {
-      const ui = shallow(
-        <AccountResetUI />
-      );
-
-      const action = ui.find('.account-reset-action .btn');
-
-      expect(action).toHaveLength(1);
-      expect(action.first().props().disabled).toBeTruthy();
-    });
-
-    it('is enabled when an endpoint has been supplied', () => {
-      const ui = shallow(
-        <AccountResetUI resetEndpoint="/reset/1" />
-      );
-
-      const action = ui.find('.account-reset-action .btn');
-
-      expect(action).toHaveLength(1);
-      expect(action.first().props().disabled).toBeFalsy();
-    });
-
-    it('submits the reset request when clicked', done => {
-      const ui = shallow(
-        <AccountResetUI resetEndpoint="/reset/1" />
-      );
-
-      ui.find('.account-reset-action .btn').first().simulate('click');
-
-      setTimeout(() => {
-        expect(fetchMock.mock.calls.length).toBe(1);
-        done();
-      });
-    });
-
-    it('is hidden when submitting or complete', () => {
-      const ui = shallow(
-        <AccountResetUI />
-      );
-
-      ui.instance().setState({
-        submitting: true,
-      });
-
-      let action = ui.find('.account-reset-action .btn');
-
-      expect(action).toHaveLength(0);
-
-      ui.instance().setState({
-        submitting: false,
-        complete: true,
-      });
-
-      action = ui.find('.account-reset-action .btn');
-
-      expect(action).toHaveLength(0);
-    });
+  expect(lastApiCallArgs).toStrictEqual({
+    body: '{"csrf_token":"SecurityID"}',
+    endpoint: '/reset/1',
+    headers: undefined,
+    method: 'POST'
   });
+  const el = await screen.findByText('An email has been sent.');
+  expect(el.classList).toContain('account-reset-action__message');
+});
 
-  describe('renderStatusMessage()', () => {
-    it('does not display a status by default', () => {
-      const ui = shallow(
-        <AccountResetUI />
-      );
+test('AccountResetUI does not display a status by default', () => {
+  const { container } = render(<AccountResetUI {...makeProps()} />);
+  expect(container.querySelector('account-reset-action__message')).toBeNull();
+});
 
-      expect(ui.find('.account-reset-action__message')).toHaveLength(0);
-    });
-
-    it('displays a sending status when the form is submitted', () => {
-      const ui = shallow(
-        <AccountResetUI />
-      );
-
-      ui.instance().setState({
-        submitting: true,
-      });
-
-      const message = ui.find('.account-reset-action__message');
-
-      expect(message).toHaveLength(1);
-      expect(message.text()).toContain('Sending...');
-    });
-
-    it('displays an error status when the request fails', () => {
-      const ui = shallow(
-        <AccountResetUI />
-      );
-
-      ui.instance().setState({
-        complete: true,
-        failed: true,
-      });
-
-      const message = ui.find('.account-reset-action__message');
-
-      expect(message).toHaveLength(1);
-      expect(message.text()).toContain('unable to send an email');
-    });
-
-    it('displays a complete status when the request succeeds', () => {
-      const ui = shallow(
-        <AccountResetUI />
-      );
-
-      ui.instance().setState({
-        complete: true,
-        failed: false,
-      });
-
-      const message = ui.find('.account-reset-action__message');
-
-      expect(message).toHaveLength(1);
-      expect(message.text()).toContain('email has been sent');
-    });
-  });
+test('AccountResetUI displays an error status when the request fails', async () => {
+  const { container } = render(
+    <AccountResetUI {...makeProps({
+      resetEndpoint: '/reset/1'
+    })}
+    />
+  );
+  fireEvent.click(container.querySelector('.account-reset-action .btn'));
+  await screen.findByText('Sending...');
+  rejectApiCall();
+  await screen.findByText('We were unable to send an email, please try again later.');
 });

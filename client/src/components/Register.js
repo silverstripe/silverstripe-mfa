@@ -212,10 +212,10 @@ class Register extends Component {
    * @return {Introduction}
    */
   renderIntroduction() {
-    const { canSkip, resources, endpoints: { skip }, showSubTitle } = this.props;
+    const { canSkip, resources, endpoints: { skip }, showSubTitle, IntroductionComponent } = this.props;
 
     return (
-      <Introduction
+      <IntroductionComponent
         canSkip={skip && canSkip}
         onSkip={this.handleSkip}
         resources={resources}
@@ -230,7 +230,7 @@ class Register extends Component {
    * @return {HTMLElement|null}
    */
   renderMethod() {
-    const { selectedMethod, showSubTitle } = this.props;
+    const { selectedMethod, showSubTitle, TitleComponent } = this.props;
     const { registerProps } = this.state;
 
     // Render nothing if there isn't a method chosen
@@ -247,7 +247,7 @@ class Register extends Component {
 
     return (
       <div>
-        { showSubTitle && <Title /> }
+        { showSubTitle && <TitleComponent /> }
         <RegistrationComponent
           {...registerProps}
           method={selectedMethod}
@@ -264,10 +264,10 @@ class Register extends Component {
    * @return {SelectMethod|null}
    */
   renderOptions() {
-    const { availableMethods, showSubTitle } = this.props;
+    const { availableMethods, showSubTitle, SelectMethodComponent } = this.props;
 
     return (
-      <SelectMethod
+      <SelectMethodComponent
         methods={availableMethods}
         showTitle={showSubTitle}
       />
@@ -275,12 +275,12 @@ class Register extends Component {
   }
 
   render() {
-    const { screen, onCompleteRegistration, showTitle, showSubTitle, completeMessage } = this.props;
+    const { screen, onCompleteRegistration, showTitle, showSubTitle, completeMessage, CompleteComponent } = this.props;
     const { ss: { i18n } } = window;
 
     if (screen === SCREEN_COMPLETE) {
       return (
-        <Complete
+        <CompleteComponent
           showTitle={showSubTitle}
           onComplete={onCompleteRegistration}
           message={completeMessage}
@@ -330,6 +330,10 @@ Register.propTypes = {
   resources: PropTypes.object,
   showTitle: PropTypes.bool,
   showSubTitle: PropTypes.bool,
+  IntroductionComponent: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
+  SelectMethodComponent: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
+  CompleteComponent: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
+  TitleComponent: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
 };
 
 Register.defaultProps = {
@@ -337,6 +341,10 @@ Register.defaultProps = {
   showTitle: true,
   showSubTitle: true,
   showIntroduction: true,
+  IntroductionComponent: Introduction,
+  SelectMethodComponent: SelectMethod,
+  CompleteComponent: Complete,
+  TitleComponent: Title
 };
 
 const mapStateToProps = state => {
