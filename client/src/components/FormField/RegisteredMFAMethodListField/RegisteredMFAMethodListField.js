@@ -110,7 +110,7 @@ class RegisteredMFAMethodListField extends Component {
    * @return {MethodListItem|null}
    */
   renderBackupMethod() {
-    const { backupMethod, backupCreatedDate, registeredMethods, readOnly } = this.props;
+    const { backupMethod, backupCreatedDate, registeredMethods, readOnly, MethodListItemComponent } = this.props;
 
     if (!backupMethod) {
       return null;
@@ -126,7 +126,7 @@ class RegisteredMFAMethodListField extends Component {
     }
 
     return (
-      <MethodListItem
+      <MethodListItemComponent
         method={registeredBackupMethod}
         createdDate={backupCreatedDate}
         canReset={!readOnly}
@@ -150,7 +150,7 @@ class RegisteredMFAMethodListField extends Component {
       return [];
     }
 
-    const { defaultMethod, readOnly } = this.props;
+    const { defaultMethod, readOnly, MethodListItemComponent } = this.props;
 
     return baseMethods
       .map(method => {
@@ -162,7 +162,7 @@ class RegisteredMFAMethodListField extends Component {
           canReset: !readOnly,
         };
 
-        return <MethodListItem {...props} />;
+        return <MethodListItemComponent {...props} />;
       });
   }
 
@@ -177,10 +177,11 @@ class RegisteredMFAMethodListField extends Component {
       backupMethod,
       endpoints,
       resources,
+      RegisterModalComponent
     } = this.props;
 
     return (
-      <RegisterModal
+      <RegisterModalComponent
         backupMethod={backupMethod}
         isOpen={this.state.modalOpen}
         toggle={this.handleToggleModal}
@@ -272,10 +273,14 @@ RegisteredMFAMethodListField.propTypes = {
   availableMethods: PropTypes.arrayOf(availableMethodShape),
   registeredMethods: PropTypes.arrayOf(registeredMethodShape),
   registrationScreen: PropTypes.number,
+  MethodListItemComponent: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
+  RegisterModalComponent: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
 };
 
 RegisteredMFAMethodListField.defaultProps = {
   initialAvailableMethods: [],
+  MethodListItemComponent: MethodListItem,
+  RegisterModalComponent: RegisterModal
 };
 
 RegisteredMFAMethodListField.childContextTypes = {

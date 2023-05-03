@@ -32,12 +32,12 @@ export const ActionList = ({ canSkip, onContinue, onSkip }) => {
   );
 };
 
-const Introduction = ({ canSkip, onContinue, onSkip, resources, showTitle }) => {
+const Introduction = ({ canSkip, onContinue, onSkip, resources, showTitle, TitleComponent }) => {
   const { ss: { i18n } } = window;
 
   return (
     <div>
-      { showTitle && <Title /> }
+      { showTitle && <TitleComponent /> }
 
       <h4 className="mfa-feature-list-title">
         { i18n._t('MultiFactorAuthentication.HOW_IT_WORKS', fallbacks['MultiFactorAuthentication.HOW_IT_WORKS']) }
@@ -127,10 +127,12 @@ Introduction.propTypes = {
     unique_image_url: PropTypes.string,
   }).isRequired,
   showTitle: PropTypes.bool,
+  TitleComponent: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
 };
 
 Introduction.defaultProps = {
   showTitle: true,
+  TitleComponent: Title
 };
 
 export { Introduction as Component };

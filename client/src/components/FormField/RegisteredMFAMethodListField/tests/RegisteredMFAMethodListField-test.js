@@ -1,186 +1,106 @@
-/* global jest, describe, it, expect */
+/* global jest, test, describe, it, expect */
 
 import React from 'react';
-import Enzyme, { shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
 import { Component as RegisteredMFAMethodListField } from '../RegisteredMFAMethodListField';
-import { loadComponent } from 'lib/Injector'; // eslint-disable-line
-
-Enzyme.configure({ adapter: new Adapter() });
+import { render } from '@testing-library/react';
 
 window.ss = {
-  i18n: { _t: (key, string) => string },
+  i18n: { _t: (key, string) => string, detectLocale: () => 'en', inject: () => {} },
 };
 
-const altMethod = { name: 'Method', urlSegment: 'method', component: '' };
-const backupMethod = { ...altMethod, name: 'Backup Method', urlSegment: 'backup' };
-const defaultMethod = { ...altMethod, name: 'Default Method', urlSegment: 'default' };
-const defaultMethodName = 'default';
+const altMethod = { name: 'Alt Method', urlSegment: 'altmethod', component: '' };
+const backupMethod = { name: 'Backup Method', urlSegment: 'backup', component: '' };
+const defaultMethod = { name: 'Default Method', urlSegment: 'default', component: '' };
 
-const RegisterComponent = () => <div />;
-const onUpdateAvailableMethods = jest.fn();
-const onSetRegisteredMethods = jest.fn();
-const onSetDefaultMethod = jest.fn();
+function makeProps(obj = {}) {
+  return {
+    defaultMethod: 'default',
+    backupMethod,
+    availableMethods: [],
+    registeredMethods: [],
+    RegisterModalComponent: () => <div className="test-register-modal" />,
+    MethodListItemComponent: ({ method }) => <div className="test-method-list-item" title={method.urlSegment} />,
+    onUpdateAvailableMethods: () => {},
+    onSetRegisteredMethods: () => {},
+    onSetDefaultMethod: () => {},
+    ...obj
+  };
+}
 
 import translationStrings from '../../../../../lang/src/en.json';
 
-describe('RegisteredMFAMethodListField', () => {
-  describe('baseMethods()', () => {
-    it('filters out backup methods', () => {
-      const registeredMethods = [altMethod, backupMethod, defaultMethod];
+test('RegisteredMFAMethodListField filters out backup methods', () => {
+  const { container } = render(
+    <RegisteredMFAMethodListField {...makeProps({
+      registeredMethods: [altMethod, backupMethod, defaultMethod]
+    })}
+    />
+  );
+  const methods = container.querySelectorAll('.method-list .test-method-list-item');
+  expect(methods).toHaveLength(2);
+  expect(methods[0].getAttribute('title')).toBe('altmethod');
+  expect(methods[1].getAttribute('title')).toBe('default');
+});
 
-      const field = shallow(
-        <RegisteredMFAMethodListField
-          backupMethod={backupMethod}
-          defaultMethod={defaultMethodName}
-          registeredMethods={registeredMethods}
-          RegisterComponent={RegisterComponent}
-          onUpdateAvailableMethods={onUpdateAvailableMethods}
-          onSetRegisteredMethods={onSetRegisteredMethods}
-          onSetDefaultMethod={onSetDefaultMethod}
-        />
-      );
+test('RegisteredMFAMethodListField renders a button when there are available methods', () => {
+  const { container } = render(
+    <RegisteredMFAMethodListField {...makeProps({
+      availableMethods: [altMethod]
+    })}
+    />
+  );
+  expect(container.querySelector('.registered-mfa-method-list-field__button')).not.toBeNull();
+});
 
-      expect(field.instance().getBaseMethods()).toHaveLength(2);
-    });
-  });
+test('RegisteredMFAMethodListField does not render a button when there are no available methods', () => {
+  const { container } = render(
+    <RegisteredMFAMethodListField {...makeProps({
+      availableMethods: []
+    })}
+    />
+  );
+  expect(container.querySelector('.registered-mfa-method-list-field__button')).toBeNull();
+});
 
-  describe('renderAddButton', () => {
-    it('renders a button', () => {
-      const availableMethods = [altMethod];
+test('RegisteredMFAMethodListField doesn\'t render a button in read-only mode', () => {
+  const { container } = render(
+    <RegisteredMFAMethodListField {...makeProps({
+      availableMethods: [altMethod],
+      readOnly: true
+    })}
+    />
+  );
+  expect(container.querySelector('.registered-mfa-method-list-field__button')).toBeNull();
+});
 
-      const wrapper = shallow(
-        <RegisteredMFAMethodListField
-          backupMethod={backupMethod}
-          defaultMethod={defaultMethodName}
-          availableMethods={availableMethods}
-          registeredMethods={[]}
-          RegisterComponent={RegisterComponent}
-          onUpdateAvailableMethods={onUpdateAvailableMethods}
-          onSetRegisteredMethods={onSetRegisteredMethods}
-          onSetDefaultMethod={onSetDefaultMethod}
-        />
-      );
+test('RegisteredMFAMethodListField renders a button with the correct label', () => {
+  const { container } = render(
+    <RegisteredMFAMethodListField {...makeProps({
+      availableMethods: [altMethod]
+    })}
+    />
+  );
+  expect(container.querySelector('.registered-mfa-method-list-field__button').textContent).toBe(translationStrings['MultiFactorAuthentication.ADD_FIRST_METHOD']);
+});
 
-      expect(wrapper.find('.registered-mfa-method-list-field__button')).toHaveLength(1);
-    });
+test('RegisteredMFAMethodListField renders a button with the correct label when there are already registered methods', () => {
+  const { container } = render(
+    <RegisteredMFAMethodListField {...makeProps({
+      availableMethods: [altMethod],
+      registeredMethods: [defaultMethod]
+    })}
+    />
+  );
+  expect(container.querySelector('.registered-mfa-method-list-field__button').textContent).toBe(translationStrings['MultiFactorAuthentication.ADD_ANOTHER_METHOD']);
+});
 
-    it('doesn\'t render a button in read-only mode', () => {
-      const availableMethods = [altMethod];
-
-      const wrapper = shallow(
-        <RegisteredMFAMethodListField
-          backupMethod={backupMethod}
-          defaultMethod={defaultMethodName}
-          availableMethods={availableMethods}
-          registeredMethods={[]}
-          readOnly
-          RegisterComponent={RegisterComponent}
-          onUpdateAvailableMethods={onUpdateAvailableMethods}
-          onSetRegisteredMethods={onSetRegisteredMethods}
-          onSetDefaultMethod={onSetDefaultMethod}
-        />
-      );
-
-      expect(wrapper.find('.registered-mfa-method-list-field__button')).toHaveLength(0);
-    });
-
-
-    it('provides a contextual message depending on registered methods', () => {
-      const availableMethods = [altMethod];
-
-      const withoutRegisteredMethods = shallow(
-        <RegisteredMFAMethodListField
-          backupMethod={backupMethod}
-          defaultMethod={defaultMethodName}
-          availableMethods={availableMethods}
-          registeredMethods={[]}
-          RegisterComponent={RegisterComponent}
-          onUpdateAvailableMethods={onUpdateAvailableMethods}
-          onSetRegisteredMethods={onSetRegisteredMethods}
-          onSetDefaultMethod={onSetDefaultMethod}
-        />
-      );
-
-      expect(withoutRegisteredMethods
-        .find('.registered-mfa-method-list-field__button')
-        .shallow()
-        .text()
-      ).toBe(translationStrings['MultiFactorAuthentication.ADD_FIRST_METHOD']);
-
-      const withRegisteredMethods = shallow(
-        <RegisteredMFAMethodListField
-          backupMethod={backupMethod}
-          defaultMethod={defaultMethodName}
-          availableMethods={availableMethods}
-          registeredMethods={[defaultMethod]}
-          RegisterComponent={RegisterComponent}
-          onUpdateAvailableMethods={onUpdateAvailableMethods}
-          onSetRegisteredMethods={onSetRegisteredMethods}
-          onSetDefaultMethod={onSetDefaultMethod}
-        />
-      );
-
-      expect(withRegisteredMethods
-        .find('.registered-mfa-method-list-field__button')
-        .shallow()
-        .text()
-      ).toBe(translationStrings['MultiFactorAuthentication.ADD_ANOTHER_METHOD']);
-    });
-  });
-
-  describe('render()', () => {
-    it('renders the read-only view when readOnly is passed', () => {
-      const registeredMethods = [altMethod];
-
-      const field = shallow(
-        <RegisteredMFAMethodListField
-          readOnly
-          registeredMethods={registeredMethods}
-          RegisterComponent={RegisterComponent}
-          onUpdateAvailableMethods={onUpdateAvailableMethods}
-          onSetRegisteredMethods={onSetRegisteredMethods}
-          onSetDefaultMethod={onSetDefaultMethod}
-        />
-      );
-
-
-      expect(field.hasClass('registered-mfa-method-list-field--read-only')).toEqual(true);
-    });
-
-    it('renders a button when there are registerable methods', () => {
-      const availableMethods = [altMethod];
-
-      const withAvailableMethods = shallow(
-        <RegisteredMFAMethodListField
-          backupMethod={backupMethod}
-          defaultMethod={defaultMethodName}
-          availableMethods={availableMethods}
-          registeredMethods={[]}
-          RegisterComponent={RegisterComponent}
-          onUpdateAvailableMethods={onUpdateAvailableMethods}
-          onSetRegisteredMethods={onSetRegisteredMethods}
-          onSetDefaultMethod={onSetDefaultMethod}
-        />
-      );
-
-      expect(withAvailableMethods.find('.registered-mfa-method-list-field__button'))
-        .toHaveLength(1);
-
-      const withoutAvailableMethods = shallow(
-        <RegisteredMFAMethodListField
-          backupMethod={backupMethod}
-          defaultMethod={defaultMethodName}
-          registeredMethods={[]}
-          RegisterComponent={RegisterComponent}
-          onUpdateAvailableMethods={onUpdateAvailableMethods}
-          onSetRegisteredMethods={onSetRegisteredMethods}
-          onSetDefaultMethod={onSetDefaultMethod}
-        />
-      );
-
-      expect(withoutAvailableMethods.find('.registered-mfa-method-list-field__button'))
-        .toHaveLength(0);
-    });
-  });
+test('RegisteredMFAMethodListField renders the read-only view when readOnly is passed', () => {
+  const { container } = render(
+    <RegisteredMFAMethodListField {...makeProps({
+      registeredMethods: [altMethod],
+      readOnly: true
+    })}
+    />
+  );
+  expect(container.querySelector('.registered-mfa-method-list-field--read-only')).not.toBeNull();
 });

@@ -1,18 +1,44 @@
-/* global jest, describe, it, expect */
+/* global jest, test, describe, it, expect */
 
-jest.mock('lib/Injector');
-
-// eslint-disable-next-line no-unused-vars
-import fetch from 'isomorphic-fetch';
 import React from 'react';
-import Enzyme, { shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
 import { Component as Verify } from '../Verify';
-import SelectMethod from '../Verify/SelectMethod';
-import LoadingError from 'components/LoadingError';
-import { loadComponent } from 'lib/Injector'; // eslint-disable-line
+import { render, screen, fireEvent } from '@testing-library/react';
 
-Enzyme.configure({ adapter: new Adapter() });
+let lastApiCallArgs;
+let resolveApiCall;
+let rejectApiCall;
+
+jest.mock('lib/api', () => ({
+  __esModule: true,
+  default: (endpoint, method, body, headers) => {
+    lastApiCallArgs = { endpoint, method, body, headers };
+    return new Promise((resolve, reject) => {
+      resolveApiCall = resolve;
+      rejectApiCall = reject;
+    });
+  }
+}));
+
+let lastInjectorLoadComponentArg;
+
+jest.mock('lib/Injector', () => ({
+  __esModule: true,
+  loadComponent: (component) => {
+    lastInjectorLoadComponentArg = component;
+    return (props) => {
+      const dataProps = Object.keys(props).map(k => `${k}=${props[k]}`).join(',');
+      return <div
+        data-component={component}
+        data-props={dataProps}
+        onClick={() => props.onCompleteVerification({
+        my: 'verifydata'
+      })}
+      >
+        {props.moreOptionsControl}
+      </div>;
+    };
+  }
+}));
 
 window.ss = {
   i18n: {
@@ -24,399 +50,273 @@ window.ss = {
   },
 };
 
-const endpoints = {
-  verify: '/fake/{urlSegment}',
-};
+function makeProps(obj = {}) {
+  return {
+    endpoints: {
+      verify: '/fake/{urlSegment}',
+    },
+    registeredMethods: [
+      {
+        urlSegment: 'aye',
+        name: 'aye',
+        component: 'TestMethod',
+      },
+      {
+        urlSegment: 'bee',
+        name: 'bee',
+        component: 'TestMethod',
+      },
+    ],
+    SelectMethodComponent: ({ methods }) => (
+      <div data-testid="test-select-method">
+        {methods.map(method => <div key={method.name} data-testid="test-select-method-method" data-method={method.name} />)}
+      </div>
+    ),
+    onCompleteVerification: () => null,
+    ...obj
+  };
+}
 
-const mockRegisteredMethods = [
-  {
-    urlSegment: 'aye',
-    name: 'aye',
-    component: 'Test',
-  },
-  {
-    urlSegment: 'bee',
-    name: 'bee',
-    component: 'Test',
-  },
-];
-
-const fetchMock = jest.spyOn(global, 'fetch');
-
-describe('Verify', () => {
-  beforeEach(() => {
-    fetchMock.mockImplementation(() => Promise.resolve({
-      status: 200,
-      json: () => Promise.resolve({}),
-    }));
-    fetchMock.mockClear();
-    loadComponent.mockClear();
+test('Verify chooses a default method if none is given', async () => {
+  const { container } = render(
+    <Verify {...makeProps()}/>
+  );
+  resolveApiCall({
+    json: () => Promise.resolve({}),
   });
+  await screen.findByText('Verify with {aye}');
+  const titles = container.querySelectorAll('.mfa-section-title');
+  expect(titles).toHaveLength(1);
+  expect(titles[0].textContent).toBe('Verify with {aye}');
+});
 
-  it.skip('? if there are no registered methods', () => {
-    // Currently it renders nothing but there's undefined behaviour here
-    // TODO Update this test when there's defined behaviour
+test('Verify chooses a given default method', async () => {
+  const { container } = render(
+    <Verify {...makeProps({
+      defaultMethod: 'bee'
+    })}
+    />
+  );
+  resolveApiCall({
+    json: () => Promise.resolve({}),
   });
+  await screen.findByText('Verify with {bee}');
+  const titles = container.querySelectorAll('.mfa-section-title');
+  expect(titles).toHaveLength(1);
+  expect(titles[0].textContent).toBe('Verify with {bee}');
+});
 
-  it('chooses a default method if none is given', () => {
-    const wrapper = shallow(
-      <Verify
-        endpoints={endpoints}
-        registeredMethods={mockRegisteredMethods}
-      />
-    );
-
-    expect(wrapper.state('selectedMethod')).toEqual({
-      urlSegment: 'aye',
-      name: 'aye',
-      component: 'Test',
-    });
+test('Verify fetches schema from the given login endpoint', async () => {
+  render(
+    <Verify {...makeProps()}/>
+  );
+  resolveApiCall({
+    json: () => Promise.resolve({}),
   });
-
-  it('respects a given default method', () => {
-    const wrapper = shallow(
-      <Verify
-        endpoints={endpoints}
-        registeredMethods={mockRegisteredMethods}
-        defaultMethod="bee"
-      />
-    );
-
-    expect(wrapper.state('selectedMethod')).toEqual({
-      urlSegment: 'bee',
-      name: 'bee',
-      component: 'Test',
-    });
+  expect(lastApiCallArgs).toStrictEqual({
+    body: undefined,
+    endpoint: '/fake/aye',
+    headers: undefined,
+    method: undefined
   });
+  // Do this final await to prevent "Warning: An update to Verify inside a test was not wrapped in act(...)"
+  await screen.findByText('Verify with {aye}');
+});
 
-  it('fetches schema from the given login endpoint', () => {
-    shallow(
-      <Verify
-        endpoints={endpoints}
-        registeredMethods={mockRegisteredMethods}
-      />
-    );
-
-    expect(fetchMock.mock.calls).toHaveLength(1);
-    expect(fetchMock.mock.calls[0][0]).toEqual('/fake/aye');
+test('Verify loads the default method component', async () => {
+  render(
+    <Verify {...makeProps()}/>
+  );
+  resolveApiCall({
+    json: () => Promise.resolve({}),
   });
+  await screen.findByText('Verify with {aye}');
+  expect(lastInjectorLoadComponentArg).toBe('TestMethod');
+});
 
-  it('loads the default method component', (done) => {
-    const wrapper = shallow(
-      <Verify
-        endpoints={endpoints}
-        registeredMethods={mockRegisteredMethods}
-      />
-    );
-
-    expect(loadComponent.mock.calls).toHaveLength(1);
-    expect(loadComponent.mock.calls[0]).toEqual(['Test']);
-
-    // Defer testing of final render state so that we don't inspect loading state
-    setTimeout(() => {
-      expect(wrapper.find('Test')).toHaveLength(1);
-      done();
-    });
+test('Verify forwards API response as props to injected component', async () => {
+  const { container } = render(
+    <Verify {...makeProps()}/>
+  );
+  resolveApiCall({
+    json: () => Promise.resolve({
+      myProp: 1,
+      anotherProp: 'two',
+    }),
   });
+  await screen.findByText('Verify with {aye}');
+  const method = container.querySelector('[data-component="TestMethod"]');
+  expect(method.getAttribute('data-props')).toContain('myProp=1,anotherProp=two');
+});
 
-  it('forwards API response as props to injected component', (done) => {
-    fetchMock.mockImplementation(() => Promise.resolve({
-      json: () => Promise.resolve({
-        myProp: 1,
-        anotherProp: 'two',
-      }),
-    }));
-
-    const wrapper = shallow(
-      <Verify
-        endpoints={endpoints}
-        registeredMethods={mockRegisteredMethods}
-      />
-    );
-
-    // Defer testing of final render state so that we don't inspect loading state
-    setTimeout(() => {
-      expect(wrapper.find('Test').props()).toEqual(expect.objectContaining({
-        myProp: 1,
-        anotherProp: 'two',
-      }));
-      done();
-    });
+test('Verify handles a CSRF token provided with the props and adds it to state', async () => {
+  const { container } = render(
+    <Verify {...makeProps()}/>
+  );
+  resolveApiCall({
+    json: () => Promise.resolve({
+      SecurityID: 'test',
+    }),
   });
-
-  it('handles a csrf token provided with the props and adds it to state', (done) => {
-    fetchMock.mockImplementation(() => Promise.resolve({
-      json: () => Promise.resolve({
-        SecurityID: 'test',
-        myProp: 1,
-        anotherProp: 'two',
-      }),
-    }));
-
-    const wrapper = shallow(
-      <Verify
-        endpoints={endpoints}
-        registeredMethods={mockRegisteredMethods}
-      />
-    );
-
-    // Defer testing of final render state so that we don't inspect loading state
-    setTimeout(() => {
-      expect(wrapper.find('Test').props()).toEqual(expect.objectContaining({
-        myProp: 1,
-        anotherProp: 'two',
-      }));
-      expect(wrapper.state('token')).toBe('test');
-      done();
-    });
+  await screen.findByText('Verify with {aye}');
+  const method = container.querySelector('[data-component="TestMethod"]');
+  fireEvent.click(method);
+  resolveApiCall({
+    status: 200,
+    json: () => Promise.resolve({ foo: 'bar' })
   });
-
-  it('provides a control to choose other methods to the injected component', (done) => {
-    const wrapper = shallow(
-      <Verify
-        endpoints={endpoints}
-        registeredMethods={mockRegisteredMethods}
-      />
-    );
-
-    // Defer testing of final render state so that we don't inspect loading state
-    setTimeout(() => {
-      expect(shallow(
-        wrapper.find('Test').prop('moreOptionsControl')
-      ).matchesElement(<a>More options</a>)).toBe(true);
-      done();
-    });
+  expect(lastApiCallArgs).toStrictEqual({
+    body: '{"my":"verifydata"}',
+    endpoint: '/fake/aye?SecurityID=test',
+    headers: undefined,
+    method: 'POST'
   });
+});
 
-  it('does not provides a control to choose other methods to the injected component when there are too few methods', (done) => {
-    const wrapper = shallow(
-      <Verify
-        endpoints={endpoints}
-        registeredMethods={mockRegisteredMethods.slice(0, 1)}
-      />
-    );
-
-    // Defer testing of final render state so that we don't inspect loading state
-    setTimeout(() => {
-      expect(wrapper.find('Test').prop('moreOptionsControl')).toBeNull();
-      done();
-    });
+test('Verify provides a control to choose other methods to the injected component', async () => {
+  const { container } = render(
+    <Verify {...makeProps()}/>
+  );
+  resolveApiCall({
+    json: () => Promise.resolve({}),
   });
+  await screen.findByText('Verify with {aye}');
+  expect(container.querySelector('a.btn-secondary').textContent).toBe('More options');
+});
 
-  it('handles a click event on the show other methods control', (done) => {
-    const wrapper = shallow(
-      <Verify
-        endpoints={endpoints}
-        registeredMethods={mockRegisteredMethods}
-      />
-    );
-
-    // Defer testing of final render state so that we don't inspect loading state
-    setTimeout(() => {
-      const moreOptionsControl = shallow(wrapper.find('Test').prop('moreOptionsControl'));
-      const preventDefault = jest.fn();
-
-      moreOptionsControl.simulate('click', { preventDefault });
-
-      expect(preventDefault.mock.calls).toHaveLength(1);
-      expect(wrapper.state('showOtherMethods')).toBe(true);
-      expect(wrapper.find(SelectMethod)).toHaveLength(1);
-      done();
-    });
+test('Verify does not provides a control to choose other methods to the injected component when there are too few methods', async () => {
+  const { container } = render(
+    <Verify {...makeProps({
+      registeredMethods: [makeProps().registeredMethods[0]]
+    })}
+    />
+  );
+  resolveApiCall({
+    json: () => Promise.resolve({}),
   });
+  await screen.findByText('Verify with {aye}');
+  expect(container.querySelector('a.btn-secondary')).toBeNull();
+});
 
-  it('will use the login endpoint to verify a completed login', (done) => {
-    const onCompleteVerification = jest.fn();
-    const wrapper = shallow(
-      <Verify
-        endpoints={endpoints}
-        registeredMethods={mockRegisteredMethods}
-        onCompleteVerification={onCompleteVerification}
-      />
-    );
-
-    setTimeout(() => {
-      expect(fetchMock.mock.calls).toHaveLength(1);
-      const completionFunction = wrapper.find('Test').prop('onCompleteVerification');
-      completionFunction({ test: 1 });
-      expect(fetchMock.mock.calls).toHaveLength(2);
-      expect(fetchMock.mock.calls[1]).toEqual(['/fake/aye', {
-        credentials: 'same-origin',
-        method: 'POST',
-        headers: {},
-        body: '{"test":1}',
-      }]);
-      setTimeout(() => {
-        expect(onCompleteVerification.mock.calls).toHaveLength(1);
-        done();
-      });
-    });
+test('Verify handles a click event on the show other methods control', async () => {
+  render(
+    <Verify {...makeProps()}/>
+  );
+  resolveApiCall({
+    json: () => Promise.resolve({}),
   });
-
-  it('will add a token from state when calling the verify endpoint', (done) => {
-    const onCompleteVerification = jest.fn();
-    const wrapper = shallow(
-      <Verify
-        endpoints={endpoints}
-        registeredMethods={mockRegisteredMethods}
-        onCompleteVerification={onCompleteVerification}
-      />
-    );
-
-    setTimeout(() => {
-      expect(fetchMock.mock.calls).toHaveLength(1);
-      wrapper.setState({
-        token: 'test',
-      });
-      const completionFunction = wrapper.find('Test').prop('onCompleteVerification');
-      completionFunction({ test: 1 });
-      expect(fetchMock.mock.calls).toHaveLength(2);
-      expect(fetchMock.mock.calls[1][0]).toEqual('/fake/aye?SecurityID=test');
-      done();
-    });
+  await screen.findByText('Verify with {aye}');
+  fireEvent.click(screen.getByText('More options'));
+  resolveApiCall({
+    status: 202
   });
+  const method = await screen.findByTestId('test-select-method-method');
+  expect(method.getAttribute('data-method')).toBe('bee');
+});
 
-  it('will provide a message from any unverified login to the injected component', done => {
-    const onCompleteVerification = jest.fn();
-    const wrapper = shallow(
-      <Verify
-        endpoints={endpoints}
-        registeredMethods={mockRegisteredMethods}
-        onCompleteVerification={onCompleteVerification}
-      />
-    );
-
-    setTimeout(() => {
-      expect(fetchMock.mock.calls).toHaveLength(1);
-
-      fetchMock.mockImplementation(() => Promise.resolve({
-        status: 400,
-        json: () => Promise.resolve({
-          message: 'It was a failure',
-        }),
-      }));
-      fetchMock.mockClear();
-
-      const completionFunction = wrapper.find('Test').prop('onCompleteVerification');
-      completionFunction({ test: 1 });
-      expect(fetchMock.mock.calls).toHaveLength(1);
-      expect(fetchMock.mock.calls[0]).toEqual(['/fake/aye', {
-        credentials: 'same-origin',
-        method: 'POST',
-        headers: {},
-        body: '{"test":1}',
-      }]);
-      setTimeout(() => {
-        expect(onCompleteVerification.mock.calls).toHaveLength(0);
-        expect(wrapper.find('Test').props()).toEqual(expect.objectContaining({
-          error: 'It was a failure',
-        }));
-        done();
-      });
-    });
+test('Verify will use the login endpoint to verify a completed login', async () => {
+  let doResolve;
+  const promise = new Promise((resolve) => {
+    doResolve = resolve;
   });
-
-  it('will provide a try-again message for a 429 rate limiting code', done => {
-    const onCompleteVerification = jest.fn();
-    const wrapper = shallow(
-      <Verify
-        endpoints={endpoints}
-        registeredMethods={mockRegisteredMethods}
-        onCompleteVerification={onCompleteVerification}
-      />
-    );
-
-    setTimeout(() => {
-      expect(fetchMock.mock.calls).toHaveLength(1);
-
-      fetchMock.mockImplementation(() => Promise.resolve({
-        status: 429,
-        json: () => Promise.resolve({
-          message: 'Something went wrong. Please try again.',
-        }),
-      }));
-      fetchMock.mockClear();
-
-      const completionFunction = wrapper.find('Test').prop('onCompleteVerification');
-      completionFunction({ test: 1 });
-      expect(fetchMock.mock.calls).toHaveLength(1);
-      expect(fetchMock.mock.calls[0]).toEqual(['/fake/aye', {
-        credentials: 'same-origin',
-        method: 'POST',
-        headers: {},
-        body: '{"test":1}',
-      }]);
-      setTimeout(() => {
-        expect(onCompleteVerification.mock.calls).toHaveLength(0);
-        expect(wrapper.find('Test').props()).toEqual(expect.objectContaining({
-          error: 'Something went wrong. Please try again.',
-        }));
-        done();
-      });
-    });
+  const onCompleteVerification = jest.fn(() => doResolve());
+  const { container } = render(
+    <Verify {...makeProps({
+      onCompleteVerification
+    })}
+    />
+  );
+  resolveApiCall({
+    json: () => Promise.resolve({}),
   });
-
-  it('will provide an unknown message for a 500 rate limiting code', done => {
-    const onCompleteVerification = jest.fn();
-    const wrapper = shallow(
-      <Verify
-        endpoints={endpoints}
-        registeredMethods={mockRegisteredMethods}
-        onCompleteVerification={onCompleteVerification}
-      />
-    );
-
-    setTimeout(() => {
-      expect(fetchMock.mock.calls).toHaveLength(1);
-
-      fetchMock.mockImplementation(() => Promise.resolve({
-        status: 500,
-        json: () => Promise.resolve({
-          message: 'An unknown error occurred.',
-        }),
-      }));
-      fetchMock.mockClear();
-
-      const completionFunction = wrapper.find('Test').prop('onCompleteVerification');
-      completionFunction({ test: 1 });
-      expect(fetchMock.mock.calls).toHaveLength(1);
-      expect(fetchMock.mock.calls[0]).toEqual(['/fake/aye', {
-        credentials: 'same-origin',
-        method: 'POST',
-        headers: {},
-        body: '{"test":1}',
-      }]);
-      setTimeout(() => {
-        expect(onCompleteVerification.mock.calls).toHaveLength(0);
-        expect(wrapper.find('Test').props()).toEqual(expect.objectContaining({
-          error: 'An unknown error occurred.',
-        }));
-        done();
-      });
-    });
+  await screen.findByText('Verify with {aye}');
+  const method = container.querySelector('[data-component="TestMethod"]');
+  fireEvent.click(method);
+  resolveApiCall({
+    status: 200,
+    json: () => Promise.resolve({ foo: 'bar' })
   });
+  await promise;
+  expect(onCompleteVerification).toHaveBeenCalled();
+});
 
-  describe('renderSelectedMethod()', () => {
-    it('renders an unavailable screen when the selected method is unavailable', done => {
-      const wrapper = shallow(
-        <Verify
-          endpoints={endpoints}
-          registeredMethods={mockRegisteredMethods}
-          isAvailable={() => false}
-          getUnavailableMessage={() => 'There is no spoon'}
-        />
-      );
-
-      // Defer testing of final render state so that we don't inspect loading state
-      setTimeout(() => {
-        // Enable a selected method
-        wrapper.instance().setState({
-          selectedMethod: mockRegisteredMethods[0],
-        });
-
-        expect(wrapper.find(LoadingError)).toHaveLength(1);
-        done();
-      });
-    });
+test('Verify will provide a message from any unverified login to the injected component', async () => {
+  const { container } = render(
+    <Verify {...makeProps()}/>
+  );
+  resolveApiCall({
+    json: () => Promise.resolve({}),
   });
+  await screen.findByText('Verify with {aye}');
+  const method = container.querySelector('[data-component="TestMethod"]');
+  fireEvent.click(method);
+  resolveApiCall({
+    status: 400,
+    json: () => Promise.resolve({
+      message: 'It was a failure',
+    })
+  });
+  await screen.findByText('Verify with {aye}');
+  const methods = container.querySelectorAll('[data-component="TestMethod"]');
+  expect(methods).toHaveLength(1);
+  expect(methods[0].getAttribute('data-props')).toContain('error=It was a failure');
+});
+
+test('Verify will provide a try-again message for a 429 rate limiting code', async () => {
+  const { container } = render(
+    <Verify {...makeProps()}/>
+  );
+  resolveApiCall({
+    json: () => Promise.resolve({}),
+  });
+  await screen.findByText('Verify with {aye}');
+  const method = container.querySelector('[data-component="TestMethod"]');
+  fireEvent.click(method);
+  resolveApiCall({
+    status: 429,
+    json: () => Promise.resolve({
+      message: 'Something went wrong. Please try again.',
+    })
+  });
+  await screen.findByText('Verify with {aye}');
+  const methods = container.querySelectorAll('[data-component="TestMethod"]');
+  expect(methods).toHaveLength(1);
+  expect(methods[0].getAttribute('data-props')).toContain('error=Something went wrong. Please try again.');
+});
+
+test('Verify will provide an unknown message for a 500 rate limiting code', async () => {
+  const { container } = render(
+    <Verify {...makeProps()}/>
+  );
+  resolveApiCall({
+    json: () => Promise.resolve({}),
+  });
+  await screen.findByText('Verify with {aye}');
+  const method = container.querySelector('[data-component="TestMethod"]');
+  fireEvent.click(method);
+  resolveApiCall({
+    status: 500,
+    json: () => Promise.resolve({
+      message: 'An unknown error occurred.',
+    })
+  });
+  await screen.findByText('Verify with {aye}');
+  const methods = container.querySelectorAll('[data-component="TestMethod"]');
+  expect(methods).toHaveLength(1);
+  expect(methods[0].getAttribute('data-props')).toContain('error=An unknown error occurred.');
+});
+
+test('Verify renders an unavailable screen when the selected method is unavailable', async () => {
+  render(
+    <Verify {...makeProps({
+      isAvailable: () => false,
+      getUnavailableMessage: () => 'There is no spoon'
+    })}
+    />
+  );
+  resolveApiCall({
+    json: () => Promise.resolve({}),
+  });
+  const el = await screen.findByText('There is no spoon');
+  expect(el.parentNode.classList).toContain('mfa-method--unavailable');
 });

@@ -51,13 +51,13 @@ class MethodListItem extends PureComponent {
   }
 
   renderRemove() {
-    const { canRemove, method } = this.props;
+    const { canRemove, method, RemoveComponent } = this.props;
 
     if (!canRemove) {
       return null;
     }
 
-    return <Remove method={method} />;
+    return <RemoveComponent method={method} />;
   }
 
   renderReset() {
@@ -104,13 +104,13 @@ class MethodListItem extends PureComponent {
    * @returns {SetDefault}
    */
   renderSetAsDefault() {
-    const { isDefaultMethod, isBackupMethod, method } = this.props;
+    const { isDefaultMethod, isBackupMethod, method, SetDefaultComponent } = this.props;
 
     if (isDefaultMethod || isBackupMethod) {
       return null;
     }
 
-    return <SetDefault method={method} />;
+    return <SetDefaultComponent method={method} />;
   }
 
 
@@ -123,9 +123,9 @@ class MethodListItem extends PureComponent {
 
     return (
       <div>
-        { this.renderRemove() }
-        { this.renderReset() }
-        { this.renderSetAsDefault() }
+      { this.renderRemove() }
+      { this.renderReset() }
+      { this.renderSetAsDefault() }
       </div>
     );
   }
@@ -156,8 +156,8 @@ class MethodListItem extends PureComponent {
 
     return (
       <Tag className={classes}>
-        { this.renderNameAndStatus() }
-        { this.renderControls() }
+      { this.renderNameAndStatus() }
+      { this.renderControls() }
       </Tag>
     );
   }
@@ -174,6 +174,8 @@ MethodListItem.propTypes = {
   createdDate: PropTypes.string,
   className: PropTypes.string,
   tag: PropTypes.string,
+  RemoveComponent: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
+  SetDefaultComponent: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
 };
 
 MethodListItem.defaultProps = {
@@ -182,6 +184,8 @@ MethodListItem.defaultProps = {
   canRemove: false,
   canReset: false,
   tag: 'li',
+  RemoveComponent: Remove,
+  SetDefaultComponent: SetDefault
 };
 
 export default MethodListItem;

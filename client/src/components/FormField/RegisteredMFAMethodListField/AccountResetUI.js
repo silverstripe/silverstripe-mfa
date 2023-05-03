@@ -111,11 +111,12 @@ class AccountResetUI extends Component {
    */
   renderSending() {
     const { ss: { i18n } } = window;
+    const { LoadingIndicatorComponent } = this.props;
 
     return (
       <p className="account-reset-action account-reset-action--sending">
         <span className="account-reset-action__icon">
-          <LoadingIndicator size="32px" />
+          <LoadingIndicatorComponent size="32px" />
         </span>
         <span className="account-reset-action__message">
           {
@@ -236,6 +237,11 @@ class AccountResetUI extends Component {
 
 AccountResetUI.propTypes = {
   resetEndpoint: PropTypes.string,
+  LoadingIndicatorComponent: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
+};
+
+AccountResetUI.defaultProps = {
+  LoadingIndicatorComponent: LoadingIndicator,
 };
 
 export default AccountResetUI;

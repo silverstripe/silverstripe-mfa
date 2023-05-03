@@ -1,11 +1,7 @@
-/* global jest, describe, it, expect */
+/* global jest, test, describe, it, expect */
 import React from 'react';
-import Enzyme, { shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
 import MethodListItem from '../MethodListItem';
-import Remove from '../MethodListItem/Remove';
-
-Enzyme.configure({ adapter: new Adapter() });
+import { render } from '@testing-library/react';
 
 window.ss = {
   i18n: {
@@ -15,49 +11,50 @@ window.ss = {
   },
 };
 
-describe('MethodListitem', () => {
-  describe('getStatusMessage()', () => {
-    it('identifies default methods', () => {
-      const wrapper = shallow(
-        <MethodListItem
-          method={{ urlSegment: 'foo', }}
-          isDefaultMethod
-        />
-      );
+function makeProps(obj = {}) {
+  return {
+    method: {
+     urlSegment: 'foo'
+    },
+    RemoveComponent: () => <div className="test-remove" />,
+    SetDefaultComponent: () => <div className="test-set-default" />,
+    ...obj
+  };
+}
 
-      expect(wrapper.instance().getStatusMessage()).toContain('(default)');
-    });
+test('MethodListitem identifies default methods', () => {
+  const { container } = render(
+    <MethodListItem {...makeProps({
+      isDefaultMethod: true
+    })}
+    />
+  );
+  expect(container.querySelector('.registered-method-list-item').textContent).toBe('{method} (default): Registered');
+});
 
-    it('identifies backup methods', () => {
-      const wrapper = shallow(
-        <MethodListItem
-          method={{ urlSegment: 'foo', }}
-          isBackupMethod
-        />
-      );
+test('MethodListItem identifies backup methods', () => {
+  const { container } = render(
+    <MethodListItem {...makeProps({
+      isBackupMethod: true
+    })}
+    />
+  );
+  expect(container.querySelector('.registered-method-list-item').textContent).toBe('{method}: Created {date}');
+});
 
-      expect(wrapper.instance().getStatusMessage()).toContain('Created');
-    });
-  });
-  describe('render()', () => {
-    it('does not render remove buttons by default', () => {
-      const wrapper = shallow(
-        <MethodListItem
-          method={{ urlSegment: 'foo', }}
-        />
-      );
+test('MethodListItem does not render remove buttons by default', () => {
+  const { container } = render(
+    <MethodListItem {...makeProps()}/>
+  );
+  expect(container.querySelector('.test-remove')).toBeNull();
+});
 
-      expect(wrapper.find(Remove)).toHaveLength(0);
-    });
-    it('does render remove buttons if canRemove is true', () => {
-      const wrapper = shallow(
-        <MethodListItem
-          method={{ urlSegment: 'foo', }}
-          canRemove
-        />
-      );
-
-      expect(wrapper.find(Remove)).toHaveLength(1);
-    });
-  });
+test('MethodListItem does render remove buttons if canRemove is true', () => {
+  const { container } = render(
+    <MethodListItem {...makeProps({
+      canRemove: true,
+    })}
+    />
+  );
+  expect(container.querySelector('.test-remove')).not.toBeNull();
 });

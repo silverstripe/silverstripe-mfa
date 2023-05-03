@@ -103,7 +103,7 @@ class SelectMethod extends Component {
   }
 
   render() {
-    const { methods, showTitle } = this.props;
+    const { methods, showTitle, TitleComponent, MethodTileComponent } = this.props;
     const { highlightedMethod } = this.state;
 
     const classes = classnames('mfa-method-tile-group', {
@@ -112,11 +112,11 @@ class SelectMethod extends Component {
 
     return (
       <div>
-        {showTitle && <Title />}
+        {showTitle && <TitleComponent />}
 
         <ul className={classes}>
           {methods.map(method => (
-            <MethodTile
+            <MethodTileComponent
               isActive={highlightedMethod === method}
               key={method.urlSegment}
               method={method}
@@ -138,10 +138,14 @@ SelectMethod.propTypes = {
   onSelectMethod: PropTypes.func,
   onClickBack: PropTypes.func,
   showTitle: PropTypes.bool,
+  TitleComponent: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
+  MethodTileComponent: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
 };
 
 SelectMethod.defaultProps = {
   showTitle: true,
+  TitleComponent: Title,
+  MethodTileComponent: MethodTile
 };
 
 const mapDispatchToProps = dispatch => ({

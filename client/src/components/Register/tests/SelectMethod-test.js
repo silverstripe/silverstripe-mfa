@@ -1,147 +1,125 @@
-/* global jest, describe, it, expect */
+/* global jest, test, describe, it, expect */
 
 import React from 'react';
-import Enzyme, { shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
 import { Component as SelectMethod } from '../SelectMethod';
-
-jest.mock('../MethodTile');
-
-Enzyme.configure({ adapter: new Adapter() });
+import { render, fireEvent } from '@testing-library/react';
 
 window.ss = {
   i18n: { _t: (key, string) => string },
 };
 
-const selectMethodMock = jest.fn();
+function makeProps(obj = {}) {
+  return {
+    methods: [
+      {
+        urlSegment: 'aye',
+        name: 'Aye',
+        description: 'Register using aye',
+        supportLink: 'https://google.com',
+        component: 'Test',
+      },
+      {
+        urlSegment: 'bee',
+        name: 'Bee',
+        description: 'Register using bee',
+        supportLink: 'https://foo.test',
+        component: 'Test',
+      },
+    ],
+    isAvailable: () => true,
+    onClickBack: () => null,
+    onSelectMethod: () => null,
+    TitleComponent: () => <div className="test-title" />,
+    MethodTileComponent: ({ method, onClick }) => <div className="test-method-tile" data-method={method.urlSegment} onClick={onClick} />,
+    ...obj
+  };
+}
 
-const firstMethod = {
-  urlSegment: 'aye',
-  name: 'Aye',
-  description: 'Register using aye',
-  supportLink: 'https://google.com',
-  component: 'Test',
-};
+test('SelectMethod automatically selects the only available method', () => {
+  const onSelectMethod = jest.fn();
+  render(
+    <SelectMethod {...makeProps({
+      methods: [
+        makeProps().methods[0]
+      ],
+      onSelectMethod
+    })}
+    />
+  );
+  expect(onSelectMethod).toHaveBeenCalled();
+});
 
-describe('SelectMethod', () => {
-  it('automatically selects the only available method', () => {
-    const mockNextHandler = jest.fn();
-    shallow(
-      <SelectMethod
-        methods={[firstMethod]}
-        isAvailable={() => true}
-        onSelectMethod={mockNextHandler}
-      />
-    );
+test('SelectMethod does not automatically select the only available method when not usable', () => {
+  const onSelectMethod = jest.fn();
+  render(
+    <SelectMethod {...makeProps({
+      onSelectMethod,
+      methods: [
+        makeProps().methods[0]
+      ],
+      isAvailable: () => false
+    })}
+    />
+  );
+  expect(onSelectMethod).not.toHaveBeenCalled();
+});
 
-    expect(mockNextHandler).toHaveBeenCalledTimes(1);
+test('SelectMethod passes the highlighted method to the onSelectMethod handler', async () => {
+  const onSelectMethod = jest.fn();
+  const { container } = render(
+    <SelectMethod {...makeProps({
+      onSelectMethod
+    })}
+    />
+  );
+  fireEvent.click(container.querySelector('[data-method="bee"]'));
+  fireEvent.click(container.querySelector('.mfa-action-list__item .btn-primary'));
+  expect(onSelectMethod).toHaveBeenCalledWith({
+    component: 'Test',
+    description: 'Register using bee',
+    name: 'Bee',
+    supportLink: 'https://foo.test',
+    urlSegment: 'bee'
   });
+});
 
-  it('does not automatically select the only available method when not usable', () => {
-    const mockNextHandler = jest.fn();
-    shallow(
-      <SelectMethod
-        methods={[firstMethod]}
-        isAvailable={() => false}
-        onSelectMethod={mockNextHandler}
-      />
-    );
+test('SelectMethod clicking the back button triggers the onClickBack callback', () => {
+  const onClickBack = jest.fn();
+  const { container } = render(
+    <SelectMethod {...makeProps({
+      onClickBack
+    })}
+    />
+  );
+  fireEvent.click(container.querySelector('.mfa-action-list__item .btn-secondary'));
+  expect(onClickBack).toHaveBeenCalled();
+});
 
-    expect(mockNextHandler).toHaveBeenCalledTimes(0);
-  });
+test('SelectMethod renders a "Next" button', () => {
+  const { container } = render(<SelectMethod {...makeProps()}/>);
+  expect(container.querySelector('.mfa-action-list .btn-primary').textContent).toBe('Next');
+});
 
-  describe('handleGoToNext()', () => {
-    it('passes the highlighted method to the method selection handler', () => {
-      const wrapper = shallow(
-        <SelectMethod
-          methods={[]}
-          onSelectMethod={(method) => {
-            expect(method.description).toBe('my mock method');
-          }}
-        />
-      );
-      wrapper.setState({ highlightedMethod: { description: 'my mock method' } });
-      wrapper.instance().handleGoToNext();
-    });
-  });
+test('SelectMethod renders a "Next" button in a disabled state when no method is highlighted', () => {
+  const { container } = render(<SelectMethod {...makeProps()}/>);
+  expect(container.querySelector('.mfa-action-list .btn-primary').disabled).toBe(true);
+});
 
-  describe('handleBack()', () => {
-    it('has a todo alert', () => {
-      window.alert = (message) => {
-        expect(message).toContain('Todo');
-      };
-      const wrapper = shallow(
-        <SelectMethod
-          methods={[]}
-          onSelectMethod={selectMethodMock}
-        />
-      );
-      wrapper.instance().handleBack();
-    });
-  });
+test('SelectMethod renders an active "Next" button when a method is highlighted', () => {
+  const { container } = render(<SelectMethod {...makeProps()}/>);
+  fireEvent.click(container.querySelector('[data-method="bee"]'));
+  expect(container.querySelector('.mfa-action-list .btn-primary').disabled).toBe(false);
+});
 
-  describe('renderActions()', () => {
-    it('renders a "Next" button', () => {
-      const wrapper = shallow(
-        <SelectMethod
-          methods={[]}
-          onSelectMethod={selectMethodMock}
-        />
-      );
+test('SelectMethod renders a "Back" button', () => {
+  const { container } = render(<SelectMethod {...makeProps()}/>);
+  expect(container.querySelector('.mfa-action-list .btn-secondary').textContent).toBe('Back');
+});
 
-      const button = wrapper.find('.mfa-action-list .btn').first();
-      expect(button.text()).toBe('Next');
-    });
-
-    it('renders a "Next" button in a disabled state when no method is highlighted', () => {
-      const wrapper = shallow(
-        <SelectMethod
-          methods={[]}
-          onSelectMethod={selectMethodMock}
-        />
-      );
-
-      const button = wrapper.find('.mfa-action-list .btn').first();
-      expect(button.props().disabled).toBe(true);
-    });
-
-    it('renders an active "Next" button when a method is highlighted', () => {
-      const wrapper = shallow(
-        <SelectMethod
-          methods={[firstMethod]}
-          onSelectMethod={selectMethodMock}
-        />
-      );
-      wrapper.instance().handleClick(firstMethod);
-
-      const button = wrapper.find('.mfa-action-list .btn').first();
-      expect(button.props().disabled).toBe(false);
-    });
-
-    it('renders a "Back" button', () => {
-      const wrapper = shallow(
-        <SelectMethod
-          methods={[]}
-          onSelectMethod={selectMethodMock}
-        />
-      );
-
-      const button = wrapper.find('.mfa-action-list .btn').at(1);
-      expect(button.text()).toBe('Back');
-    });
-  });
-
-  describe('render()', () => {
-    it('renders a MethodTile component for each available method', () => {
-      const wrapper = shallow(
-        <SelectMethod
-          methods={[firstMethod]}
-          onSelectMethod={selectMethodMock}
-        />
-      );
-
-      expect(wrapper.find('.mfa-method-tile-group')).toHaveLength(1);
-      expect(wrapper.find('.mfa-method-tile-group').children()).toHaveLength(1);
-    });
-  });
+test('SelectMethod renders a MethodTile component for each available method', () => {
+  const { container } = render(<SelectMethod {...makeProps()}/>);
+  const methodTiles = container.querySelectorAll('.test-method-tile');
+  expect(methodTiles).toHaveLength(2);
+  expect(methodTiles[0].getAttribute('data-method')).toBe('aye');
+  expect(methodTiles[1].getAttribute('data-method')).toBe('bee');
 });

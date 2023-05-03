@@ -270,7 +270,7 @@ class Verify extends Component {
   renderOtherMethods() {
     const otherMethods = this.getOtherMethods();
     const { selectedMethod, showOtherMethods } = this.state;
-    const { resources } = this.props;
+    const { resources, SelectMethodComponent } = this.props;
 
     if (selectedMethod && !showOtherMethods) {
       return null;
@@ -279,7 +279,7 @@ class Verify extends Component {
     return (
       <Fragment>
         {this.renderTitle()}
-        <SelectMethod
+        <SelectMethodComponent
           resources={resources}
           methods={otherMethods}
           onClickBack={this.handleHideOtherMethodsPane}
@@ -381,6 +381,11 @@ Verify.propTypes = {
   registeredMethods: PropTypes.arrayOf(registeredMethodType),
   // The URL segment of the method to be used as default
   defaultMethod: PropTypes.string,
+  SelectMethodComponent: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
+};
+
+Verify.defaultProps = {
+  SelectMethodComponent: SelectMethod
 };
 
 export { Verify as Component };
