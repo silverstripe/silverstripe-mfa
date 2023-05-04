@@ -1,56 +1,45 @@
-/* global jest */
+/* global jest, test */
 
 import React from 'react';
-import Enzyme, { shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
 import Verify from '../Verify';
-
-Enzyme.configure({ adapter: new Adapter() });
+import { render, fireEvent } from '@testing-library/react';
 
 window.ss = {
   i18n: { _t: (key, string) => string },
 };
 
-describe('Login - Recovery Codes', () => {
-  it('has a disabled button on load', () => {
-    const wrapper = shallow(<Verify />);
+test('Verify has a disabled button on load', () => {
+  const { container } = render(<Verify />);
+  expect(container.querySelector('button.btn-primary').disabled).toBe(true);
+});
 
-    expect(wrapper.find('button').prop('disabled')).toBe(true);
-  });
+test('Verify will un-disable the button when input is provided', () => {
+  const { container } = render(<Verify />);
+  const input = container.querySelector('input.mfa-verify-backup-codes__input');
+  fireEvent.change(input, { target: { value: 'x' } });
+  expect(container.querySelector('button.btn-primary').disabled).toBe(false);
+});
 
-  it('will un-disable the button when input is provided', () => {
-    const wrapper = shallow(<Verify />);
+test('Verify renders the given "more options control"', () => {
+  const { container } = render(
+    <Verify {...{
+      moreOptionsControl: <div>More options!</div>
+    }}
+    />
+  );
+  expect(container.querySelectorAll('.mfa-action-list__item')[1].textContent).toBe('More options!');
+});
 
-    wrapper.setState({
-      value: 'something',
-    });
-    wrapper.update();
-
-    expect(wrapper.find('button').prop('disabled')).toBe(false);
-  });
-
-  it('renders the given "more options control"', () => {
-    const moreOptions = <div>More options!</div>;
-
-    const wrapper = shallow(<Verify moreOptionsControl={moreOptions} />);
-
-    expect(wrapper.html()).toMatch(/<div>More options!<\/div>/);
-  });
-
-  it('triggers login completion with the right value when the button is pressed', () => {
-    const completeFunction = jest.fn();
-    const preventDefault = jest.fn();
-
-    const wrapper = shallow(<Verify onCompleteVerification={completeFunction} />);
-
-    wrapper.setState({
-      value: 'something',
-    });
-
-    wrapper.find('button').simulate('click', { preventDefault });
-
-    expect(preventDefault.mock.calls).toHaveLength(1);
-    expect(completeFunction.mock.calls).toHaveLength(1);
-    expect(completeFunction.mock.calls[0]).toEqual([{ code: 'something' }]);
-  });
+test('Verify triggers login completion with the right value when the button is pressed', () => {
+  const onCompleteVerification = jest.fn();
+  const { container } = render(
+    <Verify {...{
+      onCompleteVerification
+    }}
+    />
+  );
+  const input = container.querySelector('input.mfa-verify-backup-codes__input');
+  fireEvent.change(input, { target: { value: 'something' } });
+  fireEvent.click(container.querySelector('button.btn-primary'));
+  expect(onCompleteVerification).toBeCalledWith({ code: 'something' });
 });

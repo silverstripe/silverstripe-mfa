@@ -9,18 +9,10 @@ This module was based on pioneering work by Simon. It differs from the original 
 React UI + JSON API architecture, and its enhanced management UI within the CMS. You can find Simon's original module
 [here](https://github.com/firesphere/silverstripe-bootstrapmfa).
 
-## Requirements
-
-* PHP ^7.1
-* Silverstripe ^4.1
-* defuse/php-encryption ^2.2 and OpenSSL PHP extension
-
 ## Installation
 
-Install with Composer:
-
-```
-composer require silverstripe/mfa ^4.0
+```sh
+composer require silverstripe/mfa
 ```
 
 You should also install one of the additional multi-factor authenticator modules:
@@ -75,7 +67,7 @@ functionality:
 
 When adding translatable content to front-end UIs in the MFA module, you must ensure that these translations are pushed
 to Transifex. If this doesn't happen, they will be automatically removed in the next module released. See the
-[translation docs](https://docs.silverstripe.org/en/4/contributing/translation_process/#javascript-translations)
+[translation docs](https://docs.silverstripe.org/en/contributing/translation_process/#javascript-translations)
 for more information.
 
 ## License

@@ -7,6 +7,12 @@ import LoadingIndicator from '../../LoadingIndicator';
 import CircleDash from '../../Icons/CircleDash';
 import CircleTick from '../../Icons/CircleTick';
 
+/**
+ * regeneratorRuntime is not used explicitly in the code,
+ * but this import is necessary for the async handleSendReset method to work correctly
+ */
+import regeneratorRuntime from 'regenerator-runtime'; // eslint-disable-line
+
 import fallbacks from '../../../../lang/src/en.json';
 
 /**
@@ -105,11 +111,12 @@ class AccountResetUI extends Component {
    */
   renderSending() {
     const { ss: { i18n } } = window;
+    const { LoadingIndicatorComponent } = this.props;
 
     return (
       <p className="account-reset-action account-reset-action--sending">
         <span className="account-reset-action__icon">
-          <LoadingIndicator size="32px" />
+          <LoadingIndicatorComponent size="32px" />
         </span>
         <span className="account-reset-action__message">
           {
@@ -230,6 +237,11 @@ class AccountResetUI extends Component {
 
 AccountResetUI.propTypes = {
   resetEndpoint: PropTypes.string,
+  LoadingIndicatorComponent: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
+};
+
+AccountResetUI.defaultProps = {
+  LoadingIndicatorComponent: LoadingIndicator,
 };
 
 export default AccountResetUI;
