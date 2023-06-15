@@ -65,6 +65,6 @@
     "MultiFactorAuthentication.TRY_AGAIN_ERROR": "Something went wrong. Please try again.",
     "MultiFactorAuthentication.UNIQUE_DESCRIPTION": "This verification is only available to you. Even if someone gets your password, they will not be able to access your account.",
     "MultiFactorAuthentication.UNIQUE_IMAGE_ALT": "Person with tick indicating uniqueness",
-    "MultiFactorAuthentication.UNIQUE_TITLE": "Unique to you AWAWAWAWA",
+    "MultiFactorAuthentication.UNIQUE_TITLE": "Unique to you",
     "MultiFactorAuthentication.UNKNOWN_ERROR": "An unknown error occurred."
 }

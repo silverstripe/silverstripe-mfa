@@ -85,3 +85,12 @@ fi_FI:
   SilverStripe\MFA\Service\RegisteredMethodManager:
     MFAADDED: 'Monivaiheinen tunnistautumistapa on lisätty käyttäjätillesi'
     MFAREMOVED: 'Monivaiheinen tunnistautumistapa poistettiin käyttäjätililtäsi'
+  SilverStripe\MFA\RequestHandler\RegistrationHandlerTrait:
+    CSRF_FAILURE: 'Pyyntösi umpeutui. Ystävällisesti päivitä sivu ja kokeile uudelleen'
+    METHOD_ALREADY_REGISTERED: 'Tunnistusvaihtoehto on jo rekisteröity tälle käyttäjälle'
+    METHOD_MISMATCH: 'Tunnistusvaihtoehto ei ole sama joka on jo rekisteröinti prosessissa'
+    NO_REGISTRATION_IN_PROGRESS: 'Rekisteröinti prosessia ei ole käynnissä'
+  SilverStripe\MFA\RequestHandler\VerificationHandlerTrait:
+    CSRF_FAILURE: 'Pyyntösi umpeutui. Ystävällisesti päivitä sivu ja kokeile uudelleen'
+    METHOD_NOT_PROVIDED: 'Tunnistusvaihtoehtoa ei ole asetettu, eikä käyttäjällä ole oletusta asetettuna'
+    METHOD_NOT_REGISTERED: 'Käyttäjällä ei ole tätä tunnistusvaihtoehtoa rekisteröitynä'
