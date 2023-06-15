@@ -85,3 +85,12 @@ eo:
   SilverStripe\MFA\Service\RegisteredMethodManager:
     MFAADDED: 'Multfaktora aŭtentiga metodo aldoniĝis al via konto.'
     MFAREMOVED: 'Multfaktora aŭtentiga metodo foriĝis el via konto'
+  SilverStripe\MFA\RequestHandler\RegistrationHandlerTrait:
+    CSRF_FAILURE: 'Via peto eltempiĝis. Bonvolu refreŝigi kaj reprovi.'
+    METHOD_ALREADY_REGISTERED: 'Tiu metodo jam estas registrita kontraŭ ĉi tiu membro.'
+    METHOD_MISMATCH: 'Metodo ne kongruas kun registrado okazanta.'
+    NO_REGISTRATION_IN_PROGRESS: 'Neniu registrado okazas'
+  SilverStripe\MFA\RequestHandler\VerificationHandlerTrait:
+    CSRF_FAILURE: 'Via peto eltempiĝis. Bonvolu refreŝigi kaj reprovi.'
+    METHOD_NOT_PROVIDED: 'Neniu metodo haveblas por ensaluti kaj la membro ne havas aprioran'
+    METHOD_NOT_REGISTERED: 'Metodo ne estas registrita por la membro'
