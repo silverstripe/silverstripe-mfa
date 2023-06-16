@@ -86,3 +86,12 @@ fr:
   SilverStripe\MFA\Service\RegisteredMethodManager:
     MFAADDED: 'Une méthode d''authentification multi-facteur a été ajoutée à votre compte'
     MFAREMOVED: 'Une méthode d''authentification multifactorielle a été supprimée de votre compte.'
+  SilverStripe\MFA\RequestHandler\RegistrationHandlerTrait:
+    CSRF_FAILURE: 'Votre demande a expiré. Veuillez rafraîchir et réessayer'
+    METHOD_ALREADY_REGISTERED: 'Cette méthode a déjà été enregistrée pour ce membre'
+    METHOD_MISMATCH: 'La méthode ne correspond pas à l''enregistrement en cours'
+    NO_REGISTRATION_IN_PROGRESS: 'Pas d''inscription en cours'
+  SilverStripe\MFA\RequestHandler\VerificationHandlerTrait:
+    CSRF_FAILURE: 'Votre demande a expiré. Veuillez rafraîchir et réessayer'
+    METHOD_NOT_PROVIDED: 'Aucune méthode n''a été fournie pour se connecter et le membre n''a pas de méthode par défaut.'
+    METHOD_NOT_REGISTERED: 'Le membre n''a pas enregistré cette méthode'
