@@ -1,16 +1,17 @@
 /* global jest, test, describe, it, expect */
 
 import React from 'react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import {
   Component as Register,
   SCREEN_REGISTER_METHOD,
   SCREEN_CHOOSE_METHOD,
   SCREEN_COMPLETE
 } from '../Register';
-import { render, screen, fireEvent, act } from '@testing-library/react';
 
 let lastApiCallArgs;
 let resolveApiCall;
+// eslint-disable-next-line no-unused-vars
 let rejectApiCall;
 
 jest.mock('lib/api', () => ({
@@ -29,10 +30,10 @@ jest.mock('lib/Injector', () => ({
   loadComponent: (component) => {
     if (component === 'TestRegistration') {
       return ({ method, onBack, onCompleteRegistration }) => (
-          <div data-testid="test-registration" data-method={method.urlSegment} onClick={() => onCompleteRegistration({ my: 'regodata' })}>
-            <input data-testid="test-back" onClick={onBack}/>
-          </div>
-        );
+        <div data-testid="test-registration" data-method={method.urlSegment} onClick={() => onCompleteRegistration({ my: 'regodata' })}>
+          <input data-testid="test-back" onClick={onBack}/>
+        </div>
+      );
     }
     return null;
   }
@@ -74,21 +75,21 @@ function makeProps(obj = {}) {
     onCompleteRegistration: () => null,
     onRemoveAvailableMethod: () => null,
     IntroductionComponent: ({ canSkip }) => (
-        <div data-testid="test-introduction">
-          {canSkip && <div data-testid="test-skip"/>}
-        </div>
-      ),
+      <div data-testid="test-introduction">
+        {canSkip && <div data-testid="test-skip"/>}
+      </div>
+    ),
     TitleComponent: () => <div className="test-title"/>,
     SelectMethodComponent: ({ methods }) => (
-        <div className="test-select-method">
-          {methods.map((method) => <div key={method.name} data-testid="test-method">{method.description}</div>)}
-        </div>
-      ),
+      <div className="test-select-method">
+        {methods.map((method) => <div key={method.name} data-testid="test-method">{method.description}</div>)}
+      </div>
+    ),
     CompleteComponent: ({ onComplete }) => (
-        <div data-testid="test-complete">
-          <input data-testid="test-complete-button" onClick={onComplete}/>
-        </div>
-      ),
+      <div data-testid="test-complete">
+        <input data-testid="test-complete-button" onClick={onComplete}/>
+      </div>
+    ),
     ...obj,
   };
 }

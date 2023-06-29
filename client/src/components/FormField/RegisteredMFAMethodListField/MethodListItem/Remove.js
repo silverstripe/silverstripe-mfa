@@ -71,7 +71,6 @@ const Remove = ({
       }));
   };
 
-
   return (
     <button
       className="registered-method-list-item__control"

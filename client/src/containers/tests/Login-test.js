@@ -1,11 +1,13 @@
 /* global jest, test, expect */
 
 import React from 'react';
-import { Component as Login } from '../Login';
 import { render, screen, waitForElementToBeRemoved } from '@testing-library/react';
+import { Component as Login } from '../Login';
 
+// eslint-disable-next-line no-unused-vars
 let lastApiCallArgs;
 let resolveApiCall;
+// eslint-disable-next-line no-unused-vars
 let rejectApiCall;
 
 jest.mock('lib/api', () => ({

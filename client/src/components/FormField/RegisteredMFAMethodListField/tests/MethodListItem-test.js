@@ -1,7 +1,7 @@
 /* global jest, test, describe, it, expect */
 import React from 'react';
-import MethodListItem from '../MethodListItem';
 import { render } from '@testing-library/react';
+import MethodListItem from '../MethodListItem';
 
 window.ss = {
   i18n: {
@@ -14,7 +14,7 @@ window.ss = {
 function makeProps(obj = {}) {
   return {
     method: {
-     urlSegment: 'foo'
+      urlSegment: 'foo'
     },
     RemoveComponent: () => <div className="test-remove" />,
     SetDefaultComponent: () => <div className="test-set-default" />,

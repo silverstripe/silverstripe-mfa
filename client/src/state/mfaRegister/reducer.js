@@ -1,9 +1,9 @@
-import MFA_REGISTER from './actionTypes';
 import {
   SCREEN_INTRODUCTION,
   SCREEN_CHOOSE_METHOD,
   SCREEN_REGISTER_METHOD
 } from 'components/Register';
+import MFA_REGISTER from './actionTypes';
 
 const initialState = {
   screen: SCREEN_INTRODUCTION,

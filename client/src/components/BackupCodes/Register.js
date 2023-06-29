@@ -220,7 +220,6 @@ class Register extends Component {
   }
 }
 
-
 Register.propTypes = {
   codes: PropTypes.arrayOf(PropTypes.string),
   // Determines the duration of the 'copied' message (in milliseconds)

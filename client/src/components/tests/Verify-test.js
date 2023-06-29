@@ -1,11 +1,12 @@
 /* global jest, test, describe, it, expect */
 
 import React from 'react';
-import { Component as Verify } from '../Verify';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { Component as Verify } from '../Verify';
 
 let lastApiCallArgs;
 let resolveApiCall;
+// eslint-disable-next-line no-unused-vars
 let rejectApiCall;
 
 jest.mock('lib/api', () => ({
@@ -31,8 +32,8 @@ jest.mock('lib/Injector', () => ({
         data-component={component}
         data-props={dataProps}
         onClick={() => props.onCompleteVerification({
-        my: 'verifydata'
-      })}
+          my: 'verifydata'
+        })}
       >
         {props.moreOptionsControl}
       </div>;

@@ -1,8 +1,8 @@
 /* global jest, test, describe, it, expect */
 
 import React from 'react';
-import { Component as Introduction, ActionList } from '../Introduction';
 import { fireEvent, render } from '@testing-library/react';
+import { Component as Introduction, ActionList } from '../Introduction';
 
 window.ss = {
   i18n: { _t: (key, string) => string },

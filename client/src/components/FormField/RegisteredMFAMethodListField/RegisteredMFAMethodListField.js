@@ -5,8 +5,6 @@ import { connect } from 'react-redux';
 import classnames from 'classnames';
 import registeredMethodShape from 'types/registeredMethod';
 import availableMethodShape from 'types/availableMethod';
-import AccountResetUI from './AccountResetUI';
-import MethodListItem from './MethodListItem';
 import {
   chooseMethod,
   setAvailableMethods,
@@ -17,6 +15,8 @@ import {
   SCREEN_CHOOSE_METHOD,
   SCREEN_INTRODUCTION
 } from 'components/Register';
+import MethodListItem from './MethodListItem';
+import AccountResetUI from './AccountResetUI';
 import RegisterModal from '../../RegisterModal';
 
 import fallbacks from '../../../../lang/src/en.json';

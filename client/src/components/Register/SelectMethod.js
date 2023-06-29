@@ -1,15 +1,16 @@
+/* eslint-disable import/no-cycle */
 /* global window */
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import MethodTile from './MethodTile';
 import availableMethodType from 'types/availableMethod';
 import classnames from 'classnames';
-import { SCREEN_INTRODUCTION, SCREEN_REGISTER_METHOD } from '../Register';
 import { showScreen, chooseMethod } from 'state/mfaRegister/actions';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import withMethodAvailability from 'state/methodAvailability/withMethodAvailability';
+import { SCREEN_INTRODUCTION, SCREEN_REGISTER_METHOD } from '../Register';
+import MethodTile from './MethodTile';
 import Title from './Title';
 
 /**

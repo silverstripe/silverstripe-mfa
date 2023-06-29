@@ -3,10 +3,10 @@ import confirm from 'reactstrap-confirm';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import moment from 'moment';
+import methodShape from 'types/registeredMethod';
 import Remove from './MethodListItem/Remove';
 import Reset from './MethodListItem/Reset';
 import SetDefault from './MethodListItem/SetDefault';
-import methodShape from 'types/registeredMethod';
 
 import fallbacks from '../../../../lang/src/en.json';
 
@@ -113,7 +113,6 @@ class MethodListItem extends PureComponent {
     return <SetDefaultComponent method={method} />;
   }
 
-
   renderControls() {
     const { canRemove, canReset } = this.props;
 
@@ -123,9 +122,9 @@ class MethodListItem extends PureComponent {
 
     return (
       <div>
-      { this.renderRemove() }
-      { this.renderReset() }
-      { this.renderSetAsDefault() }
+        { this.renderRemove() }
+        { this.renderReset() }
+        { this.renderSetAsDefault() }
       </div>
     );
   }
@@ -156,8 +155,8 @@ class MethodListItem extends PureComponent {
 
     return (
       <Tag className={classes}>
-      { this.renderNameAndStatus() }
-      { this.renderControls() }
+        { this.renderNameAndStatus() }
+        { this.renderControls() }
       </Tag>
     );
   }

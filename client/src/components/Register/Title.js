@@ -1,11 +1,12 @@
+/* eslint-disable import/no-cycle */
 import React from 'react';
+import { connect } from 'react-redux';
 import {
   SCREEN_INTRODUCTION,
   SCREEN_REGISTER_METHOD,
   SCREEN_CHOOSE_METHOD,
   SCREEN_COMPLETE,
 } from '../Register';
-import { connect } from 'react-redux';
 
 import fallbacks from '../../../lang/src/en.json';
 

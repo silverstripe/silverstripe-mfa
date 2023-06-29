@@ -2,8 +2,8 @@
 
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
-import { Component as SelectMethod } from '../SelectMethod';
 import { render, fireEvent } from '@testing-library/react';
+import { Component as SelectMethod } from '../SelectMethod';
 
 window.ss = {
   i18n: {
