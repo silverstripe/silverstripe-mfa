@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 /* global window */
 
 import React, { Component } from 'react';
@@ -169,12 +170,12 @@ class Register extends Component {
         if (response && response.errors) {
           const formattedErrors = response.errors.join(', ');
 
-          this.setState({
+          this.setState((prevState) => ({
             registerProps: {
-              ...this.state.registerProps,
+              ...prevState.registerProps,
               error: formattedErrors,
             },
-          });
+          }));
         }
       });
   }

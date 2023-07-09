@@ -277,7 +277,7 @@ class Verify extends Component {
     }
 
     return (
-      <Fragment>
+      <>
         {this.renderTitle()}
         <SelectMethodComponent
           resources={resources}
@@ -285,7 +285,7 @@ class Verify extends Component {
           onClickBack={this.handleHideOtherMethodsPane}
           onSelectMethod={method => event => this.handleClickOtherMethod(event, method)}
         />
-      </Fragment>
+      </>
     );
   }
 
@@ -327,7 +327,7 @@ class Verify extends Component {
     });
 
     return (
-      <Fragment>
+      <>
         {this.renderTitle()}
 
         <h2 className="mfa-section-title">{leadInLabel}</h2>
@@ -338,7 +338,7 @@ class Verify extends Component {
           onCompleteVerification={this.handleCompleteVerification}
           moreOptionsControl={this.renderOtherMethodsControl()}
         />}
-      </Fragment>
+      </>
     );
   }
 
@@ -363,10 +363,10 @@ class Verify extends Component {
     }
 
     return (
-      <Fragment>
+      <>
         {this.renderSelectedMethod()}
         {this.renderOtherMethods()}
-      </Fragment>
+      </>
     );
   }
 }

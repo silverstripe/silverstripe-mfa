@@ -1,8 +1,10 @@
 /* global jest, test, describe, it, expect */
 
 import React from 'react';
-import { Component as RegisteredMFAMethodListField } from '../RegisteredMFAMethodListField';
 import { render } from '@testing-library/react';
+import { Component as RegisteredMFAMethodListField } from '../RegisteredMFAMethodListField';
+
+import translationStrings from '../../../../../lang/src/en.json';
 
 window.ss = {
   i18n: { _t: (key, string) => string, detectLocale: () => 'en', inject: () => {} },
@@ -26,8 +28,6 @@ function makeProps(obj = {}) {
     ...obj
   };
 }
-
-import translationStrings from '../../../../../lang/src/en.json';
 
 test('RegisteredMFAMethodListField filters out backup methods', () => {
   const { container } = render(

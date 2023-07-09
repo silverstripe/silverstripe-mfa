@@ -84,7 +84,6 @@ class RegisterModal extends Component {
   }
 }
 
-
 RegisterModal.propTypes = {
   // Boolean for if the modal is open
   isOpen: PropTypes.bool,

@@ -1,8 +1,8 @@
 /* global jest, test */
 
 import React from 'react';
-import Verify from '../Verify';
 import { render, fireEvent } from '@testing-library/react';
+import Verify from '../Verify';
 
 window.ss = {
   i18n: { _t: (key, string) => string },

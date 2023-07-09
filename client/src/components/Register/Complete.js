@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import React from 'react';
 import PropTypes from 'prop-types';
 import Title from './Title';
@@ -26,12 +27,12 @@ const Complete = ({ onComplete, showTitle, message }) => (
 );
 
 Complete.propTypes = {
-    onComplete: PropTypes.func.isRequired,
-    showTitle: PropTypes.bool,
+  onComplete: PropTypes.func.isRequired,
+  showTitle: PropTypes.bool,
 };
 
 Complete.defaultProps = {
-    showTitle: true,
+  showTitle: true,
 };
 
 export default Complete;

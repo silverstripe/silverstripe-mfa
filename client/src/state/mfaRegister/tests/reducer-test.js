@@ -1,11 +1,11 @@
 /* global jest, describe, it, expect */
 
-import reducer from '../reducer';
-import MFA_REGISTER from '../actionTypes';
 import {
   SCREEN_INTRODUCTION,
   SCREEN_CHOOSE_METHOD,
 } from 'components/Register';
+import reducer from '../reducer';
+import MFA_REGISTER from '../actionTypes';
 
 describe('MFARegister reducer', () => {
   it('should return the initial state', () => {

@@ -1,8 +1,8 @@
 /* global jest, test, describe, it, expect */
 
 import React from 'react';
-import { Component as MethodTile } from '../MethodTile';
 import { fireEvent, render } from '@testing-library/react';
+import { Component as MethodTile } from '../MethodTile';
 
 function makeProps(obj = {}) {
   return {

@@ -1,10 +1,11 @@
+/* eslint-disable import/no-cycle */
 /* global window */
 
 import React from 'react';
 import PropTypes from 'prop-types';
 import { showScreen, chooseMethod } from 'state/mfaRegister/actions';
-import { SCREEN_REGISTER_METHOD } from '../Register';
 import { connect } from 'react-redux';
+import { SCREEN_REGISTER_METHOD } from '../Register';
 import Title from './Title';
 
 import fallbacks from '../../../lang/src/en.json';

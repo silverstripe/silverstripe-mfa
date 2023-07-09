@@ -2,8 +2,8 @@
 
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
-import AccountResetUI from '../AccountResetUI';
 import { render, screen, fireEvent } from '@testing-library/react';
+import AccountResetUI from '../AccountResetUI';
 
 let resolveApiCall;
 let rejectApiCall;

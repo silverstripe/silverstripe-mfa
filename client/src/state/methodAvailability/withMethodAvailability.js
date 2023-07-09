@@ -17,6 +17,7 @@ const withMethodAvailability = (WrappedComponent) => {
       this.isAvailable = this.isAvailable.bind(this);
       this.getUnavailableMessage = this.getUnavailableMessage.bind(this);
     }
+
     /**
      * Checks "available method overrides", which can be provided via Redux state, and will
      * allow other components to specify client-side restrictions for various methods. For
