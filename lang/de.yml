@@ -82,9 +82,6 @@ de:
     METHOD_NOT_PROVIDED: 'Es wurde keine Methode für die Anmeldung angegeben und das Mitglied hat keinen Standard definiert'
     METHOD_NOT_REGISTERED: 'Das Mitglied hat diese Methode nicht registriert'
     NO_REGISTRATION_IN_PROGRESS: 'Keine Registrierung in Arbeit'
-  SilverStripe\MFA\Service\RegisteredMethodManager:
-    MFAADDED: 'Eine Multi-Faktor-Authentifizierungsmethode wurde zu Ihrem Konto hinzugefügt'
-    MFAREMOVED: 'Eine Multi-Faktor-Authentifizierungsmethode wurde aus Ihrem Konto entfernt'
   SilverStripe\MFA\RequestHandler\RegistrationHandlerTrait:
     CSRF_FAILURE: 'Ihre Anfrage wurde abgebrochen. Bitte aktualisieren und erneut versuchen'
     METHOD_ALREADY_REGISTERED: 'Diese Methode ist bereits für dieses Mitglied registriert worden'
@@ -94,3 +91,6 @@ de:
     CSRF_FAILURE: 'Ihre Anfrage wurde abgebrochen. Bitte aktualisieren und erneut versuchen'
     METHOD_NOT_PROVIDED: 'Es wurde keine Methode für die Anmeldung angegeben und das Mitglied hat keinen Standard definiert'
     METHOD_NOT_REGISTERED: 'Das Mitglied hat diese Methode nicht registriert'
+  SilverStripe\MFA\Service\RegisteredMethodManager:
+    MFAADDED: 'Eine Multi-Faktor-Authentifizierungsmethode wurde zu Ihrem Konto hinzugefügt'
+    MFAREMOVED: 'Eine Multi-Faktor-Authentifizierungsmethode wurde aus Ihrem Konto entfernt'

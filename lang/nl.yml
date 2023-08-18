@@ -82,9 +82,6 @@ nl:
     METHOD_NOT_PROVIDED: 'Het was niet duidelijk met welke methode moest worden ingelogd en er is geen standaard ingesteld.'
     METHOD_NOT_REGISTERED: 'Deze methode is niet geregistreerd voor dit account'
     NO_REGISTRATION_IN_PROGRESS: 'Geen registratie bezig'
-  SilverStripe\MFA\Service\RegisteredMethodManager:
-    MFAADDED: 'Er is een tweestapsverificatie methode toegevoegd aan uw account'
-    MFAREMOVED: 'Er is een tweestapsverificatie methode verwijderd van uw account'
   SilverStripe\MFA\RequestHandler\RegistrationHandlerTrait:
     CSRF_FAILURE: 'De aanvraag duurde te lang om te verwerken. Ververs aub de pagina en probeer het nogmaals.'
     METHOD_ALREADY_REGISTERED: 'Die methode is voor dit account al geregistreerd'
@@ -94,3 +91,6 @@ nl:
     CSRF_FAILURE: 'De aanvraag duurde te lang om te verwerken. Ververs aub de pagina en probeer het nogmaals.'
     METHOD_NOT_PROVIDED: 'Het was niet duidelijk met welke methode moest worden ingelogd en er is geen standaard ingesteld.'
     METHOD_NOT_REGISTERED: 'Deze methode is niet geregistreerd voor dit account'
+  SilverStripe\MFA\Service\RegisteredMethodManager:
+    MFAADDED: 'Er is een tweestapsverificatie methode toegevoegd aan uw account'
+    MFAREMOVED: 'Er is een tweestapsverificatie methode verwijderd van uw account'
