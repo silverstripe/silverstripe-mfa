@@ -26,6 +26,7 @@ use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\MFA\Tests\Stub\Store\TestStore;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
 use SilverStripe\ORM\FieldType\DBDatetime;
+use SilverStripe\ORM\ValidationException;
 use SilverStripe\Security\Group;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
@@ -573,42 +574,72 @@ class LoginHandlerTest extends FunctionalTest
         $this->assertSame('foobar', $handler->getBackURL());
     }
 
+    public function testMFAGroupRestrictionValidation()
+    {
+        $config = SiteConfig::current_site_config();
+        $config->MFAAppliesTo = EnforcementManager::APPLIES_TO_GROUPS;
+        $this->expectException(ValidationException::class);
+        $config->write();
+    }
 
-    public function testMFAGroupRestriction()
+    public function provideMFAGroupRestriction()
+    {
+        return [
+            'member in group, has registered method' => [
+                'memberFixture' => 'simon',
+                'hasMFA' => true,
+            ],
+            'member in group, with no registered method' => [
+                'memberFixture' => 'guy',
+                'hasMFA' => true,
+            ],
+            'member not in group, has registered method' => [
+                'memberFixture' => 'colin',
+                'hasMFA' => true,
+            ],
+            'member not in group, with no registered method' => [
+                'memberFixture' => 'carla',
+                'hasMFA' => false,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider provideMFAGroupRestriction
+     */
+    public function testMFAGroupRestriction(string $memberFixture, bool $hasMFA)
     {
         $config = SiteConfig::current_site_config();
 
         /** @var Group $group */
         $group = $this->objFromFixture(Group::class, 'admingroup');
         $config->MFAGroupRestrictions()->add($group);
+        $config->MFAAppliesTo = EnforcementManager::APPLIES_TO_GROUPS;
+        $config->write();
 
-        // Test that MFA is required for a member of a group that has been set in SiteConfig
         /** @var Member&MemberExtension $member */
-        $member = $this->objFromFixture(Member::class, 'guy');
+        $member = $this->objFromFixture(Member::class, $memberFixture);
 
         $this->autoFollowRedirection = false;
         $response = $this->doLogin($member, 'Password123');
         $this->autoFollowRedirection = true;
 
+        // Validate that MFA is only enabled for the relevant group, and for users who already registered an MFA method
+        $path = $hasMFA ? 'default/mfa' : 'default';
         $this->assertSame(302, $response->getStatusCode());
         $this->assertStringEndsWith(
-            Controller::join_links(Security::login_url(), 'default/mfa'),
+            Controller::join_links(Security::login_url(), $path),
             $response->getHeader('location')
         );
 
-        // Test that MFA is not required for a member that does not belong to any of the selected groups
-        /** @var Member&MemberExtension $member */
-        $member = $this->objFromFixture(Member::class, 'colin');
-
-        $this->autoFollowRedirection = false;
-        $response = $this->doLogin($member, 'Password123');
-        $this->autoFollowRedirection = true;
-
-        $this->assertSame(302, $response->getStatusCode());
-        $this->assertStringEndsWith(
-            Security::login_url(),
-            $response->getHeader('location')
-        );
+        // Validate that the member logged in successfully if MFA was not available.
+        if (!$hasMFA) {
+            $response = $this->get('/Security/login');
+            $this->assertExactMatchBySelector(
+                '#MemberLoginForm_LoginForm_error',
+                "You're logged in as {$member->FirstName}."
+            );
+        }
     }
 
     public function methodlessMemberFixtureProvider()

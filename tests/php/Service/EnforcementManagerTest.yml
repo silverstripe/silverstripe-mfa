@@ -17,6 +17,9 @@ SilverStripe\Security\Group:
     Title: View reports
     Code: reportsgroup
     Permissions: =>SilverStripe\Security\Permission.reports
+  nocmsgroup:
+    Title: No CMS Access
+    Code: nocmsgroup
 
 SilverStripe\Security\Member:
   sally_smith:
@@ -27,10 +30,16 @@ SilverStripe\Security\Member:
       - =>SilverStripe\MFA\Model\RegisteredMethod.codes
     DefaultRegisteredMethodID: =>SilverStripe\MFA\Model\RegisteredMethod.codes
     Groups: =>SilverStripe\Security\Group.admingroup
+  john_smith:
+    FirstName: John
+    Surname: Smith
+    Email: john.smith@example.com
+    Groups: =>SilverStripe\Security\Group.admingroup
   sammy_smith:
     FirstName: Sammy
     Surname: Smith
     Email: sammy.smith@example.com
+    Groups: =>SilverStripe\Security\Group.nocmsgroup
   sully_smith:
     FirstName: Sully
     Surname: Smith

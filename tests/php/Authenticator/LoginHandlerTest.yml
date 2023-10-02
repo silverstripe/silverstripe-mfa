@@ -25,20 +25,25 @@ SilverStripe\Security\Group:
 
 SilverStripe\Security\Member:
   guy:
+    FirstName: Guy
     Email: guy@example.com
     Password: Password123
     PasswordExpiry: 2030-01-01
     Groups: =>SilverStripe\Security\Group.admingroup
   simon:
+    FirstName: Simon
     Email: simon@example.com
+    Password: Password123
     RegisteredMFAMethods: =>SilverStripe\MFA\Model\RegisteredMethod.simon-math
     Groups: =>SilverStripe\Security\Group.admingroup
   robbie:
+    FirstName: Robbie
     Email: robbie@example.com
     RegisteredMFAMethods: =>SilverStripe\MFA\Model\RegisteredMethod.robbie-math
     DefaultRegisteredMethodID: =>SilverStripe\MFA\Model\RegisteredMethod.robbie-math
     Groups: =>SilverStripe\Security\Group.admingroup
   colin:
+    FirstName: Colin
     Email: colin@example.com
     Password: Password123
     PasswordExpiry: 2030-01-01
@@ -46,9 +51,13 @@ SilverStripe\Security\Member:
     DefaultRegisteredMethodID: =>SilverStripe\MFA\Model\RegisteredMethod.colin-math
     Groups: =>SilverStripe\Security\Group.contentgroup
   carla:
+    FirstName: Carla
     Email: carla@example.com
+    Password: Password123
     Groups: =>SilverStripe\Security\Group.contentgroup
   pete:
+    FirstName: Pete
     Email: pete@example.com
+    Password: Password123
     PasswordExpiry: 1990-01-01
     Groups: =>SilverStripe\Security\Group.contentgroup

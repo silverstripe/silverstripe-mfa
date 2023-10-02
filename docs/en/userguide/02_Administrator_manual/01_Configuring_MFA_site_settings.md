@@ -12,14 +12,14 @@ and select the **Access** tab.
 
 Here, you can select one of two modes of operation for MFA on your site:
 
-## MFA is optional for everyone (default)
+## MFA is optional (default)
 
 This is the default setting when MFA is installed. Everyone will be prompted to
 set up multi-factor authentication upon their first login, but they can skip the
 setup process and continue to log in as they did before. They will be able to
 set up MFA later via their Profile page in Silverstripe CMS.
 
-## MFA is required for everyone
+## MFA is required
 
 Everyone without MFA setup will be prompted with a message requiring them to
 setup MFA when they attempt to log in. If they choose not to proceed with setup,
@@ -37,3 +37,16 @@ be prompted with the option to set it up on every login, until MFA is set up.
 
 ![A screenshot of the site-wide MFA settings UI with the 'MFA is required for everyone' option selected and a date entered in the 'MFA will be required from' field](../_images/02-01-2-grace-period.png)
 </div>
+
+## Limit MFA to specific groups
+
+While it is generally recommended to apply the above settings to _all_ users globally,
+you can choose to limit MFA registration to specific groups by setting "Who do these
+MFA settings apply to?" to "Only these groups" and then selecting the relevant groups
+from the dropdown field.
+
+Note that any users who have already registered MFA for their account prior to changing
+this setting will still need to use MFA to log in, even if they are not in one of the
+groups you have selected.
+
+![A screenshot of the site-wide MFA settings UI with the 'Only these groups' option selected and a group entered in the 'MFA Groups' field](../_images/02-01-3-only-these-groups.png)
