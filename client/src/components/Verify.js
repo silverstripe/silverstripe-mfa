@@ -46,7 +46,6 @@ class Verify extends Component {
     if (defaultMethodDefinition) {
       this.setSelectedMethod(defaultMethodDefinition);
     } else {
-      // TODO is this expected? We have the "first" method as the fallback default?
       // Use the first method that's not the backup method
       this.setSelectedMethod(backupMethod
         ? registeredMethods.find(method => method.urlSegment !== backupMethod.urlSegment)
@@ -148,7 +147,7 @@ class Verify extends Component {
             onCompleteVerification();
             return null;
           case 202:
-            // TODO 202 is returned if multiple MFA methods are required...
+            // 202 is returned if multiple MFA methods are required...
             this.setState({
               loading: false,
             });

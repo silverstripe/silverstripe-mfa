@@ -58,7 +58,7 @@ class Method implements MethodInterface, TestOnly
      */
     public function getThumbnail(): string
     {
-        // TODO: Implement getThumbnail() method.
+        return '';
     }
 
     /**
@@ -69,7 +69,7 @@ class Method implements MethodInterface, TestOnly
      */
     public function applyRequirements(): void
     {
-        // TODO: Implement applyRequirements() method.
+        return;
     }
 
     /**
@@ -89,6 +89,6 @@ class Method implements MethodInterface, TestOnly
      */
     public function getUnavailableMessage(): string
     {
-        // TODO: Implement getUnavailableMessage() method.
+        return '';
     }
 }
