@@ -16,7 +16,6 @@ window.document.addEventListener('DOMContentLoaded', () => {
     const element = window.document.getElementById('mfa-app');
     const schemaURL = element.dataset.schemaurl;
 
-    // todo allow Redux to come from react-injector
     const store = createStore(
       combineReducers(Injector.reducer.getAll()),
       window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()

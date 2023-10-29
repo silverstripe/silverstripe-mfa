@@ -19,7 +19,7 @@ class RegisterHandler implements RegisterHandlerInterface, TestOnly
      */
     public function start(StoreInterface $store): array
     {
-        // TODO: Implement start() method.
+        return [];
     }
 
     /**
@@ -32,7 +32,7 @@ class RegisterHandler implements RegisterHandlerInterface, TestOnly
      */
     public function register(HTTPRequest $request, StoreInterface $store): Result
     {
-        // TODO: Implement register() method.
+        return new Result();
     }
 
     /**
@@ -44,7 +44,7 @@ class RegisterHandler implements RegisterHandlerInterface, TestOnly
      */
     public function getDescription(): string
     {
-        // TODO: Implement getDescription() method.
+        return '';
     }
 
     /**
@@ -54,7 +54,7 @@ class RegisterHandler implements RegisterHandlerInterface, TestOnly
      */
     public function getSupportLink(): string
     {
-        // TODO: Implement getSupportLink() method.
+        return '';
     }
 
     /**
@@ -64,7 +64,7 @@ class RegisterHandler implements RegisterHandlerInterface, TestOnly
      */
     public function getSupportText(): string
     {
-        // TODO: Implement getSupportText() method.
+        return '';
     }
 
     /**
@@ -74,6 +74,6 @@ class RegisterHandler implements RegisterHandlerInterface, TestOnly
      */
     public function getComponent(): string
     {
-        // TODO: Implement getComponent() method.
+        return '';
     }
 }
