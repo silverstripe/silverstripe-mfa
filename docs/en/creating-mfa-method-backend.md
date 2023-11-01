@@ -1,7 +1,5 @@
 # Creating a new MFA method: Backend
 
-<!-- TODO: Documentation covering Method interfaces, etc. -->
-
 ## Method availability
 
 If your method isn't available in some situations, and you can determine this via server-side state, you can provide

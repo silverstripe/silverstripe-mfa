@@ -21,7 +21,7 @@ class VerifyHandler implements VerifyHandlerInterface, TestOnly
      */
     public function start(StoreInterface $store, RegisteredMethod $method): array
     {
-        // TODO: Implement start() method.
+        return [];
     }
 
     /**
@@ -35,7 +35,7 @@ class VerifyHandler implements VerifyHandlerInterface, TestOnly
      */
     public function verify(HTTPRequest $request, StoreInterface $store, RegisteredMethod $registeredMethod): Result
     {
-        // TODO: Implement verify() method.
+        return new Result();
     }
 
     /**
@@ -45,6 +45,6 @@ class VerifyHandler implements VerifyHandlerInterface, TestOnly
      */
     public function getComponent(): string
     {
-        // TODO: Implement getComponent() method.
+        return '';
     }
 }

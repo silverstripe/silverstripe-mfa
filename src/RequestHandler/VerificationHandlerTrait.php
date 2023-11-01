@@ -42,7 +42,7 @@ trait VerificationHandlerTrait
             $registeredMethod = RegisteredMethodManager::singleton()->getFromMember($member, $requestedMethod);
         }
 
-        // ...Or use the default (TODO: Should we have the default as a fallback? Maybe just if no method is specified?)
+        // Use the default method if there's no requested method
         if (!$registeredMethod) {
             $registeredMethod = $member->DefaultRegisteredMethod;
         }
