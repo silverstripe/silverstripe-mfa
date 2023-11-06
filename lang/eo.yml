@@ -35,6 +35,9 @@ eo:
     REGISTERED: 'Vi sukcese registris je {method} kiel ekstra nivelo de protekto por via konto ĉe {site}.'
     REMOVED: 'Vi sukcese forigis {method} aŭtentigan metodon el via konto ĉe {site}.'
     USEDBACKUPCODE: 'Iu uzis realiran kodon por aliri vian konton ĉe {site}.'
+  SilverStripe\MFA\Extension\AccountReset\MemberExtension:
+    db_AccountResetExpired: 'Konta agordo eksvalidiĝis'
+    db_AccountResetHash: 'Konta agorda haketaĵo'
   SilverStripe\MFA\Extension\AccountReset\SecurityAdminExtension:
     ACCOUNT_RESET_EMAIL_SUBJECT: 'Reagordi vian konton.'
     BAD_REQUEST: 'Nevalida peto'
@@ -55,6 +58,9 @@ eo:
     MFA_PERMISSION_DESCRIPTION: 'Povo vidi kaj reagordi registritajn metodojn por aliaj membroj bezonas la permeson "Aliro al ''Sekureco''".'
     MFA_PERMISSION_LABEL: 'Vidi/reagordi MFA-agordaron por aliaj membroj.'
     MFA_SETTINGS_FIELD_LABEL: 'Multfaktora aŭtentiga agordaro (MFA)'
+    db_DefaultRegisteredMethodID: 'Apriora registra metodo-ID'
+    db_HasSkippedMFARegistration: 'Preterlasis MFA-registron.'
+    has_many_RegisteredMFAMethods: 'MFA-registraj metodoj'
   SilverStripe\MFA\Extension\SiteConfigExtension:
     MFA_GRACE_DESCRIPTION: 'MFA-agordaro estos malnepra antaŭ tiu dato'
     MFA_GRACE_TITLE: 'MFA estos bezonata ekde (optional)'
@@ -62,12 +68,17 @@ eo:
     MFA_OPTIONAL: 'MFA estas malnepra por ĉiuj'
     MFA_REQUIRED: 'MFA estas nepra por ĉiuj '
     MULTI_FACTOR_AUTHENTICATION: 'Multfaktora aŭtentigo (MFA)'
+    db_MFAGracePeriodExpires: 'MFA-prokrastoperiodo eksvalidiĝas'
+    db_MFARequired: 'MFA bezonata'
   SilverStripe\MFA\Model\RegisteredMethod:
     PLURALNAME: 'Registritaj metodoj'
     PLURALS:
       one: 'Unu  registrita metodo'
       other: '{count} registritaj metodoj'
     SINGULARNAME: 'Registrita metodo'
+    db_Data: Datumoj
+    db_MethodClassName: 'Nomo de metoda klaso'
+    has_one_Member: Membro
   SilverStripe\MFA\Report\EnabledMembers:
     ANY_AT_LEAST_ONE: 'Iu(j) (almenaŭ unu)'
     COLUMN_METHODS_REGISTERED: 'Registritaj metodoj'
@@ -82,9 +93,6 @@ eo:
     METHOD_NOT_PROVIDED: 'Neniu metodo haveblas por ensaluti kaj la membro ne havas aprioran'
     METHOD_NOT_REGISTERED: 'Metodo ne estas registrita por la membro'
     NO_REGISTRATION_IN_PROGRESS: 'Neniu registrado okazas'
-  SilverStripe\MFA\Service\RegisteredMethodManager:
-    MFAADDED: 'Multfaktora aŭtentiga metodo aldoniĝis al via konto.'
-    MFAREMOVED: 'Multfaktora aŭtentiga metodo foriĝis el via konto'
   SilverStripe\MFA\RequestHandler\RegistrationHandlerTrait:
     CSRF_FAILURE: 'Via peto eltempiĝis. Bonvolu refreŝigi kaj reprovi.'
     METHOD_ALREADY_REGISTERED: 'Tiu metodo jam estas registrita kontraŭ ĉi tiu membro.'
@@ -94,3 +102,6 @@ eo:
     CSRF_FAILURE: 'Via peto eltempiĝis. Bonvolu refreŝigi kaj reprovi.'
     METHOD_NOT_PROVIDED: 'Neniu metodo haveblas por ensaluti kaj la membro ne havas aprioran'
     METHOD_NOT_REGISTERED: 'Metodo ne estas registrita por la membro'
+  SilverStripe\MFA\Service\RegisteredMethodManager:
+    MFAADDED: 'Multfaktora aŭtentiga metodo aldoniĝis al via konto.'
+    MFAREMOVED: 'Multfaktora aŭtentiga metodo foriĝis el via konto'
