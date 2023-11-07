@@ -23,7 +23,6 @@ nl:
     INVALID_METHOD: 'Die functionaliteit is niet beschikbaar'
     INVALID_REGISTERED_METHOD: 'Die registratiemethode is niet beschikbaar'
     INVALID_SESSION: 'Ongeldige sessie. Ververs aub de pagina en probeer het nogmaals.'
-    MENUTITLE: SilverStripe\MFA\Controller\AdminRegistrationController
   SilverStripe\MFA\Email\AccountReset:
     ACTION: 'Klik hier om het account te resetten'
     DESCRIPTION: 'Er is een aanvraag gestart om uw account te resetten.'
@@ -35,6 +34,9 @@ nl:
     REGISTERED: 'Het is gelukt om de tweestapsverificatie {method} toe te voegen aan uw account op {site}'
     REMOVED: 'U heeft de tweestapsverificatie {method} van uw account verwijderd op {site}.'
     USEDBACKUPCODE: 'Er is met een recovery code ingelogd op uw {site} account.'
+  SilverStripe\MFA\Extension\AccountReset\MemberExtension:
+    db_AccountResetExpired: 'Accountherstel verlopen'
+    db_AccountResetHash: Accoutreset-hash
   SilverStripe\MFA\Extension\AccountReset\SecurityAdminExtension:
     ACCOUNT_RESET_EMAIL_SUBJECT: 'Reset uw account'
     BAD_REQUEST: 'Ongeldige aanvraag'
@@ -44,7 +46,6 @@ nl:
     INVALID_MEMBER: 'Het account om te resetten kon niet gevonden worden'
   SilverStripe\MFA\Extension\AccountReset\SecurityExtension:
     ACCOUNT_RESET_DESCRIPTION: 'Uw wachtwoord wordt gewijzigd en eventueel geregistreerde tweestapsverificaties worden verwijderd.'
-    ACCOUNT_RESET_TITLE: 'Reset account'
     ALREADYAUTHENTICATEDBODY: 'U moet ingelogd zijn om het account te resetten.'
     ALREADYAUTHENTICATEDTITLE: 'U bent al ingelogd'
     INVALIDTOKENBODY: 'Het kan zijn dat het token om dit account te resetten is verlopen. Neem a.u.b. contact op met een beheerder.'
@@ -55,6 +56,9 @@ nl:
     MFA_PERMISSION_DESCRIPTION: 'Om de tweestapsverificatie instellingen van andere gebruikers te kunnen zien, is de permissie "Toegang tot het ''Beveiliging'' gedeelte" nodig.'
     MFA_PERMISSION_LABEL: 'Tweestapsverificatie voor andere gebruikers zien/resetten'
     MFA_SETTINGS_FIELD_LABEL: 'Tweestapsverificatie instellingen (MFA)'
+    db_DefaultRegisteredMethodID: 'Standaard registratiemethode ID'
+    db_HasSkippedMFARegistration: 'MFA-registratie overgeslagen'
+    has_many_RegisteredMFAMethods: 'Gerigistreerde MFA-methodes'
   SilverStripe\MFA\Extension\SiteConfigExtension:
     MFA_GRACE_DESCRIPTION: 'MFA is voor deze datum nog facultatief'
     MFA_GRACE_TITLE: 'MFA is verplicht vanaf (optioneel)'
@@ -62,12 +66,16 @@ nl:
     MFA_OPTIONAL: 'MFA is optioneel'
     MFA_REQUIRED: 'MFA is voor iedereen die inlogt in het CMS verplicht'
     MULTI_FACTOR_AUTHENTICATION: 'Multi Factor Authenticatie (MFA)'
+    db_MFAGracePeriodExpires: 'MFA respijtperiode afloopdatum'
+    db_MFARequired: 'MFA verplicht'
   SilverStripe\MFA\Model\RegisteredMethod:
     PLURALNAME: 'Geregistreerde methodes'
     PLURALS:
       one: 'Een Geregistreerde Methode'
       other: '{count} geregistreerde methodes'
     SINGULARNAME: 'Geregistreerde methode'
+    db_MethodClassName: 'Methode classname'
+    has_one_Member: Lid
   SilverStripe\MFA\Report\EnabledMembers:
     ANY_AT_LEAST_ONE: 'Tenminste één'
     COLUMN_METHODS_REGISTERED: 'Geregistreerde methodes'
@@ -82,9 +90,6 @@ nl:
     METHOD_NOT_PROVIDED: 'Het was niet duidelijk met welke methode moest worden ingelogd en er is geen standaard ingesteld.'
     METHOD_NOT_REGISTERED: 'Deze methode is niet geregistreerd voor dit account'
     NO_REGISTRATION_IN_PROGRESS: 'Geen registratie bezig'
-  SilverStripe\MFA\Service\RegisteredMethodManager:
-    MFAADDED: 'Er is een tweestapsverificatie methode toegevoegd aan uw account'
-    MFAREMOVED: 'Er is een tweestapsverificatie methode verwijderd van uw account'
   SilverStripe\MFA\RequestHandler\RegistrationHandlerTrait:
     CSRF_FAILURE: 'De aanvraag duurde te lang om te verwerken. Ververs aub de pagina en probeer het nogmaals.'
     METHOD_ALREADY_REGISTERED: 'Die methode is voor dit account al geregistreerd'
@@ -94,3 +99,6 @@ nl:
     CSRF_FAILURE: 'De aanvraag duurde te lang om te verwerken. Ververs aub de pagina en probeer het nogmaals.'
     METHOD_NOT_PROVIDED: 'Het was niet duidelijk met welke methode moest worden ingelogd en er is geen standaard ingesteld.'
     METHOD_NOT_REGISTERED: 'Deze methode is niet geregistreerd voor dit account'
+  SilverStripe\MFA\Service\RegisteredMethodManager:
+    MFAADDED: 'Er is een tweestapsverificatie methode toegevoegd aan uw account'
+    MFAREMOVED: 'Er is een tweestapsverificatie methode verwijderd van uw account'
