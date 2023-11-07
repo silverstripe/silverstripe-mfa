@@ -35,6 +35,9 @@ en:
     REGISTERED: 'You have successfully registered {method} as an extra layer of protection for your account at {site}.'
     REMOVED: 'You have removed the {method} authentication method from your account at {site}.'
     USEDBACKUPCODE: 'A recovery code was used to gain access to your account at {site}.'
+  SilverStripe\MFA\Extension\AccountReset\MemberExtension:
+    db_AccountResetExpired: 'Account reset expired'
+    db_AccountResetHash: 'Account reset hash'
   SilverStripe\MFA\Extension\AccountReset\SecurityAdminExtension:
     ACCOUNT_RESET_EMAIL_SUBJECT: 'Reset your account'
     BAD_REQUEST: 'Invalid request'
@@ -90,12 +93,6 @@ en:
     METHOD_NOT_PROVIDED: 'No method was provided to login with and the Member has no default'
     METHOD_NOT_REGISTERED: 'Member does not have this method registered'
     NO_REGISTRATION_IN_PROGRESS: 'No registration in progress'
-  SilverStripe\MFA\Service\RegisteredMethodManager:
-    MFAADDED: 'A multi-factor authentication method was added to your account'
-    MFAREMOVED: 'A multi-factor authentication method was removed from your account'
-  SilverStripe\MFA\Extension\AccountReset\MemberExtension:
-    db_AccountResetExpired: 'Account reset expired'
-    db_AccountResetHash: 'Account reset hash'
   SilverStripe\MFA\RequestHandler\RegistrationHandlerTrait:
     CSRF_FAILURE: 'Your request timed out. Please refresh and try again'
     METHOD_ALREADY_REGISTERED: 'That method has already been registered against this Member'
@@ -105,3 +102,6 @@ en:
     CSRF_FAILURE: 'Your request timed out. Please refresh and try again'
     METHOD_NOT_PROVIDED: 'No method was provided to login with and the Member has no default'
     METHOD_NOT_REGISTERED: 'Member does not have this method registered'
+  SilverStripe\MFA\Service\RegisteredMethodManager:
+    MFAADDED: 'A multi-factor authentication method was added to your account'
+    MFAREMOVED: 'A multi-factor authentication method was removed from your account'

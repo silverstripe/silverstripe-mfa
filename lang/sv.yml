@@ -82,9 +82,6 @@ sv:
     METHOD_NOT_PROVIDED: 'Ingen metod gavs för att logga in med och kontot har ingen standardmetod'
     METHOD_NOT_REGISTERED: 'Kontot har inte denna metod registrerad'
     NO_REGISTRATION_IN_PROGRESS: 'Ingen registrering pågår'
-  SilverStripe\MFA\Service\RegisteredMethodManager:
-    MFAADDED: 'En multifaktorautentiseringsmetod har lagts till ditt konto'
-    MFAREMOVED: 'En multifaktorautentiseringsmetod togs bort från ditt konto'
   SilverStripe\MFA\RequestHandler\RegistrationHandlerTrait:
     CSRF_FAILURE: 'Din begäran tog för lång tid. Vänligen ladda om sidan och försök igen'
     METHOD_ALREADY_REGISTERED: 'Den metoden har redan registrerats mot detta konto'
@@ -94,3 +91,6 @@ sv:
     CSRF_FAILURE: 'Din begäran tog för lång tid. Vänligen ladda om sidan och försök igen'
     METHOD_NOT_PROVIDED: 'Ingen metod gavs för att logga in med och kontot har ingen standardmetod'
     METHOD_NOT_REGISTERED: 'Kontot har inte denna metod registrerad'
+  SilverStripe\MFA\Service\RegisteredMethodManager:
+    MFAADDED: 'En multifaktorautentiseringsmetod har lagts till ditt konto'
+    MFAREMOVED: 'En multifaktorautentiseringsmetod togs bort från ditt konto'
