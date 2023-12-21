@@ -7,8 +7,12 @@ use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DateField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\OptionsetField;
+use SilverStripe\Forms\TreeMultiselectField;
+use SilverStripe\MFA\Service\EnforcementManager;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\FieldType\DBField;
+use SilverStripe\ORM\ValidationResult;
+use SilverStripe\Security\Group;
 use SilverStripe\View\Requirements;
 
 /**
@@ -32,6 +36,13 @@ class SiteConfigExtension extends DataExtension
     private static $db = [
         'MFARequired' => 'Boolean',
         'MFAGracePeriodExpires' => 'Date',
+        'MFAAppliesTo' => 'Enum(["'
+            . EnforcementManager::APPLIES_TO_EVERYONE . '","'
+            . EnforcementManager::APPLIES_TO_GROUPS . '"])',
+    ];
+
+    private static $many_many = [
+      'MFAGroupRestrictions' => Group::class
     ];
 
     private static $defaults = [
@@ -47,8 +58,8 @@ class SiteConfigExtension extends DataExtension
             'MFARequired',
             '',
             [
-                false => _t(__CLASS__ . '.MFA_OPTIONAL', 'MFA is optional for everyone'),
-                true => _t(__CLASS__ . '.MFA_REQUIRED', 'MFA is required for everyone'),
+                false => _t(__CLASS__ . '.MFA_OPTIONAL2', 'MFA is optional'),
+                true => _t(__CLASS__ . '.MFA_REQUIRED2', 'MFA is required'),
             ]
         );
         $mfaOptions->addExtraClass('mfa-settings__required');
@@ -63,7 +74,28 @@ class SiteConfigExtension extends DataExtension
         ));
         $mfaGraceEnd->addExtraClass('mfa-settings__grace-period');
 
-        $mfaOptions = CompositeField::create($mfaOptions, $mfaGraceEnd)
+        $mfaAppliesToWho = OptionsetField::create(
+            'MFAAppliesTo',
+            _t(__CLASS__ . '.MFA_APPLIES_TO_TITLE', 'Who do these MFA settings apply to?'),
+            [
+                EnforcementManager::APPLIES_TO_EVERYONE => _t(__CLASS__ . '.EVERYONE', 'Everyone'),
+                EnforcementManager::APPLIES_TO_GROUPS => _t(
+                    __CLASS__ . '.ONLY_GROUPS',
+                    'Only these groups (choose from list)'
+                ),
+            ]
+        );
+
+        $mfaGroupRestrict = TreeMultiselectField::create(
+            'MFAGroupRestrictions',
+            _t(__CLASS__ . '.MFA_GROUP_RESTRICTIONS', 'MFA Groups'),
+            Group::class
+        )->setDescription(_t(
+            __CLASS__ . '.MFA_GROUP_RESTRICTIONS_DESCRIPTION',
+            'MFA will only be enabled for members of these selected groups.'
+        ))->addExtraClass('js-mfa-group-restrictions');
+
+        $mfaOptions = CompositeField::create($mfaOptions, $mfaGraceEnd, $mfaAppliesToWho, $mfaGroupRestrict)
             ->setTitle(DBField::create_field(
                 'HTMLFragment',
                 _t(__CLASS__ . '.MULTI_FACTOR_AUTHENTICATION', 'Multi-factor authentication (MFA)')
@@ -71,6 +103,22 @@ class SiteConfigExtension extends DataExtension
             ));
 
         $fields->addFieldToTab('Root.Access', $mfaOptions);
+    }
+
+    public function validate(ValidationResult $validationResult)
+    {
+        if (
+            $this->owner->MFAAppliesTo == EnforcementManager::APPLIES_TO_GROUPS
+            && !$this->owner->MFAGroupRestrictions()->exists()
+        ) {
+            $validationResult->addFieldError(
+                'MFAGroupRestrictions',
+                _t(
+                    __CLASS__ . '.MFA_GROUP_RESTRICTIONS_VALIDATION',
+                    'At least one group must be selected, or the MFA settings should apply to everyone.'
+                )
+            );
+        }
     }
 
     /**

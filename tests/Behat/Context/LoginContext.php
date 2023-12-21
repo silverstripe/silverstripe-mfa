@@ -44,7 +44,7 @@ class LoginContext extends CMSLoginContext
      */
     public function iSelectFromTheMfaSettings($option)
     {
-        $value = $option === 'MFA is required for everyone' ? 1 : 0;
+        $value = $option === 'MFA is required' ? 1 : 0;
         $this->getMainContext()->selectOption('MFARequired', $value);
     }
 }

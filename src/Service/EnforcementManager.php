@@ -23,6 +23,9 @@ class EnforcementManager
     use Configurable;
     use Injectable;
 
+    public const APPLIES_TO_EVERYONE = 'everyone';
+    public const APPLIES_TO_GROUPS = 'groups';
+
     /**
      * Indicate how many MFA methods the user must authenticate with before they are considered logged in
      *
@@ -72,7 +75,7 @@ class EnforcementManager
             return true;
         }
 
-        if ($this->isMFARequired()) {
+        if ($this->isMFARequired() && $this->isUserInMFAEnabledGroup($member)) {
             return false;
         }
 
@@ -110,6 +113,10 @@ class EnforcementManager
 
         if ($member->RegisteredMFAMethods()->exists()) {
             return true;
+        }
+
+        if (!$this->isUserInMFAEnabledGroup($member) && !$this->hasCompletedRegistration($member)) {
+            return false;
         }
 
         if ($this->isGracePeriodInEffect()) {
@@ -152,7 +159,9 @@ class EnforcementManager
      * Whether MFA is required for eligible users. This takes into account whether a grace period is set and whether
      * we're currently inside the window for it.
      *
-     * Note that in determining this, we ignore whether or not MFA is enabled for the site in general.
+     * Note that in determining this, we ignore whether or not MFA is enabled for the site in general. We also ignore
+     * whether any given member is in the list of groups for which MFA has been enabled - for that, call
+     * {@see isUserInMFAEnabledGroup()}
      *
      * @return bool
      */
@@ -265,5 +274,26 @@ class EnforcementManager
         }
 
         return true;
+    }
+
+    protected function isUserInMFAEnabledGroup(Member $member): bool
+    {
+        /** @var SiteConfig&SiteConfigExtension $siteConfig */
+        $siteConfig = SiteConfig::current_site_config();
+
+        // If we aren't restricting by groups, then we pass this check and move on
+        // to any other applicable checks.
+        if ($siteConfig->MFAAppliesTo !== self::APPLIES_TO_GROUPS) {
+            return true;
+        }
+
+        $groups = $siteConfig->MFAGroupRestrictions();
+
+        // If no groups are set in the Site Config MFAGroupRestrictions field, MFA is enabled for all users.
+        // This should generally not be possible, but can happen if a group is deleted after being set in that field.
+        if ($groups->count() === 0) {
+            return true;
+        }
+        return $member->inGroups($groups);
     }
 }
