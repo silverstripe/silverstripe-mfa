@@ -9,6 +9,7 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\OptionsetField;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\FieldType\DBField;
+use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\View\Requirements;
 
 /**
@@ -16,6 +17,8 @@ use SilverStripe\View\Requirements;
  *
  * @property bool $MFARequired
  * @property string $MFAGracePeriodExpires
+ *
+ * @extends DataExtension<SiteConfig>
  */
 class SiteConfigExtension extends DataExtension
 {

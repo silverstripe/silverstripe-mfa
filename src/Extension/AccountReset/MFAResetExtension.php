@@ -13,7 +13,7 @@ use SilverStripe\Security\Member;
  * resets the 'MFA Skipped' flag on the member so that they are prompted to
  * set up MFA again when they next log in.
  *
- * @package SilverStripe\MFA\Extension\AccountReset
+ * @extends Extension<SecurityExtension>
  */
 class MFAResetExtension extends Extension
 {

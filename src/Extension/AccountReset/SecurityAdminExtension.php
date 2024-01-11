@@ -23,8 +23,7 @@ use SilverStripe\Security\SecurityToken;
  * This extension is applied to SecurityAdmin to provide an additional endpoint
  * for sending account reset requests.
  *
- * @package SilverStripe\MFA\Extension
- * @property SecurityAdmin $owner
+ * @extends Extension<SecurityAdmin>
  */
 class SecurityAdminExtension extends Extension
 {
@@ -84,7 +83,6 @@ class SecurityAdminExtension extends Extension
             );
         }
 
-        /** @var Member $memberToReset */
         $memberToReset = Member::get()->byID($request->param('ID'));
 
         if ($memberToReset === null) {

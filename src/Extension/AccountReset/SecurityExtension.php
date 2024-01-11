@@ -25,8 +25,7 @@ use SilverStripe\Security\Security;
  * itself be extended to add procedures to the reset action (such as removing
  * additional authentication factors, sending alerts, etc.)
  *
- * @package SilverStripe\MFA\Extension
- * @property Security $owner
+ * @extends Extension<Security>
  */
 class SecurityExtension extends Extension
 {

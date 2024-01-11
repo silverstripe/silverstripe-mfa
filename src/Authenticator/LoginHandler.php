@@ -289,7 +289,6 @@ class LoginHandler extends BaseLoginHandler
         }
 
         // If we've completed registration and the member is not already logged in then we need to log them in
-        /** @var EnforcementManager $enforcementManager */
         $enforcementManager = EnforcementManager::create();
         $mustLogin = $request->getSession()->get(static::SESSION_KEY . '.mustLogin');
 
@@ -457,7 +456,6 @@ class LoginHandler extends BaseLoginHandler
         }
 
         $request = $this->getRequest();
-        /** @var EnforcementManager $enforcementManager */
         $enforcementManager = EnforcementManager::create();
 
         // Assert that the member has a valid registration.
@@ -469,7 +467,6 @@ class LoginHandler extends BaseLoginHandler
             && !$enforcementManager->hasCompletedRegistration($member)
         ) {
             // Log them out again
-            /** @var IdentityStore $identityStore */
             $identityStore = Injector::inst()->get(IdentityStore::class);
             $identityStore->logOut($request);
 

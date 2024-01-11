@@ -24,8 +24,9 @@ use SilverStripe\Security\Security;
  * @property MethodInterface $DefaultRegisteredMethod
  * @property string $DefaultRegisteredMethodID
  * @property bool $HasSkippedMFARegistration
- * @property Member|MemberExtension $owner
  * @method HasManyList<RegisteredMethod> RegisteredMFAMethods()
+ *
+ * @extends DataExtension<Member&static>
  */
 class MemberExtension extends DataExtension implements PermissionProvider
 {
