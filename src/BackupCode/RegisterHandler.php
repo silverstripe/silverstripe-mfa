@@ -54,10 +54,8 @@ class RegisterHandler implements RegisterHandlerInterface
         // Create or update the RegisteredMethod on the member. This breaks the normal flow as it's created on "start"
         // instead of after receiving a response from the user
 
-        /** @var MethodInterface $method */
         $method = Injector::inst()->get(Method::class);
 
-        /** @var BackupCodeGeneratorInterface $generator */
         $generator = Injector::inst()->get(BackupCodeGeneratorInterface::class);
         $codes = $generator->generate();
 

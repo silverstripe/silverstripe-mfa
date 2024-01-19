@@ -161,7 +161,6 @@ class RegisteredMethodManager
         $remainingMethods = $member->RegisteredMFAMethods()->count();
         if ($remainingMethods === 2) {
             // If there is only one other method (other than backup codes) then set that as the default method
-            /** @var RegisteredMethod|null $remainingMethodExceptBackup */
             $remainingMethodExceptBackup = $member->RegisteredMFAMethods()
                 ->filter('MethodClassName:Not', $backupMethod)
                 ->first();

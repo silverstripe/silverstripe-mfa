@@ -6,6 +6,9 @@ use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\Core\Extension;
 use SilverStripe\MFA\RequestHandler\BaseHandlerTrait;
 
+/**
+ * @extends Extension<LeftAndMain>
+ */
 class RequirementsExtension extends Extension
 {
     use BaseHandlerTrait;

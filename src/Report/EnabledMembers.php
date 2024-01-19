@@ -31,7 +31,7 @@ class EnabledMembers extends Report
      * Cached registered methods fetched for the current list of members. This should only be populated at render time
      * as methods will be fetched for the current "records" on the report
      *
-     * @var DataList|null
+     * @var ArrayList<RegisteredMethod>|null
      */
     private $registeredMethods = null;
 
@@ -49,7 +49,7 @@ class EnabledMembers extends Report
      * Supplies the list displayed in the report
      *
      * @param array $params
-     * @return DataList
+     * @return DataList<Member>
      */
     public function sourceRecords($params): DataList
     {
@@ -161,7 +161,7 @@ class EnabledMembers extends Report
     }
 
     /**
-     * @return ArrayList
+     * @return ArrayList<RegisteredMethod>
      */
     protected function getRegisteredMethodsForRecords(): ArrayList
     {

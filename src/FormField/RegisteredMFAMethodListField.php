@@ -46,7 +46,6 @@ class RegisteredMFAMethodListField extends FormField
         if (!$this->value && $this->getForm() && $this->getForm()->getRecord() instanceof Member) {
             $member = $this->getForm()->getRecord();
         } else {
-            /** @var Member $member */
             $member = DataObject::get_by_id(Member::class, $this->value);
         }
 
