@@ -23,6 +23,7 @@ fr:
     INVALID_METHOD: 'Aucune méthode de ce type n''est disponible'
     INVALID_REGISTERED_METHOD: 'Aucune méthode enregistrée de ce type n''est disponible'
     INVALID_SESSION: 'Session non valide. Veuillez rafraîchir et réessayer.'
+    MENUTITLE: SilverStripe\MFA\Controller\AdminRegistrationController
   SilverStripe\MFA\Email\AccountReset:
     ACTION: 'Cliquez ici pour réinitialiser votre compte'
     DESCRIPTION: 'Une réinitialisation du compte a été lancée pour votre compte.'
@@ -60,6 +61,7 @@ fr:
     MFA_LEARN_MORE: 'En savoir plus sur MFA'
     MFA_OPTIONAL: 'MFA est facultatif pour tous'
     MFA_REQUIRED: 'MFA est obligatoire pour tous'
+    MULTI_FACTOR_AUTHENTICATION: 'Multi-factor authentication (MFA)'
   SilverStripe\MFA\Model\RegisteredMethod:
     PLURALNAME: 'Méthodes enregistrées'
     PLURALS:

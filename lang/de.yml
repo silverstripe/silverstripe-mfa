@@ -23,6 +23,7 @@ de:
     INVALID_METHOD: 'Eine solche Methode ist nicht verfügbar'
     INVALID_REGISTERED_METHOD: 'Eine solche registrierte Methode ist nicht verfügbar'
     INVALID_SESSION: 'Ungültige Sitzung. Bitte aktualisieren Sie die Seite und versuchen Sie es erneut.'
+    MENUTITLE: SilverStripe\MFA\Controller\AdminRegistrationController
   SilverStripe\MFA\Email\AccountReset:
     ACTION: 'Klicken Sie hier, um Ihr Konto zurückzusetzen'
     DESCRIPTION: 'Für Ihr Konto wurde eine Rücksetzung veranlasst.'
