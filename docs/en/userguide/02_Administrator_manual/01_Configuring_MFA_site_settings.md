@@ -28,12 +28,11 @@ they will remain logged out.
 Once a user has set up an MFA method on their account, they will not be able to
 remove it unless they have added another.
 
-<div class="hint" markdown="1">
-**Set a date.**
-
-As an administrator, you can set the date for when MFA will be become mandatory.
-MFA will be optional before this date, however users without MFA configured will
-be prompted with the option to set it up on every login, until MFA is set up.
-
-![A screenshot of the site-wide MFA settings UI with the 'MFA is required for everyone' option selected and a date entered in the 'MFA will be required from' field](../_images/02-01-2-grace-period.png)
-</div>
+> [!TIP]
+> **Set a date.**
+>
+> As an administrator, you can set the date for when MFA will be become mandatory.
+> MFA will be optional before this date, however users without MFA configured will
+> be prompted with the option to set it up on every login, until MFA is set up.
+>
+> ![A screenshot of the site-wide MFA settings UI with the 'MFA is required for everyone' option selected and a date entered in the 'MFA will be required from' field](../_images/02-01-2-grace-period.png)

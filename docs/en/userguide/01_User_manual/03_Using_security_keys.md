@@ -25,9 +25,8 @@ You must also log in via **HTTPS**. If there is no padlock in the address bar
 of your browser, try changing `http://` to `https://` at the beginning of the
 address.
 
-<div class="notice" markdown='1'>
-Security keys are not recommended for use with Subsites. If you intend to log in to a Subsite over a different website domain to your main site, your security key will not be compatible. This is an intentional security requirement of the WebAuthn standard.
-</div>
+> [!CAUTION]
+> Security keys are not recommended for use with Subsites. If you intend to log in to a Subsite over a different website domain to your main site, your security key will not be compatible. This is an intentional security requirement of the WebAuthn standard.
 
 ## Setting up with a security key
 
@@ -45,7 +44,7 @@ area or button in the centre of the key.
 
 ![A screenshot of the Security key setup flow waiting for the security key to be activated](../_images/01-03-3-security-key-progress.png)
 
-Once you see the message _Key verified_, press **Complete registration** to
+Once you see the message *Key verified*, press **Complete registration** to
 finish registering the key with your account.
 
 ![A screenshot of a successful security key verification in the Security key setup flow](../_images/01-03-4-security-key-verified.png)

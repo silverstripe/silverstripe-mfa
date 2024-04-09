@@ -1,4 +1,8 @@
-# Creating a new MFA method: Front-end
+---
+title: Creating a new MFA method: front-end
+---
+
+# Creating a new MFA method: front-end
 
 ## Introduction
 
@@ -8,7 +12,7 @@ with React / Redux is recommended.
 
 The front-end components of MFA make use of [`react-injector`](https://github.com/silverstripe/react-injector/)
 (Injector) to allow sharing of React components and Redux reducers between separate JS bundles. You can find more
-documentation on the Injector API in the [Silverstripe docs](https://docs.silverstripe.org/en/4/developer_guides/customising_the_admin_interface/reactjs_redux_and_graphql/#the-injector-api).
+documentation on the Injector API in the [Silverstripe docs](https://docs.silverstripe.org/en/developer_guides/customising_the_admin_interface/reactjs_redux_and_graphql/#the-injector-api).
 
 You'll find it easiest to get up and running by matching the NPM dependencies and Webpack configuration used in the TOTP
 and WebAuthn modules, with a single entry point that handles registering your components with Injector. We also suggest
@@ -35,7 +39,7 @@ Your component for registration will need to accept a couple of key props:
 
 A Register component for Basic Math might look like this:
 
-```jsx
+```js
 import React, { Component } from 'react';
 
 class BasicMathRegister extends Component {
@@ -88,7 +92,7 @@ Your verification component will look similar to your registration one - it shou
 
 - `onCompleteVerification`: A callback that should be invoked when the user has completed the challenge presented, with
   any data that your `VerifyHandlerInterface::verify()` implementation needs to confirm the user's identity. **NOTE:**
-  It is _imperative_ that your backend code is involved in the verification process, as providing secrets to the browser
+  It is *imperative* that your backend code is involved in the verification process, as providing secrets to the browser
   or otherwise relying solely on it to approve the authentication can result in significant security flaws.
 - `moreOptionsControl`: A React component to render in your UI, which presents a button for users to pick a different
   method to authenticate with. We recommend referencing the layout of the TOTP / WebAuthn implementations.
@@ -97,7 +101,7 @@ Your verification component will look similar to your registration one - it shou
 
 A Verify component for Basic Math might look like this:
 
-```jsx
+```js
 import React, { Component } from 'react';
 
 class BasicMathVerify extends Component {
@@ -157,21 +161,21 @@ class BasicMathVerify extends Component {
 export default BasicMathVerify;
 ```
 
-## Register components with Injector
+## Register components with `Injector`
 
 In order for your components to be found and rendered by the MFA module, you'll need to register them with Injector.
 Your JS entrypoint (the file Webpack is pointed at) should contain the following:
 
 ```js
+import Injector from 'lib/Injector'; // available via expose-loader
 import BasicMathRegister from './components/BasicMathRegister';
 import BasicMathVerify from './components/BasicMathVerify';
-import Injector from 'lib/Injector'; // available via expose-loader
 
 // Injector expects dependencies to be registered during this event, and initialises itself afterwards
 window.document.addEventListener('DOMContentLoaded', () => {
   Injector.component.registerMany({
-  	BasicMathRegister,
-  	BasicMathVerify,
+    BasicMathRegister,
+    BasicMathVerify,
   });
 });
 ```
@@ -182,12 +186,12 @@ You can then specify the component names via `VerifyHandlerInterface::getCompone
 ## Method availability
 
 If your method needs to rely on frontend environment state to determine whether it's available (such as the browser
-being used), you can [define a Redux reducer](https://docs.silverstripe.org/en/4/developer_guides/customising_the_admin_interface/reactjs_redux_and_graphql/#using-injector-to-customise-redux-state-data)
+being used), you can [define a Redux reducer](https://docs.silverstripe.org/en/developer_guides/customising_the_admin_interface/reactjs_redux_and_graphql/#using-injector-to-customise-redux-state-data)
 that will initialise some "availability" information in the Redux store, which the MFA module will look for when it
 determines whether a method is available to be used or not. For example:
 
-```jsx
-// File: webauthn-module/client/src/state/availability/reducer.js
+```js
+// webauthn-module/client/src/state/availability/reducer.js
 export default (state = {}) => {
   const isAvailable = typeof window.AuthenticatorResponse !== 'undefined';
   const availability = isAvailable ? {} : {
@@ -202,8 +206,8 @@ export default (state = {}) => {
 You must register this reducer with Injector with a name that matches the pattern `[urlSegment]Availability`. This is
 required for the MFA module to find this part of the redux state. For example:
 
-```jsx
-// File: webauthn-module/client/src/boot/index.js
+```js
+// webauthn-module/client/src/boot/index.js
 import Injector from 'lib/Injector';
 import reducer from 'state/availability/reducer';
 
