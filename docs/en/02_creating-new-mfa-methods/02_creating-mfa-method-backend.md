@@ -1,8 +1,8 @@
 ---
-title: Creating a new MFA method: backend
+title: Creating a new MFA method - backend
 ---
 
-# Creating a new MFA method: backend
+# Creating a new MFA method - backend
 
 ## Method availability
 

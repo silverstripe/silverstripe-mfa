@@ -1,8 +1,8 @@
 ---
-title: Creating a new MFA method: front-end
+title: Creating a new MFA method - front-end
 ---
 
-# Creating a new MFA method: front-end
+# Creating a new MFA method - front-end
 
 ## Introduction
 
