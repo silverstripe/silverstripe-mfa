@@ -1,11 +1,18 @@
-# Creating a new MFA method: Backend
+---
+title: Creating a new MFA method - backend
+---
+
+# Creating a new MFA method - backend
 
 ## Method availability
 
 If your method isn't available in some situations, and you can determine this via server-side state, you can provide
-this information to the frontend via `MethodInterface::isAvailable()`, for example:
+this information to the frontend via [`MethodInterface::isAvailable()`](api:SilverStripe\MFA\Method\MethodInterface::isAvailable()), for example:
 
 ```php
+// app/src/MFA/Methods/MyMethod.php
+namespace App\MFA\Methods;
+
 class MyMethod implements MethodInterface
 {
     public function isAvailable(): bool

@@ -11,9 +11,9 @@ their accounts by sending them an email to reset their account via Silverstripe 
 ![A screenshot of a user's profile from the perspective of an administrator](../_images/02-02-1-account-reset.png)
 
 1. Verify that the person requesting the reset owns the account.
-2. Navigate to the **Security** section, and select the member requesting an
+1. Navigate to the **Security** section, and select the member requesting an
    account reset.
-3. Locate the **Multi-factor Authentication settings (MFA)** field, and if
+1. Locate the **Multi-factor Authentication settings (MFA)** field, and if
    prompted, re-enter your password to unlock it. Press
    **Send account reset email**, and confirm the action in the dialog.
 

@@ -16,8 +16,8 @@ re-enter your password to access them.
 
 1. Go to your profile page, and find the Multi-factor authentication settings
    area. If you are prompted for your password, enter it.
-2. Press **Add another MFA method**. If prompted, pick which method to set up.
-3. Follow the relevant guide for setting up the method:
+1. Press **Add another MFA method**. If prompted, pick which method to set up.
+1. Follow the relevant guide for setting up the method:
    - [Authenticator app](using_authenticator_apps)
    - [Security key](using_security_keys)
 
@@ -27,7 +27,7 @@ re-enter your password to access them.
 
 1. Go to your profile page, and find the Multi-factor authentication settings
    area. If you are prompted for your password, enter it.
-2. Find the method you want to modify, and press the action beneath it that you
+1. Find the method you want to modify, and press the action beneath it that you
    want to take. Actions include:
    - **Remove:** This will delete the method. This action is only available if
      you have multiple methods registered, or if MFA is optional for your site.
@@ -42,8 +42,8 @@ re-enter your password to access them.
 
 1. Go to your profile page, and find the Multi-factor authentication settings
    area. If you are prompted for your password, enter it.
-2. Find the Backup codes method, and press the **Reset** action.
-3. You will be presented with a new set of backup codes, which you should store
+1. Find the Backup codes method, and press the **Reset** action.
+1. You will be presented with a new set of backup codes, which you should store
    in a safe place.
 
 ![A screenshot of the dialog presented when a user presses the 'Reset' action on their CMS profile](../_images/01-05-4-reset-recovery-codes.png)
