@@ -3,7 +3,7 @@ title: Setting Up MFA
 summary: Running initial configuration of an MFA method for your account
 ---
 
-# Setting Up MFA
+# Setting up MFA
 
 ## 1. Prompted to setup MFA
 
@@ -15,7 +15,7 @@ prompted to set it up for your account.
 If MFA is optional, you can choose to skip setup, and you won’t be prompted
 again. You can manually add MFA from your profile in Silverstripe CMS at a later time.
 
-If an administrator has configured MFA as _required_, it will prompt you every
+If an administrator has configured MFA as *required*, it will prompt you every
 time you attempt to log in. You will be unable to access the CMS until you have
 completed this process.
 
@@ -35,10 +35,9 @@ verification you set up will become your default method. This method displays
 first when logging in. You can add more methods or change the default method via
 your CMS profile.
 
-<div class="hint" markdown="1">
-Setting up additional verification methods will give you more ways to log in if
-you lose access to your default method.
-</div>
+> [!TIP]
+> Setting up additional verification methods will give you more ways to log in if
+> you lose access to your default method.
 
 ## 3. Backup your recovery codes
 
