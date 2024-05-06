@@ -23,6 +23,7 @@ eo:
     INVALID_METHOD: 'Tia metodo ne disponeblas.'
     INVALID_REGISTERED_METHOD: 'Tia metodo registrita ne disponeblas.'
     INVALID_SESSION: 'Nevalida seanco. Bonvolu refreŝigi kaj reprovi.'
+    MENUTITLE: SilverStripe\MFA\Controller\AdminRegistrationController
   SilverStripe\MFA\Email\AccountReset:
     ACTION: 'Alklaku ĉi tie por reagordi vian konton.'
     DESCRIPTION: 'Ekreagordas vian konton.'

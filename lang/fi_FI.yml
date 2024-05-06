@@ -23,6 +23,7 @@ fi_FI:
     INVALID_METHOD: 'Varmennustapaa ei ole käytössä'
     INVALID_REGISTERED_METHOD: 'Rekiteröityä varmennustapaa ei ole käytössä'
     INVALID_SESSION: 'Virheellinen istunto. Ystävällisesti päivitä sivu ja kokeile uudelleen.'
+    MENUTITLE: SilverStripe\MFA\Controller\AdminRegistrationController
   SilverStripe\MFA\Email\AccountReset:
     ACTION: 'Klikkaa tästä asettamaksesi käyttäjätilisi uudelleen'
     DESCRIPTION: 'Käyttäjätilisi uudelleenasennus on aloitettu'
