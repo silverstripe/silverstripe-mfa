@@ -14,7 +14,7 @@ sv:
     DESCRIPTION: 'Återställningskoder gör att du kan logga in på ditt konto om din primära autentisering inte är tillgänglig. Varje kod kan endast användas en gång. Förvara dessa koder på ett säkert ställe, eftersom de inte kommer att vara synliga efter att du lämnat den här sidan.'
     SUPPORT_LINK_DESCRIPTION: 'Lär dig mer om återställningskoder.'
   SilverStripe\MFA\BackupCode\VerifyHandler:
-    INVALID_CODE: 'Ogiltig kod'
+    INVALID_CODE: 'Felaktig kod'
     MFAREMOVED: 'En återställningskod användes för att komma åt ditt konto'
   SilverStripe\MFA\Controller\AdminRegistrationController:
     COULD_NOT_DELETE: 'Det gick inte att ta bort den angivna metoden från användaren'
@@ -34,6 +34,9 @@ sv:
     REGISTERED: 'Du har nu registrerat {metod} som ett extra lager skydd för ditt konto på {site}'
     REMOVED: 'Du har raderat {method} autentiseringsmetod från ditt konto på {site}.'
     USEDBACKUPCODE: 'En återställningskod användes för att få åtkomst till ditt konto på {site}.'
+  SilverStripe\MFA\Extension\AccountReset\MemberExtension:
+    db_AccountResetExpired: 'Kontoåterställning har löpt ut'
+    db_AccountResetHash: "Hash för kontoåterställning\_"
   SilverStripe\MFA\Extension\AccountReset\SecurityAdminExtension:
     ACCOUNT_RESET_EMAIL_SUBJECT: 'Återställ ditt konto'
     BAD_REQUEST: 'Felaktig begäran'
@@ -54,6 +57,9 @@ sv:
     MFA_PERMISSION_DESCRIPTION: 'Möjlighet att se och återställa registrerade MFA-metoder för andra medlemmar. Kräver behörigheten "Åtkomst till "Säkerhet".'
     MFA_PERMISSION_LABEL: 'Visa/återställ MFA-konfiguration för andra medlemmar'
     MFA_SETTINGS_FIELD_LABEL: 'Inställningar för multifaktorautentisering (MFA)'
+    db_DefaultRegisteredMethodID: 'Standardregistrerat metod-ID'
+    db_HasSkippedMFARegistration: 'Har hoppat över MFA-registreringen'
+    has_many_RegisteredMFAMethods: "Registrerade MFA-metoder\_"
   SilverStripe\MFA\Extension\SiteConfigExtension:
     MFA_GRACE_DESCRIPTION: 'MFA-inställningar kommer att vara valfri före detta datum'
     MFA_GRACE_TITLE: 'MFA kommer att krävas från (valfritt)'
@@ -61,12 +67,16 @@ sv:
     MFA_OPTIONAL: 'MFA är valfritt för alla'
     MFA_REQUIRED: 'MFA krävs för alla'
     MULTI_FACTOR_AUTHENTICATION: 'Multifaktorautentisering (MFA)'
+    db_MFAGracePeriodExpires: 'MFA respitperiod löper ut'
+    db_MFARequired: "MFA krävs\_"
   SilverStripe\MFA\Model\RegisteredMethod:
     PLURALNAME: 'Registrerade metoder'
     PLURALS:
       one: 'En registrerad metod'
       other: '{count} Registrerade metoder'
     SINGULARNAME: 'Registrerad metod'
+    db_MethodClassName: Metodklassnamn
+    has_one_Member: Konto
   SilverStripe\MFA\Report\EnabledMembers:
     ANY_AT_LEAST_ONE: 'Vilka som helst (åtminstone en)'
     COLUMN_METHODS_REGISTERED: 'Registrerade metoder'
