@@ -20,7 +20,7 @@ class MFAResetExtension extends Extension
     /**
      * @param Member&MemberExtension $member
      */
-    public function handleAccountReset(Member $member)
+    protected function handleAccountReset(Member $member)
     {
         foreach ($member->RegisteredMFAMethods() as $method) {
             $method->delete();

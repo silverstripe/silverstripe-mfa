@@ -41,7 +41,7 @@ class SiteConfigExtension extends DataExtension
         'MFARequired' => false,
     ];
 
-    public function updateCMSFields(FieldList $fields)
+    protected function updateCMSFields(FieldList $fields)
     {
         Requirements::javascript('silverstripe/mfa: client/dist/js/bundle-cms.js');
         Requirements::css('silverstripe/mfa: client/dist/styles/bundle-cms.css');

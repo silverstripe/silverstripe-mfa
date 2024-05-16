@@ -90,7 +90,7 @@ class MemberExtension extends DataExtension implements PermissionProvider
         return implode(', ', $arr);
     }
 
-    public function updateCMSFields(FieldList $fields): FieldList
+    protected function updateCMSFields(FieldList $fields): FieldList
     {
         $fields->removeByName(['DefaultRegisteredMethodID', 'HasSkippedMFARegistration', 'RegisteredMFAMethods']);
 
