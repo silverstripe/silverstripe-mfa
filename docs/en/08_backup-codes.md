@@ -81,7 +81,7 @@ class BackupCodeGeneratorExtension extends Extension
     /**
      * Add some special characters into the character set for generating backup codes
      */
-    public function updateCharacterSet(&$characterSet)
+    protected function updateCharacterSet(&$characterSet)
     {
         $characterSet = array_merge($characterSet, ['!', '@', '#', '$', '%', '^']);
     }

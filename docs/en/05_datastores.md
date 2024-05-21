@@ -37,7 +37,7 @@ use SilverStripe\MFA\Store\StoreInterface;
 // Apply extension to SilverStripe\MFA\Authenticator\LoginHandler
 class MyLoginHandlerExtension extends Extension
 {
-    public function onBeforeSaveRequestToStore(HTTPRequest $request, StoreInterface $store): void
+    protected function onBeforeSaveRequestToStore(HTTPRequest $request, StoreInterface $store): void
     {
         $request->offsetUnset('MySecretField');
     }
