@@ -26,7 +26,7 @@ class MemberExtension extends DataExtension
         'AccountResetExpired' => 'Datetime',
     ];
 
-    public function updateCMSFields(FieldList $fields)
+    protected function updateCMSFields(FieldList $fields)
     {
         $fields->removeByName(['AccountResetHash', 'AccountResetExpired']);
 
