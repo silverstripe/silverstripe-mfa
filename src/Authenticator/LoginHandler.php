@@ -521,7 +521,7 @@ class LoginHandler extends BaseLoginHandler
      * @param LoggerInterface $logger
      * @return $this
      */
-    public function setLogger(LoggerInterface $logger): self
+    public function setLogger(LoggerInterface $logger): LoginHandler
     {
         $this->logger = $logger;
         return $this;

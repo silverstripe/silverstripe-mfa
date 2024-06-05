@@ -44,7 +44,7 @@ class RegisterHandlerTest extends FunctionalTest
      */
     public function testRegisterRouteIsPrivateWithGETMethod()
     {
-        $response = $this->get(self::URL);
+        $response = $this->get(RegisterHandlerTest::URL);
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -54,7 +54,7 @@ class RegisterHandlerTest extends FunctionalTest
     public function testRegisterRouteIsPrivateWithPOSTMethod()
     {
         // See https://github.com/silverstripe/silverstripe-framework/pull/8987 for why we have to provide $data.
-        $response = $this->post(self::URL, ['dummy' => 'data']);
+        $response = $this->post(RegisterHandlerTest::URL, ['dummy' => 'data']);
         $this->assertEquals(403, $response->getStatusCode());
     }
 
@@ -83,7 +83,7 @@ class RegisterHandlerTest extends FunctionalTest
 
         $this->scaffoldPartialLogin($staleMember);
 
-        $response = $this->get(self::URL);
+        $response = $this->get(RegisterHandlerTest::URL);
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertStringContainsString('This member already has an MFA method', $response->getBody());
     }
@@ -95,7 +95,7 @@ class RegisterHandlerTest extends FunctionalTest
     {
         $this->logInAs('stale-member');
 
-        $response = $this->get(self::URL);
+        $response = $this->get(RegisterHandlerTest::URL);
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertStringContainsString(
             'That method has already been registered against this Member',
@@ -113,7 +113,7 @@ class RegisterHandlerTest extends FunctionalTest
 
         $this->scaffoldPartialLogin($freshMember);
 
-        $response = $this->get(self::URL);
+        $response = $this->get(RegisterHandlerTest::URL);
         $this->assertEquals(200, $response->getStatusCode(), sprintf('Body: %s', $response->getBody()));
     }
 
@@ -126,7 +126,7 @@ class RegisterHandlerTest extends FunctionalTest
 
         $this->scaffoldPartialLogin($freshMember);
 
-        $response = $this->get(self::URL);
+        $response = $this->get(RegisterHandlerTest::URL);
         $this->assertEquals(200, $response->getStatusCode(), sprintf('Body: %s', $response->getBody()));
         $this->assertSame(SecurityToken::inst()->getValue(), json_decode($response->getBody())->SecurityID);
     }
@@ -141,7 +141,13 @@ class RegisterHandlerTest extends FunctionalTest
 
         $this->scaffoldPartialLogin($freshMember);
 
-        $response = $this->post(self::URL, ['dummy' => 'data'], null, $this->session(), json_encode(['number' => 7]));
+        $response = $this->post(
+            RegisterHandlerTest::URL,
+            ['dummy' => 'data'],
+            null,
+            $this->session(),
+            json_encode(['number' => 7])
+        );
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertStringContainsString('No registration in progress', $response->getBody());
     }
@@ -154,9 +160,15 @@ class RegisterHandlerTest extends FunctionalTest
         /** @var Member $freshMember */
         $freshMember = $this->objFromFixture(Member::class, 'fresh-member');
 
-        $this->scaffoldPartialLogin($freshMember, self::class); // Purposefully set to the wrong class
+        $this->scaffoldPartialLogin($freshMember, RegisterHandlerTest::class); // Purposefully set to the wrong class
 
-        $response = $this->post(self::URL, ['dummy' => 'data'], null, $this->session(), json_encode(['number' => 7]));
+        $response = $this->post(
+            RegisterHandlerTest::URL,
+            ['dummy' => 'data'],
+            null,
+            $this->session(),
+            json_encode(['number' => 7])
+        );
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertStringContainsString('Method does not match registration in progress', $response->getBody());
     }
@@ -192,7 +204,13 @@ class RegisterHandlerTest extends FunctionalTest
 
         $this->scaffoldPartialLogin($freshMember, 'mock-method');
 
-        $response = $this->post(self::URL, ['dummy' => 'data'], null, $this->session(), json_encode(['number' => 7]));
+        $response = $this->post(
+            RegisterHandlerTest::URL,
+            ['dummy' => 'data'],
+            null,
+            $this->session(),
+            json_encode(['number' => 7])
+        );
         $this->assertEquals(400, $response->getStatusCode());
         $this->assertStringContainsString('No. Bad user', $response->getBody());
     }
@@ -207,7 +225,13 @@ class RegisterHandlerTest extends FunctionalTest
 
         $this->scaffoldPartialLogin($freshMember, 'basic-math');
 
-        $response = $this->post(self::URL, ['dummy' => 'data'], null, $this->session(), json_encode(['number' => 7]));
+        $response = $this->post(
+            RegisterHandlerTest::URL,
+            ['dummy' => 'data'],
+            null,
+            $this->session(),
+            json_encode(['number' => 7])
+        );
         $this->assertEquals(201, $response->getStatusCode());
 
         // Make sure the registration made it into the database
@@ -225,14 +249,20 @@ class RegisterHandlerTest extends FunctionalTest
 
         $this->scaffoldPartialLogin($freshMember);
 
-        $response = $this->post(self::URL, ['dummy' => 'data'], null, $this->session(), json_encode(['number' => 7]));
+        $response = $this->post(
+            RegisterHandlerTest::URL,
+            ['dummy' => 'data'],
+            null,
+            $this->session(),
+            json_encode(['number' => 7])
+        );
         $this->assertEquals(403, $response->getStatusCode());
         $this->assertStringContainsString('Your request timed out', $response->getBody());
 
         $this->scaffoldPartialLogin($freshMember, 'basic-math');
 
         $response = $this->post(
-            self::URL,
+            RegisterHandlerTest::URL,
             [SecurityToken::inst()->getName() => SecurityToken::inst()->getValue()],
             null,
             $this->session(),
@@ -251,7 +281,13 @@ class RegisterHandlerTest extends FunctionalTest
         $freshMember = $this->objFromFixture(Member::class, 'fresh-member');
         $this->scaffoldPartialLogin($freshMember, 'basic-math');
 
-        $response = $this->post(self::URL, ['dummy' => 'data'], null, $this->session(), json_encode(['number' => 7]));
+        $response = $this->post(
+            RegisterHandlerTest::URL,
+            ['dummy' => 'data'],
+            null,
+            $this->session(),
+            json_encode(['number' => 7])
+        );
         $this->assertSame(403, $response->getStatusCode());
         $this->assertStringContainsString('You must be logged in or logging in', (string) $response->getBody());
     }
