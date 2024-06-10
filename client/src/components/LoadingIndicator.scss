@@ -21,7 +21,7 @@
   animation: $loading-indicator-animation;
 }
 
-@-webkit-keyframes spinner-loader {
+@keyframes spinner-loader {
   0% {
     -webkit-transform: rotate(0deg);
     transform: rotate(0deg);
@@ -31,6 +31,7 @@
     transform: rotate(360deg);
   }
 }
+
 @keyframes spinner-loader {
   0% {
     -webkit-transform: rotate(0deg);

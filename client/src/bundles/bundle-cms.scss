@@ -1,12 +1,8 @@
 // Core variables
 @import 'variables';
-
 @import '../styles/mfa-variables';
 @import '../styles/mfa';
-
 @import '../containers/Login';
-
-@import '../styles/mfa-variables';
 
 // Component styles
 @import '../components/FormField/RegisteredMFAMethodListField/AccountResetUI';
