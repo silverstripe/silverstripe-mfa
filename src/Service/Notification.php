@@ -43,7 +43,7 @@ class Notification
      */
     protected $logger;
 
-    public function setLogger(LoggerInterface $logger): self
+    public function setLogger(LoggerInterface $logger): Notification
     {
         $this->logger = $logger;
         return $this;

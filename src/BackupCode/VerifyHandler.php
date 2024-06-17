@@ -25,7 +25,7 @@ class VerifyHandler implements VerifyHandlerInterface
      */
     protected $notification;
 
-    public function setNotificationService(Notification $notification): self
+    public function setNotificationService(Notification $notification): VerifyHandler
     {
         $this->notification = $notification;
         return $this;
@@ -92,7 +92,10 @@ class VerifyHandler implements VerifyHandlerInterface
                 $registeredMethod->Member(),
                 'SilverStripe/MFA/Email/Notification_backupcodeused',
                 [
-                    'subject' => _t(self::class . '.MFAREMOVED', 'A recovery code was used to access your account'),
+                    'subject' => _t(
+                        VerifyHandler::class . '.MFAREMOVED',
+                        'A recovery code was used to access your account'
+                    ),
                     'CodesRemaining' => count($candidates ?? []),
                 ]
             );

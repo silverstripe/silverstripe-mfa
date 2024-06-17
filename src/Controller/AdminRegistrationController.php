@@ -272,7 +272,7 @@ class AdminRegistrationController extends LeftAndMain
      * @param LoggerInterface|null $logger
      * @return $this
      */
-    public function setLogger(?LoggerInterface $logger): self
+    public function setLogger(?LoggerInterface $logger): AdminRegistrationController
     {
         $this->logger = $logger;
         return $this;
