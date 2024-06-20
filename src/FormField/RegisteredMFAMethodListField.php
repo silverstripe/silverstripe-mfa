@@ -30,7 +30,7 @@ class RegisteredMFAMethodListField extends FormField
 
     public function Field($properties = array())
     {
-        return $this->renderWith(self::class);
+        return $this->renderWith(RegisteredMFAMethodListField::class);
     }
 
     /**

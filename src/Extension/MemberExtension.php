@@ -121,7 +121,7 @@ class MemberExtension extends DataExtension implements PermissionProvider
      */
     public function currentUserCanViewMFAConfig(): bool
     {
-        return (Permission::check(self::MFA_ADMINISTER_REGISTERED_METHODS)
+        return (Permission::check(MemberExtension::MFA_ADMINISTER_REGISTERED_METHODS)
             || $this->currentUserCanEditMFAConfig());
     }
 
@@ -160,7 +160,7 @@ class MemberExtension extends DataExtension implements PermissionProvider
         );
 
         return [
-            self::MFA_ADMINISTER_REGISTERED_METHODS => [
+            MemberExtension::MFA_ADMINISTER_REGISTERED_METHODS => [
                 'name' => $label,
                 'category' => $category,
                 'help' => $description,
