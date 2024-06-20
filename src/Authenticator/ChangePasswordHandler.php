@@ -192,7 +192,7 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
             ], 202);
         }
 
-        $request->getSession()->set(self::MFA_VERIFIED_ON_CHANGE_PASSWORD, true);
+        $request->getSession()->set(ChangePasswordHandler::MFA_VERIFIED_ON_CHANGE_PASSWORD, true);
         $store->clear($request);
 
         return $this->jsonResponse([
@@ -211,7 +211,7 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
             $hash
             && $member
             && $member->RegisteredMFAMethods()->exists()
-            && !$session->get(self::MFA_VERIFIED_ON_CHANGE_PASSWORD)
+            && !$session->get(ChangePasswordHandler::MFA_VERIFIED_ON_CHANGE_PASSWORD)
         ) {
             Injector::inst()->create(StoreInterface::class, $member)->save($this->getRequest());
             return $this->mfa();

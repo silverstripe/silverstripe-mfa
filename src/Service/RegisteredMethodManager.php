@@ -31,7 +31,7 @@ class RegisteredMethodManager
      */
     protected $notification;
 
-    public function setNotificationService(Notification $notification): self
+    public function setNotificationService(Notification $notification): RegisteredMethodManager
     {
         $this->notification = $notification;
         return $this;
@@ -94,7 +94,7 @@ class RegisteredMethodManager
                 'SilverStripe/MFA/Email/Notification_register',
                 [
                     'subject' => _t(
-                        self::class . '.MFAADDED',
+                        RegisteredMethodManager::class . '.MFAADDED',
                         'A multi-factor authentication method was added to your account'
                     ),
                     'MethodName' => $method->getName(),
@@ -186,7 +186,7 @@ class RegisteredMethodManager
             'SilverStripe/MFA/Email/Notification_removed',
             [
                 'subject' => _t(
-                    self::class . '.MFAREMOVED',
+                    RegisteredMethodManager::class . '.MFAREMOVED',
                     'A multi-factor authentication method was removed from your account'
                 ),
                 'MethodName' => $method->getName(),
