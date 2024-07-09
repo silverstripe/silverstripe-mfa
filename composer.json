@@ -26,7 +26,7 @@
     ],
     "require": {
         "php": "^7.4 || ^8.0",
-        "silverstripe/framework": "^4.10",
+        "silverstripe/framework": "^4.13",
         "silverstripe/admin": "^1.1",
         "silverstripe/siteconfig": "^4.1",
         "defuse/php-encryption": "^2.2",
