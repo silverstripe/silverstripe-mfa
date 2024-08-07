@@ -34,6 +34,9 @@ de:
     REGISTERED: 'Sie haben {method} erfolgreich als zusätzliche Schutzmaßnahme für Ihr Konto bei {site} registriert.'
     REMOVED: 'Sie haben die Authentifizierungsmethode {method} aus Ihrem Konto bei {site} entfernt.'
     USEDBACKUPCODE: 'Ein Wiederherstellungscode wurde verwendet, um Zugang zu Ihrem Konto bei {site} zu erhalten.'
+  SilverStripe\MFA\Extension\AccountReset\MemberExtension:
+    db_AccountResetExpired: 'Zurücksetzen des Kontos ist abgelaufen'
+    db_AccountResetHash: 'Konto zurücksetzen Hash'
   SilverStripe\MFA\Extension\AccountReset\SecurityAdminExtension:
     ACCOUNT_RESET_EMAIL_SUBJECT: 'Setzen Sie Ihr Konto zurück'
     BAD_REQUEST: 'Ungültige Anfrage'
@@ -54,6 +57,9 @@ de:
     MFA_PERMISSION_DESCRIPTION: 'Möglichkeit, registrierte MFA-Methoden für andere Nutzer einzusehen und zurückzusetzen. Erfordert die Berechtigung "Zugriff auf den Bereich ''Sicherheit''".'
     MFA_PERMISSION_LABEL: 'MFA-Konfiguration für andere Mitglieder anzeigen/zurücksetzen'
     MFA_SETTINGS_FIELD_LABEL: 'Einstellungen für die Multi-Faktor-Authentifizierung (MFA)'
+    db_DefaultRegisteredMethodID: 'Standardmäßig registrierte Methoden-ID'
+    db_HasSkippedMFARegistration: 'Hat die MFA-Registrierung übersprungen'
+    has_many_RegisteredMFAMethods: 'Registrierte MFA-Methoden'
   SilverStripe\MFA\Extension\SiteConfigExtension:
     MFA_GRACE_DESCRIPTION: 'Die Einrichtung der MFA ist vor diesem Datum optional.'
     MFA_GRACE_TITLE: 'MFA wird verlangt von (optional)'
@@ -61,12 +67,17 @@ de:
     MFA_OPTIONAL: 'MFA ist für alle optional'
     MFA_REQUIRED: 'MFA ist für alle erforderlich'
     MULTI_FACTOR_AUTHENTICATION: 'Multi-Faktor-Authentifizierung (MFA)'
+    db_MFAGracePeriodExpires: 'MFA-Schonfrist läuft ab'
+    db_MFARequired: 'MFA erforderlich'
   SilverStripe\MFA\Model\RegisteredMethod:
     PLURALNAME: 'Registrierte Methoden'
     PLURALS:
       one: 'Eine Registrierte Methode'
       other: '{count} Registrierte Methoden'
     SINGULARNAME: 'Registrierte Methoden'
+    db_Data: Daten
+    db_MethodClassName: 'Name der Methodenklasse'
+    has_one_Member: Mitglied
   SilverStripe\MFA\Report\EnabledMembers:
     ANY_AT_LEAST_ONE: 'Beliebig (mindestens eine)'
     COLUMN_METHODS_REGISTERED: 'Registrierte Methoden'
