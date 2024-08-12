@@ -46,6 +46,7 @@ trait RegistrationHandlerTrait
             ->addHeader('Content-Type', 'application/json');
 
         if (!$allowReregistration && $existingRegisteredMethod) {
+            /** @phpstan-ignore translation.key (we can't change this to __TRAIT__ until the next major release) */
             return $response->setBody(json_encode(['errors' => [_t(
                 __CLASS__ . '.METHOD_ALREADY_REGISTERED',
                 'That method has already been registered against this Member'
@@ -80,6 +81,7 @@ trait RegistrationHandlerTrait
         HTTPRequest $request
     ): Result {
         if (!SecurityToken::inst()->checkRequest($request)) {
+            /** @phpstan-ignore translation.key (we can't change this to __TRAIT__ until the next major release) */
             return Result::create(false, _t(
                 __CLASS__ . '.CSRF_FAILURE',
                 'Your request timed out. Please refresh and try again'
@@ -90,6 +92,7 @@ trait RegistrationHandlerTrait
 
         // If a registration process hasn't been initiated in a previous request, calling this method is invalid
         if (!$storedMethodName) {
+            /** @phpstan-ignore translation.key (we can't change this to __TRAIT__ until the next major release) */
             return Result::create(false, _t(__CLASS__ . '.NO_REGISTRATION_IN_PROGRESS', 'No registration in progress'));
         }
 
@@ -97,6 +100,7 @@ trait RegistrationHandlerTrait
         if ($storedMethodName !== $method->getURLSegment()) {
             return Result::create(
                 false,
+                /** @phpstan-ignore translation.key (we can't change this to __TRAIT__ until the next major release) */
                 _t(__CLASS__ . '.METHOD_MISMATCH', 'Method does not match registration in progress')
             );
         }
