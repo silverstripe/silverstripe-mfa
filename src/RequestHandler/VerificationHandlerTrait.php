@@ -54,11 +54,13 @@ trait VerificationHandlerTrait
         if (!$registeredMethod) {
             // We can display a specific message if there was no method specified
             if (!$requestedMethod) {
+                /** @phpstan-ignore translation.key (we can't change this to __TRAIT__ until the next major release) */
                 $message = _t(
                     __CLASS__ . '.METHOD_NOT_PROVIDED',
                     'No method was provided to login with and the Member has no default'
                 );
             } else {
+                /** @phpstan-ignore translation.key (we can't change this to __TRAIT__ until the next major release) */
                 $message = _t(__CLASS__ . '.METHOD_NOT_REGISTERED', 'Member does not have this method registered');
             }
 
@@ -90,6 +92,7 @@ trait VerificationHandlerTrait
     protected function completeVerificationRequest(StoreInterface $store, HTTPRequest $request): Result
     {
         if (!SecurityToken::inst()->checkRequest($request)) {
+            /** @phpstan-ignore translation.key (we can't change this to __TRAIT__ until the next major release) */
             return Result::create(false, _t(
                 __CLASS__ . '.CSRF_FAILURE',
                 'Your request timed out. Please refresh and try again'
