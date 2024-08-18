@@ -16,7 +16,7 @@ class RequirementsExtension extends Extension
     /**
      * @see LeftAndMain::init()
      */
-    public function init()
+    protected function onInit()
     {
         // As requirements for this module are dynamic - plugin methods apply their own requirements - we need to
         // include these requirements at run-time (opposed to using $extra_requirements_*)

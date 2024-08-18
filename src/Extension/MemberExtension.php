@@ -172,7 +172,7 @@ class MemberExtension extends DataExtension implements PermissionProvider
     /**
      * Clear any temporary multi-factor authentication related session keys when a member is successfully logged in.
      */
-    public function afterMemberLoggedIn(): void
+    protected function onAfterMemberLoggedIn(): void
     {
         if (!Controller::has_curr()) {
             return;
