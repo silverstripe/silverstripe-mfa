@@ -7,7 +7,7 @@ use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DateField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\OptionsetField;
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\View\Requirements;
@@ -18,9 +18,9 @@ use SilverStripe\View\Requirements;
  * @property bool $MFARequired
  * @property string $MFAGracePeriodExpires
  *
- * @extends DataExtension<SiteConfig>
+ * @extends Extension<SiteConfig>
  */
-class SiteConfigExtension extends DataExtension
+class SiteConfigExtension extends Extension
 {
     /**
      * A URL that will help CMS users find out more information about multi-factor authentication

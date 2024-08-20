@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SilverStripe\MFA\Extension\AccountReset;
 
 use SilverStripe\Forms\FieldList;
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverStripe\Security\Member;
@@ -17,9 +17,9 @@ use SilverStripe\Security\RandomGenerator;
  * @property string $AccountResetHash
  * @property DBDatetime $AccountResetExpired
  *
- * @extends DataExtension<Member&static>
+ * @extends Extension<Member&static>
  */
-class MemberExtension extends DataExtension
+class MemberExtension extends Extension
 {
     private static $db = [
         'AccountResetHash' => 'Varchar(160)',
