@@ -11,7 +11,7 @@ use SilverStripe\MFA\Exception\InvalidMethodException;
 use SilverStripe\MFA\FormField\RegisteredMFAMethodListField;
 use SilverStripe\MFA\Method\MethodInterface;
 use SilverStripe\MFA\Model\RegisteredMethod;
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 use SilverStripe\ORM\HasManyList;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Permission;
@@ -26,9 +26,9 @@ use SilverStripe\Security\Security;
  * @property bool $HasSkippedMFARegistration
  * @method HasManyList<RegisteredMethod> RegisteredMFAMethods()
  *
- * @extends DataExtension<Member&static>
+ * @extends Extension<Member&static>
  */
-class MemberExtension extends DataExtension implements PermissionProvider
+class MemberExtension extends Extension implements PermissionProvider
 {
     public const MFA_ADMINISTER_REGISTERED_METHODS = 'MFA_ADMINISTER_REGISTERED_METHODS';
 
