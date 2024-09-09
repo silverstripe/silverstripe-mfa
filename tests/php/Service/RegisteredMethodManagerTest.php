@@ -218,7 +218,7 @@ class RegisteredMethodManagerTest extends SapphireTest
     private function registerServiceForMFAToBeRequired($required = false)
     {
         $enforcementMock = $this->getMockBuilder(EnforcementManager::class)
-            ->setMethods(['isMFARequired'])
+            ->onlyMethods(['isMFARequired'])
             ->getMock();
         $enforcementMock
             ->method('isMFARequired')

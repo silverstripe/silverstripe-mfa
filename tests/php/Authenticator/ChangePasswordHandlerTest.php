@@ -130,7 +130,7 @@ class ChangePasswordHandlerTest extends FunctionalTest
         /** @var ChangePasswordHandler&MockObject $handler */
         $handler = $this->getMockBuilder(ChangePasswordHandler::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getStore'])
+            ->onlyMethods(['getStore'])
             ->getMock();
 
         $handler->expects($this->once())->method('getStore')->willReturn(null);
@@ -143,7 +143,7 @@ class ChangePasswordHandlerTest extends FunctionalTest
         /** @var ChangePasswordHandler&MockObject $handler */
         $handler = $this->getMockBuilder(ChangePasswordHandler::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getStore'])
+            ->onlyMethods(['getStore'])
             ->getMock();
 
         $store = $this->createMock(TestStore::class);
@@ -160,7 +160,7 @@ class ChangePasswordHandlerTest extends FunctionalTest
         /** @var ChangePasswordHandler&MockObject $handler */
         $handler = $this->getMockBuilder(ChangePasswordHandler::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getStore', 'createStartVerificationResponse'])
+            ->onlyMethods(['getStore', 'createStartVerificationResponse'])
             ->getMock();
 
         $store = $this->createMock(TestStore::class);
@@ -185,7 +185,7 @@ class ChangePasswordHandlerTest extends FunctionalTest
         /** @var ChangePasswordHandler&MockObject $handler */
         $handler = $this->getMockBuilder(ChangePasswordHandler::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getStore', 'completeVerificationRequest'])
+            ->onlyMethods(['getStore', 'completeVerificationRequest'])
             ->getMock();
 
         /** @var LoggerInterface&MockObject $logger */
@@ -209,7 +209,7 @@ class ChangePasswordHandlerTest extends FunctionalTest
         /** @var ChangePasswordHandler&MockObject $handler */
         $handler = $this->getMockBuilder(ChangePasswordHandler::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getStore', 'completeVerificationRequest'])
+            ->onlyMethods(['getStore', 'completeVerificationRequest'])
             ->getMock();
 
         $store = $this->createMock(TestStore::class);
@@ -229,7 +229,7 @@ class ChangePasswordHandlerTest extends FunctionalTest
         /** @var ChangePasswordHandler&MockObject $handler */
         $handler = $this->getMockBuilder(ChangePasswordHandler::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getStore', 'completeVerificationRequest', 'isVerificationComplete'])
+            ->onlyMethods(['getStore', 'completeVerificationRequest', 'isVerificationComplete'])
             ->getMock();
 
         $store = $this->createMock(TestStore::class);
@@ -248,7 +248,7 @@ class ChangePasswordHandlerTest extends FunctionalTest
         /** @var ChangePasswordHandler&MockObject $handler */
         $handler = $this->getMockBuilder(ChangePasswordHandler::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getStore', 'completeVerificationRequest', 'isVerificationComplete'])
+            ->onlyMethods(['getStore', 'completeVerificationRequest', 'isVerificationComplete'])
             ->getMock();
 
         $store = new SessionStore($this->createMock(Member::class));

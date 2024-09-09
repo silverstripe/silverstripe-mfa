@@ -31,6 +31,7 @@ use SilverStripe\Security\Security;
 use SilverStripe\Security\SecurityToken;
 use SilverStripe\Security\SudoMode\SudoModeServiceInterface;
 use SilverStripe\SiteConfig\SiteConfig;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class LoginHandlerTest extends FunctionalTest
 {
@@ -201,8 +202,8 @@ class LoginHandlerTest extends FunctionalTest
     /**
      * @param bool $mfaRequired
      * @param string|null $member
-     * @dataProvider cannotSkipMFAProvider
      */
+    #[DataProvider('cannotSkipMFAProvider')]
     public function testCannotSkipMFA($mfaRequired, $member = 'robbie')
     {
         $this->setSiteConfig(['MFARequired' => $mfaRequired]);
@@ -218,7 +219,7 @@ class LoginHandlerTest extends FunctionalTest
     /**
      * @return array[]
      */
-    public function cannotSkipMFAProvider()
+    public static function cannotSkipMFAProvider()
     {
         return [
             'mfa is required' => [true],
@@ -231,8 +232,8 @@ class LoginHandlerTest extends FunctionalTest
      * @param string $memberFixture
      * @param bool $mfaRequiredInGrace
      * @param string|null $expectedRedirect
-     * @dataProvider skipRegistrationProvider
      */
+    #[DataProvider('skipRegistrationProvider')]
     public function testSkipRegistration($memberFixture, $mfaRequiredInGrace = false, $expectedRedirect = null)
     {
         if ($mfaRequiredInGrace) {
@@ -270,7 +271,7 @@ class LoginHandlerTest extends FunctionalTest
         $this->assertTrue((bool)$member->HasSkippedMFARegistration);
     }
 
-    public function skipRegistrationProvider()
+    public static function skipRegistrationProvider()
     {
         return [
             ['guy'],
@@ -282,8 +283,8 @@ class LoginHandlerTest extends FunctionalTest
 
     /**
      * @param string $memberFixture
-     * @dataProvider methodlessMemberFixtureProvider
      */
+    #[DataProvider('methodlessMemberFixtureProvider')]
     public function testBackURLIsPreservedWhenSkipping($memberFixture)
     {
         /** @var Member $member */
@@ -499,7 +500,7 @@ class LoginHandlerTest extends FunctionalTest
 
         /** @var LoginHandler|MockObject $handler */
         $handler = $this->getMockBuilder(LoginHandler::class)
-            ->setMethods(['completeVerificationRequest'])
+            ->onlyMethods(['completeVerificationRequest'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -522,8 +523,8 @@ class LoginHandlerTest extends FunctionalTest
 
     /**
      * @param string $memberFixture
-     * @dataProvider methodlessMemberFixtureProvider
      */
+    #[DataProvider('methodlessMemberFixtureProvider')]
     public function testFinishVerificationWillRedirectToTheBackURLSetAsLoginIsStarted($memberFixture)
     {
         /** @var Member $member */
@@ -534,7 +535,7 @@ class LoginHandlerTest extends FunctionalTest
 
         /** @var LoginHandler|MockObject $handler */
         $handler = $this->getMockBuilder(LoginHandler::class)
-            ->setMethods(['completeVerificationRequest'])
+            ->onlyMethods(['completeVerificationRequest'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -572,7 +573,7 @@ class LoginHandlerTest extends FunctionalTest
         $this->assertSame('foobar', $handler->getBackURL());
     }
 
-    public function methodlessMemberFixtureProvider()
+    public static function methodlessMemberFixtureProvider()
     {
         return [['guy', 'carla']];
     }
