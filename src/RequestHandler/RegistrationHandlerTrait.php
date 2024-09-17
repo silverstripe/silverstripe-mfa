@@ -11,7 +11,7 @@ use SilverStripe\MFA\Service\RegisteredMethodManager;
 use SilverStripe\MFA\State\RegisteredMethodDetailsInterface;
 use SilverStripe\MFA\State\Result;
 use SilverStripe\MFA\Store\StoreInterface;
-use SilverStripe\ORM\ValidationResult;
+use SilverStripe\Core\Validation\ValidationResult;
 use SilverStripe\Security\SecurityToken;
 
 /**
@@ -73,7 +73,7 @@ trait RegistrationHandlerTrait
      * @param MethodInterface $method
      * @param HTTPRequest $request
      * @return Result
-     * @throws \SilverStripe\ORM\ValidationException
+     * @throws \SilverStripe\Core\Validation\ValidationException
      */
     public function completeRegistrationRequest(
         StoreInterface $store,

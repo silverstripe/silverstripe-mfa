@@ -16,7 +16,7 @@ use SilverStripe\Forms\RequiredFields;
 use SilverStripe\MFA\JSONResponse;
 use SilverStripe\MFA\RequestHandler\BaseHandlerTrait;
 use SilverStripe\ORM\FieldType\DBDatetime;
-use SilverStripe\ORM\ValidationResult;
+use SilverStripe\Core\Validation\ValidationResult;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 
