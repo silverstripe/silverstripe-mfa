@@ -10,6 +10,7 @@ use SilverStripe\MFA\Report\EnabledMembers;
 use SilverStripe\MFA\Service\MethodRegistry;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method as BasicMathMethod;
 use SilverStripe\MFA\Tests\Stub\Null\Method as NullMethod;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class EnabledMembersTest extends SapphireTest
 {
@@ -34,10 +35,10 @@ class EnabledMembersTest extends SapphireTest
     }
 
     /**
-     * @dataProvider sourceRecordsParamsProvider
      * @param array $params
      * @param int $expectedRows
      */
+    #[DataProvider('sourceRecordsParamsProvider')]
     public function testSourceRecords($params, $expectedRows)
     {
         $report = new EnabledMembers();
@@ -45,7 +46,7 @@ class EnabledMembersTest extends SapphireTest
         $this->assertCount($expectedRows, $records);
     }
 
-    public function sourceRecordsParamsProvider()
+    public static function sourceRecordsParamsProvider()
     {
         return [
             'no filters' => [[], 5],

@@ -12,14 +12,13 @@ use SilverStripe\MFA\Service\Notification;
 use SilverStripe\MFA\Tests\Stub\Store\TestStore;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class VerifyHandlerTest extends SapphireTest
 {
     protected static $fixture_file = 'VerifyHandlerTest.yml';
 
-    /**
-     * @dataProvider getVerifyTests
-     */
+    #[DataProvider('getVerifyTests')]
     public function testVerifyValidatesCodes($expectedResult, $input, $message)
     {
         $handler = (new VerifyHandler())->setNotificationService($this->createMock(Notification::class));
@@ -57,7 +56,7 @@ class VerifyHandlerTest extends SapphireTest
         );
     }
 
-    public function getVerifyTests()
+    public static function getVerifyTests()
     {
         return [
             [false, 'asw123', 'Invalid characters are handled'],
