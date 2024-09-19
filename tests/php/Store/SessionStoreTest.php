@@ -5,6 +5,7 @@ namespace SilverStripe\MFA\Tests\Store;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\ORM\Connect\Database;
+use SilverStripe\ORM\Connect\MySQLDatabase;
 use SilverStripe\ORM\DB;
 use SilverStripe\Security\Member;
 
@@ -78,17 +79,25 @@ class SessionStoreTest extends SapphireTest
 
         // Replace the DB connection with a mock
         $connection = DB::get_conn();
-        $database = $this->getMockBuilder(Database::class)
-            ->enableProxyingToOriginalMethods()
-            ->setProxyTarget($connection)
-            ->getMock();
-
-        $database->expects($this->never())->method('query');
-        $database->expects($this->never())->method('preparedQuery');
-        DB::set_conn($database);
+        $mock = new class ($connection) extends MySQLDatabase  {
+            public int $queryNum = 0;
+            public int $preparedQueryNum = 0;
+            public function query($sql, $errorLevel = E_USER_ERROR)
+            {
+                $this->queryNum++;
+            }
+            public function preparedQuery($sql, $parameters, $errorLevel = E_USER_ERROR)
+            {
+                $this->preparedQueryNum++;
+            }
+        };
+        DB::set_conn($mock);
 
         // Replicate the deserialisation that happens on session start
         $store->__unserialize($serialised);
+
+        $this->assertSame(0, $mock->queryNum);
+        $this->assertSame(0, $mock->preparedQueryNum);
 
         // Finish the test and allow mock assertions to fail the test
         DB::set_conn($connection);
