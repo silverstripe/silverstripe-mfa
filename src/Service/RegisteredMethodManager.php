@@ -65,7 +65,7 @@ class RegisteredMethodManager
      * @param MethodInterface $method
      * @param mixed $data
      * @return bool Whether the method was added/replace
-     * @throws \SilverStripe\ORM\ValidationException
+     * @throws \SilverStripe\Core\Validation\ValidationException
      */
     public function registerForMember(Member $member, MethodInterface $method, $data = null): bool
     {
@@ -144,7 +144,7 @@ class RegisteredMethodManager
      * @param Member&MemberExtension $member
      * @param MethodInterface $method
      * @return bool Returns false if the given method is not registered for the member
-     * @throws \SilverStripe\ORM\ValidationException
+     * @throws \SilverStripe\Core\Validation\ValidationException
      */
     public function deleteFromMember(Member $member, MethodInterface $method): bool
     {
