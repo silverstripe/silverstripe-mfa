@@ -91,7 +91,7 @@ class SessionStoreTest extends SapphireTest
                 $this->preparedQueryNum++;
             }
         };
-        DB::set_conn($mock);
+        DB::set_conn($mock, DB::CONN_PRIMARY);
 
         // Replicate the deserialisation that happens on session start
         $store->__unserialize($serialised);
@@ -100,6 +100,6 @@ class SessionStoreTest extends SapphireTest
         $this->assertSame(0, $mock->preparedQueryNum);
 
         // Finish the test and allow mock assertions to fail the test
-        DB::set_conn($connection);
+        DB::set_conn($connection, DB::CONN_PRIMARY);
     }
 }
