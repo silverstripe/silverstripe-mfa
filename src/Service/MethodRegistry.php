@@ -70,7 +70,7 @@ class MethodRegistry
             if (!$method instanceof MethodInterface) {
                 throw new UnexpectedValueException(sprintf(
                     'Given method "%s" does not implement %s',
-                    $method,
+                    get_class($method),
                     MethodInterface::class
                 ));
             }
