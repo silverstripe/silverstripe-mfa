@@ -135,7 +135,7 @@ class LoginHandler extends BaseLoginHandler
 
     /**
      * Action handler for loading the MFA authentication React app
-     * Template variables defined here will be used by the rendering controller's template - normally Page.ss
+     * Template variables defined here will be used by the rendering controller's template - normally Page
      *
      * @return HTTPResponse|array
      */
