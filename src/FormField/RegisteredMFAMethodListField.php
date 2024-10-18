@@ -58,8 +58,8 @@ class RegisteredMFAMethodListField extends FormField
                 ],
                 // We need all available methods so we can re-register pre-existing methods
                 'allAvailableMethods' => $generator->getAvailableMethods(),
-                'backupCreationDate' => $this->getBackupMethod()
-                    ? $this->getBackupMethod()->Created
+                'backupCreatedDate' => $this->getBackupMethod($member)
+                    ? $this->getBackupMethod($member)->Created
                     : null,
                 'resetEndpoint' => SecurityAdmin::singleton()->Link("users/reset/{$this->value}"),
                 'isMFARequired' => EnforcementManager::create()->isMFARequired(),
@@ -72,9 +72,9 @@ class RegisteredMFAMethodListField extends FormField
      *
      * @return RegisteredMethod|null
      */
-    protected function getBackupMethod(): ?RegisteredMethod
+    protected function getBackupMethod($member = null): ?RegisteredMethod
     {
         $backupMethod = MethodRegistry::singleton()->getBackupMethod();
-        return RegisteredMethodManager::singleton()->getFromMember(Security::getCurrentUser(), $backupMethod);
+        return RegisteredMethodManager::singleton()->getFromMember($member ?? Security::getCurrentUser(), $backupMethod);
     }
 }
