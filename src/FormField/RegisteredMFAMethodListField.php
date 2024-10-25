@@ -17,6 +17,11 @@ use SilverStripe\Security\Security;
 class RegisteredMFAMethodListField extends FormField
 {
     /**
+     * @var Member
+     */
+    private $member;
+
+    /**
      * {@inheritDoc}
      *
      * @param string      $name  Field name
@@ -44,13 +49,13 @@ class RegisteredMFAMethodListField extends FormField
         $generator = SchemaGenerator::create();
 
         if (!$this->value && $this->getForm() && $this->getForm()->getRecord() instanceof Member) {
-            $member = $this->getForm()->getRecord();
+            $this->member = $this->getForm()->getRecord();
         } else {
-            $member = DataObject::get_by_id(Member::class, $this->value);
+            $this->member = DataObject::get_by_id(Member::class, $this->value);
         }
 
         return array_merge($defaults, [
-            'schema' => $generator->getSchema($member) + [
+            'schema' => $generator->getSchema($this->member) + [
                 'endpoints' => [
                     'register' => $adminController->Link('register/{urlSegment}'),
                     'remove' => $adminController->Link('method/{urlSegment}'),
@@ -58,8 +63,8 @@ class RegisteredMFAMethodListField extends FormField
                 ],
                 // We need all available methods so we can re-register pre-existing methods
                 'allAvailableMethods' => $generator->getAvailableMethods(),
-                'backupCreatedDate' => $this->getBackupMethod($member)
-                    ? $this->getBackupMethod($member)->Created
+                'backupCreatedDate' => $this->getBackupMethod()
+                    ? $this->getBackupMethod()->Created
                     : null,
                 'resetEndpoint' => SecurityAdmin::singleton()->Link("users/reset/{$this->value}"),
                 'isMFARequired' => EnforcementManager::create()->isMFARequired(),
@@ -70,12 +75,14 @@ class RegisteredMFAMethodListField extends FormField
     /**
      * Get the registered backup method (if any) from the currently logged in user.
      *
-     * @param Member $member
      * @return RegisteredMethod|null
      */
-    protected function getBackupMethod(Member $member): ?RegisteredMethod
+    protected function getBackupMethod(): ?RegisteredMethod
     {
         $backupMethod = MethodRegistry::singleton()->getBackupMethod();
-        return RegisteredMethodManager::singleton()->getFromMember($member, $backupMethod);
+        return RegisteredMethodManager::singleton()->getFromMember(
+            $this->member ?? Security::getCurrentUser(),
+            $backupMethod
+        );
     }
 }
