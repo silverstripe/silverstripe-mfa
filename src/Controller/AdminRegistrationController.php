@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace SilverStripe\MFA\Controller;
 
 use Psr\Log\LoggerInterface;
-use SilverStripe\Admin\LeftAndMain;
+use SilverStripe\Admin\AdminController;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
@@ -25,14 +25,12 @@ use SilverStripe\Security\SecurityToken;
  * This controller handles actions that a user may perform on MFA methods registered on their own account while logged
  * in. This includes deleting methods, registering new methods and replacing (re-registering) existing methods.
  */
-class AdminRegistrationController extends LeftAndMain
+class AdminRegistrationController extends AdminController
 {
     use RegistrationHandlerTrait;
     use BaseHandlerTrait;
 
     private static $url_segment = 'mfa';
-
-    private static $ignore_menuitem = true;
 
     private static $url_handlers = [
         'GET register/$Method' => 'startRegistration',
