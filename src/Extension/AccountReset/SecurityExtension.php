@@ -12,7 +12,7 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\Form;
 use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\PasswordField;
-use SilverStripe\Forms\RequiredFields;
+use SilverStripe\Forms\Validation\RequiredFieldsValidator;
 use SilverStripe\MFA\JSONResponse;
 use SilverStripe\MFA\RequestHandler\BaseHandlerTrait;
 use SilverStripe\ORM\FieldType\DBDatetime;
@@ -123,7 +123,7 @@ class SecurityExtension extends Extension
             FormAction::create('doResetAccount', 'Reset account'),
         ]);
 
-        $validation = RequiredFields::create(['NewPassword1', 'NewPassword2']);
+        $validation = RequiredFieldsValidator::create(['NewPassword1', 'NewPassword2']);
 
         $form = Form::create($this->owner, 'ResetAccountForm', $fields, $actions, $validation);
 

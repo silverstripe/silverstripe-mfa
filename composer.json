@@ -29,7 +29,7 @@
         "silverstripe/framework": "^6",
         "silverstripe/admin": "^3",
         "silverstripe/siteconfig": "^6",
-        "defuse/php-encryption": "^2.3",
+        "defuse/php-encryption": "^2.4",
         "silverstripe/login-forms": "^6"
     },
     "require-dev": {
