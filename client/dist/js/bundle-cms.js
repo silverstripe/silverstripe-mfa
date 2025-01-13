@@ -1,1 +1,4374 @@
-!function(){var e={9696:function(e,t,n){"use strict";var o=i(n(8451)),r=i(n(3542)),a=i(n(3233));function i(e){return e&&e.__esModule?e:{default:e}}window.document.addEventListener("DOMContentLoaded",(()=>{(0,o.default)(),(0,r.default)(),(0,a.default)()}))},8451:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var o=l(n(5207)),r=l(n(1973)),a=l(n(3728)),i=l(n(4121));function l(e){return e&&e.__esModule?e:{default:e}}t.default=()=>{(0,i.default)(),o.default.component.registerMany({MFARegister:r.default,RegisteredMFAMethodListField:a.default})}},3542:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var o=i(n(5207)),r=i(n(6784)),a=i(n(420));function i(e){return e&&e.__esModule?e:{default:e}}t.default=()=>{(0,a.default)(),o.default.reducer.register("mfaAdministration",r.default)}},3233:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var o=a(n(5207)),r=a(n(9113));function a(e){return e&&e.__esModule?e:{default:e}}t.default=()=>{o.default.transform("apply-sudo-mode-to-mfa",(e=>{e.component("RegisteredMFAMethodListField",r.default)}))}},4121:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var o=i(n(5420)),r=i(n(8044)),a=i(n(5207));function i(e){return e&&e.__esModule?e:{default:e}}t.default=()=>{a.default.component.registerMany({BackupCodeRegister:o.default,BackupCodeVerify:r.default})}},420:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var o=i(n(5207)),r=i(n(1711)),a=i(n(2087));function i(e){return e&&e.__esModule?e:{default:e}}t.default=()=>{o.default.reducer.register("mfaRegister",r.default),o.default.reducer.register("mfaVerify",a.default)}},5420:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var o=function(e,t){if(!t&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var n=u(t);if(n&&n.has(e))return n.get(e);var o={__proto__:null},r=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var a in e)if("default"!==a&&{}.hasOwnProperty.call(e,a)){var i=r?Object.getOwnPropertyDescriptor(e,a):null;i&&(i.get||i.set)?Object.defineProperty(o,a,i):o[a]=e[a]}return o.default=e,n&&n.set(e,o),o}(n(1594)),r=s(n(6935)),a=s(n(52)),i=n(9399),l=n(2283);function s(e){return e&&e.__esModule?e:{default:e}}function u(e){if("function"!=typeof WeakMap)return null;var t=new WeakMap,n=new WeakMap;return(u=function(e){return e?n:t})(e)}class c extends o.Component{constructor(e){super(e),this.state={recentlyCopied:!1},this.printRef=null,this.setPrintRef=e=>{this.printRef=e},this.copyMessageTimeout=null,this.handlePrint=this.handlePrint.bind(this),this.handleCopy=this.handleCopy.bind(this)}getFormattedCodes(){const{codes:e}=this.props;return e.map((e=>(0,l.formatCode)(e)))}handlePrint(e){e.preventDefault(),(new a.default).print(this.printRef,['body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif }'])}handleCopy(e){e.preventDefault();const{copyFeedbackDuration:t}=this.props;this.setState({recentlyCopied:!0}),this.copyMessageTimeout&&clearTimeout(this.copyMessageTimeout),this.copyMessageTimeout=setTimeout((()=>{this.setState({recentlyCopied:!1})}),t)}renderCodes(){return o.default.createElement("pre",{ref:this.setPrintRef,className:"mfa-register-backup-codes__code-grid"},this.getFormattedCodes().map((e=>o.default.createElement("div",{key:e},e))))}renderDescription(){const{ss:{i18n:e}}=window,{method:{supportLink:t,supportText:n}}=this.props;return o.default.createElement("p",null,e._t("MFABackupCodesRegister.DESCRIPTION","Recovery codes enable you to log into your account in the event your primary authentication is not available. Each code can only be used once. Store these codes somewhere safe, as they will not be viewable after leaving this page.")," ",t&&o.default.createElement("a",{href:t,target:"_blank",rel:"noopener noreferrer"},n||e._t("MFARegister.RECOVERY_HELP","Learn more about recovery codes.")))}renderPrintAction(){const{ss:{i18n:e}}=window;return o.default.createElement("button",{type:"button",onClick:this.handlePrint,className:"btn btn-link"},e._t("MFABackupCodesRegister.PRINT","Print codes"))}renderDownloadAction(){const{codes:e,method:t}=this.props,{Blob:n,URL:r,ss:{i18n:a},navigator:i}=window,l=`${t.name}.txt`,s=new n([e.join("\r\n")],{type:"text/plain;charset=UTF-8"}),u=r.createObjectURL(s);return o.default.createElement("a",{download:l,href:u,className:"btn btn-link",onClick:e=>{i.msSaveBlob&&(e.preventDefault(),i.msSaveBlob(s,l))}},a._t("MFABackupCodesRegister.DOWNLOAD","Download"))}renderCopyAction(){const{codes:e}=this.props,{recentlyCopied:t}=this.state,{ss:{i18n:n}}=window,r=t?n._t("MFABackupCodesRegister.COPY_RECENT","Copied!"):n._t("MFABackupCodesRegister.COPY","Copy codes");return o.default.createElement(i.CopyToClipboard,{text:e.join("\n")},o.default.createElement("button",{type:"button",className:"mfa-register-backup-codes__copy-to-clipboard btn btn-link",onClick:this.handleCopy},r))}render(){const{onCompleteRegistration:e}=this.props,{ss:{i18n:t}}=window;return o.default.createElement("div",{className:"mfa-register-backup-codes__container"},this.renderDescription(),this.renderCodes(),o.default.createElement("div",{className:"mfa-register-backup-codes__helper-links"},this.renderPrintAction(),this.renderDownloadAction(),this.renderCopyAction()),o.default.createElement("button",{className:"btn btn-primary",onClick:()=>e()},t._t("MFABackupCodesRegister.FINISH","Finish")))}}c.propTypes={codes:r.default.arrayOf(r.default.string),copyFeedbackDuration:r.default.number},c.defaultProps={copyFeedbackDuration:3e3};t.default=c},8044:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var o,r=function(e,t){if(!t&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var n=i(t);if(n&&n.has(e))return n.get(e);var o={__proto__:null},r=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var a in e)if("default"!==a&&{}.hasOwnProperty.call(e,a)){var l=r?Object.getOwnPropertyDescriptor(e,a):null;l&&(l.get||l.set)?Object.defineProperty(o,a,l):o[a]=e[a]}return o.default=e,n&&n.set(e,o),o}(n(1594)),a=(o=n(6923))&&o.__esModule?o:{default:o};function i(e){if("function"!=typeof WeakMap)return null;var t=new WeakMap,n=new WeakMap;return(i=function(e){return e?n:t})(e)}class l extends r.Component{constructor(e){super(e),this.state={value:""},this.codeInput=r.default.createRef(),this.handleChange=this.handleChange.bind(this),this.handleCompleteVerification=this.handleCompleteVerification.bind(this)}componentDidMount(){this.codeInput.current&&this.codeInput.current.focus()}handleChange(e){this.setState({value:e.target.value})}handleCompleteVerification(e){e.preventDefault();const{onCompleteVerification:t}=this.props;t({code:this.state.value})}renderControls(){const{moreOptionsControl:e}=this.props,{ss:{i18n:t}}=window;return r.default.createElement("ul",{className:"mfa-action-list mfa-action-list--backup-codes"},r.default.createElement("li",{className:"mfa-action-list__item"},r.default.createElement("button",{className:"btn btn-primary",disabled:0===this.state.value.length,onClick:this.handleCompleteVerification},t._t("MFABackupCodesVerify.NEXT","Next"))),e&&r.default.createElement("li",{className:"mfa-action-list__item"},e))}renderDescription(){const{ss:{i18n:e}}=window,{method:t}=this.props;return r.default.createElement("p",null,e._t("MFABackupCodesVerify.DESCRIPTION","Use one of the recovery codes you received")," ",t&&t.supportLink&&r.default.createElement("a",{href:t.supportLink,target:"_blank",rel:"noopener noreferrer"},e._t("MFARegister.RECOVERY_HELP","How to use recovery codes.")))}renderInput(){const{error:e}=this.props,{ss:{i18n:t}}=window,n=t._t("MFABackupCodesVerify.LABEL","Enter recovery code"),o=(0,a.default)("mfa-verify-backup-codes__input-container",{"has-error":!!e});return r.default.createElement("div",{className:o},r.default.createElement("label",{htmlFor:"backup-code",className:"control-label"},n),r.default.createElement("input",{className:"mfa-verify-backup-codes__input text form-control",type:"text",placeholder:n,id:"backup-code",ref:this.codeInput,onChange:this.handleChange}),e&&r.default.createElement("div",{className:"help-block"},e))}render(){const{graphic:e,name:t}=this.props;return r.default.createElement("form",{className:"mfa-verify-backup-codes__container"},r.default.createElement("div",{className:"mfa-verify-backup-codes__content"},this.renderDescription(),this.renderInput()),r.default.createElement("div",{className:"mfa-verify-backup-codes__image-holder"},r.default.createElement("img",{className:"mfa-verify-backup-codes__image",src:e,alt:t})),this.renderControls())}}t.default=l},5305:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var o=h(n(6935)),r=function(e,t){if(!t&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var n=f(t);if(n&&n.has(e))return n.get(e);var o={__proto__:null},r=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var a in e)if("default"!==a&&{}.hasOwnProperty.call(e,a)){var i=r?Object.getOwnPropertyDescriptor(e,a):null;i&&(i.get||i.set)?Object.defineProperty(o,a,i):o[a]=e[a]}return o.default=e,n&&n.set(e,o),o}(n(1594)),a=h(n(6177)),i=h(n(4469)),l=h(n(1216)),s=h(n(2013)),u=h(n(3263)),c=h(n(234)),d=(h(n(7452)),h(n(231)));function f(e){if("function"!=typeof WeakMap)return null;var t=new WeakMap,n=new WeakMap;return(f=function(e){return e?n:t})(e)}function h(e){return e&&e.__esModule?e:{default:e}}class p extends r.Component{constructor(e){super(e),this.state={complete:!1,failed:!1,submitting:!1},this.handleSendReset=this.handleSendReset.bind(this)}async handleSendReset(){const{ss:{i18n:e}}=window,t=e._t("MultiFactorAuthentication.ACCOUNT_RESET_CONFIRMATION",d.default["MultiFactorAuthentication.ACCOUNT_RESET_CONFIRMATION"]),n=e._t("MultiFactorAuthentication.CONFIRMATION_TITLE",d.default["MultiFactorAuthentication.CONFIRMATION_TITLE"]),o=e._t("MultiFactorAuthentication.ACCOUNT_RESET_CONFIRMATION_BUTTON",d.default["MultiFactorAuthentication.ACCOUNT_RESET_CONFIRMATION_BUTTON"]);if(!await(0,l.default)({title:n,message:t,confirmText:o}))return;this.setState({submitting:!0});const r=JSON.stringify({csrf_token:a.default.get("SecurityID")});(0,i.default)(this.props.resetEndpoint,"POST",r).then((e=>e.json())).then((e=>{const t=!!e.error;this.setState({complete:!0,failed:t,submitting:!1})})).catch((()=>{this.setState({complete:!0,failed:!0,submitting:!1})}))}renderAction(){const{ss:{i18n:e}}=window,{resetEndpoint:t}=this.props,{complete:n,submitting:o}=this.state;return n||o?null:r.default.createElement("p",{className:"account-reset-action"},r.default.createElement("button",{className:"btn btn-outline-secondary",disabled:!t,onClick:this.handleSendReset,type:"button"},e._t("MultiFactorAuthentication.ACCOUNT_RESET_ACTION",d.default["MultiFactorAuthentication.ACCOUNT_RESET_ACTION"])))}renderSending(){const{ss:{i18n:e}}=window,{LoadingIndicatorComponent:t}=this.props;return r.default.createElement("p",{className:"account-reset-action account-reset-action--sending"},r.default.createElement("span",{className:"account-reset-action__icon"},r.default.createElement(t,{size:"32px"})),r.default.createElement("span",{className:"account-reset-action__message"},e._t("MultiFactorAuthentication.ACCOUNT_RESET_SENDING",d.default["MultiFactorAuthentication.ACCOUNT_RESET_SENDING"])))}renderFailure(){const{ss:{i18n:e}}=window;return r.default.createElement("p",{className:"account-reset-action account-reset-action--failure"},r.default.createElement("span",{className:"account-reset-action__icon"},r.default.createElement(u.default,{size:"32px"})),r.default.createElement("span",{className:"account-reset-action__message"},e._t("MultiFactorAuthentication.ACCOUNT_RESET_SENDING",d.default["MultiFactorAuthentication.ACCOUNT_RESET_SENDING_FAILURE"])))}renderSuccess(){const{ss:{i18n:e}}=window;return r.default.createElement("p",{className:"account-reset-action account-reset-action--success"},r.default.createElement("span",{className:"account-reset-action__icon"},r.default.createElement(c.default,{size:"32px"})),r.default.createElement("span",{className:"account-reset-action__message"},e._t("MultiFactorAuthentication.ACCOUNT_RESET_SENDING_SUCCESS",d.default["MultiFactorAuthentication.ACCOUNT_RESET_SENDING_SUCCESS"])))}renderStatusMessage(){const{complete:e,failed:t,submitting:n}=this.state;return n?this.renderSending():e?t?this.renderFailure():this.renderSuccess():null}render(){const{ss:{i18n:e}}=window;return r.default.createElement("div",{className:"account-reset"},r.default.createElement("h5",{className:"account-reset__title"},e._t("MultiFactorAuthentication.ACCOUNT_RESET_TITLE",d.default["MultiFactorAuthentication.ACCOUNT_RESET_TITLE"])),r.default.createElement("p",{className:"account-reset__description"},e._t("MultiFactorAuthentication.ACCOUNT_RESET_DESCRIPTION",d.default["MultiFactorAuthentication.ACCOUNT_RESET_DESCRIPTION"])),this.renderAction(),this.renderStatusMessage())}}p.propTypes={resetEndpoint:o.default.string,LoadingIndicatorComponent:o.default.oneOfType([o.default.object,o.default.func])},p.defaultProps={LoadingIndicatorComponent:s.default};t.default=p},2651:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var o=function(e,t){if(!t&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var n=p(t);if(n&&n.has(e))return n.get(e);var o={__proto__:null},r=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var a in e)if("default"!==a&&{}.hasOwnProperty.call(e,a)){var i=r?Object.getOwnPropertyDescriptor(e,a):null;i&&(i.get||i.set)?Object.defineProperty(o,a,i):o[a]=e[a]}return o.default=e,n&&n.set(e,o),o}(n(1594)),r=h(n(1216)),a=h(n(6935)),i=h(n(6923)),l=h(n(8123)),s=h(n(6026)),u=h(n(5202)),c=h(n(2515)),d=h(n(6831)),f=h(n(231));function h(e){return e&&e.__esModule?e:{default:e}}function p(e){if("function"!=typeof WeakMap)return null;var t=new WeakMap,n=new WeakMap;return(p=function(e){return e?n:t})(e)}class m extends o.PureComponent{getStatusMessage(){const{isBackupMethod:e,isDefaultMethod:t}=this.props,{ss:{i18n:n}}=window;return t?n._t("MultiFactorAuthentication.DEFAULT_REGISTERED",f.default["MultiFactorAuthentication.DEFAULT_REGISTERED"]):e?n._t("MultiFactorAuthentication.BACKUP_REGISTERED",f.default["MultiFactorAuthentication.BACKUP_REGISTERED"]):n._t("MultiFactorAuthentication.REGISTERED",f.default["MultiFactorAuthentication.REGISTERED"])}renderRemove(){const{canRemove:e,method:t,RemoveComponent:n}=this.props;return e?o.default.createElement(n,{method:t}):null}renderReset(){const{canReset:e,isBackupMethod:t,method:n}=this.props;if(!e)return null;const a={method:n};if(t){const{ss:{i18n:e}}=window,t=e._t("MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION",f.default["MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION"]),n=e._t("MultiFactorAuthentication.CONFIRMATION_TITLE",f.default["MultiFactorAuthentication.CONFIRMATION_TITLE"]),o=e._t("MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION_BUTTON",f.default["MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION_BUTTON"]);a.onReset=async e=>{await(0,r.default)({title:n,message:t,confirmText:o})&&e()}}return o.default.createElement(c.default,a)}renderSetAsDefault(){const{isDefaultMethod:e,isBackupMethod:t,method:n,SetDefaultComponent:r}=this.props;return e||t?null:o.default.createElement(r,{method:n})}renderControls(){const{canRemove:e,canReset:t}=this.props;return e||t?o.default.createElement("div",null,this.renderRemove(),this.renderReset(),this.renderSetAsDefault()):null}renderNameAndStatus(){const{method:e,createdDate:t}=this.props,{ss:{i18n:n}}=window,o=this.getStatusMessage();return l.default.locale(n.detectLocale()),n.inject(o,{method:e.name,date:(0,l.default)(t).format("L")})}render(){const{tag:e,className:t}=this.props,n=(0,i.default)(t,"registered-method-list-item");return o.default.createElement(e,{className:n},this.renderNameAndStatus(),this.renderControls())}}m.propTypes={method:s.default.isRequired,isDefaultMethod:a.default.bool,isBackupMethod:a.default.bool,canRemove:a.default.bool,canReset:a.default.bool,onRemove:a.default.func,onReset:a.default.func,createdDate:a.default.string,className:a.default.string,tag:a.default.string,RemoveComponent:a.default.oneOfType([a.default.object,a.default.func]),SetDefaultComponent:a.default.oneOfType([a.default.object,a.default.func])},m.defaultProps={isDefaultMethod:!1,isBackupMethod:!1,canRemove:!1,canReset:!1,tag:"li",RemoveComponent:u.default,SetDefaultComponent:d.default};t.default=m},5202:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var o=h(n(1594)),r=h(n(6935)),a=n(9040),i=h(n(1216)),l=h(n(6177)),s=h(n(4469)),u=n(8228),c=n(3503),d=h(n(6026)),f=h(n(231));function h(e){return e&&e.__esModule?e:{default:e}}const p=(e,t)=>{let{method:n,onRemove:r,defaultMethod:a,registeredMethods:u,onDeregisterMethod:c,onAddAvailableMethod:d,onSetDefaultMethod:h}=e,{backupMethod:p,endpoints:{remove:m}}=t;const{ss:{i18n:E}}=window,_=async()=>{const e=E._t("MultiFactorAuthentication.DELETE_CONFIRMATION",f.default["MultiFactorAuthentication.DELETE_CONFIRMATION"]),t=E._t("MultiFactorAuthentication.CONFIRMATION_TITLE",f.default["MultiFactorAuthentication.CONFIRMATION_TITLE"]),o=E._t("MultiFactorAuthentication.DELETE_CONFIRMATION_BUTTON",f.default["MultiFactorAuthentication.DELETE_CONFIRMATION_BUTTON"]);if(!await(0,i.default)({title:t,message:e,confirmText:o}))return;const r=l.default.get("SecurityID"),_=`${m.replace("{urlSegment}",n.urlSegment)}?SecurityID=${r}`;(0,s.default)(_,"DELETE").then((e=>e.json().then((t=>{if(200===e.status)return c(n),d(t.availableMethod),n.urlSegment===a&&h(null),void(!t.hasBackupMethod&&p&&u.find((e=>e.urlSegment===p.urlSegment))&&c(p));const o=t.errors&&` Errors: \n - ${t.errors.join("\n -")}`||"";throw Error(`Could not delete method. Error code ${e.status}.${o}`)}))))};return o.default.createElement("button",{className:"registered-method-list-item__control",type:"button",onClick:r?r(_):_},E._t("MultiFactorAuthentication.REMOVE_METHOD",f.default["MultiFactorAuthentication.REMOVE_METHOD"]))};p.propTypes={method:d.default.isRequired,onRemove:r.default.func,defaultMethod:r.default.string.isRequired,registeredMethods:r.default.arrayOf(d.default).isRequired,onDeregisterMethod:r.default.func.isRequired,onAddAvailableMethod:r.default.func.isRequired,onSetDefaultMethod:r.default.func.isRequired},p.contextTypes={backupMethod:d.default,endpoints:r.default.shape({register:r.default.string,remove:r.default.string})};t.default=(0,a.connect)((e=>{let{mfaAdministration:{defaultMethod:t,registeredMethods:n}}=e;return{defaultMethod:t,registeredMethods:n}}),(e=>({onDeregisterMethod:t=>{e((0,c.deregisterMethod)(t))},onAddAvailableMethod:t=>{e((0,u.addAvailableMethod)(t))},onSetDefaultMethod:t=>e((0,c.setDefaultMethod)(t))})))(p)},2515:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var o=function(e,t){if(!t&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var n=h(t);if(n&&n.has(e))return n.get(e);var o={__proto__:null},r=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var a in e)if("default"!==a&&{}.hasOwnProperty.call(e,a)){var i=r?Object.getOwnPropertyDescriptor(e,a):null;i&&(i.get||i.set)?Object.defineProperty(o,a,i):o[a]=e[a]}return o.default=e,n&&n.set(e,o),o}(n(1594)),r=f(n(6935)),a=n(9040),i=n(1973),l=n(8228),s=f(n(6026)),u=f(n(9701)),c=f(n(3720)),d=f(n(231));function f(e){return e&&e.__esModule?e:{default:e}}function h(e){if("function"!=typeof WeakMap)return null;var t=new WeakMap,n=new WeakMap;return(h=function(e){return e?n:t})(e)}class p extends o.Component{constructor(e){super(e),this.state={modalOpen:!1},this.handleReset=this.handleReset.bind(this),this.handleToggleModal=this.handleToggleModal.bind(this)}handleToggleModal(){this.setState((e=>({modalOpen:!e.modalOpen})))}handleReset(){const{onResetMethod:e,method:t}=this.props,{allAvailableMethods:n}=this.context,o=n.find((e=>e.urlSegment===t.urlSegment));if(!o)throw Error(`Cannot register the method given: ${t.name} (${t.urlSegment}).`);e(o),this.handleToggleModal()}render(){const{onReset:e}=this.props,{backupMethod:t,endpoints:n,resources:r}=this.context,a=e?()=>e(this.handleReset):this.handleReset;return o.default.createElement("button",{className:"registered-method-list-item__control",type:"button",onClick:a},window.ss.i18n._t("MultiFactorAuthentication.RESET_METHOD",d.default["MultiFactorAuthentication.RESET_METHOD"]),o.default.createElement(c.default,{backupMethod:t,isOpen:this.state.modalOpen,toggle:this.handleToggleModal,resources:r,endpoints:n,disallowedScreens:[i.SCREEN_CHOOSE_METHOD,i.SCREEN_INTRODUCTION]}))}}p.propTypes={method:s.default.isRequired,onReset:r.default.func},p.contextTypes={allAvailableMethods:r.default.arrayOf(u.default),backupMethod:s.default,endpoints:r.default.shape({register:r.default.string}),resources:r.default.object};t.default=(0,a.connect)(null,(e=>({onResetMethod:t=>{e((0,l.chooseMethod)(t)),e((0,l.showScreen)(i.SCREEN_REGISTER_METHOD))}})))(p)},6831:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=t.Component=void 0;var o=function(e,t){if(!t&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var n=f(t);if(n&&n.has(e))return n.get(e);var o={__proto__:null},r=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var a in e)if("default"!==a&&{}.hasOwnProperty.call(e,a)){var i=r?Object.getOwnPropertyDescriptor(e,a):null;i&&(i.get||i.set)?Object.defineProperty(o,a,i):o[a]=e[a]}return o.default=e,n&&n.set(e,o),o}(n(1594)),r=d(n(6935)),a=d(n(6026)),i=d(n(6177)),l=n(9040),s=d(n(4469)),u=n(3503),c=d(n(231));function d(e){return e&&e.__esModule?e:{default:e}}function f(e){if("function"!=typeof WeakMap)return null;var t=new WeakMap,n=new WeakMap;return(f=function(e){return e?n:t})(e)}class h extends o.Component{constructor(e){super(e),this.handleSetDefault=this.handleSetDefault.bind(this)}handleSetDefault(){const{method:e,onSetDefaultMethod:t}=this.props,{endpoints:{setDefault:n}}=this.context,o=i.default.get("SecurityID"),r=`${n.replace("{urlSegment}",e.urlSegment)}?SecurityID=${o}`;(0,s.default)(r,"PUT").then((n=>n.json().then((o=>{if(200===n.status)return void t(e.urlSegment);const r=o.errors&&` Errors: \n - ${o.errors.join("\n -")}`||"";throw Error(`Could not set default method. Error code ${n.status}.${r}`)}))))}render(){const{ss:{i18n:e}}=window;return o.default.createElement("button",{className:"registered-method-list-item__control",type:"button",onClick:this.handleSetDefault},e._t("MultiFactorAuthentication.SET_AS_DEFAULT",c.default["MultiFactorAuthentication.SET_AS_DEFAULT"]))}}t.Component=h,h.propTypes={method:a.default.isRequired},h.contextTypes={endpoints:r.default.shape({setDefault:r.default.string})};t.default=(0,l.connect)(null,(e=>({onSetDefaultMethod:t=>e((0,u.setDefaultMethod)(t))})))(h)},3728:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=t.Component=void 0;var o=M(n(6935)),r=function(e,t){if(!t&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var n=_(t);if(n&&n.has(e))return n.get(e);var o={__proto__:null},r=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var a in e)if("default"!==a&&{}.hasOwnProperty.call(e,a)){var i=r?Object.getOwnPropertyDescriptor(e,a):null;i&&(i.get||i.set)?Object.defineProperty(o,a,i):o[a]=e[a]}return o.default=e,n&&n.set(e,o),o}(n(1594)),a=n(3556),i=n(9040),l=M(n(6923)),s=M(n(6026)),u=M(n(9701)),c=n(8228),d=n(3503),f=n(1973),h=M(n(2651)),p=M(n(5305)),m=M(n(3720)),E=M(n(231));function _(e){if("function"!=typeof WeakMap)return null;var t=new WeakMap,n=new WeakMap;return(_=function(e){return e?n:t})(e)}function M(e){return e&&e.__esModule?e:{default:e}}class g extends r.Component{constructor(e){super(e),this.state={modalOpen:!1},this.handleToggleModal=this.handleToggleModal.bind(this)}getChildContext(){const{allAvailableMethods:e,backupMethod:t,endpoints:n,resources:o}=this.props;return{allAvailableMethods:e,backupMethod:t,endpoints:n,resources:o}}componentDidMount(){const{onSetDefaultMethod:e,initialDefaultMethod:t,onSetRegisteredMethods:n,initialRegisteredMethods:o,onUpdateAvailableMethods:r,initialAvailableMethods:a}=this.props;n(o),r(a),e(t)}getBaseMethods(){const{backupMethod:e}=this.props;let{registeredMethods:t}=this.props;return t?(e&&(t=t.filter((t=>t.urlSegment!==e.urlSegment))),t):[]}handleToggleModal(){this.setState((e=>({modalOpen:!e.modalOpen})))}renderNoMethodsMessage(){if(this.getBaseMethods().length)return null;const{readOnly:e}=this.props,{ss:{i18n:t}}=window,n=e?"MultiFactorAuthentication.NO_METHODS_REGISTERED_READONLY":"MultiFactorAuthentication.NO_METHODS_REGISTERED";return r.default.createElement("div",{className:"registered-mfa-method-list-field__no-methods"},t._t(n,E.default[n]))}renderBackupMethod(){const{backupMethod:e,backupCreatedDate:t,registeredMethods:n,readOnly:o,MethodListItemComponent:a}=this.props;if(!e)return null;const i=n.find((t=>t.urlSegment===e.urlSegment));return i?r.default.createElement(a,{method:i,createdDate:t,canReset:!o,isBackupMethod:!0,tag:"div",className:"registered-method-list-item--backup"}):null}renderBaseMethods(){const{isMFARequired:e}=this.props,t=this.getBaseMethods();if(!t.length)return[];const{defaultMethod:n,readOnly:o,MethodListItemComponent:a}=this.props;return t.map((i=>{const l={method:i,key:i.urlSegment,isDefaultMethod:n&&i.urlSegment===n,canRemove:!(o||e&&1===t.length),canReset:!o};return r.default.createElement(a,l)}))}renderModal(){const{backupMethod:e,endpoints:t,resources:n,RegisterModalComponent:o}=this.props;return r.default.createElement(o,{backupMethod:e,isOpen:this.state.modalOpen,toggle:this.handleToggleModal,resources:n,endpoints:t,disallowedScreens:[f.SCREEN_INTRODUCTION]})}renderAddButton(){const{availableMethods:e,registeredMethods:t,readOnly:n,onResetRegister:o}=this.props;if(n||!e||0===e.length)return null;const{ss:{i18n:i}}=window,l=t.length?i._t("MultiFactorAuthentication.ADD_ANOTHER_METHOD",E.default["MultiFactorAuthentication.ADD_ANOTHER_METHOD"]):i._t("MultiFactorAuthentication.ADD_FIRST_METHOD",E.default["MultiFactorAuthentication.ADD_FIRST_METHOD"]);return r.default.createElement(a.Button,{className:"registered-mfa-method-list-field__button",outline:!0,type:"button",onClick:()=>{this.handleToggleModal(),o()}},l)}render(){const{readOnly:e,resetEndpoint:t}=this.props,n=(0,l.default)({"registered-mfa-method-list-field":!0,"registered-mfa-method-list-field--read-only":e});return r.default.createElement("div",{className:n},r.default.createElement("ul",{className:"method-list"},this.renderBaseMethods()),this.renderNoMethodsMessage(),this.renderAddButton(),this.renderBackupMethod(),e&&r.default.createElement("hr",null),e&&r.default.createElement(p.default,{resetEndpoint:t}),this.renderModal())}}t.Component=g,g.propTypes={backupMethod:s.default,defaultMethod:o.default.string,readOnly:o.default.bool,isMFARequired:o.default.bool,initialDefaultMethod:o.default.string,initialRegisteredMethods:o.default.arrayOf(s.default),initialAvailableMethods:o.default.arrayOf(u.default),allAvailableMethods:o.default.arrayOf(u.default),resetEndpoint:o.default.string,endpoints:o.default.shape({register:o.default.string,remove:o.default.string}),resources:o.default.object,availableMethods:o.default.arrayOf(u.default),registeredMethods:o.default.arrayOf(s.default),registrationScreen:o.default.number,MethodListItemComponent:o.default.oneOfType([o.default.object,o.default.func]),RegisterModalComponent:o.default.oneOfType([o.default.object,o.default.func])},g.defaultProps={initialAvailableMethods:[],MethodListItemComponent:h.default,RegisterModalComponent:m.default},g.childContextTypes={allAvailableMethods:o.default.arrayOf(u.default),backupMethod:s.default,endpoints:o.default.shape({register:o.default.string,remove:o.default.string,setDefault:o.default.string}),resources:o.default.object};t.default=(0,i.connect)((e=>{const{availableMethods:t,screen:n}=e.mfaRegister,{defaultMethod:o,registeredMethods:r}=e.mfaAdministration;return{availableMethods:t,defaultMethod:o,registeredMethods:r||[],registrationScreen:n}}),(e=>({onResetRegister:()=>{e((0,c.chooseMethod)(null)),e((0,c.showScreen)(f.SCREEN_CHOOSE_METHOD))},onUpdateAvailableMethods:t=>{e((0,c.setAvailableMethods)(t))},onSetDefaultMethod:t=>{e((0,d.setDefaultMethod)(t))},onSetRegisteredMethods:t=>{e((0,d.setRegisteredMethods)(t))}})))(g)},3263:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var o,r=(o=n(1594))&&o.__esModule?o:{default:o};t.default=e=>{let{color:t="currentColor",size:n="3em"}=e;return r.default.createElement("svg",{xmlns:"http://www.w3.org/2000/svg",viewBox:"0 0 512 512",height:n,width:n},r.default.createElement("g",{fill:t},r.default.createElement("path",{d:"M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zM124 296c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h264c6.6 0 12 5.4 12 12v56c0 6.6-5.4 12-12 12H124z"})))}},234:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var o,r=(o=n(1594))&&o.__esModule?o:{default:o};t.default=e=>{let{color:t="currentColor",size:n="3em"}=e;return r.default.createElement("svg",{xmlns:"http://www.w3.org/2000/svg",viewBox:"0 0 512 512",height:n,width:n},r.default.createElement("g",{fill:t},r.default.createElement("path",{d:"M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"})))}},2013:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var o=a(n(1594)),r=a(n(6923));function a(e){return e&&e.__esModule?e:{default:e}}t.default=e=>{let{block:t=!1,size:n="6em"}=e;return o.default.createElement("div",{style:{height:n,width:n},className:(0,r.default)({"mfa-loading-indicator":!0,"mfa-loading-indicator--block":t})})}},1973:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=t.SCREEN_REGISTER_METHOD=t.SCREEN_INTRODUCTION=t.SCREEN_COMPLETE=t.SCREEN_CHOOSE_METHOD=t.Component=void 0;var o=function(e,t){if(!t&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var n=_(t);if(n&&n.has(e))return n.get(e);var o={__proto__:null},r=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var a in e)if("default"!==a&&{}.hasOwnProperty.call(e,a)){var i=r?Object.getOwnPropertyDescriptor(e,a):null;i&&(i.get||i.set)?Object.defineProperty(o,a,i):o[a]=e[a]}return o.default=e,n&&n.set(e,o),o}(n(1594)),r=E(n(6935)),a=E(n(4469)),i=n(5207),l=E(n(9701)),s=E(n(6026)),u=E(n(2013)),c=E(n(2840)),d=E(n(7163)),f=E(n(1137)),h=n(9040),p=n(8228),m=E(n(6324));function E(e){return e&&e.__esModule?e:{default:e}}function _(e){if("function"!=typeof WeakMap)return null;var t=new WeakMap,n=new WeakMap;return(_=function(e){return e?n:t})(e)}function M(){return M=Object.assign?Object.assign.bind():function(e){for(var t=1;t<arguments.length;t++){var n=arguments[t];for(var o in n)({}).hasOwnProperty.call(n,o)&&(e[o]=n[o])}return e},M.apply(null,arguments)}const g=t.SCREEN_INTRODUCTION=1,y=t.SCREEN_REGISTER_METHOD=2,b=t.SCREEN_CHOOSE_METHOD=3,v=t.SCREEN_COMPLETE=4;class T extends o.Component{constructor(e){super(e),this.state={registerProps:null,token:null},this.handleBack=this.handleBack.bind(this),this.handleCompleteRegistration=this.handleCompleteRegistration.bind(this),this.handleSkip=this.handleSkip.bind(this)}componentDidMount(){const{selectedMethod:e}=this.props;e&&this.fetchStartRegistrationData()}componentDidUpdate(e){const{selectedMethod:t}=this.props;t&&JSON.stringify(t)!==JSON.stringify(e.selectedMethod)&&this.fetchStartRegistrationData()}setupBackupMethod(){const{backupMethod:e,selectedMethod:t,onShowComplete:n,onSelectMethod:o}=this.props;this.shouldSetupBackupMethod()&&t.urlSegment!==e.urlSegment?o(e):n()}fetchStartRegistrationData(){const{endpoints:{register:e},selectedMethod:t}=this.props,n=e.replace("{urlSegment}",t.urlSegment);(0,a.default)(n).then((e=>e.json().then((e=>{const{SecurityID:t,...n}=e;this.setState({registerProps:n,token:t})}))))}handleBack(){const{availableMethods:e,onShowIntroduction:t,onShowChooseMethod:n}=this.props;return 1===e.length&&t?t():(this.setState({registerProps:null}),n())}handleCompleteRegistration(e){const{endpoints:{register:t},selectedMethod:n,onRemoveAvailableMethod:o,onRegister:r}=this.props,{token:i}=this.state,l=i?`?SecurityID=${i}`:"";(0,a.default)(`${t.replace("{urlSegment}",n.urlSegment)}${l}`,"POST",JSON.stringify(e)).then((e=>201===e.status?(this.setState({registerProps:null}),"function"==typeof r&&r(n),o(n),this.setupBackupMethod(),null):e.json())).then((e=>{if(e&&e.errors){const t=e.errors.join(", ");this.setState((e=>({registerProps:{...e.registerProps,error:t}})))}}))}shouldSetupBackupMethod(){const{backupMethod:e,registeredMethods:t}=this.props;return!!e&&!t.find((t=>t.urlSegment===e.urlSegment))}handleSkip(){const{skip:e}=this.props.endpoints;e&&(window.location=this.props.endpoints.skip)}renderIntroduction(){const{canSkip:e,resources:t,endpoints:{skip:n},showSubTitle:r,IntroductionComponent:a}=this.props;return o.default.createElement(a,{canSkip:n&&e,onSkip:this.handleSkip,resources:t,showTitle:r})}renderMethod(){const{selectedMethod:e,showSubTitle:t,TitleComponent:n}=this.props,{registerProps:r}=this.state;if(!e)return null;if(!r)return o.default.createElement(u.default,{block:!0});const a=(0,i.loadComponent)(e.component);return o.default.createElement("div",null,t&&o.default.createElement(n,null),o.default.createElement(a,M({},r,{method:e,onBack:this.handleBack,onCompleteRegistration:this.handleCompleteRegistration})))}renderOptions(){const{availableMethods:e,showSubTitle:t,SelectMethodComponent:n}=this.props;return o.default.createElement(n,{methods:e,showTitle:t})}render(){const{screen:e,onCompleteRegistration:t,showTitle:n,showSubTitle:r,completeMessage:a,CompleteComponent:i}=this.props,{ss:{i18n:l}}=window;if(e===v)return o.default.createElement(i,{showTitle:r,onComplete:t,message:a});let s;switch(e){case b:s=this.renderOptions();break;case y:s=this.renderMethod();break;default:s=this.renderIntroduction()}return o.default.createElement("div",null,n&&o.default.createElement("h1",{className:"mfa-app-title"},l._t("MFARegister.TITLE","Multi-factor authentication")),s)}}t.Component=T,T.propTypes={availableMethods:r.default.arrayOf(l.default),backupMethod:l.default,canSkip:r.default.bool,endpoints:r.default.shape({register:r.default.string.isRequired,skip:r.default.string}),onRegister:r.default.func,onCompleteRegistration:r.default.func.isRequired,registeredMethods:r.default.arrayOf(s.default),resources:r.default.object,showTitle:r.default.bool,showSubTitle:r.default.bool,IntroductionComponent:r.default.oneOfType([r.default.object,r.default.func]),SelectMethodComponent:r.default.oneOfType([r.default.object,r.default.func]),CompleteComponent:r.default.oneOfType([r.default.object,r.default.func]),TitleComponent:r.default.oneOfType([r.default.object,r.default.func])},T.defaultProps={resources:{},showTitle:!0,showSubTitle:!0,showIntroduction:!0,IntroductionComponent:c.default,SelectMethodComponent:f.default,CompleteComponent:d.default,TitleComponent:m.default};t.default=(0,h.connect)((e=>{const t=e.mfaRegister||e;return{screen:t.screen,selectedMethod:t.method,availableMethods:t.availableMethods}}),(e=>({onShowIntroduction:()=>e((0,p.showScreen)(g)),onShowComplete:()=>e((0,p.showScreen)(v)),onSelectMethod:t=>e((0,p.chooseMethod)(t)),onShowChooseMethod:()=>{e((0,p.chooseMethod)(null)),e((0,p.showScreen)(b))},onRemoveAvailableMethod:t=>e((0,p.removeAvailableMethod)(t))})))(T)},7163:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var o=i(n(1594)),r=i(n(6935)),a=i(n(6324));function i(e){return e&&e.__esModule?e:{default:e}}const l=e=>{let{onComplete:t,showTitle:n,message:r}=e;return o.default.createElement("div",{className:"mfa-register-confirmation"},o.default.createElement("i",{className:"font-icon-check-mark mfa-register-confirmation__icon"}),n&&o.default.createElement(a.default,{className:"mfa-register-confirmation__title"}),o.default.createElement("p",{className:"mfa-register-confirmation__description"},r||window.ss.i18n._t("MFARegister.SETUP_COMPLETE_DESCRIPTION","You will be able to edit these settings later from your profile area.")),o.default.createElement("button",{onClick:t,className:"mfa-register-confirmation__continue btn btn-primary"},window.ss.i18n._t("MFARegister.SETUP_COMPLETE_CONTINUE","Continue")))};l.propTypes={onComplete:r.default.func.isRequired,showTitle:r.default.bool},l.defaultProps={showTitle:!0};t.default=l},2840:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=t.Component=t.ActionList=void 0;var o=c(n(1594)),r=c(n(6935)),a=n(8228),i=n(9040),l=n(1973),s=c(n(6324)),u=c(n(231));function c(e){return e&&e.__esModule?e:{default:e}}const d=e=>{let{canSkip:t,onContinue:n,onSkip:r}=e;const{ss:{i18n:a}}=window;return o.default.createElement("ul",{className:"mfa-action-list"},o.default.createElement("li",{className:"mfa-action-list__item"},o.default.createElement("button",{className:"btn btn-primary",onClick:n},a._t("MultiFactorAuthentication.GET_STARTED",u.default["MultiFactorAuthentication.GET_STARTED"]))),t&&o.default.createElement("li",{className:"mfa-action-list__item"},o.default.createElement("button",{className:"btn btn-secondary",onClick:r},a._t("MultiFactorAuthentication.SETUP_LATER",u.default["MultiFactorAuthentication.SETUP_LATER"]))))};t.ActionList=d;const f=e=>{let{canSkip:t,onContinue:n,onSkip:r,resources:a,showTitle:i,TitleComponent:l}=e;const{ss:{i18n:s}}=window;return o.default.createElement("div",null,i&&o.default.createElement(l,null),o.default.createElement("h4",{className:"mfa-feature-list-title"},s._t("MultiFactorAuthentication.HOW_IT_WORKS",u.default["MultiFactorAuthentication.HOW_IT_WORKS"])),o.default.createElement("ul",{className:"mfa-feature-list"},o.default.createElement("li",{className:"mfa-feature-list-item"},a.extra_factor_image_url&&o.default.createElement("img",{alt:s._t("MultiFactorAuthentication.EXTRA_LAYER_IMAGE_ALT",u.default["MultiFactorAuthentication.EXTRA_LAYER_IMAGE_ALT"]),"aria-hidden":"true",className:"mfa-feature-list-item__icon",src:a.extra_factor_image_url}),o.default.createElement("div",{className:"mfa-feature-list-item__content"},o.default.createElement("h5",{className:"mfa-block-heading mfa-feature-list-item__title"},s._t("MultiFactorAuthentication.EXTRA_LAYER_TITLE",u.default["MultiFactorAuthentication.EXTRA_LAYER_TITLE"])),o.default.createElement("p",{className:"mfa-feature-list-item__description"},s._t("MultiFactorAuthentication.EXTRA_LAYER_DESCRIPTION",u.default["MultiFactorAuthentication.EXTRA_LAYER_DESCRIPTION"])," ",a.user_help_link&&o.default.createElement("a",{href:a.user_help_link},s._t("MultiFactorAuthentication.HOW_MFA_WORKS",u.default["MultiFactorAuthentication.HOW_MFA_WORKS"]))))),o.default.createElement("li",{className:"mfa-feature-list-item"},a.unique_image_url&&o.default.createElement("img",{alt:s._t("MultiFactorAuthentication.UNIQUE_IMAGE_ALT",u.default["MultiFactorAuthentication.UNIQUE_IMAGE_ALT"]),"aria-hidden":"true",className:"mfa-feature-list-item__icon",src:a.unique_image_url}),o.default.createElement("div",{className:"mfa-feature-list-item__content"},o.default.createElement("h5",{className:"mfa-block-heading mfa-feature-list-item__title"},s._t("MultiFactorAuthentication.UNIQUE_TITLE",u.default["MultiFactorAuthentication.UNIQUE_TITLE"])),o.default.createElement("p",{className:"mfa-feature-list-item__description"},s._t("MultiFactorAuthentication.UNIQUE_DESCRIPTION",u.default["MultiFactorAuthentication.UNIQUE_DESCRIPTION"]))))),o.default.createElement(d,{canSkip:t,onContinue:n,onSkip:r}))};t.Component=f,f.propTypes={canSkip:r.default.bool,onContinue:r.default.func.isRequired,onSkip:r.default.func,resources:r.default.shape({user_help_link:r.default.string,extra_factor_image_url:r.default.string,unique_image_url:r.default.string}).isRequired,showTitle:r.default.bool,TitleComponent:r.default.oneOfType([r.default.object,r.default.func])},f.defaultProps={showTitle:!0,TitleComponent:s.default};t.default=(0,i.connect)(null,(e=>({onContinue:()=>{e((0,a.chooseMethod)(null)),e((0,a.showScreen)(l.SCREEN_REGISTER_METHOD))}})))(f)},5917:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=t.Component=void 0;var o=function(e,t){if(!t&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var n=u(t);if(n&&n.has(e))return n.get(e);var o={__proto__:null},r=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var a in e)if("default"!==a&&{}.hasOwnProperty.call(e,a)){var i=r?Object.getOwnPropertyDescriptor(e,a):null;i&&(i.get||i.set)?Object.defineProperty(o,a,i):o[a]=e[a]}return o.default=e,n&&n.set(e,o),o}(n(1594)),r=s(n(6935)),a=s(n(6923)),i=s(n(9701)),l=s(n(1974));function s(e){return e&&e.__esModule?e:{default:e}}function u(e){if("function"!=typeof WeakMap)return null;var t=new WeakMap,n=new WeakMap;return(u=function(e){return e?n:t})(e)}class c extends o.Component{constructor(e){super(e),this.handleClick=this.handleClick.bind(this),this.handleKeyUp=this.handleKeyUp.bind(this)}handleClick(e){const{method:{isAvailable:t},onClick:n}=this.props;t&&n&&n(e)}handleKeyUp(e){13===e.keyCode&&this.handleClick(e)}renderSupportLink(e){const{ss:{i18n:t}}=window,{supportLink:n,supportText:r}=e;return n?o.default.createElement("a",{href:n,target:"_blank",rel:"noopener noreferrer",className:"mfa-method-tile__support-link"},r||t._t("MFARegister.HELP","Find out more.")):null}renderUnavailableMask(){const{ss:{i18n:e}}=window,{isAvailable:t,getUnavailableMessage:n}=this.props;if(t())return null;const r=n();return o.default.createElement("div",{className:"mfa-method-tile__unavailable-mask"},o.default.createElement("h3",{className:"mfa-method-tile__unavailable-title"},e._t("MFAMethodTile.UNAVAILABLE","Unsupported: ")),r&&o.default.createElement("p",{className:"mfa-method-tile__unavailable-text"},r))}render(){const{isActive:e,method:t}=this.props,{ss:{i18n:n}}=window,r=(0,a.default)("mfa-method-tile",{"mfa-method-tile--active":e,"mfa-method-tile--unsupported":!t.isAvailable}),i=(0,a.default)("mfa-method-tile__thumbnail-container",{"mfa-method-tile__thumbnail-container--unsupported":!t.isAvailable}),l=n.inject(n._t("MFARegister.REGISTER_WITH","Register with {method}"),{method:t.name.toLowerCase()});return o.default.createElement("li",{className:r},o.default.createElement("div",{className:"mfa-method-tile__content",onClick:this.handleClick,onKeyUp:this.handleKeyUp,tabIndex:"0",role:"button"},t.thumbnail&&o.default.createElement("div",{className:i},o.default.createElement("img",{src:t.thumbnail,className:"mfa-method-tile__thumbnail",alt:t.name})),o.default.createElement("h3",{className:"mfa-method-tile__title"},l),o.default.createElement("p",{className:"mfa-method-tile__description"},t.description&&`${t.description}. `,this.renderSupportLink(t))),this.renderUnavailableMask())}}t.Component=c,c.propTypes={getUnavailableMessage:r.default.func.isRequired,isActive:r.default.bool,isAvailable:r.default.func.isRequired,method:i.default.isRequired,onClick:r.default.func.isRequired},c.defaultProps={isActive:!1};t.default=(0,l.default)(c)},1137:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=t.Component=void 0;var o=function(e,t){if(!t&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var n=m(t);if(n&&n.has(e))return n.get(e);var o={__proto__:null},r=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var a in e)if("default"!==a&&{}.hasOwnProperty.call(e,a)){var i=r?Object.getOwnPropertyDescriptor(e,a):null;i&&(i.get||i.set)?Object.defineProperty(o,a,i):o[a]=e[a]}return o.default=e,n&&n.set(e,o),o}(n(1594)),r=p(n(6935)),a=p(n(9701)),i=p(n(6923)),l=n(8228),s=n(9367),u=n(9040),c=p(n(1974)),d=n(1973),f=p(n(5917)),h=p(n(6324));function p(e){return e&&e.__esModule?e:{default:e}}function m(e){if("function"!=typeof WeakMap)return null;var t=new WeakMap,n=new WeakMap;return(m=function(e){return e?n:t})(e)}class E extends o.Component{constructor(e){super(e);let t=null;1===e.methods.length&&e.isAvailable&&e.isAvailable(e.methods[0])&&(t=e.methods[0]),this.state={highlightedMethod:t},this.handleGoToNext=this.handleGoToNext.bind(this),this.handleBack=this.handleBack.bind(this)}componentDidMount(){const{highlightedMethod:e}=this.state;e&&this.handleGoToNext()}handleGoToNext(){const{highlightedMethod:e}=this.state;this.props.onSelectMethod(e)}handleClick(e){this.setState({highlightedMethod:e})}handleBack(){this.props.onClickBack&&this.props.onClickBack()}renderActions(){const{ss:{i18n:e}}=window,{highlightedMethod:t}=this.state;return o.default.createElement("ul",{className:"mfa-action-list"},o.default.createElement("li",{className:"mfa-action-list__item"},o.default.createElement("button",{className:"btn btn-primary",disabled:null===t,onClick:this.handleGoToNext},e._t("MFARegister.NEXT","Next"))),o.default.createElement("li",{className:"mfa-action-list__item"},o.default.createElement("button",{className:"btn btn-secondary",onClick:this.handleBack},e._t("MFARegister.BACK","Back"))))}render(){const{methods:e,showTitle:t,TitleComponent:n,MethodTileComponent:r}=this.props,{highlightedMethod:a}=this.state,l=(0,i.default)("mfa-method-tile-group",{"mfa-method-tile-group--three-columns":e.length%3==0});return o.default.createElement("div",null,t&&o.default.createElement(n,null),o.default.createElement("ul",{className:l},e.map((e=>o.default.createElement(r,{isActive:a===e,key:e.urlSegment,method:e,onClick:()=>this.handleClick(e)})))),this.renderActions())}}t.Component=E,E.propTypes={methods:r.default.arrayOf(a.default),onSelectMethod:r.default.func,onClickBack:r.default.func,showTitle:r.default.bool,TitleComponent:r.default.oneOfType([r.default.object,r.default.func]),MethodTileComponent:r.default.oneOfType([r.default.object,r.default.func])},E.defaultProps={showTitle:!0,TitleComponent:h.default,MethodTileComponent:f.default};t.default=(0,s.compose)((0,u.connect)(null,(e=>({onClickBack:()=>e((0,l.showScreen)(d.SCREEN_INTRODUCTION)),onSelectMethod:t=>{e((0,l.chooseMethod)(t)),e((0,l.showScreen)(d.SCREEN_REGISTER_METHOD))}}))),c.default)(E)},6324:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=t.Component=void 0;var o=l(n(1594)),r=n(9040),a=n(1973),i=l(n(231));function l(e){return e&&e.__esModule?e:{default:e}}const s=e=>{let{screen:t,method:n,Tag:r="h2",className:l="mfa-section-title"}=e;const{ss:{i18n:s}}=window;let u;switch(t){case a.SCREEN_INTRODUCTION:u=s._t("MultiFactorAuthentication.TITLE",i.default["MultiFactorAuthentication.TITLE"]);break;case a.SCREEN_CHOOSE_METHOD:u=s._t("MultiFactorAuthentication.SELECT_METHOD",i.default["MultiFactorAuthentication.SELECT_METHOD"]);break;case a.SCREEN_COMPLETE:u=s._t("MultiFactorAuthentication.SETUP_COMPLETE_TITLE",i.default["MultiFactorAuthentication.SETUP_COMPLETE_TITLE"]);break;case a.SCREEN_REGISTER_METHOD:u=n&&s.inject(s._t("MFARegister.REGISTER_WITH","Register with {method}"),{method:n.name.toLowerCase()});break;default:u=!1}if(!u||!u.length)return null;const c=r||"span";return o.default.createElement(c,{className:l},u)};t.Component=s;t.default=(0,r.connect)((e=>{const t=e.mfaRegister||e;return{screen:t.screen,method:t.method}}))(s)},3720:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=t.Component=void 0;var o=function(e,t){if(!t&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var n=m(t);if(n&&n.has(e))return n.get(e);var o={__proto__:null},r=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var a in e)if("default"!==a&&{}.hasOwnProperty.call(e,a)){var i=r?Object.getOwnPropertyDescriptor(e,a):null;i&&(i.get||i.set)?Object.defineProperty(o,a,i):o[a]=e[a]}return o.default=e,n&&n.set(e,o),o}(n(1594)),r=p(n(6935)),a=n(3556),i=n(5207),l=n(9367),s=n(9040),u=p(n(6324)),c=n(3503),d=p(n(6026)),f=n(1973),h=p(n(231));function p(e){return e&&e.__esModule?e:{default:e}}function m(e){if("function"!=typeof WeakMap)return null;var t=new WeakMap,n=new WeakMap;return(m=function(e){return e?n:t})(e)}class E extends o.Component{constructor(e){super(e),this.handleRegister=this.handleRegister.bind(this)}componentDidUpdate(){const{disallowedScreens:e,isOpen:t,registrationScreen:n,toggle:o}=this.props;t&&e.length&&e.includes(n)&&o()}handleRegister(e){const{onAddRegisteredMethod:t,onSetDefaultMethod:n,registeredMethods:o}=this.props;o.length||n(e.urlSegment),t(e)}render(){const{backupMethod:e,endpoints:t,isOpen:n,toggle:r,registeredMethods:i,registrationScreen:l,resources:s,RegisterComponent:c}=this.props;return o.default.createElement(a.Modal,{isOpen:n,toggle:r,className:"registered-mfa-method-list-field-register-modal"},o.default.createElement(a.ModalHeader,{toggle:r},o.default.createElement(u.default,{Tag:null})),o.default.createElement(a.ModalBody,{className:"registered-mfa-method-list-field-register-modal__content"},l!==f.SCREEN_INTRODUCTION&&o.default.createElement(c,{backupMethod:e,registeredMethods:i,onCompleteRegistration:r,onRegister:this.handleRegister,resources:s,endpoints:t,showTitle:!1,showSubTitle:!1,completeMessage:window.ss.i18n._t("MultiFactorAuthentication.ADMIN_SETUP_COMPLETE_CONTINUE",h.default["MultiFactorAuthentication.ADMIN_SETUP_COMPLETE_CONTINUE"])})))}}t.Component=E,E.propTypes={isOpen:r.default.bool,toggle:r.default.func,disallowedScreens:r.default.arrayOf(r.default.number),backupMethod:d.default,resources:r.default.object,endpoints:r.default.shape({register:r.default.string}),registrationScreen:r.default.number,registeredMethods:r.default.arrayOf(d.default),onAddRegisteredMethod:r.default.func,onSetDefaultMethod:r.default.func,RegisterComponent:r.default.oneOfType([r.default.element,r.default.func,r.default.elementType])},E.defaultProps={isOpen:!1,disallowedScreens:[]};t.default=(0,l.compose)((0,i.inject)(["MFARegister"],(e=>({RegisterComponent:e})),(()=>"MFARegisterModal")),(0,s.connect)((e=>({registrationScreen:e.mfaRegister.screen,registeredMethods:e.mfaAdministration.registeredMethods})),(e=>({onAddRegisteredMethod:t=>{e((0,c.registerMethod)(t))},onSetDefaultMethod:t=>e((0,c.setDefaultMethod)(t))}))))(E)},666:function(e,t,n){"use strict";var o,r=(o=n(1594))&&o.__esModule?o:{default:o},a=n(5145),i=n(5207);window.jQuery.entwine("ss",(e=>{e('.js-injector-boot [data-field-type="registered-mfa-method-list-field"]').entwine({ReactRoot:null,onmatch(){const e=(0,i.loadComponent)("RegisteredMFAMethodListField"),{readOnly:t,schema:{backupMethod:n,defaultMethod:o,registeredMethods:l,availableMethods:s,allAvailableMethods:u,resources:c,endpoints:d,backupCreatedDate:f,resetEndpoint:h,isMFARequired:p}}=this.data("schema");let m=this.getReactRoot();m||(m=(0,a.createRoot)(this[0]),this.setReactRoot(m)),m.render(r.default.createElement(e,{backupMethod:n,readOnly:t,initialDefaultMethod:o,initialRegisteredMethods:l,initialAvailableMethods:s,allAvailableMethods:u,resources:c,endpoints:d,backupCreatedDate:f,resetEndpoint:h,isMFARequired:p}))},onunmatch(){const e=this.getReactRoot();e&&(e.unmount(),this.setReactRoot(null))}})}))},404:function(){"use strict";window.jQuery.entwine("ss",(e=>{e('[name="MFARequired"]').entwine({onchange(){parseInt(this.val(),10)?e(".mfa-settings__grace-period").removeAttr("disabled"):e(".mfa-settings__grace-period").attr("disabled","disabled")},onmatch(){this.onchange()}})}))},3965:function(e,t,n){"use strict";n(666),n(404)},4469:function(e,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;t.default=function(e){return fetch(e,{body:arguments.length>2&&void 0!==arguments[2]?arguments[2]:void 0,credentials:"same-origin",headers:arguments.length>3&&void 0!==arguments[3]?arguments[3]:{},method:arguments.length>1&&void 0!==arguments[1]?arguments[1]:"GET"})}},2283:function(e,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.formatCode=void 0;t.formatCode=function(e){let t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:" ";if(e.length<6)return e;if(e.length%4==0)return e.split(/(.{4})/g).filter((e=>e)).join(t).trim();if(e.length%3==0)return e.split(/(.{3})/g).filter((e=>e)).join(t).trim();const n=4-e.length%4,o=(e.length-3*n)/4,r=[...[...Array(o).keys()].map((()=>4)),...[...Array(n).keys()].map((()=>3))];let a=0;return r.map((t=>e.substring(a,a+=t))).join(t).trim()}},1974:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.hoc=t.default=void 0;var o=function(e,t){if(!t&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var n=i(t);if(n&&n.has(e))return n.get(e);var o={__proto__:null},r=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var a in e)if("default"!==a&&{}.hasOwnProperty.call(e,a)){var l=r?Object.getOwnPropertyDescriptor(e,a):null;l&&(l.get||l.set)?Object.defineProperty(o,a,l):o[a]=e[a]}return o.default=e,n&&n.set(e,o),o}(n(1594)),r=n(9040),a=n(9367);function i(e){if("function"!=typeof WeakMap)return null;var t=new WeakMap,n=new WeakMap;return(i=function(e){return e?n:t})(e)}function l(){return l=Object.assign?Object.assign.bind():function(e){for(var t=1;t<arguments.length;t++){var n=arguments[t];for(var o in n)({}).hasOwnProperty.call(n,o)&&(e[o]=n[o])}return e},l.apply(null,arguments)}const s=e=>{const t=class extends o.Component{constructor(e){super(e),this.getAvailabilityOverride=this.getAvailabilityOverride.bind(this),this.isAvailable=this.isAvailable.bind(this),this.getUnavailableMessage=this.getUnavailableMessage.bind(this)}getAvailabilityOverride(){let e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:null;const{availableMethodOverrides:t}=this.props,n=e||this.props.method,{urlSegment:o}=n;return void 0!==t[o]?t[o]:{}}getUnavailableMessage(){const e=(arguments.length>0&&void 0!==arguments[0]?arguments[0]:null)||this.props.method;return this.getAvailabilityOverride(e).unavailableMessage||e.unavailableMessage}isAvailable(){const e=(arguments.length>0&&void 0!==arguments[0]?arguments[0]:null)||this.props.method,t=this.getAvailabilityOverride(e);let n=e.isAvailable;return void 0!==t.isAvailable&&(n=t.isAvailable),n}render(){return o.default.createElement(e,l({},this.props,{isAvailable:this.isAvailable,getUnavailableMessage:this.getUnavailableMessage}))}},n=(e=>e.displayName||e.name||"Component")(e);return t.displayName=`WithMethodAvailability(${n})`,t};t.hoc=s;const u=(0,a.compose)((0,r.connect)((e=>{const t=[...e.mfaRegister.availableMethods,...e.mfaVerify.allMethods],n={};return Object.values(t).forEach((t=>{const{urlSegment:o}=t,r=`${o}Availability`;void 0!==e[r]&&(n[o]=e[r])})),{availableMethodOverrides:n}})),s);t.default=u},8647:function(e,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;t.default=["ADD_REGISTERED_METHOD","REMOVE_REGISTERED_METHOD","SET_DEFAULT_METHOD","SET_REGISTERED_METHODS"].reduce(((e,t)=>Object.assign(e,{[t]:`MFA_ADMINISTRATION.${t}`})),{})},3503:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.setRegisteredMethods=t.setDefaultMethod=t.registerMethod=t.deregisterMethod=void 0;var o,r=(o=n(8647))&&o.__esModule?o:{default:o};t.registerMethod=e=>({type:r.default.ADD_REGISTERED_METHOD,payload:{method:e}});t.deregisterMethod=e=>({type:r.default.REMOVE_REGISTERED_METHOD,payload:{method:e}});t.setDefaultMethod=e=>({type:r.default.SET_DEFAULT_METHOD,payload:{defaultMethod:e}});t.setRegisteredMethods=e=>({type:r.default.SET_REGISTERED_METHODS,payload:{methods:e}})},6784:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(){let e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:a,{type:t,payload:n}=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{};const o=e=>t=>t.urlSegment===e.urlSegment,{registeredMethods:i}=e;switch(t){case r.default.ADD_REGISTERED_METHOD:{const{method:t}=n;return Array.isArray(i)?i.find(o(t))?e:(i.push(t),{...e,registeredMethods:i}):{...e,registeredMethods:[t]}}case r.default.REMOVE_REGISTERED_METHOD:{const{method:t}=n,r=i.findIndex(o(t));if(r<0)return e;i.splice(r,1);const a=2===i.length?{defaultMethod:i.find((()=>!0)).urlSegment}:{};return{...e,...a,registeredMethods:[...i]}}case r.default.SET_DEFAULT_METHOD:return{...e,defaultMethod:n.defaultMethod};case r.default.SET_REGISTERED_METHODS:return{...e,registeredMethods:n.methods};default:return e}};var o,r=(o=n(8647))&&o.__esModule?o:{default:o};const a={defaultMethod:null,registeredMethods:[]}},9716:function(e,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;t.default=["ADD_AVAILABLE_METHOD","REMOVE_AVAILABLE_METHOD","SET_AVAILABLE_METHODS","SET_SCREEN","SET_METHOD"].reduce(((e,t)=>Object.assign(e,{[t]:`MFA_REGISTER.${t}`})),{})},8228:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.showScreen=t.setAvailableMethods=t.removeAvailableMethod=t.chooseMethod=t.addAvailableMethod=void 0;var o,r=(o=n(9716))&&o.__esModule?o:{default:o};t.showScreen=e=>({type:r.default.SET_SCREEN,payload:{screen:e}});t.chooseMethod=e=>({type:r.default.SET_METHOD,payload:{method:e}});t.setAvailableMethods=e=>({type:r.default.SET_AVAILABLE_METHODS,payload:{availableMethods:e}});t.addAvailableMethod=e=>({type:r.default.ADD_AVAILABLE_METHOD,payload:{method:e}});t.removeAvailableMethod=e=>({type:r.default.REMOVE_AVAILABLE_METHOD,payload:{method:e}})},1711:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(){let e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:i,{type:t,payload:n}=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{};switch(t){case a.default.SET_SCREEN:{const{screen:t}=n;return null===e.method&&t===r.SCREEN_REGISTER_METHOD?{...e,screen:r.SCREEN_CHOOSE_METHOD}:{...e,screen:t}}case a.default.SET_METHOD:return{...e,method:n.method};case a.default.SET_AVAILABLE_METHODS:return{...e,availableMethods:n.availableMethods};case a.default.ADD_AVAILABLE_METHOD:return{...e,availableMethods:[...e.availableMethods,n.method]};case a.default.REMOVE_AVAILABLE_METHOD:return{...e,availableMethods:e.availableMethods.filter((e=>e.urlSegment!==n.method.urlSegment))};default:return e}};var o,r=n(1973),a=(o=n(9716))&&o.__esModule?o:{default:o};const i={screen:r.SCREEN_INTRODUCTION,method:null,availableMethods:[]}},892:function(e,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;t.default=["SET_ALL_METHODS"].reduce(((e,t)=>Object.assign(e,{[t]:`MFA_VERIFY.${t}`})),{})},2087:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(){let e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:a,{type:t,payload:n}=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{};if(t===r.default.SET_ALL_METHODS)return{...e,allMethods:n.allMethods};return e};var o,r=(o=n(892))&&o.__esModule?o:{default:o};const a={allMethods:[]}},9701:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var o,r=(o=n(6935))&&o.__esModule?o:{default:o};t.default=r.default.shape({urlSegment:r.default.string,name:r.default.string,description:r.default.string,supportLink:r.default.string,supportText:r.default.string,thumbnail:r.default.string,component:r.default.string,isAvailable:r.default.bool,unavailableMessage:r.default.string})},6026:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var o,r=(o=n(6935))&&o.__esModule?o:{default:o};t.default=r.default.shape({name:r.default.string,urlSegment:r.default.string,isAvailable:r.default.bool,unavailableMessage:r.default.string,component:r.default.string,supportLink:r.default.string,thumbnail:r.default.string})},7965:function(e,t,n){"use strict";var o=n(6426),r={"text/plain":"Text","text/html":"Url",default:"Text"};e.exports=function(e,t){var n,a,i,l,s,u,c=!1;t||(t={}),n=t.debug||!1;try{if(i=o(),l=document.createRange(),s=document.getSelection(),(u=document.createElement("span")).textContent=e,u.ariaHidden="true",u.style.all="unset",u.style.position="fixed",u.style.top=0,u.style.clip="rect(0, 0, 0, 0)",u.style.whiteSpace="pre",u.style.webkitUserSelect="text",u.style.MozUserSelect="text",u.style.msUserSelect="text",u.style.userSelect="text",u.addEventListener("copy",(function(o){if(o.stopPropagation(),t.format)if(o.preventDefault(),void 0===o.clipboardData){n&&console.warn("unable to use e.clipboardData"),n&&console.warn("trying IE specific stuff"),window.clipboardData.clearData();var a=r[t.format]||r.default;window.clipboardData.setData(a,e)}else o.clipboardData.clearData(),o.clipboardData.setData(t.format,e);t.onCopy&&(o.preventDefault(),t.onCopy(o.clipboardData))})),document.body.appendChild(u),l.selectNodeContents(u),s.addRange(l),!document.execCommand("copy"))throw new Error("copy command was unsuccessful");c=!0}catch(o){n&&console.error("unable to copy using execCommand: ",o),n&&console.warn("trying IE specific stuff");try{window.clipboardData.setData(t.format||"text",e),t.onCopy&&t.onCopy(window.clipboardData),c=!0}catch(o){n&&console.error("unable to copy using clipboardData: ",o),n&&console.error("falling back to prompt"),a=function(e){var t=(/mac os x/i.test(navigator.userAgent)?"⌘":"Ctrl")+"+C";return e.replace(/#{\s*key\s*}/g,t)}("message"in t?t.message:"Copy to clipboard: #{key}, Enter"),window.prompt(a,e)}}finally{s&&("function"==typeof s.removeRange?s.removeRange(l):s.removeAllRanges()),u&&document.body.removeChild(u),i()}return c}},52:function(e,t){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.Printd=t.createIFrame=t.createLinkStyle=t.createStyle=void 0;var n=/^(((http[s]?)|file):)?(\/\/)+([0-9a-zA-Z-_.=?&].+)$/,o=/^((\.|\.\.)?\/)([0-9a-zA-Z-_.=?&]+\/)*([0-9a-zA-Z-_.=?&]+)$/,r=function(e){return n.test(e)||o.test(e)};function a(e,t){var n=e.createElement("style");return n.appendChild(e.createTextNode(t)),n}function i(e,t){var n=e.createElement("link");return n.type="text/css",n.rel="stylesheet",n.href=t,n}function l(e){var t=window.document.createElement("iframe");return t.setAttribute("src","about:blank"),t.setAttribute("style","visibility:hidden;width:0;height:0;position:absolute;z-index:-9999;bottom:0;"),t.setAttribute("width","0"),t.setAttribute("height","0"),t.setAttribute("wmode","opaque"),e.appendChild(t),t}t.createStyle=a,t.createLinkStyle=i,t.createIFrame=l;var s={parent:window.document.body,headElements:[],bodyElements:[]},u=function(){function e(e){this.isLoading=!1,this.hasEvents=!1,this.opts=[s,e||{}].reduce((function(e,t){return Object.keys(t).forEach((function(n){return e[n]=t[n]})),e}),{}),this.iframe=l(this.opts.parent)}return e.prototype.getIFrame=function(){return this.iframe},e.prototype.print=function(e,t,n,o){if(!this.isLoading){var l=this.iframe,s=l.contentDocument,u=l.contentWindow;if(s&&u&&(this.iframe.src="about:blank",this.elCopy=e.cloneNode(!0),this.elCopy)){this.isLoading=!0,this.callback=o;var c=u.document;c.open(),c.write('<!DOCTYPE html><html><head><meta charset="utf-8"></head><body></body></html>'),this.addEvents();var d=this.opts,f=d.headElements,h=d.bodyElements;Array.isArray(f)&&f.forEach((function(e){return c.head.appendChild(e)})),Array.isArray(h)&&h.forEach((function(e){return c.body.appendChild(e)})),Array.isArray(t)&&t.forEach((function(e){e&&c.head.appendChild(r(e)?i(c,e):a(c,e))})),c.body.appendChild(this.elCopy),Array.isArray(n)&&n.forEach((function(e){if(e){var t=c.createElement("script");r(e)?t.src=e:t.innerText=e,c.body.appendChild(t)}})),c.close()}}},e.prototype.printURL=function(e,t){this.isLoading||(this.addEvents(),this.isLoading=!0,this.callback=t,this.iframe.src=e)},e.prototype.onBeforePrint=function(e){this.onbeforeprint=e},e.prototype.onAfterPrint=function(e){this.onafterprint=e},e.prototype.launchPrint=function(e){this.isLoading||e.print()},e.prototype.addEvents=function(){var e=this;if(!this.hasEvents){this.hasEvents=!0,this.iframe.addEventListener("load",(function(){return e.onLoad()}),!1);var t=this.iframe.contentWindow;t&&(this.onbeforeprint&&t.addEventListener("beforeprint",this.onbeforeprint),this.onafterprint&&t.addEventListener("afterprint",this.onafterprint))}},e.prototype.onLoad=function(){var e=this;if(this.iframe){this.isLoading=!1;var t=this.iframe,n=t.contentDocument,o=t.contentWindow;if(!n||!o)return;"function"==typeof this.callback?this.callback({iframe:this.iframe,element:this.elCopy,launchPrint:function(){return e.launchPrint(o)}}):this.launchPrint(o)}},e}();t.Printd=u,t.default=u},5264:function(e,t,n){"use strict";function o(e){return o="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},o(e)}Object.defineProperty(t,"__esModule",{value:!0}),t.CopyToClipboard=void 0;var r=l(n(1594)),a=l(n(7965)),i=["text","onCopy","options","children"];function l(e){return e&&e.__esModule?e:{default:e}}function s(e,t){var n=Object.keys(e);if(Object.getOwnPropertySymbols){var o=Object.getOwnPropertySymbols(e);t&&(o=o.filter((function(t){return Object.getOwnPropertyDescriptor(e,t).enumerable}))),n.push.apply(n,o)}return n}function u(e){for(var t=1;t<arguments.length;t++){var n=null!=arguments[t]?arguments[t]:{};t%2?s(Object(n),!0).forEach((function(t){E(e,t,n[t])})):Object.getOwnPropertyDescriptors?Object.defineProperties(e,Object.getOwnPropertyDescriptors(n)):s(Object(n)).forEach((function(t){Object.defineProperty(e,t,Object.getOwnPropertyDescriptor(n,t))}))}return e}function c(e,t){if(null==e)return{};var n,o,r=function(e,t){if(null==e)return{};var n,o,r={},a=Object.keys(e);for(o=0;o<a.length;o++)n=a[o],t.indexOf(n)>=0||(r[n]=e[n]);return r}(e,t);if(Object.getOwnPropertySymbols){var a=Object.getOwnPropertySymbols(e);for(o=0;o<a.length;o++)n=a[o],t.indexOf(n)>=0||Object.prototype.propertyIsEnumerable.call(e,n)&&(r[n]=e[n])}return r}function d(e,t){for(var n=0;n<t.length;n++){var o=t[n];o.enumerable=o.enumerable||!1,o.configurable=!0,"value"in o&&(o.writable=!0),Object.defineProperty(e,o.key,o)}}function f(e,t){return f=Object.setPrototypeOf||function(e,t){return e.__proto__=t,e},f(e,t)}function h(e){var t=function(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Boolean.prototype.valueOf.call(Reflect.construct(Boolean,[],(function(){}))),!0}catch(e){return!1}}();return function(){var n,r=m(e);if(t){var a=m(this).constructor;n=Reflect.construct(r,arguments,a)}else n=r.apply(this,arguments);return function(e,t){if(t&&("object"===o(t)||"function"==typeof t))return t;if(void 0!==t)throw new TypeError("Derived constructors may only return object or undefined");return p(e)}(this,n)}}function p(e){if(void 0===e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return e}function m(e){return m=Object.setPrototypeOf?Object.getPrototypeOf:function(e){return e.__proto__||Object.getPrototypeOf(e)},m(e)}function E(e,t,n){return t in e?Object.defineProperty(e,t,{value:n,enumerable:!0,configurable:!0,writable:!0}):e[t]=n,e}var _=function(e){!function(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function");e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,writable:!0,configurable:!0}}),Object.defineProperty(e,"prototype",{writable:!1}),t&&f(e,t)}(s,e);var t,n,o,l=h(s);function s(){var e;!function(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}(this,s);for(var t=arguments.length,n=new Array(t),o=0;o<t;o++)n[o]=arguments[o];return E(p(e=l.call.apply(l,[this].concat(n))),"onClick",(function(t){var n=e.props,o=n.text,i=n.onCopy,l=n.children,s=n.options,u=r.default.Children.only(l),c=(0,a.default)(o,s);i&&i(o,c),u&&u.props&&"function"==typeof u.props.onClick&&u.props.onClick(t)})),e}return t=s,(n=[{key:"render",value:function(){var e=this.props,t=(e.text,e.onCopy,e.options,e.children),n=c(e,i),o=r.default.Children.only(t);return r.default.cloneElement(o,u(u({},n),{},{onClick:this.onClick}))}}])&&d(t.prototype,n),o&&d(t,o),Object.defineProperty(t,"prototype",{writable:!1}),s}(r.default.PureComponent);t.CopyToClipboard=_,E(_,"defaultProps",{onCopy:void 0,options:void 0})},9399:function(e,t,n){"use strict";var o=n(5264).CopyToClipboard;o.CopyToClipboard=o,e.exports=o},560:function(e,t,n){"use strict";function o(e){return o="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},o(e)}Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var r,a=function(e,t){if(!t&&e&&e.__esModule)return e;if(null===e||"object"!==o(e)&&"function"!=typeof e)return{default:e};var n=s(t);if(n&&n.has(e))return n.get(e);var r={},a=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var i in e)if("default"!==i&&Object.prototype.hasOwnProperty.call(e,i)){var l=a?Object.getOwnPropertyDescriptor(e,i):null;l&&(l.get||l.set)?Object.defineProperty(r,i,l):r[i]=e[i]}r.default=e,n&&n.set(e,r);return r}(n(1594)),i=(r=n(6935))&&r.__esModule?r:{default:r},l=n(3556);function s(e){if("function"!=typeof WeakMap)return null;var t=new WeakMap,n=new WeakMap;return(s=function(e){return e?n:t})(e)}function u(){return u=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var n=arguments[t];for(var o in n)Object.prototype.hasOwnProperty.call(n,o)&&(e[o]=n[o])}return e},u.apply(this,arguments)}var c=function(e){var t=e.onClose,n=e.message,o=e.title,r=e.confirmText,i=e.cancelText,s=e.confirmColor,c=e.cancelColor,d=e.className,f=e.buttonsComponent,h=e.size,p=e.bodyComponent,m=e.modalProps,E=a.default.createElement(a.Fragment,null,i&&a.default.createElement(l.Button,{color:c,onClick:function(){return t(!1)}},i)," ",a.default.createElement(l.Button,{color:s,onClick:function(){return t(!0)}},r));if(f){var _=f;E=a.default.createElement(_,{onClose:t})}var M=p;return a.default.createElement(l.Modal,u({size:h,isOpen:!0,toggle:function(){return t(!1)},className:"reactstrap-confirm ".concat(d)},m),o&&a.default.createElement(l.ModalHeader,{toggle:function(){return t(!1)}},o||null),a.default.createElement(l.ModalBody,null,p?a.default.createElement(M,null):n),a.default.createElement(l.ModalFooter,null,E))};c.defaultProps={message:"Are you sure?",title:"Warning!",confirmText:"Ok",cancelText:"Cancel",confirmColor:"primary",cancelColor:"",className:"",buttonsComponent:null,size:null,bodyComponent:null,modalProps:{}},c.propTypes={onClose:i.default.func.isRequired,message:i.default.node,title:i.default.node,confirmText:i.default.node,cancelText:i.default.node,confirmColor:i.default.string,cancelColor:i.default.string,className:i.default.string,size:i.default.string,buttonsComponent:i.default.func,bodyComponent:i.default.func,modalProps:i.default.object};var d=c;t.default=d},1216:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var o=i(n(1594)),r=n(4518),a=i(n(560));function i(e){return e&&e.__esModule?e:{default:e}}function l(){return l=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var n=arguments[t];for(var o in n)Object.prototype.hasOwnProperty.call(n,o)&&(e[o]=n[o])}return e},l.apply(this,arguments)}var s=function(e){return new Promise((function(t){var n=document.createElement("div");(0,r.render)(o.default.createElement(a.default,l({},e,{onClose:function(e){(0,r.unmountComponentAtNode)(n),n=null,t(e)}})),n)}))};t.default=s},7452:function(e){var t=function(e){"use strict";var t,n=Object.prototype,o=n.hasOwnProperty,r=Object.defineProperty||function(e,t,n){e[t]=n.value},a="function"==typeof Symbol?Symbol:{},i=a.iterator||"@@iterator",l=a.asyncIterator||"@@asyncIterator",s=a.toStringTag||"@@toStringTag";function u(e,t,n){return Object.defineProperty(e,t,{value:n,enumerable:!0,configurable:!0,writable:!0}),e[t]}try{u({},"")}catch(e){u=function(e,t,n){return e[t]=n}}function c(e,t,n,o){var a=t&&t.prototype instanceof _?t:_,i=Object.create(a.prototype),l=new N(o||[]);return r(i,"_invoke",{value:C(e,n,l)}),i}function d(e,t,n){try{return{type:"normal",arg:e.call(t,n)}}catch(e){return{type:"throw",arg:e}}}e.wrap=c;var f="suspendedStart",h="suspendedYield",p="executing",m="completed",E={};function _(){}function M(){}function g(){}var y={};u(y,i,(function(){return this}));var b=Object.getPrototypeOf,v=b&&b(b(D([])));v&&v!==n&&o.call(v,i)&&(y=v);var T=g.prototype=_.prototype=Object.create(y);function O(e){["next","throw","return"].forEach((function(t){u(e,t,(function(e){return this._invoke(t,e)}))}))}function A(e,t){function n(r,a,i,l){var s=d(e[r],e,a);if("throw"!==s.type){var u=s.arg,c=u.value;return c&&"object"==typeof c&&o.call(c,"__await")?t.resolve(c.__await).then((function(e){n("next",e,i,l)}),(function(e){n("throw",e,i,l)})):t.resolve(c).then((function(e){u.value=e,i(u)}),(function(e){return n("throw",e,i,l)}))}l(s.arg)}var a;r(this,"_invoke",{value:function(e,o){function r(){return new t((function(t,r){n(e,o,t,r)}))}return a=a?a.then(r,r):r()}})}function C(e,t,n){var o=f;return function(r,a){if(o===p)throw new Error("Generator is already running");if(o===m){if("throw"===r)throw a;return I()}for(n.method=r,n.arg=a;;){var i=n.delegate;if(i){var l=R(i,n);if(l){if(l===E)continue;return l}}if("next"===n.method)n.sent=n._sent=n.arg;else if("throw"===n.method){if(o===f)throw o=m,n.arg;n.dispatchException(n.arg)}else"return"===n.method&&n.abrupt("return",n.arg);o=p;var s=d(e,t,n);if("normal"===s.type){if(o=n.done?m:h,s.arg===E)continue;return{value:s.arg,done:n.done}}"throw"===s.type&&(o=m,n.method="throw",n.arg=s.arg)}}}function R(e,n){var o=n.method,r=e.iterator[o];if(r===t)return n.delegate=null,"throw"===o&&e.iterator.return&&(n.method="return",n.arg=t,R(e,n),"throw"===n.method)||"return"!==o&&(n.method="throw",n.arg=new TypeError("The iterator does not provide a '"+o+"' method")),E;var a=d(r,e.iterator,n.arg);if("throw"===a.type)return n.method="throw",n.arg=a.arg,n.delegate=null,E;var i=a.arg;return i?i.done?(n[e.resultName]=i.value,n.next=e.nextLoc,"return"!==n.method&&(n.method="next",n.arg=t),n.delegate=null,E):i:(n.method="throw",n.arg=new TypeError("iterator result is not an object"),n.delegate=null,E)}function S(e){var t={tryLoc:e[0]};1 in e&&(t.catchLoc=e[1]),2 in e&&(t.finallyLoc=e[2],t.afterLoc=e[3]),this.tryEntries.push(t)}function w(e){var t=e.completion||{};t.type="normal",delete t.arg,e.completion=t}function N(e){this.tryEntries=[{tryLoc:"root"}],e.forEach(S,this),this.reset(!0)}function D(e){if(e){var n=e[i];if(n)return n.call(e);if("function"==typeof e.next)return e;if(!isNaN(e.length)){var r=-1,a=function n(){for(;++r<e.length;)if(o.call(e,r))return n.value=e[r],n.done=!1,n;return n.value=t,n.done=!0,n};return a.next=a}}return{next:I}}function I(){return{value:t,done:!0}}return M.prototype=g,r(T,"constructor",{value:g,configurable:!0}),r(g,"constructor",{value:M,configurable:!0}),M.displayName=u(g,s,"GeneratorFunction"),e.isGeneratorFunction=function(e){var t="function"==typeof e&&e.constructor;return!!t&&(t===M||"GeneratorFunction"===(t.displayName||t.name))},e.mark=function(e){return Object.setPrototypeOf?Object.setPrototypeOf(e,g):(e.__proto__=g,u(e,s,"GeneratorFunction")),e.prototype=Object.create(T),e},e.awrap=function(e){return{__await:e}},O(A.prototype),u(A.prototype,l,(function(){return this})),e.AsyncIterator=A,e.async=function(t,n,o,r,a){void 0===a&&(a=Promise);var i=new A(c(t,n,o,r),a);return e.isGeneratorFunction(n)?i:i.next().then((function(e){return e.done?e.value:i.next()}))},O(T),u(T,s,"Generator"),u(T,i,(function(){return this})),u(T,"toString",(function(){return"[object Generator]"})),e.keys=function(e){var t=Object(e),n=[];for(var o in t)n.push(o);return n.reverse(),function e(){for(;n.length;){var o=n.pop();if(o in t)return e.value=o,e.done=!1,e}return e.done=!0,e}},e.values=D,N.prototype={constructor:N,reset:function(e){if(this.prev=0,this.next=0,this.sent=this._sent=t,this.done=!1,this.delegate=null,this.method="next",this.arg=t,this.tryEntries.forEach(w),!e)for(var n in this)"t"===n.charAt(0)&&o.call(this,n)&&!isNaN(+n.slice(1))&&(this[n]=t)},stop:function(){this.done=!0;var e=this.tryEntries[0].completion;if("throw"===e.type)throw e.arg;return this.rval},dispatchException:function(e){if(this.done)throw e;var n=this;function r(o,r){return l.type="throw",l.arg=e,n.next=o,r&&(n.method="next",n.arg=t),!!r}for(var a=this.tryEntries.length-1;a>=0;--a){var i=this.tryEntries[a],l=i.completion;if("root"===i.tryLoc)return r("end");if(i.tryLoc<=this.prev){var s=o.call(i,"catchLoc"),u=o.call(i,"finallyLoc");if(s&&u){if(this.prev<i.catchLoc)return r(i.catchLoc,!0);if(this.prev<i.finallyLoc)return r(i.finallyLoc)}else if(s){if(this.prev<i.catchLoc)return r(i.catchLoc,!0)}else{if(!u)throw new Error("try statement without catch or finally");if(this.prev<i.finallyLoc)return r(i.finallyLoc)}}}},abrupt:function(e,t){for(var n=this.tryEntries.length-1;n>=0;--n){var r=this.tryEntries[n];if(r.tryLoc<=this.prev&&o.call(r,"finallyLoc")&&this.prev<r.finallyLoc){var a=r;break}}a&&("break"===e||"continue"===e)&&a.tryLoc<=t&&t<=a.finallyLoc&&(a=null);var i=a?a.completion:{};return i.type=e,i.arg=t,a?(this.method="next",this.next=a.finallyLoc,E):this.complete(i)},complete:function(e,t){if("throw"===e.type)throw e.arg;return"break"===e.type||"continue"===e.type?this.next=e.arg:"return"===e.type?(this.rval=this.arg=e.arg,this.method="return",this.next="end"):"normal"===e.type&&t&&(this.next=t),E},finish:function(e){for(var t=this.tryEntries.length-1;t>=0;--t){var n=this.tryEntries[t];if(n.finallyLoc===e)return this.complete(n.completion,n.afterLoc),w(n),E}},catch:function(e){for(var t=this.tryEntries.length-1;t>=0;--t){var n=this.tryEntries[t];if(n.tryLoc===e){var o=n.completion;if("throw"===o.type){var r=o.arg;w(n)}return r}}throw new Error("illegal catch attempt")},delegateYield:function(e,n,o){return this.delegate={iterator:D(e),resultName:n,nextLoc:o},"next"===this.method&&(this.arg=t),E}},e}(e.exports);try{regeneratorRuntime=t}catch(e){"object"==typeof globalThis?globalThis.regeneratorRuntime=t:Function("r","regeneratorRuntime = r")(t)}},6426:function(e){e.exports=function(){var e=document.getSelection();if(!e.rangeCount)return function(){};for(var t=document.activeElement,n=[],o=0;o<e.rangeCount;o++)n.push(e.getRangeAt(o));switch(t.tagName.toUpperCase()){case"INPUT":case"TEXTAREA":t.blur();break;default:t=null}return e.removeAllRanges(),function(){"Caret"===e.type&&e.removeAllRanges(),e.rangeCount||n.forEach((function(t){e.addRange(t)})),t&&t.focus()}}},6177:function(e){"use strict";e.exports=Config},5207:function(e){"use strict";e.exports=Injector},6935:function(e){"use strict";e.exports=PropTypes},1594:function(e){"use strict";e.exports=React},4518:function(e){"use strict";e.exports=ReactDom},5145:function(e){"use strict";e.exports=ReactDomClient},9040:function(e){"use strict";e.exports=ReactRedux},3556:function(e){"use strict";e.exports=Reactstrap},9367:function(e){"use strict";e.exports=Redux},9113:function(e){"use strict";e.exports=SudoMode},6923:function(e){"use strict";e.exports=classnames},8123:function(e){"use strict";e.exports=moment},231:function(e){"use strict";e.exports=JSON.parse('{"MFABackupCodesRegister.COPY":"Copy codes","MFABackupCodesRegister.COPY_RECENT":"Copied!","MFABackupCodesRegister.DOWNLOAD":"Download","MFABackupCodesRegister.FINISH":"Finish","MFABackupCodesRegister.PRINT":"Print codes","MFABackupCodesVerify.DESCRIPTION":"Use one of the recovery codes you received","MFABackupCodesVerify.LABEL":"Enter recovery code","MFABackupCodesVerify.NEXT":"Next","MFALogin.SOMETHING_WENT_WRONG":"Something went wrong!","MFALogin.TRY_AGAIN":"Try again","MFAMethodTile.UNAVAILABLE":"Unsupported: ","MFARegister.BACK":"Back","MFARegister.HELP":"Find out more.","MFARegister.NEXT":"Next","MFARegister.RECOVERY_HELP":"How to use recovery codes.","MFARegister.REGISTER_WITH":"Register with {method}","MFARegister.SETUP_COMPLETE_CONTINUE":"Continue","MFARegister.SETUP_COMPLETE_DESCRIPTION":"You will be able to edit these settings later from your profile area.","MFARegister.TITLE":"Multi-factor authentication","MFASelectMethod.UNAVAILABLE":"unavailable","MFAVerify.BACK":"Back","MFAVerify.METHOD_UNAVAILABLE":"This authentication method is unavailable","MFAVerify.MORE_OPTIONS":"More options","MFAVerify.OTHER_METHODS_TITLE":"Try another way to verify","MFAVerify.TITLE":"Log in","MFAVerify.VERIFY_WITH":"Verify with {method}","MultiFactorAuthentication.ACCOUNT_RESET_ACTION":"Send account reset email","MultiFactorAuthentication.ACCOUNT_RESET_CONFIRMATION":"You are about to reset this account. Their password and multi-factor authentication will be reset. Continue?","MultiFactorAuthentication.ACCOUNT_RESET_CONFIRMATION_BUTTON":"Yes, send reset email","MultiFactorAuthentication.ACCOUNT_RESET_DESCRIPTION":"Ensure that the person requesting a reset is the real person associated with this account before proceeding. An email will be sent to the member\'s address with a link to reset both their password and multi-factor authentication methods.","MultiFactorAuthentication.ACCOUNT_RESET_SENDING":"Sending...","MultiFactorAuthentication.ACCOUNT_RESET_SENDING_FAILURE":"We were unable to send an email, please try again later.","MultiFactorAuthentication.ACCOUNT_RESET_SENDING_SUCCESS":"An email has been sent.","MultiFactorAuthentication.ACCOUNT_RESET_TITLE":"Help user reset account","MultiFactorAuthentication.ADD_ANOTHER_METHOD":"Add another MFA method","MultiFactorAuthentication.ADD_FIRST_METHOD":"Add an MFA method","MultiFactorAuthentication.ADMIN_SETUP_COMPLETE_CONTINUE":"Your settings have been updated","MultiFactorAuthentication.BACKUP_REGISTERED":"{method}: Created {date}","MultiFactorAuthentication.CONFIRMATION_TITLE":"Are you sure?","MultiFactorAuthentication.DEFAULT_CONFIRM_BUTTON":"Confirm","MultiFactorAuthentication.DEFAULT_CONFIRM_DISMISS_BUTTON":"Cancel","MultiFactorAuthentication.DEFAULT_REGISTERED":"{method} (default): Registered","MultiFactorAuthentication.DELETE_CONFIRMATION":"Are you sure you want to remove this method","MultiFactorAuthentication.DELETE_CONFIRMATION_BUTTON":"Remove method","MultiFactorAuthentication.EXTRA_LAYER_DESCRIPTION":"Every time you log into your account, you\'ll need your password and an additional form of verification.","MultiFactorAuthentication.EXTRA_LAYER_IMAGE_ALT":"Shields indicating additional protection","MultiFactorAuthentication.EXTRA_LAYER_TITLE":"Extra layer of protection","MultiFactorAuthentication.GET_STARTED":"Get started","MultiFactorAuthentication.HOW_IT_WORKS":"How it works","MultiFactorAuthentication.HOW_MFA_WORKS":"How multi-factor authentication works","MultiFactorAuthentication.MORE_OPTIONS_IMAGE_ALT":"Graphic depicting various MFA options","MultiFactorAuthentication.NO_METHODS_REGISTERED":"No MFA methods have been registered. Add one using the button below","MultiFactorAuthentication.NO_METHODS_REGISTERED_READONLY":"This member has not registered any MFA methods yet","MultiFactorAuthentication.REGISTERED":"{method}: Registered","MultiFactorAuthentication.REMOVE_METHOD":"Remove","MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION":"All existing codes will be made invalid and new codes will be created","MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION_BUTTON":"Reset codes","MultiFactorAuthentication.RESET_METHOD":"Reset","MultiFactorAuthentication.SELECT_METHOD":"Select a verification method","MultiFactorAuthentication.SETUP_COMPLETE_TITLE":"Multi-factor authentication is now set up","MultiFactorAuthentication.SETUP_LATER":"Setup later","MultiFactorAuthentication.SET_AS_DEFAULT":"Set as default method","MultiFactorAuthentication.TITLE":"Add extra security to your account","MultiFactorAuthentication.TRY_AGAIN_ERROR":"Something went wrong. Please try again.","MultiFactorAuthentication.UNIQUE_DESCRIPTION":"This verification is only available to you. Even if someone gets your password, they will not be able to access your account.","MultiFactorAuthentication.UNIQUE_IMAGE_ALT":"Person with tick indicating uniqueness","MultiFactorAuthentication.UNIQUE_TITLE":"Unique to you","MultiFactorAuthentication.UNKNOWN_ERROR":"An unknown error occurred."}')}},t={};function n(o){var r=t[o];if(void 0!==r)return r.exports;var a=t[o]={exports:{}};return e[o](a,a.exports,n),a.exports}!function(){"use strict";n(3965),n(9696)}()}();
+/******/ (function() { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./client/src/boot/cms/index.js":
+/*!**************************************!*\
+  !*** ./client/src/boot/cms/index.js ***!
+  \**************************************/
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var _registerComponents = _interopRequireDefault(__webpack_require__(/*! ./registerComponents */ "./client/src/boot/cms/registerComponents.js"));
+var _registerReducers = _interopRequireDefault(__webpack_require__(/*! ./registerReducers */ "./client/src/boot/cms/registerReducers.js"));
+var _registerTransformations = _interopRequireDefault(__webpack_require__(/*! ./registerTransformations */ "./client/src/boot/cms/registerTransformations.js"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+window.document.addEventListener('DOMContentLoaded', () => {
+  (0, _registerComponents.default)();
+  (0, _registerReducers.default)();
+  (0, _registerTransformations.default)();
+});
+
+/***/ }),
+
+/***/ "./client/src/boot/cms/registerComponents.js":
+/*!***************************************************!*\
+  !*** ./client/src/boot/cms/registerComponents.js ***!
+  \***************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+var _Injector = _interopRequireDefault(__webpack_require__(/*! lib/Injector */ "lib/Injector"));
+var _Register = _interopRequireDefault(__webpack_require__(/*! components/Register */ "./client/src/components/Register.js"));
+var _RegisteredMFAMethodListField = _interopRequireDefault(__webpack_require__(/*! components/FormField/RegisteredMFAMethodListField/RegisteredMFAMethodListField */ "./client/src/components/FormField/RegisteredMFAMethodListField/RegisteredMFAMethodListField.js"));
+var _registerComponents = _interopRequireDefault(__webpack_require__(/*! ../registerComponents */ "./client/src/boot/registerComponents.js"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+var _default = () => {
+  (0, _registerComponents.default)();
+  _Injector.default.component.registerMany({
+    MFARegister: _Register.default,
+    RegisteredMFAMethodListField: _RegisteredMFAMethodListField.default
+  });
+};
+exports["default"] = _default;
+
+/***/ }),
+
+/***/ "./client/src/boot/cms/registerReducers.js":
+/*!*************************************************!*\
+  !*** ./client/src/boot/cms/registerReducers.js ***!
+  \*************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+var _Injector = _interopRequireDefault(__webpack_require__(/*! lib/Injector */ "lib/Injector"));
+var _reducer = _interopRequireDefault(__webpack_require__(/*! state/mfaAdministration/reducer */ "./client/src/state/mfaAdministration/reducer.js"));
+var _registerReducers = _interopRequireDefault(__webpack_require__(/*! ../registerReducers */ "./client/src/boot/registerReducers.js"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+var _default = () => {
+  (0, _registerReducers.default)();
+  _Injector.default.reducer.register('mfaAdministration', _reducer.default);
+};
+exports["default"] = _default;
+
+/***/ }),
+
+/***/ "./client/src/boot/cms/registerTransformations.js":
+/*!********************************************************!*\
+  !*** ./client/src/boot/cms/registerTransformations.js ***!
+  \********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+var _Injector = _interopRequireDefault(__webpack_require__(/*! lib/Injector */ "lib/Injector"));
+var _SudoMode = _interopRequireDefault(__webpack_require__(/*! containers/SudoMode/SudoMode */ "containers/SudoMode/SudoMode"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+var _default = () => {
+  _Injector.default.transform('apply-sudo-mode-to-mfa', updater => {
+    updater.component('RegisteredMFAMethodListField', _SudoMode.default);
+  });
+};
+exports["default"] = _default;
+
+/***/ }),
+
+/***/ "./client/src/boot/registerComponents.js":
+/*!***********************************************!*\
+  !*** ./client/src/boot/registerComponents.js ***!
+  \***********************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+var _Register = _interopRequireDefault(__webpack_require__(/*! components/BackupCodes/Register */ "./client/src/components/BackupCodes/Register.js"));
+var _Verify = _interopRequireDefault(__webpack_require__(/*! components/BackupCodes/Verify */ "./client/src/components/BackupCodes/Verify.js"));
+var _Injector = _interopRequireDefault(__webpack_require__(/*! lib/Injector */ "lib/Injector"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+var _default = () => {
+  _Injector.default.component.registerMany({
+    BackupCodeRegister: _Register.default,
+    BackupCodeVerify: _Verify.default
+  });
+};
+exports["default"] = _default;
+
+/***/ }),
+
+/***/ "./client/src/boot/registerReducers.js":
+/*!*********************************************!*\
+  !*** ./client/src/boot/registerReducers.js ***!
+  \*********************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+var _Injector = _interopRequireDefault(__webpack_require__(/*! lib/Injector */ "lib/Injector"));
+var _reducer = _interopRequireDefault(__webpack_require__(/*! state/mfaRegister/reducer */ "./client/src/state/mfaRegister/reducer.js"));
+var _reducer2 = _interopRequireDefault(__webpack_require__(/*! state/mfaVerify/reducer */ "./client/src/state/mfaVerify/reducer.js"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+var _default = () => {
+  _Injector.default.reducer.register('mfaRegister', _reducer.default);
+  _Injector.default.reducer.register('mfaVerify', _reducer2.default);
+};
+exports["default"] = _default;
+
+/***/ }),
+
+/***/ "./client/src/components/BackupCodes/Register.js":
+/*!*******************************************************!*\
+  !*** ./client/src/components/BackupCodes/Register.js ***!
+  \*******************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "react"));
+var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "prop-types"));
+var _printd = _interopRequireDefault(__webpack_require__(/*! printd */ "./node_modules/printd/index.js"));
+var _reactCopyToClipboard = __webpack_require__(/*! react-copy-to-clipboard */ "./node_modules/react-copy-to-clipboard/lib/index.js");
+var _formatCode = __webpack_require__(/*! lib/formatCode */ "./client/src/lib/formatCode.js");
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function Register(props) {
+  const {
+    codes,
+    method,
+    onCompleteRegistration,
+    copyFeedbackDuration
+  } = props;
+  const [recentlyCopied, setRecentlyCopied] = (0, _react.useState)(false);
+  const copyMessageTimeout = (0, _react.useRef)(null);
+  const printRef = (0, _react.useRef)(null);
+  const i18n = window.ss.i18n;
+  function getFormattedCodes() {
+    return codes.map(code => (0, _formatCode.formatCode)(code));
+  }
+  function handlePrint(event) {
+    event.preventDefault();
+    new _printd.default().print(printRef, ['body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif }']);
+  }
+  function handleCopy(event) {
+    event.preventDefault();
+    setRecentlyCopied(true);
+    if (copyMessageTimeout.current) {
+      clearTimeout(copyMessageTimeout.current);
+    }
+    copyMessageTimeout.current = setTimeout(() => {
+      setRecentlyCopied(false);
+    }, copyFeedbackDuration);
+  }
+  function renderCodes() {
+    return _react.default.createElement("pre", {
+      ref: printRef,
+      className: "mfa-register-backup-codes__code-grid"
+    }, getFormattedCodes().map(code => _react.default.createElement("div", {
+      key: code
+    }, code)));
+  }
+  function renderDescription() {
+    const {
+      supportLink,
+      supportText
+    } = method;
+    return _react.default.createElement("p", null, i18n._t('MFABackupCodesRegister.DESCRIPTION', 'Recovery codes enable you to log into your account in the event your primary ' + 'authentication is not available. Each code can only be used once. Store these codes ' + 'somewhere safe, as they will not be viewable after leaving this page.'), "\xA0", supportLink && _react.default.createElement("a", {
+      href: supportLink,
+      target: "_blank",
+      rel: "noopener noreferrer"
+    }, supportText || i18n._t('MFARegister.RECOVERY_HELP', 'Learn more about recovery codes.')));
+  }
+  function renderPrintAction() {
+    return _react.default.createElement("button", {
+      type: "button",
+      onClick: handlePrint,
+      className: "btn btn-link"
+    }, i18n._t('MFABackupCodesRegister.PRINT', 'Print codes'));
+  }
+  function renderDownloadAction() {
+    const {
+      Blob,
+      URL,
+      navigator
+    } = window;
+    const filename = `${method.name}.txt`;
+    const codesText = codes.join('\r\n');
+    const codesBlob = new Blob([codesText], {
+      type: 'text/plain;charset=UTF-8'
+    });
+    const codesURL = URL.createObjectURL(codesBlob);
+    const supportInternetExplorer = e => {
+      if (navigator.msSaveBlob) {
+        e.preventDefault();
+        navigator.msSaveBlob(codesBlob, filename);
+      }
+    };
+    return _react.default.createElement("a", {
+      download: filename,
+      href: codesURL,
+      className: "btn btn-link",
+      onClick: supportInternetExplorer
+    }, i18n._t('MFABackupCodesRegister.DOWNLOAD', 'Download'));
+  }
+  function renderCopyAction() {
+    const label = recentlyCopied ? i18n._t('MFABackupCodesRegister.COPY_RECENT', 'Copied!') : i18n._t('MFABackupCodesRegister.COPY', 'Copy codes');
+    return _react.default.createElement(_reactCopyToClipboard.CopyToClipboard, {
+      text: codes.join('\n')
+    }, _react.default.createElement("button", {
+      type: "button",
+      className: "mfa-register-backup-codes__copy-to-clipboard btn btn-link",
+      onClick: () => handleCopy()
+    }, label));
+  }
+  return _react.default.createElement("div", {
+    className: "mfa-register-backup-codes__container"
+  }, renderDescription(), renderCodes(), _react.default.createElement("div", {
+    className: "mfa-register-backup-codes__helper-links"
+  }, renderPrintAction(), renderDownloadAction(), renderCopyAction()), _react.default.createElement("button", {
+    className: "btn btn-primary",
+    onClick: () => onCompleteRegistration()
+  }, i18n._t('MFABackupCodesRegister.FINISH', 'Finish')));
+}
+Register.propTypes = {
+  codes: _propTypes.default.arrayOf(_propTypes.default.string),
+  copyFeedbackDuration: _propTypes.default.number
+};
+Register.defaultProps = {
+  copyFeedbackDuration: 3000
+};
+var _default = exports["default"] = Register;
+
+/***/ }),
+
+/***/ "./client/src/components/BackupCodes/Verify.js":
+/*!*****************************************************!*\
+  !*** ./client/src/components/BackupCodes/Verify.js ***!
+  \*****************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "react"));
+var _classnames = _interopRequireDefault(__webpack_require__(/*! classnames */ "classnames"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function Verify(props) {
+  const {
+    error,
+    graphic,
+    method,
+    name,
+    moreOptionsControl,
+    onCompleteVerification
+  } = props;
+  const [value, setValue] = (0, _react.useState)('');
+  const codeInput = (0, _react.useRef)(null);
+  const i18n = window.ss.i18n;
+  (0, _react.useEffect)(() => {
+    if (codeInput.current) {
+      codeInput.current.focus();
+    }
+  }, [codeInput]);
+  function handleChange(event) {
+    setValue(event.target.value);
+  }
+  function handleCompleteVerification(event) {
+    event.preventDefault();
+    onCompleteVerification({
+      code: value
+    });
+  }
+  function renderControls() {
+    return _react.default.createElement("ul", {
+      className: "mfa-action-list mfa-action-list--backup-codes"
+    }, _react.default.createElement("li", {
+      className: "mfa-action-list__item"
+    }, _react.default.createElement("button", {
+      className: "btn btn-primary",
+      disabled: value.length === 0,
+      onClick: handleCompleteVerification
+    }, i18n._t('MFABackupCodesVerify.NEXT', 'Next'))), moreOptionsControl && _react.default.createElement("li", {
+      className: "mfa-action-list__item"
+    }, moreOptionsControl));
+  }
+  function renderDescription() {
+    return _react.default.createElement("p", null, i18n._t('MFABackupCodesVerify.DESCRIPTION', 'Use one of the recovery codes you received'), "\xA0", method && method.supportLink && _react.default.createElement("a", {
+      href: method.supportLink,
+      target: "_blank",
+      rel: "noopener noreferrer"
+    }, i18n._t('MFARegister.RECOVERY_HELP', 'How to use recovery codes.')));
+  }
+  function renderInput() {
+    const label = i18n._t('MFABackupCodesVerify.LABEL', 'Enter recovery code');
+    const formGroupClasses = (0, _classnames.default)('mfa-verify-backup-codes__input-container', {
+      'has-error': !!error
+    });
+    return _react.default.createElement("div", {
+      className: formGroupClasses
+    }, _react.default.createElement("label", {
+      htmlFor: "backup-code",
+      className: "control-label"
+    }, label), _react.default.createElement("input", {
+      className: "mfa-verify-backup-codes__input text form-control",
+      type: "text",
+      placeholder: label,
+      id: "backup-code",
+      ref: codeInput,
+      onChange: handleChange
+    }), error && _react.default.createElement("div", {
+      className: "help-block"
+    }, error));
+  }
+  return _react.default.createElement("form", {
+    className: "mfa-verify-backup-codes__container"
+  }, _react.default.createElement("div", {
+    className: "mfa-verify-backup-codes__content"
+  }, renderDescription(), renderInput()), _react.default.createElement("div", {
+    className: "mfa-verify-backup-codes__image-holder"
+  }, _react.default.createElement("img", {
+    className: "mfa-verify-backup-codes__image",
+    src: graphic,
+    alt: name
+  })), renderControls());
+}
+var _default = exports["default"] = Verify;
+
+/***/ }),
+
+/***/ "./client/src/components/FormField/RegisteredMFAMethodListField/AccountResetUI.js":
+/*!****************************************************************************************!*\
+  !*** ./client/src/components/FormField/RegisteredMFAMethodListField/AccountResetUI.js ***!
+  \****************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "prop-types"));
+var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "react"));
+var _Config = _interopRequireDefault(__webpack_require__(/*! lib/Config */ "lib/Config"));
+var _api = _interopRequireDefault(__webpack_require__(/*! lib/api */ "./client/src/lib/api.js"));
+var _reactstrapConfirm = _interopRequireDefault(__webpack_require__(/*! reactstrap-confirm */ "./node_modules/reactstrap-confirm/dist/index.js"));
+var _LoadingIndicator = _interopRequireDefault(__webpack_require__(/*! ../../LoadingIndicator */ "./client/src/components/LoadingIndicator.js"));
+var _CircleDash = _interopRequireDefault(__webpack_require__(/*! ../../Icons/CircleDash */ "./client/src/components/Icons/CircleDash.js"));
+var _CircleTick = _interopRequireDefault(__webpack_require__(/*! ../../Icons/CircleTick */ "./client/src/components/Icons/CircleTick.js"));
+var _regeneratorRuntime = _interopRequireDefault(__webpack_require__(/*! regenerator-runtime */ "./node_modules/regenerator-runtime/runtime.js"));
+var _en = _interopRequireDefault(__webpack_require__(/*! ../../../../lang/src/en.json */ "./client/lang/src/en.json"));
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+function AccountResetUI(props) {
+  const {
+    LoadingIndicatorComponent,
+    resetEndpoint
+  } = props;
+  const [complete, setComplete] = (0, _react.useState)(false);
+  const [failed, setFailed] = (0, _react.useState)(false);
+  const [submitting, setSubmitting] = (0, _react.useState)(false);
+  const i18n = window.ss.i18n;
+  async function handleSendReset() {
+    const confirmMessage = i18n._t('MultiFactorAuthentication.ACCOUNT_RESET_CONFIRMATION', _en.default['MultiFactorAuthentication.ACCOUNT_RESET_CONFIRMATION']);
+    const confirmTitle = i18n._t('MultiFactorAuthentication.CONFIRMATION_TITLE', _en.default['MultiFactorAuthentication.CONFIRMATION_TITLE']);
+    const buttonLabel = i18n._t('MultiFactorAuthentication.ACCOUNT_RESET_CONFIRMATION_BUTTON', _en.default['MultiFactorAuthentication.ACCOUNT_RESET_CONFIRMATION_BUTTON']);
+    if (!(await (0, _reactstrapConfirm.default)({
+      title: confirmTitle,
+      message: confirmMessage,
+      confirmText: buttonLabel
+    }))) {
+      return;
+    }
+    setSubmitting(true);
+    const body = JSON.stringify({
+      csrf_token: _Config.default.get('SecurityID')
+    });
+    (0, _api.default)(resetEndpoint, 'POST', body).then(response => response.json()).then(output => {
+      setComplete(true);
+      setFailed(!!output.error);
+      setSubmitting(false);
+    }).catch(() => {
+      setComplete(true);
+      setFailed(true);
+      setSubmitting(false);
+    });
+  }
+  function renderAction() {
+    if (complete || submitting) {
+      return null;
+    }
+    return _react.default.createElement("p", {
+      className: "account-reset-action"
+    }, _react.default.createElement("button", {
+      className: "btn btn-outline-secondary",
+      disabled: !resetEndpoint,
+      onClick: () => handleSendReset(),
+      type: "button"
+    }, i18n._t('MultiFactorAuthentication.ACCOUNT_RESET_ACTION', _en.default['MultiFactorAuthentication.ACCOUNT_RESET_ACTION'])));
+  }
+  function renderSending() {
+    return _react.default.createElement("p", {
+      className: "account-reset-action account-reset-action--sending"
+    }, _react.default.createElement("span", {
+      className: "account-reset-action__icon"
+    }, _react.default.createElement(LoadingIndicatorComponent, {
+      size: "32px"
+    })), _react.default.createElement("span", {
+      className: "account-reset-action__message"
+    }, i18n._t('MultiFactorAuthentication.ACCOUNT_RESET_SENDING', _en.default['MultiFactorAuthentication.ACCOUNT_RESET_SENDING'])));
+  }
+  function renderFailure() {
+    return _react.default.createElement("p", {
+      className: "account-reset-action account-reset-action--failure"
+    }, _react.default.createElement("span", {
+      className: "account-reset-action__icon"
+    }, _react.default.createElement(_CircleDash.default, {
+      size: "32px"
+    })), _react.default.createElement("span", {
+      className: "account-reset-action__message"
+    }, i18n._t('MultiFactorAuthentication.ACCOUNT_RESET_SENDING', _en.default['MultiFactorAuthentication.ACCOUNT_RESET_SENDING_FAILURE'])));
+  }
+  function renderSuccess() {
+    return _react.default.createElement("p", {
+      className: "account-reset-action account-reset-action--success"
+    }, _react.default.createElement("span", {
+      className: "account-reset-action__icon"
+    }, _react.default.createElement(_CircleTick.default, {
+      size: "32px"
+    })), _react.default.createElement("span", {
+      className: "account-reset-action__message"
+    }, i18n._t('MultiFactorAuthentication.ACCOUNT_RESET_SENDING_SUCCESS', _en.default['MultiFactorAuthentication.ACCOUNT_RESET_SENDING_SUCCESS'])));
+  }
+  function renderStatusMessage() {
+    if (submitting) {
+      return renderSending();
+    }
+    if (!complete) {
+      return null;
+    }
+    return failed ? renderFailure() : renderSuccess();
+  }
+  return _react.default.createElement("div", {
+    className: "account-reset"
+  }, _react.default.createElement("h5", {
+    className: "account-re'set__title"
+  }, i18n._t('MultiFactorAuthentication.ACCOUNT_RESET_TITLE', _en.default['MultiFactorAuthentication.ACCOUNT_RESET_TITLE'])), _react.default.createElement("p", {
+    className: "account-reset__description"
+  }, i18n._t('MultiFactorAuthentication.ACCOUNT_RESET_DESCRIPTION', _en.default['MultiFactorAuthentication.ACCOUNT_RESET_DESCRIPTION'])), renderAction(), renderStatusMessage());
+}
+AccountResetUI.propTypes = {
+  resetEndpoint: _propTypes.default.string,
+  LoadingIndicatorComponent: _propTypes.default.oneOfType([_propTypes.default.object, _propTypes.default.func])
+};
+AccountResetUI.defaultProps = {
+  LoadingIndicatorComponent: _LoadingIndicator.default
+};
+var _default = exports["default"] = AccountResetUI;
+
+/***/ }),
+
+/***/ "./client/src/components/FormField/RegisteredMFAMethodListField/MethodListItem.js":
+/*!****************************************************************************************!*\
+  !*** ./client/src/components/FormField/RegisteredMFAMethodListField/MethodListItem.js ***!
+  \****************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+var _react = _interopRequireDefault(__webpack_require__(/*! react */ "react"));
+var _reactstrapConfirm = _interopRequireDefault(__webpack_require__(/*! reactstrap-confirm */ "./node_modules/reactstrap-confirm/dist/index.js"));
+var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "prop-types"));
+var _classnames = _interopRequireDefault(__webpack_require__(/*! classnames */ "classnames"));
+var _moment = _interopRequireDefault(__webpack_require__(/*! moment */ "moment"));
+var _registeredMethod = _interopRequireDefault(__webpack_require__(/*! types/registeredMethod */ "./client/src/types/registeredMethod.js"));
+var _Remove = _interopRequireDefault(__webpack_require__(/*! ./MethodListItem/Remove */ "./client/src/components/FormField/RegisteredMFAMethodListField/MethodListItem/Remove.js"));
+var _Reset = _interopRequireDefault(__webpack_require__(/*! ./MethodListItem/Reset */ "./client/src/components/FormField/RegisteredMFAMethodListField/MethodListItem/Reset.js"));
+var _SetDefault = _interopRequireDefault(__webpack_require__(/*! ./MethodListItem/SetDefault */ "./client/src/components/FormField/RegisteredMFAMethodListField/MethodListItem/SetDefault.js"));
+var _en = _interopRequireDefault(__webpack_require__(/*! ../../../../lang/src/en.json */ "./client/lang/src/en.json"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+function MethodListItem(props) {
+  const {
+    allAvailableMethods,
+    backupMethod,
+    canRemove,
+    canReset,
+    className,
+    createdDate,
+    endpoints,
+    isBackupMethod,
+    isDefaultMethod,
+    method,
+    RemoveComponent,
+    resources,
+    SetDefaultComponent,
+    tag: Tag
+  } = props;
+  const i18n = window.ss.i18n;
+  function getStatusMessage() {
+    if (isDefaultMethod) {
+      return i18n._t('MultiFactorAuthentication.DEFAULT_REGISTERED', _en.default['MultiFactorAuthentication.DEFAULT_REGISTERED']);
+    }
+    if (isBackupMethod) {
+      return i18n._t('MultiFactorAuthentication.BACKUP_REGISTERED', _en.default['MultiFactorAuthentication.BACKUP_REGISTERED']);
+    }
+    return i18n._t('MultiFactorAuthentication.REGISTERED', _en.default['MultiFactorAuthentication.REGISTERED']);
+  }
+  function renderRemove() {
+    if (!canRemove) {
+      return null;
+    }
+    return _react.default.createElement(RemoveComponent, {
+      method: method,
+      backupMethod: backupMethod,
+      endpoints: endpoints
+    });
+  }
+  function renderReset() {
+    if (!canReset) {
+      return null;
+    }
+    const resetProps = {
+      method,
+      allAvailableMethods,
+      backupMethod,
+      endpoints,
+      resources
+    };
+    if (isBackupMethod) {
+      const confirmMessage = i18n._t('MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION', _en.default['MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION']);
+      const confirmTitle = i18n._t('MultiFactorAuthentication.CONFIRMATION_TITLE', _en.default['MultiFactorAuthentication.CONFIRMATION_TITLE']);
+      const buttonLabel = i18n._t('MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION_BUTTON', _en.default['MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION_BUTTON']);
+      resetProps.onReset = async callback => {
+        if (!(await (0, _reactstrapConfirm.default)({
+          title: confirmTitle,
+          message: confirmMessage,
+          confirmText: buttonLabel
+        }))) {
+          return;
+        }
+        callback();
+      };
+    }
+    return _react.default.createElement(_Reset.default, resetProps);
+  }
+  function renderSetAsDefault() {
+    if (isDefaultMethod || isBackupMethod) {
+      return null;
+    }
+    return _react.default.createElement(SetDefaultComponent, {
+      method: method,
+      endpoints: endpoints
+    });
+  }
+  function renderControls() {
+    if (!canRemove && !canReset) {
+      return null;
+    }
+    return _react.default.createElement("div", null, renderRemove(), renderReset(), renderSetAsDefault());
+  }
+  function renderNameAndStatus() {
+    const statusMessage = getStatusMessage();
+    _moment.default.locale(i18n.detectLocale());
+    return i18n.inject(statusMessage, {
+      method: method.name,
+      date: (0, _moment.default)(createdDate).format('L')
+    });
+  }
+  const classes = (0, _classnames.default)(className, 'registered-method-list-item');
+  return _react.default.createElement(Tag, {
+    className: classes
+  }, renderNameAndStatus(), renderControls());
+}
+MethodListItem.propTypes = {
+  method: _registeredMethod.default.isRequired,
+  isDefaultMethod: _propTypes.default.bool,
+  isBackupMethod: _propTypes.default.bool,
+  canRemove: _propTypes.default.bool,
+  canReset: _propTypes.default.bool,
+  onRemove: _propTypes.default.func,
+  onReset: _propTypes.default.func,
+  createdDate: _propTypes.default.string,
+  className: _propTypes.default.string,
+  tag: _propTypes.default.string,
+  RemoveComponent: _propTypes.default.oneOfType([_propTypes.default.object, _propTypes.default.func]),
+  SetDefaultComponent: _propTypes.default.oneOfType([_propTypes.default.object, _propTypes.default.func])
+};
+MethodListItem.defaultProps = {
+  isDefaultMethod: false,
+  isBackupMethod: false,
+  canRemove: false,
+  canReset: false,
+  tag: 'li',
+  RemoveComponent: _Remove.default,
+  SetDefaultComponent: _SetDefault.default
+};
+var _default = exports["default"] = MethodListItem;
+
+/***/ }),
+
+/***/ "./client/src/components/FormField/RegisteredMFAMethodListField/MethodListItem/Remove.js":
+/*!***********************************************************************************************!*\
+  !*** ./client/src/components/FormField/RegisteredMFAMethodListField/MethodListItem/Remove.js ***!
+  \***********************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+var _react = _interopRequireDefault(__webpack_require__(/*! react */ "react"));
+var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "prop-types"));
+var _reactRedux = __webpack_require__(/*! react-redux */ "react-redux");
+var _reactstrapConfirm = _interopRequireDefault(__webpack_require__(/*! reactstrap-confirm */ "./node_modules/reactstrap-confirm/dist/index.js"));
+var _Config = _interopRequireDefault(__webpack_require__(/*! lib/Config */ "lib/Config"));
+var _api = _interopRequireDefault(__webpack_require__(/*! lib/api */ "./client/src/lib/api.js"));
+var _actions = __webpack_require__(/*! state/mfaRegister/actions */ "./client/src/state/mfaRegister/actions.js");
+var _actions2 = __webpack_require__(/*! state/mfaAdministration/actions */ "./client/src/state/mfaAdministration/actions.js");
+var _registeredMethod = _interopRequireDefault(__webpack_require__(/*! types/registeredMethod */ "./client/src/types/registeredMethod.js"));
+var _en = _interopRequireDefault(__webpack_require__(/*! ../../../../../lang/src/en.json */ "./client/lang/src/en.json"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+const Remove = props => {
+  const {
+    backupMethod,
+    endpoints,
+    defaultMethod,
+    method,
+    onRemove,
+    registeredMethods,
+    onDeregisterMethod,
+    onAddAvailableMethod,
+    onSetDefaultMethod
+  } = props;
+  const remove = endpoints.remove;
+  const i18n = window.ss.i18n;
+  const handleRemove = async () => {
+    const confirmMessage = i18n._t('MultiFactorAuthentication.DELETE_CONFIRMATION', _en.default['MultiFactorAuthentication.DELETE_CONFIRMATION']);
+    const confirmTitle = i18n._t('MultiFactorAuthentication.CONFIRMATION_TITLE', _en.default['MultiFactorAuthentication.CONFIRMATION_TITLE']);
+    const buttonLabel = i18n._t('MultiFactorAuthentication.DELETE_CONFIRMATION_BUTTON', _en.default['MultiFactorAuthentication.DELETE_CONFIRMATION_BUTTON']);
+    if (!(await (0, _reactstrapConfirm.default)({
+      title: confirmTitle,
+      message: confirmMessage,
+      confirmText: buttonLabel
+    }))) {
+      return;
+    }
+    const token = _Config.default.get('SecurityID');
+    const endpoint = `${remove.replace('{urlSegment}', method.urlSegment)}?SecurityID=${token}`;
+    (0, _api.default)(endpoint, 'DELETE').then(response => response.json().then(json => {
+      if (response.status === 200) {
+        onDeregisterMethod(method);
+        onAddAvailableMethod(json.availableMethod);
+        if (method.urlSegment === defaultMethod) {
+          onSetDefaultMethod(null);
+        }
+        if (!json.hasBackupMethod && backupMethod && registeredMethods.find(candidate => candidate.urlSegment === backupMethod.urlSegment)) {
+          onDeregisterMethod(backupMethod);
+        }
+        return;
+      }
+      const message = json.errors && ` Errors: \n - ${json.errors.join('\n -')}` || '';
+      throw Error(`Could not delete method. Error code ${response.status}.${message}`);
+    }));
+  };
+  return _react.default.createElement("button", {
+    className: "registered-method-list-item__control",
+    type: "button",
+    onClick: onRemove ? onRemove(handleRemove) : handleRemove
+  }, i18n._t('MultiFactorAuthentication.REMOVE_METHOD', _en.default['MultiFactorAuthentication.REMOVE_METHOD']));
+};
+Remove.propTypes = {
+  method: _registeredMethod.default.isRequired,
+  onRemove: _propTypes.default.func,
+  defaultMethod: _propTypes.default.string.isRequired,
+  registeredMethods: _propTypes.default.arrayOf(_registeredMethod.default).isRequired,
+  onDeregisterMethod: _propTypes.default.func.isRequired,
+  onAddAvailableMethod: _propTypes.default.func.isRequired,
+  onSetDefaultMethod: _propTypes.default.func.isRequired
+};
+var _default = exports["default"] = (0, _reactRedux.connect)(_ref => {
+  let {
+    mfaAdministration: {
+      defaultMethod,
+      registeredMethods
+    }
+  } = _ref;
+  return {
+    defaultMethod,
+    registeredMethods
+  };
+}, dispatch => ({
+  onDeregisterMethod: method => {
+    dispatch((0, _actions2.deregisterMethod)(method));
+  },
+  onAddAvailableMethod: method => {
+    dispatch((0, _actions.addAvailableMethod)(method));
+  },
+  onSetDefaultMethod: urlSegment => dispatch((0, _actions2.setDefaultMethod)(urlSegment))
+}))(Remove);
+
+/***/ }),
+
+/***/ "./client/src/components/FormField/RegisteredMFAMethodListField/MethodListItem/Reset.js":
+/*!**********************************************************************************************!*\
+  !*** ./client/src/components/FormField/RegisteredMFAMethodListField/MethodListItem/Reset.js ***!
+  \**********************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "react"));
+var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "prop-types"));
+var _reactRedux = __webpack_require__(/*! react-redux */ "react-redux");
+var _Register = __webpack_require__(/*! components/Register */ "./client/src/components/Register.js");
+var _actions = __webpack_require__(/*! state/mfaRegister/actions */ "./client/src/state/mfaRegister/actions.js");
+var _registeredMethod = _interopRequireDefault(__webpack_require__(/*! types/registeredMethod */ "./client/src/types/registeredMethod.js"));
+var _RegisterModal = _interopRequireDefault(__webpack_require__(/*! components/RegisterModal */ "./client/src/components/RegisterModal.js"));
+var _en = _interopRequireDefault(__webpack_require__(/*! ../../../../../lang/src/en.json */ "./client/lang/src/en.json"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function Reset(props) {
+  const {
+    allAvailableMethods,
+    backupMethod,
+    endpoints,
+    onReset,
+    onResetMethod,
+    method,
+    resources
+  } = props;
+  const [modalOpen, setModalOpen] = (0, _react.useState)(false);
+  function handleToggleModal() {
+    setModalOpen(!modalOpen);
+  }
+  function handleReset() {
+    const availableMethodDetail = allAvailableMethods.find(candidate => candidate.urlSegment === method.urlSegment);
+    if (!availableMethodDetail) {
+      throw Error(`Cannot register the method given: ${method.name} (${method.urlSegment}).`);
+    }
+    onResetMethod(availableMethodDetail);
+    handleToggleModal();
+  }
+  const callback = onReset ? () => onReset(handleReset) : handleReset;
+  return _react.default.createElement("button", {
+    className: "registered-method-list-item__control",
+    type: "button",
+    onClick: callback
+  }, window.ss.i18n._t('MultiFactorAuthentication.RESET_METHOD', _en.default['MultiFactorAuthentication.RESET_METHOD']), _react.default.createElement(_RegisterModal.default, {
+    backupMethod: backupMethod,
+    isOpen: modalOpen,
+    toggle: () => handleToggleModal(),
+    resources: resources,
+    endpoints: endpoints,
+    disallowedScreens: [_Register.SCREEN_CHOOSE_METHOD, _Register.SCREEN_INTRODUCTION]
+  }));
+}
+Reset.propTypes = {
+  method: _registeredMethod.default.isRequired,
+  onReset: _propTypes.default.func
+};
+var _default = exports["default"] = (0, _reactRedux.connect)(null, dispatch => ({
+  onResetMethod: method => {
+    dispatch((0, _actions.chooseMethod)(method));
+    dispatch((0, _actions.showScreen)(_Register.SCREEN_REGISTER_METHOD));
+  }
+}))(Reset);
+
+/***/ }),
+
+/***/ "./client/src/components/FormField/RegisteredMFAMethodListField/MethodListItem/SetDefault.js":
+/*!***************************************************************************************************!*\
+  !*** ./client/src/components/FormField/RegisteredMFAMethodListField/MethodListItem/SetDefault.js ***!
+  \***************************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.Component = SetDefault;
+exports["default"] = void 0;
+var _react = _interopRequireDefault(__webpack_require__(/*! react */ "react"));
+var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "prop-types"));
+var _registeredMethod = _interopRequireDefault(__webpack_require__(/*! types/registeredMethod */ "./client/src/types/registeredMethod.js"));
+var _Config = _interopRequireDefault(__webpack_require__(/*! lib/Config */ "lib/Config"));
+var _reactRedux = __webpack_require__(/*! react-redux */ "react-redux");
+var _api = _interopRequireDefault(__webpack_require__(/*! lib/api */ "./client/src/lib/api.js"));
+var _actions = __webpack_require__(/*! state/mfaAdministration/actions */ "./client/src/state/mfaAdministration/actions.js");
+var _en = _interopRequireDefault(__webpack_require__(/*! ../../../../../lang/src/en.json */ "./client/lang/src/en.json"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+function SetDefault(props) {
+  const {
+    endpoints,
+    method,
+    onSetDefaultMethod
+  } = props;
+  const i18n = window.ss.i18n;
+  function handleSetDefault() {
+    const {
+      setDefault
+    } = endpoints;
+    const token = _Config.default.get('SecurityID');
+    const endpoint = `${setDefault.replace('{urlSegment}', method.urlSegment)}?SecurityID=${token}`;
+    (0, _api.default)(endpoint, 'PUT').then(response => response.json().then(json => {
+      if (response.status === 200) {
+        onSetDefaultMethod(method.urlSegment);
+        return;
+      }
+      const message = json.errors && ` Errors: \n - ${json.errors.join('\n -')}` || '';
+      throw Error(`Could not set default method. Error code ${response.status}.${message}`);
+    }));
+  }
+  return _react.default.createElement("button", {
+    className: "registered-method-list-item__control",
+    type: "button",
+    onClick: handleSetDefault
+  }, i18n._t('MultiFactorAuthentication.SET_AS_DEFAULT', _en.default['MultiFactorAuthentication.SET_AS_DEFAULT']));
+}
+SetDefault.propTypes = {
+  method: _registeredMethod.default.isRequired
+};
+SetDefault.contextTypes = {
+  endpoints: _propTypes.default.shape({
+    setDefault: _propTypes.default.string
+  })
+};
+const mapDispatchToProps = dispatch => ({
+  onSetDefaultMethod: urlSegment => dispatch((0, _actions.setDefaultMethod)(urlSegment))
+});
+var _default = exports["default"] = (0, _reactRedux.connect)(null, mapDispatchToProps)(SetDefault);
+
+/***/ }),
+
+/***/ "./client/src/components/FormField/RegisteredMFAMethodListField/RegisteredMFAMethodListField.js":
+/*!******************************************************************************************************!*\
+  !*** ./client/src/components/FormField/RegisteredMFAMethodListField/RegisteredMFAMethodListField.js ***!
+  \******************************************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.Component = RegisteredMFAMethodListField;
+exports["default"] = void 0;
+var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "prop-types"));
+var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "react"));
+var _reactstrap = __webpack_require__(/*! reactstrap */ "reactstrap");
+var _reactRedux = __webpack_require__(/*! react-redux */ "react-redux");
+var _classnames = _interopRequireDefault(__webpack_require__(/*! classnames */ "classnames"));
+var _registeredMethod = _interopRequireDefault(__webpack_require__(/*! types/registeredMethod */ "./client/src/types/registeredMethod.js"));
+var _availableMethod = _interopRequireDefault(__webpack_require__(/*! types/availableMethod */ "./client/src/types/availableMethod.js"));
+var _actions = __webpack_require__(/*! state/mfaRegister/actions */ "./client/src/state/mfaRegister/actions.js");
+var _actions2 = __webpack_require__(/*! state/mfaAdministration/actions */ "./client/src/state/mfaAdministration/actions.js");
+var _Register = __webpack_require__(/*! components/Register */ "./client/src/components/Register.js");
+var _MethodListItem = _interopRequireDefault(__webpack_require__(/*! ./MethodListItem */ "./client/src/components/FormField/RegisteredMFAMethodListField/MethodListItem.js"));
+var _AccountResetUI = _interopRequireDefault(__webpack_require__(/*! ./AccountResetUI */ "./client/src/components/FormField/RegisteredMFAMethodListField/AccountResetUI.js"));
+var _RegisterModal = _interopRequireDefault(__webpack_require__(/*! ../../RegisterModal */ "./client/src/components/RegisterModal.js"));
+var _en = _interopRequireDefault(__webpack_require__(/*! ../../../../lang/src/en.json */ "./client/lang/src/en.json"));
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+function RegisteredMFAMethodListField(props) {
+  const {
+    allAvailableMethods,
+    availableMethods,
+    backupCreatedDate,
+    backupMethod,
+    defaultMethod,
+    endpoints,
+    initialAvailableMethods,
+    initialDefaultMethod,
+    initialRegisteredMethods,
+    isMFARequired,
+    MethodListItemComponent,
+    onResetRegister,
+    onSetDefaultMethod,
+    onSetRegisteredMethods,
+    onUpdateAvailableMethods,
+    readOnly,
+    registeredMethods,
+    RegisterModalComponent,
+    resetEndpoint,
+    resources
+  } = props;
+  const [modalOpen, setModalOpen] = (0, _react.useState)(false);
+  const i18n = window.ss.i18n;
+  (0, _react.useEffect)(() => {
+    onSetRegisteredMethods(initialRegisteredMethods);
+    onUpdateAvailableMethods(initialAvailableMethods);
+    onSetDefaultMethod(initialDefaultMethod);
+  }, []);
+  function getBaseMethods() {
+    let {
+      methods
+    } = registeredMethods;
+    if (!methods) {
+      return [];
+    }
+    if (backupMethod) {
+      methods = methods.filter(method => method.urlSegment !== backupMethod.urlSegment);
+    }
+    return methods;
+  }
+  function handleToggleModal() {
+    setModalOpen(!modalOpen);
+  }
+  function renderNoMethodsMessage() {
+    if (getBaseMethods().length) {
+      return null;
+    }
+    const messageKey = readOnly ? 'MultiFactorAuthentication.NO_METHODS_REGISTERED_READONLY' : 'MultiFactorAuthentication.NO_METHODS_REGISTERED';
+    return _react.default.createElement("div", {
+      className: "registered-mfa-method-list-field__no-methods"
+    }, i18n._t(messageKey, _en.default[messageKey]));
+  }
+  function renderBackupMethod() {
+    if (!backupMethod) {
+      return null;
+    }
+    const registeredBackupMethod = registeredMethods.find(candidate => candidate.urlSegment === backupMethod.urlSegment);
+    if (!registeredBackupMethod) {
+      return null;
+    }
+    return _react.default.createElement(MethodListItemComponent, {
+      method: registeredBackupMethod,
+      createdDate: backupCreatedDate,
+      canReset: !readOnly,
+      isBackupMethod: true,
+      tag: "div",
+      className: "registered-method-list-item--backup"
+    });
+  }
+  function renderBaseMethods() {
+    const baseMethods = getBaseMethods();
+    if (!baseMethods.length) {
+      return [];
+    }
+    return baseMethods.map(method => {
+      const newProps = {
+        allAvailableMethods,
+        backupMethod,
+        endpoints,
+        method,
+        resources,
+        key: method.urlSegment,
+        isDefaultMethod: defaultMethod && method.urlSegment === defaultMethod,
+        canRemove: !readOnly && !(isMFARequired && baseMethods.length === 1),
+        canReset: !readOnly
+      };
+      return _react.default.createElement(MethodListItemComponent, newProps);
+    });
+  }
+  function renderModal() {
+    return _react.default.createElement(RegisterModalComponent, {
+      backupMethod: backupMethod,
+      isOpen: modalOpen,
+      toggle: () => handleToggleModal(),
+      resources: resources,
+      endpoints: endpoints,
+      disallowedScreens: [_Register.SCREEN_INTRODUCTION]
+    });
+  }
+  function renderAddButton() {
+    if (readOnly || !availableMethods || availableMethods.length === 0) {
+      return null;
+    }
+    const label = registeredMethods.length ? i18n._t('MultiFactorAuthentication.ADD_ANOTHER_METHOD', _en.default['MultiFactorAuthentication.ADD_ANOTHER_METHOD']) : i18n._t('MultiFactorAuthentication.ADD_FIRST_METHOD', _en.default['MultiFactorAuthentication.ADD_FIRST_METHOD']);
+    return _react.default.createElement(_reactstrap.Button, {
+      className: "registered-mfa-method-list-field__button",
+      outline: true,
+      type: "button",
+      onClick: () => {
+        handleToggleModal();
+        onResetRegister();
+      }
+    }, label);
+  }
+  const classNames = (0, _classnames.default)({
+    'registered-mfa-method-list-field': true,
+    'registered-mfa-method-list-field--read-only': readOnly
+  });
+  return _react.default.createElement("div", {
+    className: classNames
+  }, _react.default.createElement("ul", {
+    className: "method-list"
+  }, renderBaseMethods()), renderNoMethodsMessage(), renderAddButton(), renderBackupMethod(), readOnly && _react.default.createElement("hr", null), readOnly && _react.default.createElement(_AccountResetUI.default, {
+    resetEndpoint: resetEndpoint
+  }), renderModal());
+}
+RegisteredMFAMethodListField.propTypes = {
+  backupMethod: _registeredMethod.default,
+  defaultMethod: _propTypes.default.string,
+  readOnly: _propTypes.default.bool,
+  isMFARequired: _propTypes.default.bool,
+  initialDefaultMethod: _propTypes.default.string,
+  initialRegisteredMethods: _propTypes.default.arrayOf(_registeredMethod.default),
+  initialAvailableMethods: _propTypes.default.arrayOf(_availableMethod.default),
+  allAvailableMethods: _propTypes.default.arrayOf(_availableMethod.default),
+  resetEndpoint: _propTypes.default.string,
+  endpoints: _propTypes.default.shape({
+    register: _propTypes.default.string,
+    remove: _propTypes.default.string
+  }),
+  resources: _propTypes.default.object,
+  availableMethods: _propTypes.default.arrayOf(_availableMethod.default),
+  registeredMethods: _propTypes.default.arrayOf(_registeredMethod.default),
+  registrationScreen: _propTypes.default.number,
+  MethodListItemComponent: _propTypes.default.oneOfType([_propTypes.default.object, _propTypes.default.func]),
+  RegisterModalComponent: _propTypes.default.oneOfType([_propTypes.default.object, _propTypes.default.func])
+};
+RegisteredMFAMethodListField.defaultProps = {
+  initialAvailableMethods: [],
+  MethodListItemComponent: _MethodListItem.default,
+  RegisterModalComponent: _RegisterModal.default
+};
+RegisteredMFAMethodListField.childContextTypes = {
+  allAvailableMethods: _propTypes.default.arrayOf(_availableMethod.default),
+  backupMethod: _registeredMethod.default,
+  endpoints: _propTypes.default.shape({
+    register: _propTypes.default.string,
+    remove: _propTypes.default.string,
+    setDefault: _propTypes.default.string
+  }),
+  resources: _propTypes.default.object
+};
+const mapDispatchToProps = dispatch => ({
+  onResetRegister: () => {
+    dispatch((0, _actions.chooseMethod)(null));
+    dispatch((0, _actions.showScreen)(_Register.SCREEN_CHOOSE_METHOD));
+  },
+  onUpdateAvailableMethods: methods => {
+    dispatch((0, _actions.setAvailableMethods)(methods));
+  },
+  onSetDefaultMethod: urlSegment => {
+    dispatch((0, _actions2.setDefaultMethod)(urlSegment));
+  },
+  onSetRegisteredMethods: methods => {
+    dispatch((0, _actions2.setRegisteredMethods)(methods));
+  }
+});
+const mapStateToProps = state => {
+  const {
+    availableMethods,
+    screen
+  } = state.mfaRegister;
+  const {
+    defaultMethod,
+    registeredMethods
+  } = state.mfaAdministration;
+  return {
+    availableMethods,
+    defaultMethod,
+    registeredMethods: registeredMethods || [],
+    registrationScreen: screen
+  };
+};
+var _default = exports["default"] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(RegisteredMFAMethodListField);
+
+/***/ }),
+
+/***/ "./client/src/components/Icons/CircleDash.js":
+/*!***************************************************!*\
+  !*** ./client/src/components/Icons/CircleDash.js ***!
+  \***************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+var _react = _interopRequireDefault(__webpack_require__(/*! react */ "react"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+var _default = _ref => {
+  let {
+    color = 'currentColor',
+    size = '3em'
+  } = _ref;
+  return _react.default.createElement("svg", {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 512 512",
+    height: size,
+    width: size
+  }, _react.default.createElement("g", {
+    fill: color
+  }, _react.default.createElement("path", {
+    d: "M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zM124 296c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h264c6.6 0 12 5.4 12 12v56c0 6.6-5.4 12-12 12H124z"
+  })));
+};
+exports["default"] = _default;
+
+/***/ }),
+
+/***/ "./client/src/components/Icons/CircleTick.js":
+/*!***************************************************!*\
+  !*** ./client/src/components/Icons/CircleTick.js ***!
+  \***************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+var _react = _interopRequireDefault(__webpack_require__(/*! react */ "react"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+var _default = _ref => {
+  let {
+    color = 'currentColor',
+    size = '3em'
+  } = _ref;
+  return _react.default.createElement("svg", {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 512 512",
+    height: size,
+    width: size
+  }, _react.default.createElement("g", {
+    fill: color
+  }, _react.default.createElement("path", {
+    d: "M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"
+  })));
+};
+exports["default"] = _default;
+
+/***/ }),
+
+/***/ "./client/src/components/LoadingIndicator.js":
+/*!***************************************************!*\
+  !*** ./client/src/components/LoadingIndicator.js ***!
+  \***************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+var _react = _interopRequireDefault(__webpack_require__(/*! react */ "react"));
+var _classnames = _interopRequireDefault(__webpack_require__(/*! classnames */ "classnames"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+var _default = _ref => {
+  let {
+    block = false,
+    size = '6em'
+  } = _ref;
+  return _react.default.createElement("div", {
+    style: {
+      height: size,
+      width: size
+    },
+    className: (0, _classnames.default)({
+      'mfa-loading-indicator': true,
+      'mfa-loading-indicator--block': block
+    })
+  });
+};
+exports["default"] = _default;
+
+/***/ }),
+
+/***/ "./client/src/components/Register.js":
+/*!*******************************************!*\
+  !*** ./client/src/components/Register.js ***!
+  \*******************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.Component = Register;
+exports["default"] = exports.SCREEN_REGISTER_METHOD = exports.SCREEN_INTRODUCTION = exports.SCREEN_COMPLETE = exports.SCREEN_CHOOSE_METHOD = void 0;
+var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "react"));
+var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "prop-types"));
+var _api = _interopRequireDefault(__webpack_require__(/*! lib/api */ "./client/src/lib/api.js"));
+var _Injector = __webpack_require__(/*! lib/Injector */ "lib/Injector");
+var _availableMethod = _interopRequireDefault(__webpack_require__(/*! types/availableMethod */ "./client/src/types/availableMethod.js"));
+var _registeredMethod = _interopRequireDefault(__webpack_require__(/*! types/registeredMethod */ "./client/src/types/registeredMethod.js"));
+var _LoadingIndicator = _interopRequireDefault(__webpack_require__(/*! components/LoadingIndicator */ "./client/src/components/LoadingIndicator.js"));
+var _Introduction = _interopRequireDefault(__webpack_require__(/*! components/Register/Introduction */ "./client/src/components/Register/Introduction.js"));
+var _Complete = _interopRequireDefault(__webpack_require__(/*! components/Register/Complete */ "./client/src/components/Register/Complete.js"));
+var _SelectMethod = _interopRequireDefault(__webpack_require__(/*! components/Register/SelectMethod */ "./client/src/components/Register/SelectMethod.js"));
+var _reactRedux = __webpack_require__(/*! react-redux */ "react-redux");
+var _actions = __webpack_require__(/*! state/mfaRegister/actions */ "./client/src/state/mfaRegister/actions.js");
+var _Title = _interopRequireDefault(__webpack_require__(/*! components/Register/Title */ "./client/src/components/Register/Title.js"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+const SCREEN_INTRODUCTION = exports.SCREEN_INTRODUCTION = 1;
+const SCREEN_REGISTER_METHOD = exports.SCREEN_REGISTER_METHOD = 2;
+const SCREEN_CHOOSE_METHOD = exports.SCREEN_CHOOSE_METHOD = 3;
+const SCREEN_COMPLETE = exports.SCREEN_COMPLETE = 4;
+function Register(props) {
+  const {
+    availableMethods,
+    backupMethod,
+    canSkip,
+    completeMessage,
+    CompleteComponent,
+    endpoints,
+    IntroductionComponent,
+    onCompleteRegistration,
+    onRegister,
+    onRemoveAvailableMethod,
+    onShowComplete,
+    onSelectMethod,
+    onShowIntroduction,
+    onShowChooseMethod,
+    registeredMethods,
+    resources,
+    screen,
+    selectedMethod,
+    SelectMethodComponent,
+    showSubTitle,
+    showTitle,
+    TitleComponent
+  } = props;
+  const [registerProps, setRegisterProps] = (0, _react.useState)(null);
+  const [token, setToken] = (0, _react.useState)(null);
+  const i18n = window.ss.i18n;
+  function fetchStartRegistrationData() {
+    const {
+      register
+    } = endpoints;
+    const endpoint = register.replace('{urlSegment}', selectedMethod.urlSegment);
+    (0, _api.default)(endpoint).then(response => response.json().then(result => {
+      const {
+        SecurityID,
+        ...other
+      } = result;
+      setRegisterProps(other);
+      setToken(SecurityID);
+    }));
+  }
+  (0, _react.useEffect)(() => {
+    if (selectedMethod) {
+      fetchStartRegistrationData();
+    }
+  }, [selectedMethod]);
+  function shouldSetupBackupMethod() {
+    if (!backupMethod) {
+      return false;
+    }
+    return !registeredMethods.find(method => method.urlSegment === backupMethod.urlSegment);
+  }
+  function setupBackupMethod() {
+    if (shouldSetupBackupMethod() && selectedMethod.urlSegment !== backupMethod.urlSegment) {
+      onSelectMethod(backupMethod);
+      return;
+    }
+    onShowComplete();
+  }
+  function handleBack() {
+    if (availableMethods.length === 1 && onShowIntroduction) {
+      return onShowIntroduction();
+    }
+    setRegisterProps(null);
+    return onShowChooseMethod();
+  }
+  function handleCompleteRegistration(registrationData) {
+    const {
+      register
+    } = endpoints;
+    const params = token ? `?SecurityID=${token}` : '';
+    (0, _api.default)(`${register.replace('{urlSegment}', selectedMethod.urlSegment)}${params}`, 'POST', JSON.stringify(registrationData)).then(response => {
+      switch (response.status) {
+        case 201:
+          setRegisterProps(null);
+          if (typeof onRegister === 'function') {
+            onRegister(selectedMethod);
+          }
+          onRemoveAvailableMethod(selectedMethod);
+          setupBackupMethod();
+          return null;
+        default:
+      }
+      return response.json();
+    }).then(response => {
+      if (response && response.errors) {
+        const formattedErrors = response.errors.join(', ');
+        setRegisterProps({
+          ...registerProps,
+          error: formattedErrors
+        });
+      }
+    });
+  }
+  function handleSkip() {
+    const {
+      skip
+    } = endpoints;
+    if (skip) {
+      window.location = skip;
+    }
+  }
+  function renderIntroduction() {
+    const {
+      skip
+    } = endpoints;
+    return _react.default.createElement(IntroductionComponent, {
+      canSkip: skip && canSkip,
+      onSkip: () => handleSkip(),
+      resources: () => resources(),
+      showTitle: () => showSubTitle()
+    });
+  }
+  function renderMethod() {
+    if (!selectedMethod) {
+      return null;
+    }
+    if (!registerProps) {
+      return _react.default.createElement(_LoadingIndicator.default, {
+        block: true
+      });
+    }
+    const RegistrationComponent = (0, _Injector.loadComponent)(selectedMethod.component);
+    return _react.default.createElement("div", null, showSubTitle && _react.default.createElement(TitleComponent, null), _react.default.createElement(RegistrationComponent, _extends({}, registerProps, {
+      method: selectedMethod,
+      onBack: () => handleBack(),
+      onCompleteRegistration: () => handleCompleteRegistration()
+    })));
+  }
+  function renderOptions() {
+    return _react.default.createElement(SelectMethodComponent, {
+      methods: availableMethods,
+      showTitle: showSubTitle
+    });
+  }
+  if (screen === SCREEN_COMPLETE) {
+    return _react.default.createElement(CompleteComponent, {
+      showTitle: showSubTitle,
+      onComplete: onCompleteRegistration,
+      message: completeMessage
+    });
+  }
+  let content;
+  switch (screen) {
+    case SCREEN_CHOOSE_METHOD:
+      content = renderOptions();
+      break;
+    case SCREEN_REGISTER_METHOD:
+      content = renderMethod();
+      break;
+    case SCREEN_INTRODUCTION:
+    default:
+      content = renderIntroduction();
+      break;
+  }
+  return _react.default.createElement("div", null, showTitle && _react.default.createElement("h1", {
+    className: "mfa-app-title"
+  }, i18n._t('MFARegister.TITLE', 'Multi-factor authentication')), content);
+}
+Register.propTypes = {
+  availableMethods: _propTypes.default.arrayOf(_availableMethod.default),
+  backupMethod: _availableMethod.default,
+  canSkip: _propTypes.default.bool,
+  endpoints: _propTypes.default.shape({
+    register: _propTypes.default.string.isRequired,
+    skip: _propTypes.default.string
+  }),
+  onRegister: _propTypes.default.func,
+  onCompleteRegistration: _propTypes.default.func.isRequired,
+  registeredMethods: _propTypes.default.arrayOf(_registeredMethod.default),
+  resources: _propTypes.default.object,
+  showTitle: _propTypes.default.bool,
+  showSubTitle: _propTypes.default.bool,
+  IntroductionComponent: _propTypes.default.oneOfType([_propTypes.default.object, _propTypes.default.func]),
+  SelectMethodComponent: _propTypes.default.oneOfType([_propTypes.default.object, _propTypes.default.func]),
+  CompleteComponent: _propTypes.default.oneOfType([_propTypes.default.object, _propTypes.default.func]),
+  TitleComponent: _propTypes.default.oneOfType([_propTypes.default.object, _propTypes.default.func])
+};
+Register.defaultProps = {
+  resources: {},
+  showTitle: true,
+  showSubTitle: true,
+  showIntroduction: true,
+  IntroductionComponent: _Introduction.default,
+  SelectMethodComponent: _SelectMethod.default,
+  CompleteComponent: _Complete.default,
+  TitleComponent: _Title.default
+};
+const mapStateToProps = state => {
+  const source = state.mfaRegister || state;
+  return {
+    screen: source.screen,
+    selectedMethod: source.method,
+    availableMethods: source.availableMethods
+  };
+};
+const mapDispatchToProps = dispatch => ({
+  onShowIntroduction: () => dispatch((0, _actions.showScreen)(SCREEN_INTRODUCTION)),
+  onShowComplete: () => dispatch((0, _actions.showScreen)(SCREEN_COMPLETE)),
+  onSelectMethod: method => dispatch((0, _actions.chooseMethod)(method)),
+  onShowChooseMethod: () => {
+    dispatch((0, _actions.chooseMethod)(null));
+    dispatch((0, _actions.showScreen)(SCREEN_CHOOSE_METHOD));
+  },
+  onRemoveAvailableMethod: method => dispatch((0, _actions.removeAvailableMethod)(method))
+});
+var _default = exports["default"] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Register);
+
+/***/ }),
+
+/***/ "./client/src/components/Register/Complete.js":
+/*!****************************************************!*\
+  !*** ./client/src/components/Register/Complete.js ***!
+  \****************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+var _react = _interopRequireDefault(__webpack_require__(/*! react */ "react"));
+var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "prop-types"));
+var _Title = _interopRequireDefault(__webpack_require__(/*! ./Title */ "./client/src/components/Register/Title.js"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+const Complete = _ref => {
+  let {
+    onComplete,
+    showTitle,
+    message
+  } = _ref;
+  return _react.default.createElement("div", {
+    className: "mfa-register-confirmation"
+  }, _react.default.createElement("i", {
+    className: "font-icon-check-mark mfa-register-confirmation__icon"
+  }), showTitle && _react.default.createElement(_Title.default, {
+    className: "mfa-register-confirmation__title"
+  }), _react.default.createElement("p", {
+    className: "mfa-register-confirmation__description"
+  }, message || window.ss.i18n._t('MFARegister.SETUP_COMPLETE_DESCRIPTION', 'You will be able to edit these settings later from your profile area.')), _react.default.createElement("button", {
+    onClick: onComplete,
+    className: "mfa-register-confirmation__continue btn btn-primary"
+  }, window.ss.i18n._t('MFARegister.SETUP_COMPLETE_CONTINUE', 'Continue')));
+};
+Complete.propTypes = {
+  onComplete: _propTypes.default.func.isRequired,
+  showTitle: _propTypes.default.bool
+};
+Complete.defaultProps = {
+  showTitle: true
+};
+var _default = exports["default"] = Complete;
+
+/***/ }),
+
+/***/ "./client/src/components/Register/Introduction.js":
+/*!********************************************************!*\
+  !*** ./client/src/components/Register/Introduction.js ***!
+  \********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = exports.Component = exports.ActionList = void 0;
+var _react = _interopRequireDefault(__webpack_require__(/*! react */ "react"));
+var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "prop-types"));
+var _actions = __webpack_require__(/*! state/mfaRegister/actions */ "./client/src/state/mfaRegister/actions.js");
+var _reactRedux = __webpack_require__(/*! react-redux */ "react-redux");
+var _Register = __webpack_require__(/*! ../Register */ "./client/src/components/Register.js");
+var _Title = _interopRequireDefault(__webpack_require__(/*! ./Title */ "./client/src/components/Register/Title.js"));
+var _en = _interopRequireDefault(__webpack_require__(/*! ../../../lang/src/en.json */ "./client/lang/src/en.json"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+const ActionList = _ref => {
+  let {
+    canSkip,
+    onContinue,
+    onSkip
+  } = _ref;
+  const {
+    ss: {
+      i18n
+    }
+  } = window;
+  return _react.default.createElement("ul", {
+    className: "mfa-action-list"
+  }, _react.default.createElement("li", {
+    className: "mfa-action-list__item"
+  }, _react.default.createElement("button", {
+    className: "btn btn-primary",
+    onClick: onContinue
+  }, i18n._t('MultiFactorAuthentication.GET_STARTED', _en.default['MultiFactorAuthentication.GET_STARTED']))), canSkip && _react.default.createElement("li", {
+    className: "mfa-action-list__item"
+  }, _react.default.createElement("button", {
+    className: "btn btn-secondary",
+    onClick: onSkip
+  }, i18n._t('MultiFactorAuthentication.SETUP_LATER', _en.default['MultiFactorAuthentication.SETUP_LATER']))));
+};
+exports.ActionList = ActionList;
+const Introduction = _ref2 => {
+  let {
+    canSkip,
+    onContinue,
+    onSkip,
+    resources,
+    showTitle,
+    TitleComponent
+  } = _ref2;
+  const {
+    ss: {
+      i18n
+    }
+  } = window;
+  return _react.default.createElement("div", null, showTitle && _react.default.createElement(TitleComponent, null), _react.default.createElement("h4", {
+    className: "mfa-feature-list-title"
+  }, i18n._t('MultiFactorAuthentication.HOW_IT_WORKS', _en.default['MultiFactorAuthentication.HOW_IT_WORKS'])), _react.default.createElement("ul", {
+    className: "mfa-feature-list"
+  }, _react.default.createElement("li", {
+    className: "mfa-feature-list-item"
+  }, resources.extra_factor_image_url && _react.default.createElement("img", {
+    alt: i18n._t('MultiFactorAuthentication.EXTRA_LAYER_IMAGE_ALT', _en.default['MultiFactorAuthentication.EXTRA_LAYER_IMAGE_ALT']),
+    "aria-hidden": "true",
+    className: "mfa-feature-list-item__icon",
+    src: resources.extra_factor_image_url
+  }), _react.default.createElement("div", {
+    className: "mfa-feature-list-item__content"
+  }, _react.default.createElement("h5", {
+    className: "mfa-block-heading mfa-feature-list-item__title"
+  }, i18n._t('MultiFactorAuthentication.EXTRA_LAYER_TITLE', _en.default['MultiFactorAuthentication.EXTRA_LAYER_TITLE'])), _react.default.createElement("p", {
+    className: "mfa-feature-list-item__description"
+  }, i18n._t('MultiFactorAuthentication.EXTRA_LAYER_DESCRIPTION', _en.default['MultiFactorAuthentication.EXTRA_LAYER_DESCRIPTION']), "\xA0", resources.user_help_link && _react.default.createElement("a", {
+    href: resources.user_help_link
+  }, i18n._t('MultiFactorAuthentication.HOW_MFA_WORKS', _en.default['MultiFactorAuthentication.HOW_MFA_WORKS']))))), _react.default.createElement("li", {
+    className: "mfa-feature-list-item"
+  }, resources.unique_image_url && _react.default.createElement("img", {
+    alt: i18n._t('MultiFactorAuthentication.UNIQUE_IMAGE_ALT', _en.default['MultiFactorAuthentication.UNIQUE_IMAGE_ALT']),
+    "aria-hidden": "true",
+    className: "mfa-feature-list-item__icon",
+    src: resources.unique_image_url
+  }), _react.default.createElement("div", {
+    className: "mfa-feature-list-item__content"
+  }, _react.default.createElement("h5", {
+    className: "mfa-block-heading mfa-feature-list-item__title"
+  }, i18n._t('MultiFactorAuthentication.UNIQUE_TITLE', _en.default['MultiFactorAuthentication.UNIQUE_TITLE'])), _react.default.createElement("p", {
+    className: "mfa-feature-list-item__description"
+  }, i18n._t('MultiFactorAuthentication.UNIQUE_DESCRIPTION', _en.default['MultiFactorAuthentication.UNIQUE_DESCRIPTION']))))), _react.default.createElement(ActionList, {
+    canSkip: canSkip,
+    onContinue: onContinue,
+    onSkip: onSkip
+  }));
+};
+exports.Component = Introduction;
+Introduction.propTypes = {
+  canSkip: _propTypes.default.bool,
+  onContinue: _propTypes.default.func.isRequired,
+  onSkip: _propTypes.default.func,
+  resources: _propTypes.default.shape({
+    user_help_link: _propTypes.default.string,
+    extra_factor_image_url: _propTypes.default.string,
+    unique_image_url: _propTypes.default.string
+  }).isRequired,
+  showTitle: _propTypes.default.bool,
+  TitleComponent: _propTypes.default.oneOfType([_propTypes.default.object, _propTypes.default.func])
+};
+Introduction.defaultProps = {
+  showTitle: true,
+  TitleComponent: _Title.default
+};
+const mapDispatchToProps = dispatch => ({
+  onContinue: () => {
+    dispatch((0, _actions.chooseMethod)(null));
+    dispatch((0, _actions.showScreen)(_Register.SCREEN_REGISTER_METHOD));
+  }
+});
+var _default = exports["default"] = (0, _reactRedux.connect)(null, mapDispatchToProps)(Introduction);
+
+/***/ }),
+
+/***/ "./client/src/components/Register/MethodTile.js":
+/*!******************************************************!*\
+  !*** ./client/src/components/Register/MethodTile.js ***!
+  \******************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.Component = MethodTile;
+exports["default"] = void 0;
+var _react = _interopRequireDefault(__webpack_require__(/*! react */ "react"));
+var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "prop-types"));
+var _classnames = _interopRequireDefault(__webpack_require__(/*! classnames */ "classnames"));
+var _availableMethod = _interopRequireDefault(__webpack_require__(/*! types/availableMethod */ "./client/src/types/availableMethod.js"));
+var _withMethodAvailability = _interopRequireDefault(__webpack_require__(/*! state/methodAvailability/withMethodAvailability */ "./client/src/state/methodAvailability/withMethodAvailability.js"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+function MethodTile(props) {
+  const {
+    isActive,
+    isAvailable,
+    getUnavailableMessage,
+    method,
+    onClick
+  } = props;
+  const i18n = window.ss.i18n;
+  function handleClick(event) {
+    if (method.isAvailable && onClick) {
+      onClick(event);
+    }
+  }
+  function handleKeyUp(event) {
+    if (event.keyCode === 13) {
+      handleClick(event);
+    }
+  }
+  function renderSupportLink() {
+    const {
+      supportLink,
+      supportText
+    } = method;
+    if (!supportLink) {
+      return null;
+    }
+    return _react.default.createElement("a", {
+      href: supportLink,
+      target: "_blank",
+      rel: "noopener noreferrer",
+      className: "mfa-method-tile__support-link"
+    }, supportText || i18n._t('MFARegister.HELP', 'Find out more.'));
+  }
+  function renderUnavailableMask() {
+    if (isAvailable()) {
+      return null;
+    }
+    const message = getUnavailableMessage();
+    return _react.default.createElement("div", {
+      className: "mfa-method-tile__unavailable-mask"
+    }, _react.default.createElement("h3", {
+      className: "mfa-method-tile__unavailable-title"
+    }, i18n._t('MFAMethodTile.UNAVAILABLE', 'Unsupported: ')), message && _react.default.createElement("p", {
+      className: "mfa-method-tile__unavailable-text"
+    }, message));
+  }
+  const classes = (0, _classnames.default)('mfa-method-tile', {
+    'mfa-method-tile--active': isActive,
+    'mfa-method-tile--unsupported': !method.isAvailable
+  });
+  const thumbnailClasses = (0, _classnames.default)('mfa-method-tile__thumbnail-container', {
+    'mfa-method-tile__thumbnail-container--unsupported': !method.isAvailable
+  });
+  const leadInLabel = i18n.inject(i18n._t('MFARegister.REGISTER_WITH', 'Register with {method}'), {
+    method: method.name.toLowerCase()
+  });
+  return _react.default.createElement("li", {
+    className: classes
+  }, _react.default.createElement("div", {
+    className: "mfa-method-tile__content",
+    onClick: handleClick,
+    onKeyUp: handleKeyUp,
+    tabIndex: "0",
+    role: "button"
+  }, method.thumbnail && _react.default.createElement("div", {
+    className: thumbnailClasses
+  }, _react.default.createElement("img", {
+    src: method.thumbnail,
+    className: "mfa-method-tile__thumbnail",
+    alt: method.name
+  })), _react.default.createElement("h3", {
+    className: "mfa-method-tile__title"
+  }, leadInLabel), _react.default.createElement("p", {
+    className: "mfa-method-tile__description"
+  }, method.description && `${method.description}. `, renderSupportLink())), renderUnavailableMask());
+}
+MethodTile.propTypes = {
+  getUnavailableMessage: _propTypes.default.func.isRequired,
+  isActive: _propTypes.default.bool,
+  isAvailable: _propTypes.default.func.isRequired,
+  method: _availableMethod.default.isRequired,
+  onClick: _propTypes.default.func.isRequired
+};
+MethodTile.defaultProps = {
+  isActive: false
+};
+var _default = exports["default"] = (0, _withMethodAvailability.default)(MethodTile);
+
+/***/ }),
+
+/***/ "./client/src/components/Register/SelectMethod.js":
+/*!********************************************************!*\
+  !*** ./client/src/components/Register/SelectMethod.js ***!
+  \********************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.Component = SelectMethod;
+exports["default"] = void 0;
+var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "react"));
+var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "prop-types"));
+var _availableMethod = _interopRequireDefault(__webpack_require__(/*! types/availableMethod */ "./client/src/types/availableMethod.js"));
+var _classnames = _interopRequireDefault(__webpack_require__(/*! classnames */ "classnames"));
+var _actions = __webpack_require__(/*! state/mfaRegister/actions */ "./client/src/state/mfaRegister/actions.js");
+var _redux = __webpack_require__(/*! redux */ "redux");
+var _reactRedux = __webpack_require__(/*! react-redux */ "react-redux");
+var _withMethodAvailability = _interopRequireDefault(__webpack_require__(/*! state/methodAvailability/withMethodAvailability */ "./client/src/state/methodAvailability/withMethodAvailability.js"));
+var _Register = __webpack_require__(/*! ../Register */ "./client/src/components/Register.js");
+var _MethodTile = _interopRequireDefault(__webpack_require__(/*! ./MethodTile */ "./client/src/components/Register/MethodTile.js"));
+var _Title = _interopRequireDefault(__webpack_require__(/*! ./Title */ "./client/src/components/Register/Title.js"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function SelectMethod(props) {
+  const {
+    methods,
+    MethodTileComponent,
+    onClickBack,
+    onSelectMethod,
+    showTitle,
+    TitleComponent
+  } = props;
+  const i18n = window.ss.i18n;
+  let initialHighlightedMethod = null;
+  if (props.methods.length === 1 && props.isAvailable && props.isAvailable(props.methods[0])) {
+    initialHighlightedMethod = props.methods[0];
+  }
+  const [highlightedMethod, setHighlightedMethod] = (0, _react.useState)(initialHighlightedMethod);
+  function handleGoToNext() {
+    onSelectMethod(highlightedMethod);
+  }
+  (0, _react.useEffect)(() => {
+    if (initialHighlightedMethod) {
+      handleGoToNext();
+    }
+  }, []);
+  function handleClick(method) {
+    setHighlightedMethod(method);
+  }
+  function handleBack() {
+    if (onClickBack) {
+      onClickBack();
+    }
+  }
+  function renderActions() {
+    return _react.default.createElement("ul", {
+      className: "mfa-action-list"
+    }, _react.default.createElement("li", {
+      className: "mfa-action-list__item"
+    }, _react.default.createElement("button", {
+      className: "btn btn-primary",
+      disabled: highlightedMethod === null,
+      onClick: handleGoToNext
+    }, i18n._t('MFARegister.NEXT', 'Next'))), _react.default.createElement("li", {
+      className: "mfa-action-list__item"
+    }, _react.default.createElement("button", {
+      className: "btn btn-secondary",
+      onClick: handleBack
+    }, i18n._t('MFARegister.BACK', 'Back'))));
+  }
+  const classes = (0, _classnames.default)('mfa-method-tile-group', {
+    'mfa-method-tile-group--three-columns': methods.length % 3 === 0
+  });
+  return _react.default.createElement("div", null, showTitle && _react.default.createElement(TitleComponent, null), _react.default.createElement("ul", {
+    className: classes
+  }, methods.map(method => _react.default.createElement(MethodTileComponent, {
+    isActive: highlightedMethod === method,
+    key: method.urlSegment,
+    method: method,
+    onClick: () => handleClick(method)
+  }))), renderActions());
+}
+SelectMethod.propTypes = {
+  methods: _propTypes.default.arrayOf(_availableMethod.default),
+  onSelectMethod: _propTypes.default.func,
+  onClickBack: _propTypes.default.func,
+  showTitle: _propTypes.default.bool,
+  TitleComponent: _propTypes.default.oneOfType([_propTypes.default.object, _propTypes.default.func]),
+  MethodTileComponent: _propTypes.default.oneOfType([_propTypes.default.object, _propTypes.default.func])
+};
+SelectMethod.defaultProps = {
+  showTitle: true,
+  TitleComponent: _Title.default,
+  MethodTileComponent: _MethodTile.default
+};
+const mapDispatchToProps = dispatch => ({
+  onClickBack: () => dispatch((0, _actions.showScreen)(_Register.SCREEN_INTRODUCTION)),
+  onSelectMethod: method => {
+    dispatch((0, _actions.chooseMethod)(method));
+    dispatch((0, _actions.showScreen)(_Register.SCREEN_REGISTER_METHOD));
+  }
+});
+var _default = exports["default"] = (0, _redux.compose)((0, _reactRedux.connect)(null, mapDispatchToProps), _withMethodAvailability.default)(SelectMethod);
+
+/***/ }),
+
+/***/ "./client/src/components/Register/Title.js":
+/*!*************************************************!*\
+  !*** ./client/src/components/Register/Title.js ***!
+  \*************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = exports.Component = void 0;
+var _react = _interopRequireDefault(__webpack_require__(/*! react */ "react"));
+var _reactRedux = __webpack_require__(/*! react-redux */ "react-redux");
+var _Register = __webpack_require__(/*! ../Register */ "./client/src/components/Register.js");
+var _en = _interopRequireDefault(__webpack_require__(/*! ../../../lang/src/en.json */ "./client/lang/src/en.json"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+const Title = _ref => {
+  let {
+    screen,
+    method,
+    Tag = 'h2',
+    className = 'mfa-section-title'
+  } = _ref;
+  const {
+    ss: {
+      i18n
+    }
+  } = window;
+  let content;
+  switch (screen) {
+    case _Register.SCREEN_INTRODUCTION:
+      content = i18n._t('MultiFactorAuthentication.TITLE', _en.default['MultiFactorAuthentication.TITLE']);
+      break;
+    case _Register.SCREEN_CHOOSE_METHOD:
+      content = i18n._t('MultiFactorAuthentication.SELECT_METHOD', _en.default['MultiFactorAuthentication.SELECT_METHOD']);
+      break;
+    case _Register.SCREEN_COMPLETE:
+      content = i18n._t('MultiFactorAuthentication.SETUP_COMPLETE_TITLE', _en.default['MultiFactorAuthentication.SETUP_COMPLETE_TITLE']);
+      break;
+    case _Register.SCREEN_REGISTER_METHOD:
+      content = method && i18n.inject(i18n._t('MFARegister.REGISTER_WITH', 'Register with {method}'), {
+        method: method.name.toLowerCase()
+      });
+      break;
+    default:
+      content = false;
+  }
+  if (!content || !content.length) {
+    return null;
+  }
+  const ParsedTag = Tag || 'span';
+  return _react.default.createElement(ParsedTag, {
+    className: className
+  }, content);
+};
+exports.Component = Title;
+const mapStateToProps = state => {
+  const source = state.mfaRegister || state;
+  return {
+    screen: source.screen,
+    method: source.method
+  };
+};
+var _default = exports["default"] = (0, _reactRedux.connect)(mapStateToProps)(Title);
+
+/***/ }),
+
+/***/ "./client/src/components/RegisterModal.js":
+/*!************************************************!*\
+  !*** ./client/src/components/RegisterModal.js ***!
+  \************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.Component = RegisterModal;
+exports["default"] = void 0;
+var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "react"));
+var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "prop-types"));
+var _reactstrap = __webpack_require__(/*! reactstrap */ "reactstrap");
+var _Injector = __webpack_require__(/*! lib/Injector */ "lib/Injector");
+var _redux = __webpack_require__(/*! redux */ "redux");
+var _reactRedux = __webpack_require__(/*! react-redux */ "react-redux");
+var _Title = _interopRequireDefault(__webpack_require__(/*! components/Register/Title */ "./client/src/components/Register/Title.js"));
+var _actions = __webpack_require__(/*! state/mfaAdministration/actions */ "./client/src/state/mfaAdministration/actions.js");
+var _registeredMethod = _interopRequireDefault(__webpack_require__(/*! types/registeredMethod */ "./client/src/types/registeredMethod.js"));
+var _Register = __webpack_require__(/*! components/Register */ "./client/src/components/Register.js");
+var _en = _interopRequireDefault(__webpack_require__(/*! ../../lang/src/en.json */ "./client/lang/src/en.json"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function RegisterModal(props) {
+  const {
+    backupMethod,
+    disallowedScreens,
+    endpoints,
+    isOpen,
+    onAddRegisteredMethod,
+    RegisterComponent,
+    registeredMethods,
+    resources,
+    onSetDefaultMethod,
+    registrationScreen,
+    toggle
+  } = props;
+  (0, _react.useEffect)(() => {
+    if (!isOpen || !disallowedScreens.length) {
+      return;
+    }
+    if (disallowedScreens.includes(registrationScreen)) {
+      toggle();
+    }
+  }, [disallowedScreens, isOpen, registrationScreen, toggle]);
+  function handleRegister(method) {
+    if (!registeredMethods.length) {
+      onSetDefaultMethod(method.urlSegment);
+    }
+    onAddRegisteredMethod(method);
+  }
+  return _react.default.createElement(_reactstrap.Modal, {
+    isOpen: isOpen,
+    toggle: toggle,
+    className: "registered-mfa-method-list-field-register-modal"
+  }, _react.default.createElement(_reactstrap.ModalHeader, {
+    toggle: toggle
+  }, _react.default.createElement(_Title.default, {
+    Tag: null
+  })), _react.default.createElement(_reactstrap.ModalBody, {
+    className: "registered-mfa-method-list-field-register-modal__content"
+  }, registrationScreen !== _Register.SCREEN_INTRODUCTION && _react.default.createElement(RegisterComponent, {
+    backupMethod: backupMethod,
+    registeredMethods: registeredMethods,
+    onCompleteRegistration: toggle,
+    onRegister: () => handleRegister(),
+    resources: resources,
+    endpoints: endpoints,
+    showTitle: false,
+    showSubTitle: false,
+    completeMessage: window.ss.i18n._t('MultiFactorAuthentication.ADMIN_SETUP_COMPLETE_CONTINUE', _en.default['MultiFactorAuthentication.ADMIN_SETUP_COMPLETE_CONTINUE'])
+  })));
+}
+RegisterModal.propTypes = {
+  isOpen: _propTypes.default.bool,
+  toggle: _propTypes.default.func,
+  disallowedScreens: _propTypes.default.arrayOf(_propTypes.default.number),
+  backupMethod: _registeredMethod.default,
+  resources: _propTypes.default.object,
+  endpoints: _propTypes.default.shape({
+    register: _propTypes.default.string
+  }),
+  registrationScreen: _propTypes.default.number,
+  registeredMethods: _propTypes.default.arrayOf(_registeredMethod.default),
+  onAddRegisteredMethod: _propTypes.default.func,
+  onSetDefaultMethod: _propTypes.default.func,
+  RegisterComponent: _propTypes.default.oneOfType([_propTypes.default.element, _propTypes.default.func, _propTypes.default.elementType])
+};
+RegisterModal.defaultProps = {
+  isOpen: false,
+  disallowedScreens: []
+};
+const mapStateToProps = state => ({
+  registrationScreen: state.mfaRegister.screen,
+  registeredMethods: state.mfaAdministration.registeredMethods
+});
+const mapDispatchToProps = dispatch => ({
+  onAddRegisteredMethod: method => {
+    dispatch((0, _actions.registerMethod)(method));
+  },
+  onSetDefaultMethod: urlSegment => dispatch((0, _actions.setDefaultMethod)(urlSegment))
+});
+var _default = exports["default"] = (0, _redux.compose)((0, _Injector.inject)(['MFARegister'], RegisterComponent => ({
+  RegisterComponent
+}), () => 'MFARegisterModal'), (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps))(RegisterModal);
+
+/***/ }),
+
+/***/ "./client/src/legacy/RegisteredMFAMethodListFieldEntwine.js":
+/*!******************************************************************!*\
+  !*** ./client/src/legacy/RegisteredMFAMethodListFieldEntwine.js ***!
+  \******************************************************************/
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var _react = _interopRequireDefault(__webpack_require__(/*! react */ "react"));
+var _client = __webpack_require__(/*! react-dom/client */ "react-dom/client");
+var _Injector = __webpack_require__(/*! lib/Injector */ "lib/Injector");
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+const FIELD_SELECTOR = '.js-injector-boot [data-field-type="registered-mfa-method-list-field"]';
+window.jQuery.entwine('ss', $ => {
+  $(FIELD_SELECTOR).entwine({
+    ReactRoot: null,
+    onmatch() {
+      const RegisteredMFAMethodListField = (0, _Injector.loadComponent)('RegisteredMFAMethodListField');
+      const {
+        readOnly,
+        schema: {
+          backupMethod,
+          defaultMethod,
+          registeredMethods,
+          availableMethods,
+          allAvailableMethods,
+          resources,
+          endpoints,
+          backupCreatedDate,
+          resetEndpoint,
+          isMFARequired
+        }
+      } = this.data('schema');
+      let root = this.getReactRoot();
+      if (!root) {
+        root = (0, _client.createRoot)(this[0]);
+        this.setReactRoot(root);
+      }
+      root.render(_react.default.createElement(RegisteredMFAMethodListField, {
+        backupMethod: backupMethod,
+        readOnly: readOnly,
+        initialDefaultMethod: defaultMethod,
+        initialRegisteredMethods: registeredMethods,
+        initialAvailableMethods: availableMethods,
+        allAvailableMethods: allAvailableMethods,
+        resources: resources,
+        endpoints: endpoints,
+        backupCreatedDate: backupCreatedDate,
+        resetEndpoint: resetEndpoint,
+        isMFARequired: isMFARequired
+      }));
+    },
+    onunmatch() {
+      const root = this.getReactRoot();
+      if (root) {
+        root.unmount();
+        this.setReactRoot(null);
+      }
+    }
+  });
+});
+
+/***/ }),
+
+/***/ "./client/src/legacy/SiteConfig.js":
+/*!*****************************************!*\
+  !*** ./client/src/legacy/SiteConfig.js ***!
+  \*****************************************/
+/***/ (function() {
+
+"use strict";
+
+
+window.jQuery.entwine('ss', $ => {
+  $('[name="MFARequired"]').entwine({
+    onchange() {
+      const isRequired = parseInt(this.val(), 10);
+      if (isRequired) {
+        $('.mfa-settings__grace-period').removeAttr('disabled');
+      } else {
+        $('.mfa-settings__grace-period').attr('disabled', 'disabled');
+      }
+    },
+    onmatch() {
+      this.onchange();
+    }
+  });
+});
+
+/***/ }),
+
+/***/ "./client/src/legacy/index.js":
+/*!************************************!*\
+  !*** ./client/src/legacy/index.js ***!
+  \************************************/
+/***/ (function(__unused_webpack_module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(/*! ./RegisteredMFAMethodListFieldEntwine */ "./client/src/legacy/RegisteredMFAMethodListFieldEntwine.js");
+__webpack_require__(/*! ./SiteConfig */ "./client/src/legacy/SiteConfig.js");
+
+/***/ }),
+
+/***/ "./client/src/lib/api.js":
+/*!*******************************!*\
+  !*** ./client/src/lib/api.js ***!
+  \*******************************/
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+const api = function (endpoint) {
+  let method = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'GET';
+  let body = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : undefined;
+  let headers = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+  return fetch(endpoint, {
+    body,
+    credentials: 'same-origin',
+    headers,
+    method
+  });
+};
+var _default = exports["default"] = api;
+
+/***/ }),
+
+/***/ "./client/src/lib/formatCode.js":
+/*!**************************************!*\
+  !*** ./client/src/lib/formatCode.js ***!
+  \**************************************/
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.formatCode = void 0;
+const formatCode = function (code) {
+  let delimiter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ' ';
+  if (code.length < 6) {
+    return code;
+  }
+  if (code.length % 4 === 0) {
+    return code.split(/(.{4})/g).filter(c => c).join(delimiter).trim();
+  }
+  if (code.length % 3 === 0) {
+    return code.split(/(.{3})/g).filter(c => c).join(delimiter).trim();
+  }
+  const groupsOfThree = 4 - code.length % 4;
+  const groupsOfFour = (code.length - groupsOfThree * 3) / 4;
+  const chunkSizes = [...[...Array(groupsOfFour).keys()].map(() => 4), ...[...Array(groupsOfThree).keys()].map(() => 3)];
+  let pointer = 0;
+  const chunks = chunkSizes.map(size => code.substring(pointer, pointer += size));
+  return chunks.join(delimiter).trim();
+};
+exports.formatCode = formatCode;
+
+/***/ }),
+
+/***/ "./client/src/state/methodAvailability/withMethodAvailability.js":
+/*!***********************************************************************!*\
+  !*** ./client/src/state/methodAvailability/withMethodAvailability.js ***!
+  \***********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.hoc = exports["default"] = void 0;
+var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "react"));
+var _reactRedux = __webpack_require__(/*! react-redux */ "react-redux");
+var _redux = __webpack_require__(/*! redux */ "redux");
+function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
+function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+const getDisplayName = WrappedComponent => WrappedComponent.displayName || WrappedComponent.name || 'Component';
+const withMethodAvailability = WrappedComponent => {
+  const WithMethodAvailability = class extends _react.Component {
+    constructor(props) {
+      super(props);
+      this.getAvailabilityOverride = this.getAvailabilityOverride.bind(this);
+      this.isAvailable = this.isAvailable.bind(this);
+      this.getUnavailableMessage = this.getUnavailableMessage.bind(this);
+    }
+    getAvailabilityOverride() {
+      let method = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+      const {
+        availableMethodOverrides
+      } = this.props;
+      const checkMethod = method || this.props.method;
+      const {
+        urlSegment
+      } = checkMethod;
+      if (typeof availableMethodOverrides[urlSegment] !== 'undefined') {
+        return availableMethodOverrides[urlSegment];
+      }
+      return {};
+    }
+    getUnavailableMessage() {
+      let method = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+      const checkMethod = method || this.props.method;
+      const availabilityOverride = this.getAvailabilityOverride(checkMethod);
+      return availabilityOverride.unavailableMessage || checkMethod.unavailableMessage;
+    }
+    isAvailable() {
+      let method = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+      const checkMethod = method || this.props.method;
+      const availabilityOverride = this.getAvailabilityOverride(checkMethod);
+      let isAvailable = checkMethod.isAvailable;
+      if (typeof availabilityOverride.isAvailable !== 'undefined') {
+        isAvailable = availabilityOverride.isAvailable;
+      }
+      return isAvailable;
+    }
+    render() {
+      return _react.default.createElement(WrappedComponent, _extends({}, this.props, {
+        isAvailable: this.isAvailable,
+        getUnavailableMessage: this.getUnavailableMessage
+      }));
+    }
+  };
+  const displayName = getDisplayName(WrappedComponent);
+  WithMethodAvailability.displayName = `WithMethodAvailability(${displayName})`;
+  return WithMethodAvailability;
+};
+exports.hoc = withMethodAvailability;
+const mapStateToProps = state => {
+  const methods = [...state.mfaRegister.availableMethods, ...state.mfaVerify.allMethods];
+  const availableMethodOverrides = {};
+  Object.values(methods).forEach(method => {
+    const {
+      urlSegment
+    } = method;
+    const stateKey = `${urlSegment}Availability`;
+    if (typeof state[stateKey] !== 'undefined') {
+      availableMethodOverrides[urlSegment] = state[stateKey];
+    }
+  });
+  return {
+    availableMethodOverrides
+  };
+};
+const composedWithMethodAvailability = (0, _redux.compose)((0, _reactRedux.connect)(mapStateToProps), withMethodAvailability);
+var _default = exports["default"] = composedWithMethodAvailability;
+
+/***/ }),
+
+/***/ "./client/src/state/mfaAdministration/actionTypes.js":
+/*!***********************************************************!*\
+  !*** ./client/src/state/mfaAdministration/actionTypes.js ***!
+  \***********************************************************/
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+var _default = exports["default"] = ['ADD_REGISTERED_METHOD', 'REMOVE_REGISTERED_METHOD', 'SET_DEFAULT_METHOD', 'SET_REGISTERED_METHODS'].reduce((obj, item) => Object.assign(obj, {
+  [item]: `MFA_ADMINISTRATION.${item}`
+}), {});
+
+/***/ }),
+
+/***/ "./client/src/state/mfaAdministration/actions.js":
+/*!*******************************************************!*\
+  !*** ./client/src/state/mfaAdministration/actions.js ***!
+  \*******************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.setRegisteredMethods = exports.setDefaultMethod = exports.registerMethod = exports.deregisterMethod = void 0;
+var _actionTypes = _interopRequireDefault(__webpack_require__(/*! ./actionTypes */ "./client/src/state/mfaAdministration/actionTypes.js"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+const registerMethod = method => ({
+  type: _actionTypes.default.ADD_REGISTERED_METHOD,
+  payload: {
+    method
+  }
+});
+exports.registerMethod = registerMethod;
+const deregisterMethod = method => ({
+  type: _actionTypes.default.REMOVE_REGISTERED_METHOD,
+  payload: {
+    method
+  }
+});
+exports.deregisterMethod = deregisterMethod;
+const setDefaultMethod = urlSegment => ({
+  type: _actionTypes.default.SET_DEFAULT_METHOD,
+  payload: {
+    defaultMethod: urlSegment
+  }
+});
+exports.setDefaultMethod = setDefaultMethod;
+const setRegisteredMethods = methods => ({
+  type: _actionTypes.default.SET_REGISTERED_METHODS,
+  payload: {
+    methods
+  }
+});
+exports.setRegisteredMethods = setRegisteredMethods;
+
+/***/ }),
+
+/***/ "./client/src/state/mfaAdministration/reducer.js":
+/*!*******************************************************!*\
+  !*** ./client/src/state/mfaAdministration/reducer.js ***!
+  \*******************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = mfaAdministationReducer;
+var _actionTypes = _interopRequireDefault(__webpack_require__(/*! ./actionTypes */ "./client/src/state/mfaAdministration/actionTypes.js"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+const initialState = {
+  defaultMethod: null,
+  registeredMethods: []
+};
+function mfaAdministationReducer() {
+  let state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
+  let {
+    type,
+    payload
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  const getMatcher = method => candidate => candidate.urlSegment === method.urlSegment;
+  const {
+    registeredMethods
+  } = state;
+  switch (type) {
+    case _actionTypes.default.ADD_REGISTERED_METHOD:
+      {
+        const {
+          method
+        } = payload;
+        if (!Array.isArray(registeredMethods)) {
+          return {
+            ...state,
+            registeredMethods: [method]
+          };
+        }
+        if (registeredMethods.find(getMatcher(method))) {
+          return state;
+        }
+        registeredMethods.push(method);
+        return {
+          ...state,
+          registeredMethods
+        };
+      }
+    case _actionTypes.default.REMOVE_REGISTERED_METHOD:
+      {
+        const {
+          method
+        } = payload;
+        const index = registeredMethods.findIndex(getMatcher(method));
+        if (index < 0) {
+          return state;
+        }
+        registeredMethods.splice(index, 1);
+        const defaultMethodState = registeredMethods.length === 2 ? {
+          defaultMethod: registeredMethods.find(() => true).urlSegment
+        } : {};
+        return {
+          ...state,
+          ...defaultMethodState,
+          registeredMethods: [...registeredMethods]
+        };
+      }
+    case _actionTypes.default.SET_DEFAULT_METHOD:
+      {
+        return {
+          ...state,
+          defaultMethod: payload.defaultMethod
+        };
+      }
+    case _actionTypes.default.SET_REGISTERED_METHODS:
+      {
+        return {
+          ...state,
+          registeredMethods: payload.methods
+        };
+      }
+    default:
+      return state;
+  }
+}
+
+/***/ }),
+
+/***/ "./client/src/state/mfaRegister/actionTypes.js":
+/*!*****************************************************!*\
+  !*** ./client/src/state/mfaRegister/actionTypes.js ***!
+  \*****************************************************/
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+var _default = exports["default"] = ['ADD_AVAILABLE_METHOD', 'REMOVE_AVAILABLE_METHOD', 'SET_AVAILABLE_METHODS', 'SET_SCREEN', 'SET_METHOD'].reduce((obj, item) => Object.assign(obj, {
+  [item]: `MFA_REGISTER.${item}`
+}), {});
+
+/***/ }),
+
+/***/ "./client/src/state/mfaRegister/actions.js":
+/*!*************************************************!*\
+  !*** ./client/src/state/mfaRegister/actions.js ***!
+  \*************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.showScreen = exports.setAvailableMethods = exports.removeAvailableMethod = exports.chooseMethod = exports.addAvailableMethod = void 0;
+var _actionTypes = _interopRequireDefault(__webpack_require__(/*! ./actionTypes */ "./client/src/state/mfaRegister/actionTypes.js"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+const showScreen = screen => ({
+  type: _actionTypes.default.SET_SCREEN,
+  payload: {
+    screen
+  }
+});
+exports.showScreen = showScreen;
+const chooseMethod = method => ({
+  type: _actionTypes.default.SET_METHOD,
+  payload: {
+    method
+  }
+});
+exports.chooseMethod = chooseMethod;
+const setAvailableMethods = methods => ({
+  type: _actionTypes.default.SET_AVAILABLE_METHODS,
+  payload: {
+    availableMethods: methods
+  }
+});
+exports.setAvailableMethods = setAvailableMethods;
+const addAvailableMethod = method => ({
+  type: _actionTypes.default.ADD_AVAILABLE_METHOD,
+  payload: {
+    method
+  }
+});
+exports.addAvailableMethod = addAvailableMethod;
+const removeAvailableMethod = method => ({
+  type: _actionTypes.default.REMOVE_AVAILABLE_METHOD,
+  payload: {
+    method
+  }
+});
+exports.removeAvailableMethod = removeAvailableMethod;
+
+/***/ }),
+
+/***/ "./client/src/state/mfaRegister/reducer.js":
+/*!*************************************************!*\
+  !*** ./client/src/state/mfaRegister/reducer.js ***!
+  \*************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = mfaRegisterReducer;
+var _Register = __webpack_require__(/*! components/Register */ "./client/src/components/Register.js");
+var _actionTypes = _interopRequireDefault(__webpack_require__(/*! ./actionTypes */ "./client/src/state/mfaRegister/actionTypes.js"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+const initialState = {
+  screen: _Register.SCREEN_INTRODUCTION,
+  method: null,
+  availableMethods: []
+};
+function mfaRegisterReducer() {
+  let state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
+  let {
+    type,
+    payload
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  switch (type) {
+    case _actionTypes.default.SET_SCREEN:
+      {
+        const {
+          screen
+        } = payload;
+        if (state.method === null && screen === _Register.SCREEN_REGISTER_METHOD) {
+          return {
+            ...state,
+            screen: _Register.SCREEN_CHOOSE_METHOD
+          };
+        }
+        return {
+          ...state,
+          screen
+        };
+      }
+    case _actionTypes.default.SET_METHOD:
+      {
+        return {
+          ...state,
+          method: payload.method
+        };
+      }
+    case _actionTypes.default.SET_AVAILABLE_METHODS:
+      {
+        return {
+          ...state,
+          availableMethods: payload.availableMethods
+        };
+      }
+    case _actionTypes.default.ADD_AVAILABLE_METHOD:
+      {
+        return {
+          ...state,
+          availableMethods: [...state.availableMethods, payload.method]
+        };
+      }
+    case _actionTypes.default.REMOVE_AVAILABLE_METHOD:
+      {
+        return {
+          ...state,
+          availableMethods: state.availableMethods.filter(method => method.urlSegment !== payload.method.urlSegment)
+        };
+      }
+    default:
+      return state;
+  }
+}
+
+/***/ }),
+
+/***/ "./client/src/state/mfaVerify/actionTypes.js":
+/*!***************************************************!*\
+  !*** ./client/src/state/mfaVerify/actionTypes.js ***!
+  \***************************************************/
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+var _default = exports["default"] = ['SET_ALL_METHODS'].reduce((obj, item) => Object.assign(obj, {
+  [item]: `MFA_VERIFY.${item}`
+}), {});
+
+/***/ }),
+
+/***/ "./client/src/state/mfaVerify/reducer.js":
+/*!***********************************************!*\
+  !*** ./client/src/state/mfaVerify/reducer.js ***!
+  \***********************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = mfaRegisterReducer;
+var _actionTypes = _interopRequireDefault(__webpack_require__(/*! ./actionTypes */ "./client/src/state/mfaVerify/actionTypes.js"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+const initialState = {
+  allMethods: []
+};
+function mfaRegisterReducer() {
+  let state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
+  let {
+    type,
+    payload
+  } = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  switch (type) {
+    case _actionTypes.default.SET_ALL_METHODS:
+      {
+        return {
+          ...state,
+          allMethods: payload.allMethods
+        };
+      }
+    default:
+      return state;
+  }
+}
+
+/***/ }),
+
+/***/ "./client/src/types/availableMethod.js":
+/*!*********************************************!*\
+  !*** ./client/src/types/availableMethod.js ***!
+  \*********************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "prop-types"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+var _default = exports["default"] = _propTypes.default.shape({
+  urlSegment: _propTypes.default.string,
+  name: _propTypes.default.string,
+  description: _propTypes.default.string,
+  supportLink: _propTypes.default.string,
+  supportText: _propTypes.default.string,
+  thumbnail: _propTypes.default.string,
+  component: _propTypes.default.string,
+  isAvailable: _propTypes.default.bool,
+  unavailableMessage: _propTypes.default.string
+});
+
+/***/ }),
+
+/***/ "./client/src/types/registeredMethod.js":
+/*!**********************************************!*\
+  !*** ./client/src/types/registeredMethod.js ***!
+  \**********************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "prop-types"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
+var _default = exports["default"] = _propTypes.default.shape({
+  name: _propTypes.default.string,
+  urlSegment: _propTypes.default.string,
+  isAvailable: _propTypes.default.bool,
+  unavailableMessage: _propTypes.default.string,
+  component: _propTypes.default.string,
+  supportLink: _propTypes.default.string,
+  thumbnail: _propTypes.default.string
+});
+
+/***/ }),
+
+/***/ "./node_modules/copy-to-clipboard/index.js":
+/*!*************************************************!*\
+  !*** ./node_modules/copy-to-clipboard/index.js ***!
+  \*************************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var deselectCurrent = __webpack_require__(/*! toggle-selection */ "./node_modules/toggle-selection/index.js");
+
+var clipboardToIE11Formatting = {
+  "text/plain": "Text",
+  "text/html": "Url",
+  "default": "Text"
+}
+
+var defaultMessage = "Copy to clipboard: #{key}, Enter";
+
+function format(message) {
+  var copyKey = (/mac os x/i.test(navigator.userAgent) ? "⌘" : "Ctrl") + "+C";
+  return message.replace(/#{\s*key\s*}/g, copyKey);
+}
+
+function copy(text, options) {
+  var debug,
+    message,
+    reselectPrevious,
+    range,
+    selection,
+    mark,
+    success = false;
+  if (!options) {
+    options = {};
+  }
+  debug = options.debug || false;
+  try {
+    reselectPrevious = deselectCurrent();
+
+    range = document.createRange();
+    selection = document.getSelection();
+
+    mark = document.createElement("span");
+    mark.textContent = text;
+    // avoid screen readers from reading out loud the text
+    mark.ariaHidden = "true"
+    // reset user styles for span element
+    mark.style.all = "unset";
+    // prevents scrolling to the end of the page
+    mark.style.position = "fixed";
+    mark.style.top = 0;
+    mark.style.clip = "rect(0, 0, 0, 0)";
+    // used to preserve spaces and line breaks
+    mark.style.whiteSpace = "pre";
+    // do not inherit user-select (it may be `none`)
+    mark.style.webkitUserSelect = "text";
+    mark.style.MozUserSelect = "text";
+    mark.style.msUserSelect = "text";
+    mark.style.userSelect = "text";
+    mark.addEventListener("copy", function(e) {
+      e.stopPropagation();
+      if (options.format) {
+        e.preventDefault();
+        if (typeof e.clipboardData === "undefined") { // IE 11
+          debug && console.warn("unable to use e.clipboardData");
+          debug && console.warn("trying IE specific stuff");
+          window.clipboardData.clearData();
+          var format = clipboardToIE11Formatting[options.format] || clipboardToIE11Formatting["default"]
+          window.clipboardData.setData(format, text);
+        } else { // all other browsers
+          e.clipboardData.clearData();
+          e.clipboardData.setData(options.format, text);
+        }
+      }
+      if (options.onCopy) {
+        e.preventDefault();
+        options.onCopy(e.clipboardData);
+      }
+    });
+
+    document.body.appendChild(mark);
+
+    range.selectNodeContents(mark);
+    selection.addRange(range);
+
+    var successful = document.execCommand("copy");
+    if (!successful) {
+      throw new Error("copy command was unsuccessful");
+    }
+    success = true;
+  } catch (err) {
+    debug && console.error("unable to copy using execCommand: ", err);
+    debug && console.warn("trying IE specific stuff");
+    try {
+      window.clipboardData.setData(options.format || "text", text);
+      options.onCopy && options.onCopy(window.clipboardData);
+      success = true;
+    } catch (err) {
+      debug && console.error("unable to copy using clipboardData: ", err);
+      debug && console.error("falling back to prompt");
+      message = format("message" in options ? options.message : defaultMessage);
+      window.prompt(message, text);
+    }
+  } finally {
+    if (selection) {
+      if (typeof selection.removeRange == "function") {
+        selection.removeRange(range);
+      } else {
+        selection.removeAllRanges();
+      }
+    }
+
+    if (mark) {
+      document.body.removeChild(mark);
+    }
+    reselectPrevious();
+  }
+
+  return success;
+}
+
+module.exports = copy;
+
+
+/***/ }),
+
+/***/ "./node_modules/printd/index.js":
+/*!**************************************!*\
+  !*** ./node_modules/printd/index.js ***!
+  \**************************************/
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Printd = exports.createIFrame = exports.createLinkStyle = exports.createStyle = void 0;
+var URL_LONG = /^(((http[s]?)|file):)?(\/\/)+([0-9a-zA-Z-_.=?&].+)$/;
+var URL_SHORT = /^((\.|\.\.)?\/)([0-9a-zA-Z-_.=?&]+\/)*([0-9a-zA-Z-_.=?&]+)$/;
+var isValidURL = function (str) { return URL_LONG.test(str) || URL_SHORT.test(str); };
+function createStyle(doc, cssText) {
+    var style = doc.createElement("style");
+    style.appendChild(doc.createTextNode(cssText));
+    return style;
+}
+exports.createStyle = createStyle;
+function createLinkStyle(doc, url) {
+    var style = doc.createElement("link");
+    style.type = "text/css";
+    style.rel = "stylesheet";
+    style.href = url;
+    return style;
+}
+exports.createLinkStyle = createLinkStyle;
+function createIFrame(parent) {
+    var el = window.document.createElement("iframe");
+    el.setAttribute("src", "about:blank");
+    el.setAttribute("style", "visibility:hidden;width:0;height:0;position:absolute;z-index:-9999;bottom:0;");
+    el.setAttribute("width", "0");
+    el.setAttribute("height", "0");
+    el.setAttribute("wmode", "opaque");
+    parent.appendChild(el);
+    return el;
+}
+exports.createIFrame = createIFrame;
+var DEFAULT_OPTIONS = {
+    parent: window.document.body,
+    headElements: [],
+    bodyElements: []
+};
+/** Printd class that prints HTML elements in a blank document */
+var Printd = /** @class */ (function () {
+    function Printd(options) {
+        this.isLoading = false;
+        this.hasEvents = false;
+        // IE 11+ "Object.assign" polyfill
+        this.opts = [DEFAULT_OPTIONS, options || {}].reduce(function (a, b) {
+            Object.keys(b).forEach(function (k) { return (a[k] = b[k]); });
+            return a;
+        }, {});
+        this.iframe = createIFrame(this.opts.parent);
+    }
+    /** Gets current Iframe reference */
+    Printd.prototype.getIFrame = function () {
+        return this.iframe;
+    };
+    /**
+     * Print an HTMLElement
+     *
+     * @param el HTMLElement
+     * @param styles Optional styles (css texts or urls) that will add to iframe document.head
+     * @param scripts Optional scripts (script texts or urls) that will add to iframe document.body
+     * @param callback Optional callback that will be triggered when content is ready to print
+     */
+    Printd.prototype.print = function (el, styles, scripts, callback) {
+        if (this.isLoading)
+            return;
+        var _a = this.iframe, contentDocument = _a.contentDocument, contentWindow = _a.contentWindow;
+        if (!contentDocument || !contentWindow)
+            return;
+        this.iframe.src = "about:blank";
+        this.elCopy = el.cloneNode(true);
+        if (!this.elCopy)
+            return;
+        this.isLoading = true;
+        this.callback = callback;
+        var doc = contentWindow.document;
+        doc.open();
+        doc.write('<!DOCTYPE html><html><head><meta charset="utf-8"></head><body></body></html>');
+        this.addEvents();
+        // 1. append custom elements
+        var _b = this.opts, headElements = _b.headElements, bodyElements = _b.bodyElements;
+        // 1.1 append custom head elements
+        if (Array.isArray(headElements)) {
+            headElements.forEach(function (el) { return doc.head.appendChild(el); });
+        }
+        // 1.1 append custom body elements
+        if (Array.isArray(bodyElements)) {
+            bodyElements.forEach(function (el) { return doc.body.appendChild(el); });
+        }
+        // 2. append custom styles
+        if (Array.isArray(styles)) {
+            styles.forEach(function (value) {
+                if (value) {
+                    doc.head.appendChild(isValidURL(value) ? createLinkStyle(doc, value) : createStyle(doc, value));
+                }
+            });
+        }
+        // 3. append element copy
+        doc.body.appendChild(this.elCopy);
+        // 4. append custom scripts
+        if (Array.isArray(scripts)) {
+            scripts.forEach(function (value) {
+                if (value) {
+                    var script = doc.createElement("script");
+                    if (isValidURL(value)) {
+                        script.src = value;
+                    }
+                    else {
+                        script.innerText = value;
+                    }
+                    doc.body.appendChild(script);
+                }
+            });
+        }
+        doc.close();
+    };
+    /**
+     * Print an URL
+     *
+     * @param url URL to print
+     * @param callback Optional callback that will be triggered when content is ready to print
+     */
+    Printd.prototype.printURL = function (url, callback) {
+        if (this.isLoading)
+            return;
+        this.addEvents();
+        this.isLoading = true;
+        this.callback = callback;
+        this.iframe.src = url;
+    };
+    /**
+     * Add a browser `beforeprint` print event listener providing a custom callback.
+     *
+     * Note that it only works when printing custom HTML elements.
+     *
+     */
+    Printd.prototype.onBeforePrint = function (callback) {
+        this.onbeforeprint = callback;
+    };
+    /**
+     * Add a browser `afterprint` print event listener providing a custom callback.
+     *
+     * Note that it only works when printing custom HTML elements.
+     *
+     */
+    Printd.prototype.onAfterPrint = function (callback) {
+        this.onafterprint = callback;
+    };
+    Printd.prototype.launchPrint = function (contentWindow) {
+        if (!this.isLoading) {
+            contentWindow.print();
+        }
+    };
+    Printd.prototype.addEvents = function () {
+        var _this = this;
+        if (!this.hasEvents) {
+            this.hasEvents = true;
+            this.iframe.addEventListener("load", function () { return _this.onLoad(); }, false);
+            var contentWindow = this.iframe.contentWindow;
+            if (contentWindow) {
+                if (this.onbeforeprint) {
+                    contentWindow.addEventListener("beforeprint", this.onbeforeprint);
+                }
+                if (this.onafterprint) {
+                    contentWindow.addEventListener("afterprint", this.onafterprint);
+                }
+            }
+        }
+    };
+    Printd.prototype.onLoad = function () {
+        var _this = this;
+        if (this.iframe) {
+            this.isLoading = false;
+            var _a = this.iframe, contentDocument = _a.contentDocument, contentWindow_1 = _a.contentWindow;
+            if (!contentDocument || !contentWindow_1)
+                return;
+            if (typeof this.callback === "function") {
+                this.callback({
+                    iframe: this.iframe,
+                    element: this.elCopy,
+                    launchPrint: function () { return _this.launchPrint(contentWindow_1); }
+                });
+            }
+            else {
+                this.launchPrint(contentWindow_1);
+            }
+        }
+    };
+    return Printd;
+}());
+exports.Printd = Printd;
+exports["default"] = Printd;
+
+
+/***/ }),
+
+/***/ "./node_modules/react-copy-to-clipboard/lib/Component.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/react-copy-to-clipboard/lib/Component.js ***!
+  \***************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports.CopyToClipboard = void 0;
+
+var _react = _interopRequireDefault(__webpack_require__(/*! react */ "react"));
+
+var _copyToClipboard = _interopRequireDefault(__webpack_require__(/*! copy-to-clipboard */ "./node_modules/copy-to-clipboard/index.js"));
+
+var _excluded = ["text", "onCopy", "options", "children"];
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var CopyToClipboard = /*#__PURE__*/function (_React$PureComponent) {
+  _inherits(CopyToClipboard, _React$PureComponent);
+
+  var _super = _createSuper(CopyToClipboard);
+
+  function CopyToClipboard() {
+    var _this;
+
+    _classCallCheck(this, CopyToClipboard);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _super.call.apply(_super, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this), "onClick", function (event) {
+      var _this$props = _this.props,
+          text = _this$props.text,
+          onCopy = _this$props.onCopy,
+          children = _this$props.children,
+          options = _this$props.options;
+
+      var elem = _react["default"].Children.only(children);
+
+      var result = (0, _copyToClipboard["default"])(text, options);
+
+      if (onCopy) {
+        onCopy(text, result);
+      } // Bypass onClick if it was present
+
+
+      if (elem && elem.props && typeof elem.props.onClick === 'function') {
+        elem.props.onClick(event);
+      }
+    });
+
+    return _this;
+  }
+
+  _createClass(CopyToClipboard, [{
+    key: "render",
+    value: function render() {
+      var _this$props2 = this.props,
+          _text = _this$props2.text,
+          _onCopy = _this$props2.onCopy,
+          _options = _this$props2.options,
+          children = _this$props2.children,
+          props = _objectWithoutProperties(_this$props2, _excluded);
+
+      var elem = _react["default"].Children.only(children);
+
+      return /*#__PURE__*/_react["default"].cloneElement(elem, _objectSpread(_objectSpread({}, props), {}, {
+        onClick: this.onClick
+      }));
+    }
+  }]);
+
+  return CopyToClipboard;
+}(_react["default"].PureComponent);
+
+exports.CopyToClipboard = CopyToClipboard;
+
+_defineProperty(CopyToClipboard, "defaultProps", {
+  onCopy: undefined,
+  options: undefined
+});
+
+/***/ }),
+
+/***/ "./node_modules/react-copy-to-clipboard/lib/index.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/react-copy-to-clipboard/lib/index.js ***!
+  \***********************************************************/
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var _require = __webpack_require__(/*! ./Component */ "./node_modules/react-copy-to-clipboard/lib/Component.js"),
+    CopyToClipboard = _require.CopyToClipboard;
+
+CopyToClipboard.CopyToClipboard = CopyToClipboard;
+module.exports = CopyToClipboard;
+
+/***/ }),
+
+/***/ "./node_modules/reactstrap-confirm/dist/components/ConfirmModal.js":
+/*!*************************************************************************!*\
+  !*** ./node_modules/reactstrap-confirm/dist/components/ConfirmModal.js ***!
+  \*************************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+
+var _react = _interopRequireWildcard(__webpack_require__(/*! react */ "react"));
+
+var _propTypes = _interopRequireDefault(__webpack_require__(/*! prop-types */ "prop-types"));
+
+var _reactstrap = __webpack_require__(/*! reactstrap */ "reactstrap");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+
+var ConfirmModal = function ConfirmModal(_ref) {
+  var onClose = _ref.onClose,
+      message = _ref.message,
+      title = _ref.title,
+      confirmText = _ref.confirmText,
+      cancelText = _ref.cancelText,
+      confirmColor = _ref.confirmColor,
+      cancelColor = _ref.cancelColor,
+      className = _ref.className,
+      buttonsComponent = _ref.buttonsComponent,
+      size = _ref.size,
+      bodyComponent = _ref.bodyComponent,
+      modalProps = _ref.modalProps;
+
+  var buttonsContent = /*#__PURE__*/_react["default"].createElement(_react.Fragment, null, cancelText && /*#__PURE__*/_react["default"].createElement(_reactstrap.Button, {
+    color: cancelColor,
+    onClick: function onClick() {
+      return onClose(false);
+    }
+  }, cancelText), ' ', /*#__PURE__*/_react["default"].createElement(_reactstrap.Button, {
+    color: confirmColor,
+    onClick: function onClick() {
+      return onClose(true);
+    }
+  }, confirmText));
+
+  if (buttonsComponent) {
+    var CustomComponent = buttonsComponent;
+    buttonsContent = /*#__PURE__*/_react["default"].createElement(CustomComponent, {
+      onClose: onClose
+    });
+  }
+
+  var BodyComponent = bodyComponent;
+  return /*#__PURE__*/_react["default"].createElement(_reactstrap.Modal, _extends({
+    size: size,
+    isOpen: true,
+    toggle: function toggle() {
+      return onClose(false);
+    },
+    className: "reactstrap-confirm ".concat(className)
+  }, modalProps), title && /*#__PURE__*/_react["default"].createElement(_reactstrap.ModalHeader, {
+    toggle: function toggle() {
+      return onClose(false);
+    }
+  }, title || null), /*#__PURE__*/_react["default"].createElement(_reactstrap.ModalBody, null, bodyComponent ? /*#__PURE__*/_react["default"].createElement(BodyComponent, null) : message), /*#__PURE__*/_react["default"].createElement(_reactstrap.ModalFooter, null, buttonsContent));
+};
+
+ConfirmModal.defaultProps = {
+  message: 'Are you sure?',
+  title: 'Warning!',
+  confirmText: 'Ok',
+  cancelText: 'Cancel',
+  confirmColor: 'primary',
+  cancelColor: '',
+  className: '',
+  buttonsComponent: null,
+  size: null,
+  bodyComponent: null,
+  modalProps: {}
+};
+ConfirmModal.propTypes = {
+  onClose: _propTypes["default"].func.isRequired,
+  message: _propTypes["default"].node,
+  title: _propTypes["default"].node,
+  confirmText: _propTypes["default"].node,
+  cancelText: _propTypes["default"].node,
+  confirmColor: _propTypes["default"].string,
+  cancelColor: _propTypes["default"].string,
+  className: _propTypes["default"].string,
+  size: _propTypes["default"].string,
+  buttonsComponent: _propTypes["default"].func,
+  bodyComponent: _propTypes["default"].func,
+  modalProps: _propTypes["default"].object
+};
+var _default = ConfirmModal;
+exports["default"] = _default;
+
+/***/ }),
+
+/***/ "./node_modules/reactstrap-confirm/dist/index.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/reactstrap-confirm/dist/index.js ***!
+  \*******************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+
+var _react = _interopRequireDefault(__webpack_require__(/*! react */ "react"));
+
+var _reactDom = __webpack_require__(/*! react-dom */ "react-dom");
+
+var _ConfirmModal = _interopRequireDefault(__webpack_require__(/*! ./components/ConfirmModal */ "./node_modules/reactstrap-confirm/dist/components/ConfirmModal.js"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+
+var confirm = function confirm(props) {
+  return new Promise(function (resolve) {
+    var el = document.createElement('div');
+
+    var handleResolve = function handleResolve(result) {
+      (0, _reactDom.unmountComponentAtNode)(el);
+      el = null;
+      resolve(result);
+    };
+
+    (0, _reactDom.render)( /*#__PURE__*/_react["default"].createElement(_ConfirmModal["default"], _extends({}, props, {
+      onClose: handleResolve
+    })), el);
+  });
+};
+
+var _default = confirm;
+exports["default"] = _default;
+
+/***/ }),
+
+/***/ "./node_modules/regenerator-runtime/runtime.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/regenerator-runtime/runtime.js ***!
+  \*****************************************************/
+/***/ (function(module) {
+
+/**
+ * Copyright (c) 2014-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+var runtime = (function (exports) {
+  "use strict";
+
+  var Op = Object.prototype;
+  var hasOwn = Op.hasOwnProperty;
+  var defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; };
+  var undefined; // More compressible than void 0.
+  var $Symbol = typeof Symbol === "function" ? Symbol : {};
+  var iteratorSymbol = $Symbol.iterator || "@@iterator";
+  var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
+  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+
+  function define(obj, key, value) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+    return obj[key];
+  }
+  try {
+    // IE 8 has a broken Object.defineProperty that only works on DOM objects.
+    define({}, "");
+  } catch (err) {
+    define = function(obj, key, value) {
+      return obj[key] = value;
+    };
+  }
+
+  function wrap(innerFn, outerFn, self, tryLocsList) {
+    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
+    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
+    var generator = Object.create(protoGenerator.prototype);
+    var context = new Context(tryLocsList || []);
+
+    // The ._invoke method unifies the implementations of the .next,
+    // .throw, and .return methods.
+    defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) });
+
+    return generator;
+  }
+  exports.wrap = wrap;
+
+  // Try/catch helper to minimize deoptimizations. Returns a completion
+  // record like context.tryEntries[i].completion. This interface could
+  // have been (and was previously) designed to take a closure to be
+  // invoked without arguments, but in all the cases we care about we
+  // already have an existing method we want to call, so there's no need
+  // to create a new function object. We can even get away with assuming
+  // the method takes exactly one argument, since that happens to be true
+  // in every case, so we don't have to touch the arguments object. The
+  // only additional allocation required is the completion record, which
+  // has a stable shape and so hopefully should be cheap to allocate.
+  function tryCatch(fn, obj, arg) {
+    try {
+      return { type: "normal", arg: fn.call(obj, arg) };
+    } catch (err) {
+      return { type: "throw", arg: err };
+    }
+  }
+
+  var GenStateSuspendedStart = "suspendedStart";
+  var GenStateSuspendedYield = "suspendedYield";
+  var GenStateExecuting = "executing";
+  var GenStateCompleted = "completed";
+
+  // Returning this object from the innerFn has the same effect as
+  // breaking out of the dispatch switch statement.
+  var ContinueSentinel = {};
+
+  // Dummy constructor functions that we use as the .constructor and
+  // .constructor.prototype properties for functions that return Generator
+  // objects. For full spec compliance, you may wish to configure your
+  // minifier not to mangle the names of these two functions.
+  function Generator() {}
+  function GeneratorFunction() {}
+  function GeneratorFunctionPrototype() {}
+
+  // This is a polyfill for %IteratorPrototype% for environments that
+  // don't natively support it.
+  var IteratorPrototype = {};
+  define(IteratorPrototype, iteratorSymbol, function () {
+    return this;
+  });
+
+  var getProto = Object.getPrototypeOf;
+  var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+  if (NativeIteratorPrototype &&
+      NativeIteratorPrototype !== Op &&
+      hasOwn.call(NativeIteratorPrototype, iteratorSymbol)) {
+    // This environment has a native %IteratorPrototype%; use it instead
+    // of the polyfill.
+    IteratorPrototype = NativeIteratorPrototype;
+  }
+
+  var Gp = GeneratorFunctionPrototype.prototype =
+    Generator.prototype = Object.create(IteratorPrototype);
+  GeneratorFunction.prototype = GeneratorFunctionPrototype;
+  defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: true });
+  defineProperty(
+    GeneratorFunctionPrototype,
+    "constructor",
+    { value: GeneratorFunction, configurable: true }
+  );
+  GeneratorFunction.displayName = define(
+    GeneratorFunctionPrototype,
+    toStringTagSymbol,
+    "GeneratorFunction"
+  );
+
+  // Helper for defining the .next, .throw, and .return methods of the
+  // Iterator interface in terms of a single ._invoke method.
+  function defineIteratorMethods(prototype) {
+    ["next", "throw", "return"].forEach(function(method) {
+      define(prototype, method, function(arg) {
+        return this._invoke(method, arg);
+      });
+    });
+  }
+
+  exports.isGeneratorFunction = function(genFun) {
+    var ctor = typeof genFun === "function" && genFun.constructor;
+    return ctor
+      ? ctor === GeneratorFunction ||
+        // For the native GeneratorFunction constructor, the best we can
+        // do is to check its .name property.
+        (ctor.displayName || ctor.name) === "GeneratorFunction"
+      : false;
+  };
+
+  exports.mark = function(genFun) {
+    if (Object.setPrototypeOf) {
+      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
+    } else {
+      genFun.__proto__ = GeneratorFunctionPrototype;
+      define(genFun, toStringTagSymbol, "GeneratorFunction");
+    }
+    genFun.prototype = Object.create(Gp);
+    return genFun;
+  };
+
+  // Within the body of any async function, `await x` is transformed to
+  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
+  // `hasOwn.call(value, "__await")` to determine if the yielded value is
+  // meant to be awaited.
+  exports.awrap = function(arg) {
+    return { __await: arg };
+  };
+
+  function AsyncIterator(generator, PromiseImpl) {
+    function invoke(method, arg, resolve, reject) {
+      var record = tryCatch(generator[method], generator, arg);
+      if (record.type === "throw") {
+        reject(record.arg);
+      } else {
+        var result = record.arg;
+        var value = result.value;
+        if (value &&
+            typeof value === "object" &&
+            hasOwn.call(value, "__await")) {
+          return PromiseImpl.resolve(value.__await).then(function(value) {
+            invoke("next", value, resolve, reject);
+          }, function(err) {
+            invoke("throw", err, resolve, reject);
+          });
+        }
+
+        return PromiseImpl.resolve(value).then(function(unwrapped) {
+          // When a yielded Promise is resolved, its final value becomes
+          // the .value of the Promise<{value,done}> result for the
+          // current iteration.
+          result.value = unwrapped;
+          resolve(result);
+        }, function(error) {
+          // If a rejected Promise was yielded, throw the rejection back
+          // into the async generator function so it can be handled there.
+          return invoke("throw", error, resolve, reject);
+        });
+      }
+    }
+
+    var previousPromise;
+
+    function enqueue(method, arg) {
+      function callInvokeWithMethodAndArg() {
+        return new PromiseImpl(function(resolve, reject) {
+          invoke(method, arg, resolve, reject);
+        });
+      }
+
+      return previousPromise =
+        // If enqueue has been called before, then we want to wait until
+        // all previous Promises have been resolved before calling invoke,
+        // so that results are always delivered in the correct order. If
+        // enqueue has not been called before, then it is important to
+        // call invoke immediately, without waiting on a callback to fire,
+        // so that the async generator function has the opportunity to do
+        // any necessary setup in a predictable way. This predictability
+        // is why the Promise constructor synchronously invokes its
+        // executor callback, and why async functions synchronously
+        // execute code before the first await. Since we implement simple
+        // async functions in terms of async generators, it is especially
+        // important to get this right, even though it requires care.
+        previousPromise ? previousPromise.then(
+          callInvokeWithMethodAndArg,
+          // Avoid propagating failures to Promises returned by later
+          // invocations of the iterator.
+          callInvokeWithMethodAndArg
+        ) : callInvokeWithMethodAndArg();
+    }
+
+    // Define the unified helper method that is used to implement .next,
+    // .throw, and .return (see defineIteratorMethods).
+    defineProperty(this, "_invoke", { value: enqueue });
+  }
+
+  defineIteratorMethods(AsyncIterator.prototype);
+  define(AsyncIterator.prototype, asyncIteratorSymbol, function () {
+    return this;
+  });
+  exports.AsyncIterator = AsyncIterator;
+
+  // Note that simple async functions are implemented on top of
+  // AsyncIterator objects; they just return a Promise for the value of
+  // the final result produced by the iterator.
+  exports.async = function(innerFn, outerFn, self, tryLocsList, PromiseImpl) {
+    if (PromiseImpl === void 0) PromiseImpl = Promise;
+
+    var iter = new AsyncIterator(
+      wrap(innerFn, outerFn, self, tryLocsList),
+      PromiseImpl
+    );
+
+    return exports.isGeneratorFunction(outerFn)
+      ? iter // If outerFn is a generator, return the full iterator.
+      : iter.next().then(function(result) {
+          return result.done ? result.value : iter.next();
+        });
+  };
+
+  function makeInvokeMethod(innerFn, self, context) {
+    var state = GenStateSuspendedStart;
+
+    return function invoke(method, arg) {
+      if (state === GenStateExecuting) {
+        throw new Error("Generator is already running");
+      }
+
+      if (state === GenStateCompleted) {
+        if (method === "throw") {
+          throw arg;
+        }
+
+        // Be forgiving, per 25.3.3.3.3 of the spec:
+        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
+        return doneResult();
+      }
+
+      context.method = method;
+      context.arg = arg;
+
+      while (true) {
+        var delegate = context.delegate;
+        if (delegate) {
+          var delegateResult = maybeInvokeDelegate(delegate, context);
+          if (delegateResult) {
+            if (delegateResult === ContinueSentinel) continue;
+            return delegateResult;
+          }
+        }
+
+        if (context.method === "next") {
+          // Setting context._sent for legacy support of Babel's
+          // function.sent implementation.
+          context.sent = context._sent = context.arg;
+
+        } else if (context.method === "throw") {
+          if (state === GenStateSuspendedStart) {
+            state = GenStateCompleted;
+            throw context.arg;
+          }
+
+          context.dispatchException(context.arg);
+
+        } else if (context.method === "return") {
+          context.abrupt("return", context.arg);
+        }
+
+        state = GenStateExecuting;
+
+        var record = tryCatch(innerFn, self, context);
+        if (record.type === "normal") {
+          // If an exception is thrown from innerFn, we leave state ===
+          // GenStateExecuting and loop back for another invocation.
+          state = context.done
+            ? GenStateCompleted
+            : GenStateSuspendedYield;
+
+          if (record.arg === ContinueSentinel) {
+            continue;
+          }
+
+          return {
+            value: record.arg,
+            done: context.done
+          };
+
+        } else if (record.type === "throw") {
+          state = GenStateCompleted;
+          // Dispatch the exception by looping back around to the
+          // context.dispatchException(context.arg) call above.
+          context.method = "throw";
+          context.arg = record.arg;
+        }
+      }
+    };
+  }
+
+  // Call delegate.iterator[context.method](context.arg) and handle the
+  // result, either by returning a { value, done } result from the
+  // delegate iterator, or by modifying context.method and context.arg,
+  // setting context.delegate to null, and returning the ContinueSentinel.
+  function maybeInvokeDelegate(delegate, context) {
+    var methodName = context.method;
+    var method = delegate.iterator[methodName];
+    if (method === undefined) {
+      // A .throw or .return when the delegate iterator has no .throw
+      // method, or a missing .next mehtod, always terminate the
+      // yield* loop.
+      context.delegate = null;
+
+      // Note: ["return"] must be used for ES3 parsing compatibility.
+      if (methodName === "throw" && delegate.iterator["return"]) {
+        // If the delegate iterator has a return method, give it a
+        // chance to clean up.
+        context.method = "return";
+        context.arg = undefined;
+        maybeInvokeDelegate(delegate, context);
+
+        if (context.method === "throw") {
+          // If maybeInvokeDelegate(context) changed context.method from
+          // "return" to "throw", let that override the TypeError below.
+          return ContinueSentinel;
+        }
+      }
+      if (methodName !== "return") {
+        context.method = "throw";
+        context.arg = new TypeError(
+          "The iterator does not provide a '" + methodName + "' method");
+      }
+
+      return ContinueSentinel;
+    }
+
+    var record = tryCatch(method, delegate.iterator, context.arg);
+
+    if (record.type === "throw") {
+      context.method = "throw";
+      context.arg = record.arg;
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    var info = record.arg;
+
+    if (! info) {
+      context.method = "throw";
+      context.arg = new TypeError("iterator result is not an object");
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    if (info.done) {
+      // Assign the result of the finished delegate to the temporary
+      // variable specified by delegate.resultName (see delegateYield).
+      context[delegate.resultName] = info.value;
+
+      // Resume execution at the desired location (see delegateYield).
+      context.next = delegate.nextLoc;
+
+      // If context.method was "throw" but the delegate handled the
+      // exception, let the outer generator proceed normally. If
+      // context.method was "next", forget context.arg since it has been
+      // "consumed" by the delegate iterator. If context.method was
+      // "return", allow the original .return call to continue in the
+      // outer generator.
+      if (context.method !== "return") {
+        context.method = "next";
+        context.arg = undefined;
+      }
+
+    } else {
+      // Re-yield the result returned by the delegate method.
+      return info;
+    }
+
+    // The delegate iterator is finished, so forget it and continue with
+    // the outer generator.
+    context.delegate = null;
+    return ContinueSentinel;
+  }
+
+  // Define Generator.prototype.{next,throw,return} in terms of the
+  // unified ._invoke helper method.
+  defineIteratorMethods(Gp);
+
+  define(Gp, toStringTagSymbol, "Generator");
+
+  // A Generator should always return itself as the iterator object when the
+  // @@iterator function is called on it. Some browsers' implementations of the
+  // iterator prototype chain incorrectly implement this, causing the Generator
+  // object to not be returned from this call. This ensures that doesn't happen.
+  // See https://github.com/facebook/regenerator/issues/274 for more details.
+  define(Gp, iteratorSymbol, function() {
+    return this;
+  });
+
+  define(Gp, "toString", function() {
+    return "[object Generator]";
+  });
+
+  function pushTryEntry(locs) {
+    var entry = { tryLoc: locs[0] };
+
+    if (1 in locs) {
+      entry.catchLoc = locs[1];
+    }
+
+    if (2 in locs) {
+      entry.finallyLoc = locs[2];
+      entry.afterLoc = locs[3];
+    }
+
+    this.tryEntries.push(entry);
+  }
+
+  function resetTryEntry(entry) {
+    var record = entry.completion || {};
+    record.type = "normal";
+    delete record.arg;
+    entry.completion = record;
+  }
+
+  function Context(tryLocsList) {
+    // The root entry object (effectively a try statement without a catch
+    // or a finally block) gives us a place to store values thrown from
+    // locations where there is no enclosing try statement.
+    this.tryEntries = [{ tryLoc: "root" }];
+    tryLocsList.forEach(pushTryEntry, this);
+    this.reset(true);
+  }
+
+  exports.keys = function(val) {
+    var object = Object(val);
+    var keys = [];
+    for (var key in object) {
+      keys.push(key);
+    }
+    keys.reverse();
+
+    // Rather than returning an object with a next method, we keep
+    // things simple and return the next function itself.
+    return function next() {
+      while (keys.length) {
+        var key = keys.pop();
+        if (key in object) {
+          next.value = key;
+          next.done = false;
+          return next;
+        }
+      }
+
+      // To avoid creating an additional object, we just hang the .value
+      // and .done properties off the next function object itself. This
+      // also ensures that the minifier will not anonymize the function.
+      next.done = true;
+      return next;
+    };
+  };
+
+  function values(iterable) {
+    if (iterable) {
+      var iteratorMethod = iterable[iteratorSymbol];
+      if (iteratorMethod) {
+        return iteratorMethod.call(iterable);
+      }
+
+      if (typeof iterable.next === "function") {
+        return iterable;
+      }
+
+      if (!isNaN(iterable.length)) {
+        var i = -1, next = function next() {
+          while (++i < iterable.length) {
+            if (hasOwn.call(iterable, i)) {
+              next.value = iterable[i];
+              next.done = false;
+              return next;
+            }
+          }
+
+          next.value = undefined;
+          next.done = true;
+
+          return next;
+        };
+
+        return next.next = next;
+      }
+    }
+
+    // Return an iterator with no values.
+    return { next: doneResult };
+  }
+  exports.values = values;
+
+  function doneResult() {
+    return { value: undefined, done: true };
+  }
+
+  Context.prototype = {
+    constructor: Context,
+
+    reset: function(skipTempReset) {
+      this.prev = 0;
+      this.next = 0;
+      // Resetting context._sent for legacy support of Babel's
+      // function.sent implementation.
+      this.sent = this._sent = undefined;
+      this.done = false;
+      this.delegate = null;
+
+      this.method = "next";
+      this.arg = undefined;
+
+      this.tryEntries.forEach(resetTryEntry);
+
+      if (!skipTempReset) {
+        for (var name in this) {
+          // Not sure about the optimal order of these conditions:
+          if (name.charAt(0) === "t" &&
+              hasOwn.call(this, name) &&
+              !isNaN(+name.slice(1))) {
+            this[name] = undefined;
+          }
+        }
+      }
+    },
+
+    stop: function() {
+      this.done = true;
+
+      var rootEntry = this.tryEntries[0];
+      var rootRecord = rootEntry.completion;
+      if (rootRecord.type === "throw") {
+        throw rootRecord.arg;
+      }
+
+      return this.rval;
+    },
+
+    dispatchException: function(exception) {
+      if (this.done) {
+        throw exception;
+      }
+
+      var context = this;
+      function handle(loc, caught) {
+        record.type = "throw";
+        record.arg = exception;
+        context.next = loc;
+
+        if (caught) {
+          // If the dispatched exception was caught by a catch block,
+          // then let that catch block handle the exception normally.
+          context.method = "next";
+          context.arg = undefined;
+        }
+
+        return !! caught;
+      }
+
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        var record = entry.completion;
+
+        if (entry.tryLoc === "root") {
+          // Exception thrown outside of any try block that could handle
+          // it, so set the completion value of the entire function to
+          // throw the exception.
+          return handle("end");
+        }
+
+        if (entry.tryLoc <= this.prev) {
+          var hasCatch = hasOwn.call(entry, "catchLoc");
+          var hasFinally = hasOwn.call(entry, "finallyLoc");
+
+          if (hasCatch && hasFinally) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            } else if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else if (hasCatch) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            }
+
+          } else if (hasFinally) {
+            if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else {
+            throw new Error("try statement without catch or finally");
+          }
+        }
+      }
+    },
+
+    abrupt: function(type, arg) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc <= this.prev &&
+            hasOwn.call(entry, "finallyLoc") &&
+            this.prev < entry.finallyLoc) {
+          var finallyEntry = entry;
+          break;
+        }
+      }
+
+      if (finallyEntry &&
+          (type === "break" ||
+           type === "continue") &&
+          finallyEntry.tryLoc <= arg &&
+          arg <= finallyEntry.finallyLoc) {
+        // Ignore the finally entry if control is not jumping to a
+        // location outside the try/catch block.
+        finallyEntry = null;
+      }
+
+      var record = finallyEntry ? finallyEntry.completion : {};
+      record.type = type;
+      record.arg = arg;
+
+      if (finallyEntry) {
+        this.method = "next";
+        this.next = finallyEntry.finallyLoc;
+        return ContinueSentinel;
+      }
+
+      return this.complete(record);
+    },
+
+    complete: function(record, afterLoc) {
+      if (record.type === "throw") {
+        throw record.arg;
+      }
+
+      if (record.type === "break" ||
+          record.type === "continue") {
+        this.next = record.arg;
+      } else if (record.type === "return") {
+        this.rval = this.arg = record.arg;
+        this.method = "return";
+        this.next = "end";
+      } else if (record.type === "normal" && afterLoc) {
+        this.next = afterLoc;
+      }
+
+      return ContinueSentinel;
+    },
+
+    finish: function(finallyLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.finallyLoc === finallyLoc) {
+          this.complete(entry.completion, entry.afterLoc);
+          resetTryEntry(entry);
+          return ContinueSentinel;
+        }
+      }
+    },
+
+    "catch": function(tryLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc === tryLoc) {
+          var record = entry.completion;
+          if (record.type === "throw") {
+            var thrown = record.arg;
+            resetTryEntry(entry);
+          }
+          return thrown;
+        }
+      }
+
+      // The context.catch method must only be called with a location
+      // argument that corresponds to a known catch block.
+      throw new Error("illegal catch attempt");
+    },
+
+    delegateYield: function(iterable, resultName, nextLoc) {
+      this.delegate = {
+        iterator: values(iterable),
+        resultName: resultName,
+        nextLoc: nextLoc
+      };
+
+      if (this.method === "next") {
+        // Deliberately forget the last sent value so that we don't
+        // accidentally pass it on to the delegate.
+        this.arg = undefined;
+      }
+
+      return ContinueSentinel;
+    }
+  };
+
+  // Regardless of whether this script is executing as a CommonJS module
+  // or not, return the runtime object so that we can declare the variable
+  // regeneratorRuntime in the outer scope, which allows this module to be
+  // injected easily by `bin/regenerator --include-runtime script.js`.
+  return exports;
+
+}(
+  // If this script is executing as a CommonJS module, use module.exports
+  // as the regeneratorRuntime namespace. Otherwise create a new empty
+  // object. Either way, the resulting object will be used to initialize
+  // the regeneratorRuntime variable at the top of this file.
+   true ? module.exports : 0
+));
+
+try {
+  regeneratorRuntime = runtime;
+} catch (accidentalStrictMode) {
+  // This module should not be running in strict mode, so the above
+  // assignment should always work unless something is misconfigured. Just
+  // in case runtime.js accidentally runs in strict mode, in modern engines
+  // we can explicitly access globalThis. In older engines we can escape
+  // strict mode using a global Function call. This could conceivably fail
+  // if a Content Security Policy forbids using Function, but in that case
+  // the proper solution is to fix the accidental strict mode problem. If
+  // you've misconfigured your bundler to force strict mode and applied a
+  // CSP to forbid Function, and you're not willing to fix either of those
+  // problems, please detail your unique predicament in a GitHub issue.
+  if (typeof globalThis === "object") {
+    globalThis.regeneratorRuntime = runtime;
+  } else {
+    Function("r", "regeneratorRuntime = r")(runtime);
+  }
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/toggle-selection/index.js":
+/*!************************************************!*\
+  !*** ./node_modules/toggle-selection/index.js ***!
+  \************************************************/
+/***/ (function(module) {
+
+
+module.exports = function () {
+  var selection = document.getSelection();
+  if (!selection.rangeCount) {
+    return function () {};
+  }
+  var active = document.activeElement;
+
+  var ranges = [];
+  for (var i = 0; i < selection.rangeCount; i++) {
+    ranges.push(selection.getRangeAt(i));
+  }
+
+  switch (active.tagName.toUpperCase()) { // .toUpperCase handles XHTML
+    case 'INPUT':
+    case 'TEXTAREA':
+      active.blur();
+      break;
+
+    default:
+      active = null;
+      break;
+  }
+
+  selection.removeAllRanges();
+  return function () {
+    selection.type === 'Caret' &&
+    selection.removeAllRanges();
+
+    if (!selection.rangeCount) {
+      ranges.forEach(function(range) {
+        selection.addRange(range);
+      });
+    }
+
+    active &&
+    active.focus();
+  };
+};
+
+
+/***/ }),
+
+/***/ "lib/Config":
+/*!*************************!*\
+  !*** external "Config" ***!
+  \*************************/
+/***/ (function(module) {
+
+"use strict";
+module.exports = Config;
+
+/***/ }),
+
+/***/ "lib/Injector":
+/*!***************************!*\
+  !*** external "Injector" ***!
+  \***************************/
+/***/ (function(module) {
+
+"use strict";
+module.exports = Injector;
+
+/***/ }),
+
+/***/ "prop-types":
+/*!****************************!*\
+  !*** external "PropTypes" ***!
+  \****************************/
+/***/ (function(module) {
+
+"use strict";
+module.exports = PropTypes;
+
+/***/ }),
+
+/***/ "react":
+/*!************************!*\
+  !*** external "React" ***!
+  \************************/
+/***/ (function(module) {
+
+"use strict";
+module.exports = React;
+
+/***/ }),
+
+/***/ "react-dom":
+/*!***************************!*\
+  !*** external "ReactDom" ***!
+  \***************************/
+/***/ (function(module) {
+
+"use strict";
+module.exports = ReactDom;
+
+/***/ }),
+
+/***/ "react-dom/client":
+/*!*********************************!*\
+  !*** external "ReactDomClient" ***!
+  \*********************************/
+/***/ (function(module) {
+
+"use strict";
+module.exports = ReactDomClient;
+
+/***/ }),
+
+/***/ "react-redux":
+/*!*****************************!*\
+  !*** external "ReactRedux" ***!
+  \*****************************/
+/***/ (function(module) {
+
+"use strict";
+module.exports = ReactRedux;
+
+/***/ }),
+
+/***/ "reactstrap":
+/*!*****************************!*\
+  !*** external "Reactstrap" ***!
+  \*****************************/
+/***/ (function(module) {
+
+"use strict";
+module.exports = Reactstrap;
+
+/***/ }),
+
+/***/ "redux":
+/*!************************!*\
+  !*** external "Redux" ***!
+  \************************/
+/***/ (function(module) {
+
+"use strict";
+module.exports = Redux;
+
+/***/ }),
+
+/***/ "containers/SudoMode/SudoMode":
+/*!***************************!*\
+  !*** external "SudoMode" ***!
+  \***************************/
+/***/ (function(module) {
+
+"use strict";
+module.exports = SudoMode;
+
+/***/ }),
+
+/***/ "classnames":
+/*!*****************************!*\
+  !*** external "classnames" ***!
+  \*****************************/
+/***/ (function(module) {
+
+"use strict";
+module.exports = classnames;
+
+/***/ }),
+
+/***/ "moment":
+/*!*************************!*\
+  !*** external "moment" ***!
+  \*************************/
+/***/ (function(module) {
+
+"use strict";
+module.exports = moment;
+
+/***/ }),
+
+/***/ "./client/lang/src/en.json":
+/*!*********************************!*\
+  !*** ./client/lang/src/en.json ***!
+  \*********************************/
+/***/ (function(module) {
+
+"use strict";
+module.exports = /*#__PURE__*/JSON.parse('{"MFABackupCodesRegister.COPY":"Copy codes","MFABackupCodesRegister.COPY_RECENT":"Copied!","MFABackupCodesRegister.DOWNLOAD":"Download","MFABackupCodesRegister.FINISH":"Finish","MFABackupCodesRegister.PRINT":"Print codes","MFABackupCodesVerify.DESCRIPTION":"Use one of the recovery codes you received","MFABackupCodesVerify.LABEL":"Enter recovery code","MFABackupCodesVerify.NEXT":"Next","MFALogin.SOMETHING_WENT_WRONG":"Something went wrong!","MFALogin.TRY_AGAIN":"Try again","MFAMethodTile.UNAVAILABLE":"Unsupported: ","MFARegister.BACK":"Back","MFARegister.HELP":"Find out more.","MFARegister.NEXT":"Next","MFARegister.RECOVERY_HELP":"How to use recovery codes.","MFARegister.REGISTER_WITH":"Register with {method}","MFARegister.SETUP_COMPLETE_CONTINUE":"Continue","MFARegister.SETUP_COMPLETE_DESCRIPTION":"You will be able to edit these settings later from your profile area.","MFARegister.TITLE":"Multi-factor authentication","MFASelectMethod.UNAVAILABLE":"unavailable","MFAVerify.BACK":"Back","MFAVerify.METHOD_UNAVAILABLE":"This authentication method is unavailable","MFAVerify.MORE_OPTIONS":"More options","MFAVerify.OTHER_METHODS_TITLE":"Try another way to verify","MFAVerify.TITLE":"Log in","MFAVerify.VERIFY_WITH":"Verify with {method}","MultiFactorAuthentication.ACCOUNT_RESET_ACTION":"Send account reset email","MultiFactorAuthentication.ACCOUNT_RESET_CONFIRMATION":"You are about to reset this account. Their password and multi-factor authentication will be reset. Continue?","MultiFactorAuthentication.ACCOUNT_RESET_CONFIRMATION_BUTTON":"Yes, send reset email","MultiFactorAuthentication.ACCOUNT_RESET_DESCRIPTION":"Ensure that the person requesting a reset is the real person associated with this account before proceeding. An email will be sent to the member\'s address with a link to reset both their password and multi-factor authentication methods.","MultiFactorAuthentication.ACCOUNT_RESET_SENDING":"Sending...","MultiFactorAuthentication.ACCOUNT_RESET_SENDING_FAILURE":"We were unable to send an email, please try again later.","MultiFactorAuthentication.ACCOUNT_RESET_SENDING_SUCCESS":"An email has been sent.","MultiFactorAuthentication.ACCOUNT_RESET_TITLE":"Help user reset account","MultiFactorAuthentication.ADD_ANOTHER_METHOD":"Add another MFA method","MultiFactorAuthentication.ADD_FIRST_METHOD":"Add an MFA method","MultiFactorAuthentication.ADMIN_SETUP_COMPLETE_CONTINUE":"Your settings have been updated","MultiFactorAuthentication.BACKUP_REGISTERED":"{method}: Created {date}","MultiFactorAuthentication.CONFIRMATION_TITLE":"Are you sure?","MultiFactorAuthentication.DEFAULT_CONFIRM_BUTTON":"Confirm","MultiFactorAuthentication.DEFAULT_CONFIRM_DISMISS_BUTTON":"Cancel","MultiFactorAuthentication.DEFAULT_REGISTERED":"{method} (default): Registered","MultiFactorAuthentication.DELETE_CONFIRMATION":"Are you sure you want to remove this method","MultiFactorAuthentication.DELETE_CONFIRMATION_BUTTON":"Remove method","MultiFactorAuthentication.EXTRA_LAYER_DESCRIPTION":"Every time you log into your account, you\'ll need your password and an additional form of verification.","MultiFactorAuthentication.EXTRA_LAYER_IMAGE_ALT":"Shields indicating additional protection","MultiFactorAuthentication.EXTRA_LAYER_TITLE":"Extra layer of protection","MultiFactorAuthentication.GET_STARTED":"Get started","MultiFactorAuthentication.HOW_IT_WORKS":"How it works","MultiFactorAuthentication.HOW_MFA_WORKS":"How multi-factor authentication works","MultiFactorAuthentication.MORE_OPTIONS_IMAGE_ALT":"Graphic depicting various MFA options","MultiFactorAuthentication.NO_METHODS_REGISTERED":"No MFA methods have been registered. Add one using the button below","MultiFactorAuthentication.NO_METHODS_REGISTERED_READONLY":"This member has not registered any MFA methods yet","MultiFactorAuthentication.REGISTERED":"{method}: Registered","MultiFactorAuthentication.REMOVE_METHOD":"Remove","MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION":"All existing codes will be made invalid and new codes will be created","MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION_BUTTON":"Reset codes","MultiFactorAuthentication.RESET_METHOD":"Reset","MultiFactorAuthentication.SELECT_METHOD":"Select a verification method","MultiFactorAuthentication.SETUP_COMPLETE_TITLE":"Multi-factor authentication is now set up","MultiFactorAuthentication.SETUP_LATER":"Setup later","MultiFactorAuthentication.SET_AS_DEFAULT":"Set as default method","MultiFactorAuthentication.TITLE":"Add extra security to your account","MultiFactorAuthentication.TRY_AGAIN_ERROR":"Something went wrong. Please try again.","MultiFactorAuthentication.UNIQUE_DESCRIPTION":"This verification is only available to you. Even if someone gets your password, they will not be able to access your account.","MultiFactorAuthentication.UNIQUE_IMAGE_ALT":"Person with tick indicating uniqueness","MultiFactorAuthentication.UNIQUE_TITLE":"Unique to you","MultiFactorAuthentication.UNKNOWN_ERROR":"An unknown error occurred."}');
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry needs to be wrapped in an IIFE because it needs to be in strict mode.
+!function() {
+"use strict";
+/*!******************************************!*\
+  !*** ./client/src/bundles/bundle-cms.js ***!
+  \******************************************/
+
+
+__webpack_require__(/*! ../legacy */ "./client/src/legacy/index.js");
+__webpack_require__(/*! ../boot/cms */ "./client/src/boot/cms/index.js");
+}();
+/******/ })()
+;
+//# sourceMappingURL=bundle-cms.js.map

@@ -1,6 +1,6 @@
 /* global window */
 
-import React, { Component, Fragment } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { loadComponent } from 'lib/Injector'; // eslint-disable-line
@@ -13,132 +13,92 @@ import LoadingError from 'components/LoadingError';
 
 import fallbacks from '../../lang/src/en.json';
 
-class Verify extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      selectedMethod: null,
-      verifyProps: null,
-      message: null,
-      showOtherMethods: false,
-      token: null,
-    };
-
-    this.handleCompleteVerification = this.handleCompleteVerification.bind(this);
-    this.handleShowOtherMethodsPane = this.handleShowOtherMethodsPane.bind(this);
-    this.handleHideOtherMethodsPane = this.handleHideOtherMethodsPane.bind(this);
-    this.handleClickOtherMethod = this.handleClickOtherMethod.bind(this);
-  }
-
-  componentDidMount() {
-    const {
-      defaultMethod,
-      registeredMethods,
-      backupMethod,
-    } = this.props;
-
-    // Choose either the default method or the first method in the list as the default verify screen
-    const defaultMethodDefinition = defaultMethod && registeredMethods.find(
-      method => method.urlSegment === defaultMethod
-    );
-
-    if (defaultMethodDefinition) {
-      this.setSelectedMethod(defaultMethodDefinition);
-    } else {
-      // Use the first method that's not the backup method
-      this.setSelectedMethod(backupMethod
-        ? registeredMethods.find(method => method.urlSegment !== backupMethod.urlSegment)
-        : registeredMethods[0]
-      );
-    }
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    const { selectedMethod } = this.state;
-
-    // If the selected method has changed (or been set for the first time) then we'll load a "start"
-    // endpoint to get the process going
-    if (
-      (!prevState.selectedMethod && selectedMethod)
-      || (prevState.selectedMethod
-        && selectedMethod
-        && prevState.selectedMethod.urlSegment !== selectedMethod.urlSegment
-      )
-    ) {
-      this.fetchStartVerifyData();
-    }
-  }
+function Verify(props) {
+  const {
+    backupMethod,
+    defaultMethod,
+    endpoints,
+    getUnavailableMessage,
+    isAvailable,
+    onCompleteVerification,
+    registeredMethods,
+    resources,
+    SelectMethodComponent,
+  } = props;
+  const [loading, setLoading] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState(null);
+  const [verifyProps, setVerifyProps] = useState(null);
+  const [message, setMessage] = useState(null);
+  const [showOtherMethods, setShowOtherMethods] = useState(false);
+  const [token, setToken] = useState(null);
+  const i18n = window.ss.i18n;
 
   /**
    * Set the current method the user will use to complete authentication
-   *
-   * @param {Object} method
    */
-  setSelectedMethod(method) {
-    this.setState({
-      selectedMethod: method,
-      // When a method is chosen we'll assume the "select other method" screen is not relevant now
-      showOtherMethods: false,
-    });
-  }
-
-  /**
-   * Helper function to return methods aside from the selected one
-   *
-   * @return {Object[]}
-   */
-  getOtherMethods() {
-    const { registeredMethods } = this.props;
-    const { selectedMethod } = this.state;
-
-    if (!selectedMethod) {
-      return registeredMethods;
-    }
-
-    return registeredMethods.filter(method => method.urlSegment !== selectedMethod.urlSegment);
+  function updateSelectedMethod(method) {
+    setSelectedMethod(method);
+    // When a method is chosen we'll assume the "select other method" screen is not relevant now
+    setShowOtherMethods(false);
   }
 
   /**
    * Trigger a "fetch" of state for starting a verification flow
    */
-  fetchStartVerifyData() {
-    const { endpoints: { verify } } = this.props;
-    const { selectedMethod } = this.state;
-
+  function fetchStartVerifyData() {
+    const { verify } = endpoints;
     const endpoint = verify.replace('{urlSegment}', selectedMethod.urlSegment);
-
-    this.setState({
-      loading: true,
-    });
-
+    setLoading(true);
     // "start" a verification
     api(endpoint).then(response => response.json().then(result => {
-      const { SecurityID: token, ...verifyProps } = result;
-      this.setState({
-        loading: false,
-        verifyProps,
-        token,
-      });
+      const { SecurityID, ...other } = result;
+      setLoading(false);
+      setVerifyProps(other);
+      setToken(SecurityID);
     }));
+  }
+
+  useEffect(() => {
+    const defaultMethodDefinition = defaultMethod && registeredMethods.find(
+      method => method.urlSegment === defaultMethod
+    );
+    if (defaultMethodDefinition) {
+      updateSelectedMethod(defaultMethodDefinition);
+    } else {
+      // Use the first method that's not the backup method
+      updateSelectedMethod(backupMethod
+        ? registeredMethods.find(method => method.urlSegment !== backupMethod.urlSegment)
+        : registeredMethods[0]
+      );
+    }
+  }, [defaultMethod, registeredMethods, backupMethod]);
+
+  // If the selected method has changed (or been set for the first time) then we'll load a "start"
+  // endpoint to get the process going
+  useEffect(() => {
+    if (selectedMethod) {
+      fetchStartVerifyData();
+    }
+  }, [selectedMethod]);
+
+  /**
+   * Helper function to return methods aside from the selected one
+   */
+  function getOtherMethods() {
+    if (!selectedMethod) {
+      return registeredMethods;
+    }
+    return registeredMethods.filter(method => method.urlSegment !== selectedMethod.urlSegment);
   }
 
   /**
    * Complete a verification by verifying the given "verifyData" with the "verify" endpoint
-   *
-   * @param {Object} verifyData
    */
-  handleCompleteVerification(verifyData) {
-    const { endpoints: { verify }, onCompleteVerification } = this.props;
-    const { selectedMethod, token } = this.state;
+  function handleCompleteVerification(verifyData) {
+    const { verify } = endpoints;
     const params = token ? `?SecurityID=${token}` : '';
     const endpoint = `${verify.replace('{urlSegment}', selectedMethod.urlSegment)}${params}`;
-    const { ss: { i18n } } = window;
-
-    this.setState({
-      loading: true
-    });
-
+    setLoading(true);
     // "complete" a verification
     api(endpoint, 'POST', JSON.stringify(verifyData))
       .then(response => {
@@ -148,28 +108,22 @@ class Verify extends Component {
             return null;
           case 202:
             // 202 is returned if multiple MFA methods are required...
-            this.setState({
-              loading: false,
-            });
+            setLoading(false);
             return null;
           case 429:
-            this.setState({
-              loading: false,
-              message: i18n._t(
-                'MultiFactorAuthentication.TRY_AGAIN_ERROR',
-                fallbacks['MultiFactorAuthentication.TRY_AGAIN_ERROR']
-              )
-            });
+            setLoading(false);
+            setMessage(i18n._t(
+              'MultiFactorAuthentication.TRY_AGAIN_ERROR',
+              fallbacks['MultiFactorAuthentication.TRY_AGAIN_ERROR']
+            ));
             return null;
           default:
             if (response.status.toString().match(/^5[0-9]{2}$/)) {
-              this.setState({
-                loading: false,
-                message: i18n._t(
-                  'MultiFactorAuthentication.UNKNOWN_ERROR',
-                  fallbacks['MultiFactorAuthentication.UNKNOWN_ERROR']
-                )
-              });
+              setLoading(false);
+              setMessage(i18n._t(
+                'MultiFactorAuthentication.UNKNOWN_ERROR',
+                fallbacks['MultiFactorAuthentication.UNKNOWN_ERROR']
+              ));
               return null;
             }
             return response.json();
@@ -177,10 +131,22 @@ class Verify extends Component {
       })
       .then(result => {
         if (result) {
-          this.setState({
-            loading: false,
-            ...result,
-          });
+          setLoading(false);
+          if (result.message) {
+            setMessage(result.message);
+          }
+          if (result.verifyProps) {
+            setVerifyProps(result.verifyProps);
+          }
+          if (result.selectedMethod) {
+            updateSelectedMethod(result.selectedMethod);
+          }
+          if (result.showOtherMethods) {
+            setShowOtherMethods(result.showOtherMethods);
+          }
+          if (result.token) {
+            setToken(result.token);
+          }
         }
       });
   }
@@ -188,46 +154,31 @@ class Verify extends Component {
   /**
    * Handle a click on a "More options" link to show other methods that have been registered,
    * and clear any verify component validation errors.
-   *
-   * @param {Event} event
    */
-  handleShowOtherMethodsPane(event) {
+  function handleShowOtherMethodsPane(event) {
     event.preventDefault();
-
-    this.setState({
-      showOtherMethods: true,
-      // Reset error states
-      message: '',
-    });
+    setShowOtherMethods(true);
+    // Reset error states
+    setMessage(message);
   }
 
   /**
    * Handle a click on a "More options" link to show other methods that have been registered
-   *
-   * @param {Event} event
    */
-  handleHideOtherMethodsPane(event) {
+  function handleHideOtherMethodsPane(event) {
     event.preventDefault();
-
-    this.setState({
-      showOtherMethods: false,
-    });
+    setShowOtherMethods(false);
   }
 
   /**
    * Handle a click event on a button that will set the selected method of this verify component.
    * The method specified should be the value of the target of the event (ie. the value of the
    * button)
-   *
-   * @param {Event} event
-   * @param method
    */
-  handleClickOtherMethod(event, method) {
+  function handleClickOtherMethod(event, method) {
     event.preventDefault();
-    const { registeredMethods } = this.props;
-
     if (method) {
-      this.setSelectedMethod(
+      updateSelectedMethod(
         registeredMethods.find(methodSpec => methodSpec.urlSegment === method.urlSegment)
       );
     }
@@ -236,138 +187,95 @@ class Verify extends Component {
   /**
    * Render a control that will allow a user to display the "other methods" pane if the currently
    * selected method is not suitable
-   *
-   * @param {string|null} extraClass Will be added to the button
-   * @return {HTMLElement|null}
    */
-  renderOtherMethodsControl(extraClass = '') {
-    const otherMethods = this.getOtherMethods();
-    const { ss: { i18n } } = window;
-
+  function renderOtherMethodsControl(extraClass = '') {
+    const otherMethods = getOtherMethods();
     // There shouldn't be a control if there are no other methods to choose from
     if (!Array.isArray(otherMethods) || !otherMethods.length) {
       return null;
     }
+    return <a
+      href="#"
+      className={classnames('btn btn-secondary', extraClass)}
+      onClick={handleShowOtherMethodsPane}
+    >
+      {i18n._t('MFAVerify.MORE_OPTIONS', 'More options')}
+    </a>;
+  }
 
-    return (
-      <a
-        href="#"
-        className={classnames('btn btn-secondary', extraClass)}
-        onClick={this.handleShowOtherMethodsPane}
-      >
-        {i18n._t('MFAVerify.MORE_OPTIONS', 'More options')}
-      </a>
-    );
+  function renderTitle() {
+    return <h1 className="mfa-app-title">
+      {i18n._t('MFAVerify.TITLE', 'Log in')}
+    </h1>;
   }
 
   /**
    * If the half-logged in member has more than one authentication method set up, show a list of
    * others they have enabled that could also be used to complete authentication and log in.
-   *
-   * @return {HTMLElement|null}
    */
-  renderOtherMethods() {
-    const otherMethods = this.getOtherMethods();
-    const { selectedMethod, showOtherMethods } = this.state;
-    const { resources, SelectMethodComponent } = this.props;
-
+  function renderOtherMethods() {
+    const otherMethods = getOtherMethods();
     if (selectedMethod && !showOtherMethods) {
       return null;
     }
-
-    return (
-      <>
-        {this.renderTitle()}
-        <SelectMethodComponent
-          resources={resources}
-          methods={otherMethods}
-          onClickBack={this.handleHideOtherMethodsPane}
-          onSelectMethod={method => event => this.handleClickOtherMethod(event, method)}
-        />
-      </>
-    );
+    return <>
+      {renderTitle()}
+      <SelectMethodComponent
+        resources={resources}
+        methods={otherMethods}
+        onClickBack={() => handleHideOtherMethodsPane()}
+        onSelectMethod={method => event => handleClickOtherMethod(event, method)}
+      />
+    </>;
   }
 
   /**
    * Render the component for the currently selected method
-   *
-   * @return {HTMLElement|null}
    */
-  renderSelectedMethod() {
-    const { isAvailable, getUnavailableMessage } = this.props;
-    const { selectedMethod, showOtherMethods, verifyProps, message } = this.state;
-    const { ss: { i18n } } = window;
-
+  function renderSelectedMethod() {
     if (!selectedMethod || showOtherMethods) {
       return null;
     }
-
     // Handle state where the method is not available to be used, e.g. if the browser
     // is incompatible or HTTPS is not enabled.
     if (isAvailable && !isAvailable(selectedMethod)) {
       const unavailableMessage = getUnavailableMessage(selectedMethod);
-      return (
-        <LoadingError
-          title={
-            i18n._t(
-              'MFAVerify.METHOD_UNAVAILABLE',
-              'This authentication method is unavailable'
-            )
-          }
-          message={unavailableMessage}
-          controls={this.renderOtherMethodsControl('btn-outline-secondary')}
-        />
-      );
+      return <LoadingError
+        title={
+          i18n._t(
+            'MFAVerify.METHOD_UNAVAILABLE',
+            'This authentication method is unavailable'
+          )
+        }
+        message={unavailableMessage}
+        controls={renderOtherMethodsControl('btn-outline-secondary')}
+      />;
     }
-
     const MethodComponent = loadComponent(selectedMethod.component);
     const leadInLabel = i18n.inject(i18n._t('MFAVerify.VERIFY_WITH', 'Verify with {method}'), {
       method: selectedMethod.name.toLowerCase(),
     });
-
-    return (
-      <>
-        {this.renderTitle()}
-
-        <h2 className="mfa-section-title">{leadInLabel}</h2>
-        {MethodComponent && <MethodComponent
-          {...verifyProps}
-          method={selectedMethod}
-          error={message}
-          onCompleteVerification={this.handleCompleteVerification}
-          moreOptionsControl={this.renderOtherMethodsControl()}
-        />}
-      </>
-    );
+    return <>
+      {renderTitle()}
+      <h2 className="mfa-section-title">{leadInLabel}</h2>
+      {MethodComponent && <MethodComponent
+        {...verifyProps}
+        method={selectedMethod}
+        error={message}
+        onCompleteVerification={() => handleCompleteVerification()}
+        moreOptionsControl={renderOtherMethodsControl()}
+      />}
+    </>;
   }
 
-  /**
-   * @returns {HTMLElement}
-   */
-  renderTitle() {
-    const { ss: { i18n } } = window;
-
-    return (
-      <h1 className="mfa-app-title">
-        {i18n._t('MFAVerify.TITLE', 'Log in')}
-      </h1>
-    );
+  // Render the component
+  if (loading) {
+    return <LoadingIndicator block />;
   }
-
-  render() {
-    const { loading } = this.state;
-
-    if (loading) {
-      return <LoadingIndicator block />;
-    }
-
-    return (
-      <>
-        {this.renderSelectedMethod()}
-        {this.renderOtherMethods()}
-      </>
-    );
-  }
+  return <>
+    {renderSelectedMethod()}
+    {renderOtherMethods()}
+  </>;
 }
 
 Verify.propTypes = {

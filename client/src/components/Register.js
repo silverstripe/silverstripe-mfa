@@ -1,7 +1,7 @@
 /* eslint-disable import/no-cycle */
 /* global window */
 
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import api from 'lib/api';
 import { loadComponent } from 'lib/Injector'; // eslint-disable-line
@@ -27,113 +27,103 @@ export {
   SCREEN_COMPLETE,
 };
 
-class Register extends Component {
-  constructor(props) {
-    super(props);
+function Register(props) {
+  const {
+    availableMethods,
+    backupMethod,
+    canSkip,
+    completeMessage,
+    CompleteComponent,
+    endpoints,
+    IntroductionComponent,
+    onCompleteRegistration,
+    onRegister,
+    onRemoveAvailableMethod,
+    onShowComplete,
+    onSelectMethod,
+    onShowIntroduction,
+    onShowChooseMethod,
+    registeredMethods,
+    resources,
+    screen,
+    selectedMethod,
+    SelectMethodComponent,
+    showSubTitle,
+    showTitle,
+    TitleComponent,
+  } = props;
+  const [registerProps, setRegisterProps] = useState(null);
+  const [token, setToken] = useState(null);
+  const i18n = window.ss.i18n;
 
-    this.state = {
-      registerProps: null,
-      token: null,
-    };
-
-    this.handleBack = this.handleBack.bind(this);
-    this.handleCompleteRegistration = this.handleCompleteRegistration.bind(this);
-    this.handleSkip = this.handleSkip.bind(this);
+  /**
+   * Trigger a "fetch" of state for starting a registration flow
+   */
+  function fetchStartRegistrationData() {
+    const { register } = endpoints;
+    const endpoint = register.replace('{urlSegment}', selectedMethod.urlSegment);
+    // "start" a registration
+    api(endpoint).then(response => response.json().then(result => {
+      const { SecurityID, ...other } = result;
+      setRegisterProps(other);
+      setToken(SecurityID);
+    }));
   }
 
-  componentDidMount() {
-    const { selectedMethod } = this.props;
-
+  useEffect(() => {
     if (selectedMethod) {
-      this.fetchStartRegistrationData();
+      fetchStartRegistrationData();
     }
-  }
+  }, [selectedMethod]);
 
-  componentDidUpdate(prevProps) {
-    const { selectedMethod } = this.props;
-
-    if (!selectedMethod) {
-      return;
+  /**
+   * Inspects the props and returns whether a back-up method should also be set up for this
+   * registration flow.
+   */
+  function shouldSetupBackupMethod() {
+    if (!backupMethod) {
+      return false;
     }
-
-    // Trigger an async update of state if the selected method has changed
-    if (JSON.stringify(selectedMethod) !== JSON.stringify(prevProps.selectedMethod)) {
-      this.fetchStartRegistrationData();
-    }
+    return !registeredMethods.find(method => method.urlSegment === backupMethod.urlSegment);
   }
 
   /**
    * If there's a backup method that's not registered then we initialise that
    */
-  setupBackupMethod() {
-    const { backupMethod, selectedMethod, onShowComplete, onSelectMethod } = this.props;
-
+  function setupBackupMethod() {
     if (
-      this.shouldSetupBackupMethod()
+      shouldSetupBackupMethod()
       && selectedMethod.urlSegment !== backupMethod.urlSegment
     ) {
       onSelectMethod(backupMethod);
       return;
     }
-
     onShowComplete();
-  }
-
-  /**
-   * Trigger a "fetch" of state for starting a registration flow
-   */
-  fetchStartRegistrationData() {
-    const { endpoints: { register }, selectedMethod } = this.props;
-
-    const endpoint = register.replace('{urlSegment}', selectedMethod.urlSegment);
-
-    // "start" a registration
-    api(endpoint).then(response => response.json().then(result => {
-      const { SecurityID: token, ...registerProps } = result;
-      this.setState({
-        registerProps,
-        token,
-      });
-    }));
   }
 
   /**
    * Send the user back to the registration method selection screen from inside one of the
    * method registration components
    */
-  handleBack() {
-    const { availableMethods, onShowIntroduction, onShowChooseMethod } = this.props;
-
+  function handleBack() {
     // If there's only one method installed, send the user back to the introduction screen
     if (availableMethods.length === 1 && onShowIntroduction) {
       return onShowIntroduction();
     }
-
     // Send the user back to the "choose method" screen, clearing any selected method props
     // and errors from the state
-    this.setState({ registerProps: null });
-
+    setRegisterProps(null);
     return onShowChooseMethod();
   }
 
   /**
    * Provided to individual method components to be called when the registration process is
    * completed
-   *
-   * @param {object} registrationData
    */
-  handleCompleteRegistration(registrationData) {
+  function handleCompleteRegistration(registrationData) {
+    const { register } = endpoints;
     // Send registration details to server
-    const {
-      endpoints: { register },
-      selectedMethod,
-      onRemoveAvailableMethod,
-      onRegister,
-    } = this.props;
-
-    const { token } = this.state;
     const params = token ? `?SecurityID=${token}` : '';
-
     api(
       `${register.replace('{urlSegment}', selectedMethod.urlSegment)}${params}`,
       'POST',
@@ -144,21 +134,15 @@ class Register extends Component {
           case 201:
             // Clear out the register props now - any process that returns the user to the
             // register screen will need a new "start" call
-            this.setState({
-              registerProps: null,
-            });
-
+            setRegisterProps(null);
             // Trigger a given callback if provided
             if (typeof onRegister === 'function') {
               onRegister(selectedMethod);
             }
-
             // Update redux state so this method is no longer available
             onRemoveAvailableMethod(selectedMethod);
-
             // Continue to setting up a backup method if required...
-            this.setupBackupMethod();
-
+            setupBackupMethod();
             return null;
           default:
         }
@@ -166,155 +150,102 @@ class Register extends Component {
       })
       .then(response => {
         // Failure states are captured here
-
         if (response && response.errors) {
           const formattedErrors = response.errors.join(', ');
-
-          this.setState((prevState) => ({
-            registerProps: {
-              ...prevState.registerProps,
-              error: formattedErrors,
-            },
-          }));
+          setRegisterProps({
+            ...registerProps,
+            error: formattedErrors,
+          });
         }
       });
   }
 
   /**
-   * Inspects the props and returns whether a back-up method should also be set up for this
-   * registration flow.
-   *
-   * @return {boolean}
-   */
-  shouldSetupBackupMethod() {
-    const { backupMethod, registeredMethods } = this.props;
-
-    if (!backupMethod) {
-      return false;
-    }
-
-    return !registeredMethods.find(method => method.urlSegment === backupMethod.urlSegment);
-  }
-
-  /**
    * Handle an event triggered to skip the registration process
    */
-  handleSkip() {
-    const { skip } = this.props.endpoints;
-
+  function handleSkip() {
+    const { skip } = endpoints;
     if (skip) {
-      window.location = this.props.endpoints.skip;
+      window.location = skip;
     }
   }
 
   /**
    * Render the introduction splash screen for registering MFA methods
-   *
-   * @return {Introduction}
    */
-  renderIntroduction() {
-    const { canSkip, resources, endpoints: { skip }, showSubTitle, IntroductionComponent } = this.props;
-
-    return (
-      <IntroductionComponent
-        canSkip={skip && canSkip}
-        onSkip={this.handleSkip}
-        resources={resources}
-        showTitle={showSubTitle}
-      />
-    );
+  function renderIntroduction() {
+    const { skip } = endpoints;
+    return <IntroductionComponent
+      canSkip={skip && canSkip}
+      onSkip={() => handleSkip()}
+      resources={() => resources()}
+      showTitle={() => showSubTitle()}
+    />;
   }
 
   /**
    * Render the registration component of the currently selected method.
-   *
-   * @return {HTMLElement|null}
    */
-  renderMethod() {
-    const { selectedMethod, showSubTitle, TitleComponent } = this.props;
-    const { registerProps } = this.state;
-
+  function renderMethod() {
     // Render nothing if there isn't a method chosen
     if (!selectedMethod) {
       return null;
     }
-
     // Render loading if we don't have props yet...
     if (!registerProps) {
       return <LoadingIndicator block />;
     }
-
     const RegistrationComponent = loadComponent(selectedMethod.component);
-
-    return (
-      <div>
-        { showSubTitle && <TitleComponent /> }
-        <RegistrationComponent
-          {...registerProps}
-          method={selectedMethod}
-          onBack={this.handleBack}
-          onCompleteRegistration={this.handleCompleteRegistration}
-        />
-      </div>
-    );
+    return <div>
+      { showSubTitle && <TitleComponent /> }
+      <RegistrationComponent
+        {...registerProps}
+        method={selectedMethod}
+        onBack={() => handleBack()}
+        onCompleteRegistration={() => handleCompleteRegistration()}
+      />
+    </div>;
   }
 
   /**
    * If the site has more than one multi-factor method enabled, show others a user can register
-   *
-   * @return {SelectMethod|null}
    */
-  renderOptions() {
-    const { availableMethods, showSubTitle, SelectMethodComponent } = this.props;
-
-    return (
-      <SelectMethodComponent
-        methods={availableMethods}
-        showTitle={showSubTitle}
-      />
-    );
+  function renderOptions() {
+    return <SelectMethodComponent
+      methods={availableMethods}
+      showTitle={showSubTitle}
+    />;
   }
 
-  render() {
-    const { screen, onCompleteRegistration, showTitle, showSubTitle, completeMessage, CompleteComponent } = this.props;
-    const { ss: { i18n } } = window;
-
-    if (screen === SCREEN_COMPLETE) {
-      return (
-        <CompleteComponent
-          showTitle={showSubTitle}
-          onComplete={onCompleteRegistration}
-          message={completeMessage}
-        />
-      );
-    }
-
-    let content;
-
-    switch (screen) {
-      case SCREEN_CHOOSE_METHOD:
-        content = this.renderOptions();
-        break;
-      case SCREEN_REGISTER_METHOD:
-        content = this.renderMethod();
-        break;
-      case SCREEN_INTRODUCTION:
-      default:
-        content = this.renderIntroduction();
-        break;
-    }
-
-    return (
-      <div>
-        {
-          showTitle && <h1 className="mfa-app-title">
-            {i18n._t('MFARegister.TITLE', 'Multi-factor authentication')}
-          </h1>
-        }
-        { content }
-      </div>
-    );
+  // Render the component
+  if (screen === SCREEN_COMPLETE) {
+    return <CompleteComponent
+      showTitle={showSubTitle}
+      onComplete={onCompleteRegistration}
+      message={completeMessage}
+    />;
   }
+  let content;
+  switch (screen) {
+    case SCREEN_CHOOSE_METHOD:
+      content = renderOptions();
+      break;
+    case SCREEN_REGISTER_METHOD:
+      content = renderMethod();
+      break;
+    case SCREEN_INTRODUCTION:
+    default:
+      content = renderIntroduction();
+      break;
+  }
+  return <div>
+    {
+      showTitle && <h1 className="mfa-app-title">
+        {i18n._t('MFARegister.TITLE', 'Multi-factor authentication')}
+      </h1>
+    }
+    { content }
+  </div>;
 }
 
 Register.propTypes = {

@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import confirm from 'reactstrap-confirm';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
@@ -12,68 +12,73 @@ import fallbacks from '../../../../lang/src/en.json';
 
 /**
  * Renders a single Registered MFA Method for a Member
- *
- * @param {object} method
- * @param {string} suffix
- * @returns {HTMLElement}
- * @constructor
  */
+function MethodListItem(props) {
+  const {
+    allAvailableMethods,
+    backupMethod,
+    canRemove,
+    canReset,
+    className,
+    createdDate,
+    endpoints,
+    isBackupMethod,
+    isDefaultMethod,
+    method,
+    RemoveComponent,
+    resources,
+    SetDefaultComponent,
+    tag: Tag,
+  } = props;
+  const i18n = window.ss.i18n;
 
-class MethodListItem extends PureComponent {
   /**
    * Get the status message template for the method item, depending on whether
    * it is the default, backup, or a regular method.
-   *
-   * @returns {string}
    */
-  getStatusMessage() {
-    const { isBackupMethod, isDefaultMethod } = this.props;
-    const { ss: { i18n } } = window;
-
+  function getStatusMessage() {
     if (isDefaultMethod) {
       return i18n._t(
         'MultiFactorAuthentication.DEFAULT_REGISTERED',
         fallbacks['MultiFactorAuthentication.DEFAULT_REGISTERED']
       );
     }
-
     if (isBackupMethod) {
       return i18n._t(
         'MultiFactorAuthentication.BACKUP_REGISTERED',
         fallbacks['MultiFactorAuthentication.BACKUP_REGISTERED']
       );
     }
-
     return i18n._t(
       'MultiFactorAuthentication.REGISTERED',
       fallbacks['MultiFactorAuthentication.REGISTERED']
     );
   }
 
-  renderRemove() {
-    const { canRemove, method, RemoveComponent } = this.props;
-
+  function renderRemove() {
     if (!canRemove) {
       return null;
     }
-
-    return <RemoveComponent method={method} />;
+    return <RemoveComponent
+      method={method}
+      backupMethod={backupMethod}
+      endpoints={endpoints}
+    />;
   }
 
-  renderReset() {
-    const { canReset, isBackupMethod, method } = this.props;
-
+  function renderReset() {
     if (!canReset) {
       return null;
     }
-
-    const props = {
+    const resetProps = {
       method,
+      allAvailableMethods,
+      backupMethod,
+      endpoints,
+      resources,
     };
-
     // Overload onReset to confirm with user for backups only
     if (isBackupMethod) {
-      const { ss: { i18n } } = window;
       const confirmMessage = i18n._t(
         'MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION',
         fallbacks['MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION']
@@ -86,80 +91,61 @@ class MethodListItem extends PureComponent {
         'MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION_BUTTON',
         fallbacks['MultiFactorAuthentication.RESET_BACKUP_CONFIRMATION_BUTTON']
       );
-
-      props.onReset = async callback => {
-        if (!await confirm({ title: confirmTitle, message: confirmMessage, confirmText: buttonLabel })) {
+      resetProps.onReset = async callback => {
+        if (!await confirm({
+          title: confirmTitle,
+          message: confirmMessage,
+          confirmText: buttonLabel
+        })) {
           return;
         }
         callback();
       };
     }
-
-    return <Reset {...props} />;
+    return <Reset {...resetProps} />;
   }
 
   /**
    * Renders a button to make the current method the default registered method
-   *
-   * @returns {SetDefault}
    */
-  renderSetAsDefault() {
-    const { isDefaultMethod, isBackupMethod, method, SetDefaultComponent } = this.props;
-
+  function renderSetAsDefault() {
     if (isDefaultMethod || isBackupMethod) {
       return null;
     }
-
-    return <SetDefaultComponent method={method} />;
+    return <SetDefaultComponent method={method} endpoints={endpoints} />;
   }
 
-  renderControls() {
-    const { canRemove, canReset } = this.props;
-
+  function renderControls() {
     if (!canRemove && !canReset) {
       return null;
     }
-
     return (
       <div>
-        { this.renderRemove() }
-        { this.renderReset() }
-        { this.renderSetAsDefault() }
+        { renderRemove() }
+        { renderReset() }
+        { renderSetAsDefault() }
       </div>
     );
   }
 
   /**
    * Gets the method name and status, including whether it's default, backup, etc
-   *
-   * @returns {string}
    */
-  renderNameAndStatus() {
-    const { method, createdDate } = this.props;
-    const { ss: { i18n } } = window;
-
-    const statusMessage = this.getStatusMessage();
-
+  function renderNameAndStatus() {
+    const statusMessage = getStatusMessage();
     moment.locale(i18n.detectLocale());
-
     return i18n.inject(statusMessage, {
       method: method.name,
       date: moment(createdDate).format('L'),
     });
   }
 
-  render() {
-    const { tag: Tag, className } = this.props;
-
-    const classes = classNames(className, 'registered-method-list-item');
-
-    return (
-      <Tag className={classes}>
-        { this.renderNameAndStatus() }
-        { this.renderControls() }
-      </Tag>
-    );
-  }
+  // Render the component
+  const classes = classNames(className, 'registered-method-list-item');
+  return <Tag className={classes}>
+    { renderNameAndStatus() }
+    { renderControls() }
+  </Tag>;
 }
 
 MethodListItem.propTypes = {

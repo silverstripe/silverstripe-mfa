@@ -10,17 +10,20 @@ import registeredMethodShape from 'types/registeredMethod';
 
 import fallbacks from '../../../../../lang/src/en.json';
 
-const Remove = ({
-  method,
-  onRemove,
-
-  defaultMethod,
-  registeredMethods,
-  onDeregisterMethod,
-  onAddAvailableMethod,
-  onSetDefaultMethod,
-}, { backupMethod, endpoints: { remove } }) => {
-  const { ss: { i18n } } = window;
+const Remove = (props) => {
+  const {
+    backupMethod,
+    endpoints,
+    defaultMethod,
+    method,
+    onRemove,
+    registeredMethods,
+    onDeregisterMethod,
+    onAddAvailableMethod,
+    onSetDefaultMethod,
+  } = props;
+  const remove = endpoints.remove;
+  const i18n = window.ss.i18n;
 
   const handleRemove = async () => {
     // Confirm with the user
@@ -95,14 +98,6 @@ Remove.propTypes = {
   onDeregisterMethod: PropTypes.func.isRequired,
   onAddAvailableMethod: PropTypes.func.isRequired,
   onSetDefaultMethod: PropTypes.func.isRequired,
-};
-
-Remove.contextTypes = {
-  backupMethod: registeredMethodShape,
-  endpoints: PropTypes.shape({
-    register: PropTypes.string,
-    remove: PropTypes.string,
-  }),
 };
 
 export default connect(({ mfaAdministration: { defaultMethod, registeredMethods } }) => ({
