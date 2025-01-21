@@ -117,13 +117,13 @@ class Verify extends Component {
     const { error } = this.props;
     const { ss: { i18n } } = window;
     const label = i18n._t('MFABackupCodesVerify.LABEL', 'Enter recovery code');
-    const formGroupClasses = classnames('mfa-verify-backup-codes__input-container', {
+    const formGroupClasses = classnames('mfa-verify-backup-codes__input-container', 'form-group', {
       'has-error': !!error,
     });
 
     return (
       <div className={formGroupClasses}>
-        <label htmlFor="backup-code" className="control-label">
+        <label htmlFor="backup-code" className="form-label control-label">
           { label }
         </label>
         <input
