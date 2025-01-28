@@ -63,7 +63,7 @@ class BasicMathRegister extends Component {
 
     return (
       <div className="mfa-register-backup-codes__container">
-        <label htmlFor="secret">Enter a secret number:</label>
+        <label htmlFor="secret" className="form-label">Enter a secret number:</label>
         <input id="secret" type="text" value={this.state.secret} onChange={this.handleChange} />
 
         <button
@@ -142,7 +142,7 @@ class BasicMathVerify extends Component {
 
     return (
       <div className="mfa-register-backup-codes__container">
-        <label style={{ display: 'block' }} htmlFor="answer">{this.renderQuestion()}</label>
+        <label style={{ display: 'block' }} htmlFor="answer" className="form-label">{this.renderQuestion()}</label>
         <input id="answer" type="text" value={this.state.answer} onChange={this.handleChange} />
         <div>
           <button
