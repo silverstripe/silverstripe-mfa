@@ -4,7 +4,8 @@ Feature: MFA is enabled for the site
   So that my site will be more secure
 
   Background:
-    Given I am logged in with "ADMIN" permissions
+    Given I add an extension "SilverStripe\BehatExtension\Extensions\ActivateSudoModeServiceExtension" to the "SilverStripe\Security\SudoMode\SudoModeService" class
+    And I am logged in with "ADMIN" permissions
     And I go to "/admin"
     Then I should see the CMS
 

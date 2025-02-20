@@ -26,6 +26,7 @@ use SilverStripe\Security\Member;
 use SilverStripe\Security\MemberAuthenticator\LoginHandler as BaseLoginHandler;
 use SilverStripe\Security\MemberAuthenticator\MemberLoginForm;
 use SilverStripe\Security\Security;
+use SilverStripe\Core\ClassInfo;
 
 class LoginHandler extends BaseLoginHandler
 {
@@ -576,6 +577,13 @@ class LoginHandler extends BaseLoginHandler
      */
     protected function doPerformLogin(HTTPRequest $request, Member $member)
     {
+        // Deactivate sudo mode that was activated in doLogin()
+        $service = $this->getSudoModeService();
+        // Check if the service has a deactivate method, because it is not defined on the interface
+        if (ClassInfo::hasMethod($service, 'deactivate')) {
+            call_user_func([$service, 'deactivate'], $this->getRequest()->getSession());
+        }
+
         // Load the previously stored data from session and perform the login using it...
         $data = $request->getSession()->get(static::SESSION_KEY . '.additionalData') ?: [];
 

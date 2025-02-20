@@ -174,11 +174,11 @@ class MemberExtension extends Extension implements PermissionProvider
      */
     protected function onAfterMemberLoggedIn(): void
     {
-        if (!Controller::has_curr()) {
+        $controller = Controller::curr();
+        if (!$controller) {
             return;
         }
-
-        Controller::curr()
+        $controller
             ->getRequest()
             ->getSession()
             ->clear(ChangePasswordHandler::MFA_VERIFIED_ON_CHANGE_PASSWORD);
