@@ -579,10 +579,7 @@ class LoginHandler extends BaseLoginHandler
     {
         // Deactivate sudo mode that was activated in doLogin()
         $service = $this->getSudoModeService();
-        // Check if the service has a deactivate method, because it is not defined on the interface
-        if (ClassInfo::hasMethod($service, 'deactivate')) {
-            call_user_func([$service, 'deactivate'], $this->getRequest()->getSession());
-        }
+        $service->deactivate($request->getSession());
 
         // Load the previously stored data from session and perform the login using it...
         $data = $request->getSession()->get(static::SESSION_KEY . '.additionalData') ?: [];
