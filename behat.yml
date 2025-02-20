@@ -15,6 +15,8 @@ default:
         - SilverStripe\Framework\Tests\Behaviour\CmsUiContext
         - SilverStripe\BehatExtension\Context\BasicContext
         - SilverStripe\BehatExtension\Context\EmailContext
+        - SilverStripe\BehatExtension\Context\FixtureContext:
+            - '%paths.modules.mfa%/tests/Behat/features/files/'
         - SilverStripe\MFA\Tests\Behat\Context\LoginContext
         - SilverStripe\CMS\Tests\Behaviour\ThemeContext
   extensions:
