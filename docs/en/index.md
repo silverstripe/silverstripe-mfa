@@ -1,5 +1,6 @@
 ---
 title: Multi-factor authentication (MFA)
+summary: Implement multi-factor authentication such as TOTP
 ---
 
 # Multi-factor authentication (MFA)
