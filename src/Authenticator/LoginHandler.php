@@ -64,7 +64,7 @@ class LoginHandler extends BaseLoginHandler
      * @var string
      */
     // phpcs:disable
-    private static $user_help_link = 'https://userhelp.silverstripe.org/en/4/optional_features/multi-factor_authentication/';
+    private static $user_help_link = 'https://userhelp.silverstripe.org/en/5/optional_features/multi-factor_authentication/';
     // phpcs:enable
 
     /**
