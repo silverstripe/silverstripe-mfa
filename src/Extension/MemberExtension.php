@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SilverStripe\MFA\Extension;
 
 use SilverStripe\Control\Controller;
+use SilverStripe\Dev\Deprecation;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\MFA\Authenticator\ChangePasswordHandler;
 use SilverStripe\MFA\Exception\InvalidMethodException;
@@ -171,9 +172,11 @@ class MemberExtension extends DataExtension implements PermissionProvider
 
     /**
      * Clear any temporary multi-factor authentication related session keys when a member is successfully logged in.
+     * @deprecated 5.4.0 Will be renamed to onAfterMemberLoggedIn()
      */
     public function afterMemberLoggedIn(): void
     {
+        Deprecation::noticeWithNoReplacment('5.4.0', 'Will be renamed to onAfterMemberLoggedIn()');
         if (!Controller::has_curr()) {
             return;
         }
