@@ -25,15 +25,6 @@ class SessionStoreTest extends SapphireTest
         $this->assertSame(['foo' => 'baz', 'bar' => 'baz'], $store->getState());
     }
 
-    public function testSetMethodWithVerifiedMethod()
-    {
-        $this->expectException(\SilverStripe\MFA\Exception\InvalidMethodException::class);
-        $this->expectExceptionMessage('You cannot verify with a method you have already verified');
-        $store = new SessionStore($this->createMock(Member::class));
-        $store->addVerifiedMethod('foobar');
-        $store->setMethod('foobar');
-    }
-
     public function testSetMethod()
     {
         $store = new SessionStore($this->createMock(Member::class));

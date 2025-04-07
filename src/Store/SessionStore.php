@@ -114,10 +114,6 @@ class SessionStore implements StoreInterface
      */
     public function setMethod(?string $method): StoreInterface
     {
-        if (in_array($method, $this->getVerifiedMethods() ?? [])) {
-            throw new InvalidMethodException('You cannot verify with a method you have already verified');
-        }
-
         $this->method = $method;
 
         return $this;
