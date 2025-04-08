@@ -202,6 +202,11 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
 
     public function changepassword()
     {
+        $ret = $this->processChangePasswordUrlVars();
+        if ($ret) {
+            return $ret;
+        }
+
         $session = $this->getRequest()->getSession();
         $hash = $session->get('AutoLoginHash');
         /** @var Member&MemberExtension $member */
@@ -217,7 +222,7 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
             return $this->mfa();
         }
 
-        return parent::changepassword();
+        return parent::createChangePasswordHtml();
     }
 
     /**
