@@ -200,13 +200,15 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
         ], 200);
     }
 
-    public function changepassword()
+    protected function createChangePasswordResponse(): array|HTTPResponse
     {
         $session = $this->getRequest()->getSession();
         $hash = $session->get('AutoLoginHash');
         /** @var Member&MemberExtension $member */
         $member = Member::member_from_autologinhash($hash);
 
+        // If we have a user with a valid reset password hash and they have a MFA method registered,
+        // make sure they authenticate with MFA before letting them interact with the form.
         if (
             $hash
             && $member
@@ -217,7 +219,7 @@ class ChangePasswordHandler extends BaseChangePasswordHandler
             return $this->mfa();
         }
 
-        return parent::changepassword();
+        return parent::createChangePasswordResponse();
     }
 
     /**
