@@ -20,8 +20,8 @@ use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\MFA\Tests\Stub\Store\TestStore;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
 use SilverStripe\Security\Member;
-use SilverStripe\SiteConfig\SiteConfig;
-use Test;
+use SilverStripe\Security\MemberAuthenticator\ChangePasswordHandler as SecurityChangePasswordHandler;
+use ReflectionProperty;
 
 class ChangePasswordHandlerTest extends FunctionalTest
 {
@@ -34,6 +34,16 @@ class ChangePasswordHandlerTest extends FunctionalTest
         Config::modify()
             ->set(MethodRegistry::class, 'methods', [Method::class])
             ->set(Member::class, 'auto_login_token_lifetime', 10);
+    }
+
+    protected function tearDown(): void
+    {
+        foreach (['tempHashAlreadyGenerated', 'tempHashAlreadyProcessed'] as $property) {
+            $refl = new ReflectionProperty(SecurityChangePasswordHandler::class, $property);
+            $refl->setAccessible(true);
+            $refl->setValue(null, false);
+        }
+        parent::tearDown();
     }
 
     /**
