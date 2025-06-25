@@ -71,7 +71,7 @@ class ChangePasswordHandlerTest extends FunctionalTest
     {
         $this->logInAs('simon');
         $response = $this->get('Security/changepassword');
-        $this->assertStringContainsString('OldPassword', $response->getBody());
+        $this->assertStringContainsString('Password[_CurrentPassword]', $response->getBody());
     }
 
     public function testMFADoesNotLoadWhenAUserDoesNotHaveRegisteredMethods()
@@ -82,9 +82,13 @@ class ChangePasswordHandlerTest extends FunctionalTest
         $token = $member->generateAutologinTokenAndStoreHash();
         $response = $this->get("Security/changepassword?m={$memberId}&t={$token}");
 
-        $this->assertStringContainsString('NewPassword1', $response->getBody(), 'There should be a new password field');
         $this->assertStringContainsString(
-            'NewPassword2',
+            'Password[_Password]',
+            $response->getBody(),
+            'There should be a new password field'
+        );
+        $this->assertStringContainsString(
+            'Password[_ConfirmPassword]',
             $response->getBody(),
             'There should be a confirm new password field'
         );
