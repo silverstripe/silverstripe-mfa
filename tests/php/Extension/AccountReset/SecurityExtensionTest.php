@@ -8,6 +8,8 @@ use SilverStripe\MFA\Extension\AccountReset\MemberExtension;
 use SilverStripe\MFA\Extension\AccountReset\SecurityAdminExtension;
 use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverStripe\Security\Member;
+use SilverStripe\Security\Validation\PasswordValidator;
+use SilverStripe\Security\Validation\RulesPasswordValidator;
 
 /**
  * Class SecurityExtensionTest
@@ -18,17 +20,22 @@ class SecurityExtensionTest extends FunctionalTest
 {
     protected static $fixture_file = 'SecurityExtensionTest.yml';
 
+    private ?PasswordValidator $origValidator;
+
     protected function setUp(): void
     {
         parent::setUp();
+        $this->origValidator = Member::password_validator();
+        $validator = (new RulesPasswordValidator())
+            ->setMinLength(6)
+            ->setMinTestScore(1);
+        Member::set_password_validator($validator);
+    }
 
-        $validator = Member::password_validator();
-        // Do not let project code rules for password strength break these tests
-        if ($validator) {
-            $validator
-                ->setMinLength(6)
-                ->setMinTestScore(1);
-        }
+    protected function tearDown(): void
+    {
+        Member::set_password_validator($this->origValidator);
+        parent::tearDown();
     }
 
     public function testResetAccountFailsWhenAlreadyAuthenticated()
@@ -93,7 +100,10 @@ class SecurityExtensionTest extends FunctionalTest
         $response = $this->submitForm(
             'Form_ResetAccountForm',
             null,
-            ['NewPassword1' => 'testtest', 'NewPassword2' => 'testtest']
+            [
+                'Password[_Password]' => 'testtest',
+                'Password[_ConfirmPassword]' => 'testtest',
+            ],
         );
 
         $this->assertStringContainsString('The account reset process timed out', $response->getBody());
@@ -113,7 +123,10 @@ class SecurityExtensionTest extends FunctionalTest
         $response = $this->submitForm(
             'Form_ResetAccountForm',
             null,
-            ['NewPassword1' => 'testtest', 'NewPassword2' => 'testtest']
+            [
+                'Password[_Password]' => 'testtest',
+                'Password[_ConfirmPassword]' => 'testtest',
+            ],
         );
 
         // User should have been redirected to Login form with session message

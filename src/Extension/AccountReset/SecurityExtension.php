@@ -11,12 +11,10 @@ use SilverStripe\Core\Extension;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\Form;
 use SilverStripe\Forms\FormAction;
-use SilverStripe\Forms\PasswordField;
-use SilverStripe\Forms\Validation\RequiredFieldsValidator;
-use SilverStripe\MFA\JSONResponse;
 use SilverStripe\MFA\RequestHandler\BaseHandlerTrait;
 use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverStripe\Core\Validation\ValidationResult;
+use SilverStripe\Forms\ConfirmedPasswordField;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 
@@ -102,33 +100,23 @@ class SecurityExtension extends Extension
 
     public function ResetAccountForm(): Form
     {
+        $field = ConfirmedPasswordField::create(
+            'Password',
+            _t(Member::class . '.NEWPASSWORD', 'New Password'),
+            '',
+            null,
+            false,
+            _t(Member::class . '.CONFIRMNEWPASSWORD', 'Confirm New Password')
+        );
+        $field->setIsOnMemberForm(true);
         $fields = FieldList::create([
-            PasswordField::create(
-                'NewPassword1',
-                _t(
-                    'SilverStripe\\Security\\Member.NEWPASSWORD',
-                    'New password'
-                )
-            ),
-            PasswordField::create(
-                'NewPassword2',
-                _t(
-                    'SilverStripe\\Security\\Member.CONFIRMNEWPASSWORD',
-                    'Confirm new password'
-                )
-            ),
+            $field,
         ]);
-
         $actions = FieldList::create([
             FormAction::create('doResetAccount', 'Reset account'),
         ]);
-
-        $validation = RequiredFieldsValidator::create(['NewPassword1', 'NewPassword2']);
-
-        $form = Form::create($this->owner, 'ResetAccountForm', $fields, $actions, $validation);
-
+        $form = Form::create($this->owner, 'ResetAccountForm', $fields, $actions);
         $this->owner->extend('updateResetAccountForm', $form);
-
         return $form;
     }
 
@@ -158,22 +146,10 @@ class SecurityExtension extends Extension
 
         /** @var Member&MemberExtension $member */
         $member = Member::get()->byID((int) $memberID);
-
-        // Fail if passwords do not match
-        if ($data['NewPassword1'] !== $data['NewPassword2']) {
-            $form->sessionMessage(
-                _t(
-                    'SilverStripe\\Security\\Member.ERRORNEWPASSWORD',
-                    'You have entered your new password differently, try again'
-                ),
-                ValidationResult::TYPE_ERROR
-            );
-
-            return $this->owner->redirectBack();
-        }
+        $password = $data['Password']['_Password'] ?? null;
 
         // Check if the new password is accepted
-        $validationResult = $member->changePassword($data['NewPassword1']);
+        $validationResult = $member->changePassword($password);
         if (!$validationResult->isValid()) {
             $form->setSessionValidationResult($validationResult);
 
