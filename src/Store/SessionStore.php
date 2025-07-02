@@ -71,7 +71,7 @@ class SessionStore implements StoreInterface
     public function getMember(): ?Member
     {
         if (!$this->member && $this->memberID) {
-            $this->member = DataObject::get_by_id(Member::class, $this->memberID);
+            $this->member = Member::get()->setUseCache(true)->byID($this->memberID);
         }
 
         return $this->member;

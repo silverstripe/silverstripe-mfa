@@ -184,8 +184,8 @@ class RegisteredMethodManagerTest extends SapphireTest
 
         $this->assertCount(0, $member->RegisteredMFAMethods());
 
-        $this->assertNull(DataObject::get_by_id(RegisteredMethod::class, $backupMethod->ID));
-        $this->assertNull(DataObject::get_by_id(RegisteredMethod::class, $mathMethod->ID));
+        $this->assertNull(RegisteredMethod::get()->setUseCache(true)->byID($backupMethod->ID));
+        $this->assertNull(RegisteredMethod::get()->setUseCache(true)->byID($mathMethod->ID));
     }
 
     public function testCanRemoveTheOnlyMethodWhenMFAIsOptional()
