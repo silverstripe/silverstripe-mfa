@@ -170,14 +170,15 @@ class EnabledMembers extends Report
         }
 
         // Get the members from the generated report field list
-        /** @var DataList $members $members */
+        // We know this is a DataList because $this->sourceRecords() explicitly returns DataList
+        /** @var DataList $members */
         $members = $this->getReportField()->getList();
 
         // Filter RegisteredMethods by the IDs of those members and convert it to an ArrayList (to prevent filters ahead
         // from executing the datalist more than once)
         $this->registeredMethods = ArrayList::create(
             RegisteredMethod::get()
-                ->filter('MemberID', $members->column())
+                ->filterByList($members, 'MemberID', 'ID')
                 ->exclude('MethodClassName', $this->getBackupMethodClass())
                 ->toArray()
         );
