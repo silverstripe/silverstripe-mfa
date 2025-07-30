@@ -48,7 +48,7 @@ class MemberExtension extends Extension
             $token = $generator->randomToken();
             $hash = $this->owner->encryptWithUserSettings($token);
         } while (
-            Member::get()->setUseCache(true)->find('AccountResetHash', $hash)
+            Member::get()->setUseCache(true)->filter('AccountResetHash', $hash)->exists()
         );
 
         $this->owner->AccountResetHash = $hash;

@@ -145,7 +145,7 @@ class EnforcementManager
         }
 
         // Ensure they have the required backup method and at least 2 methods (the backup method plus one other)
-        return ((bool) $member->RegisteredMFAMethods()->find('MethodClassName', $backupMethod)) && $methodCount > 1;
+        return $member->RegisteredMFAMethods()->filter('MethodClassName', $backupMethod)->exists() && $methodCount > 1;
     }
 
     /**
