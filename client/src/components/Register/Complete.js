@@ -9,7 +9,7 @@ import Title from './Title';
  */
 const Complete = ({ onComplete, showTitle, message }) => (
   <div className="mfa-register-confirmation">
-    <i className="font-icon-check-mark mfa-register-confirmation__icon" />
+    <span className="font-icon-check-mark mfa-register-confirmation__icon" aria-hidden="true" />
     { showTitle && <Title className="mfa-register-confirmation__title" /> }
     <p className="mfa-register-confirmation__description">
       {message || window.ss.i18n._t(
