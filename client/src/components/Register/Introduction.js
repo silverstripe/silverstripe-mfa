@@ -33,7 +33,14 @@ export const ActionList = ({ canSkip, onContinue, onSkip }) => {
   );
 };
 
-const Introduction = ({ canSkip, onContinue, onSkip, resources, showTitle, TitleComponent }) => {
+const Introduction = ({
+  canSkip,
+  onContinue,
+  onSkip,
+  resources,
+  showTitle = true,
+  TitleComponent = Title
+}) => {
   const { ss: { i18n } } = window;
 
   return (
@@ -129,11 +136,6 @@ Introduction.propTypes = {
   }).isRequired,
   showTitle: PropTypes.bool,
   TitleComponent: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
-};
-
-Introduction.defaultProps = {
-  showTitle: true,
-  TitleComponent: Title
 };
 
 export { Introduction as Component };

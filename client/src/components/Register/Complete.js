@@ -7,7 +7,11 @@ import Title from './Title';
  * This component provides a registration confirmation screen to be shown once a member has
  * completed all steps that are part of the MFA registration process
  */
-const Complete = ({ onComplete, showTitle, message }) => (
+const Complete = ({
+  onComplete,
+  showTitle = true,
+  message
+}) => (
   <div className="mfa-register-confirmation">
     <span className="font-icon-check-mark mfa-register-confirmation__icon" aria-hidden="true" />
     { showTitle && <Title className="mfa-register-confirmation__title" /> }
@@ -29,10 +33,6 @@ const Complete = ({ onComplete, showTitle, message }) => (
 Complete.propTypes = {
   onComplete: PropTypes.func.isRequired,
   showTitle: PropTypes.bool,
-};
-
-Complete.defaultProps = {
-  showTitle: true,
 };
 
 export default Complete;
