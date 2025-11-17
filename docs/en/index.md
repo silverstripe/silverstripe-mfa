@@ -17,6 +17,10 @@ default endpoints added by this module.
 composer require silverstripe/mfa
 ```
 
+## GitHub repository
+
+<https://github.com/silverstripe/silverstripe-mfa>
+
 ## Setup
 
 After installing this module *and* a supported factor method module (e.g. TOTP), the default member authenticator
