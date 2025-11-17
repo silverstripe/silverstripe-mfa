@@ -1,7 +1,7 @@
 /* eslint-disable import/no-cycle */
 /* global window */
 
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import availableMethodType from 'types/availableMethod';
 import classnames from 'classnames';
@@ -16,68 +16,51 @@ import Title from './Title';
 /**
  * Renders a list of authentication methods as MethodTile components
  */
-class SelectMethod extends Component {
-  constructor(props) {
-    super(props);
-
-    // If only one method is available, automatically select it
-    let highlightedMethod = null;
-    if (props.methods.length === 1 && props.isAvailable && props.isAvailable(props.methods[0])) {
-      highlightedMethod = props.methods[0];
-    }
-
-    this.state = {
-      highlightedMethod,
-    };
-
-    this.handleGoToNext = this.handleGoToNext.bind(this);
-    this.handleBack = this.handleBack.bind(this);
+const SelectMethod = ({
+  methods = [],
+  onSelectMethod = () => null,
+  onClickBack = () => null,
+  showTitle = true,
+  TitleComponent = Title,
+  MethodTileComponent = MethodTile,
+  isAvailable,
+}) => {
+  // If only one method is available, automatically select it
+  let initialHighlightedMethod = null;
+  if (methods.length === 1 && isAvailable && isAvailable(methods[0])) {
+    initialHighlightedMethod = methods[0];
   }
 
-  /**
-   * If only one method is available, automatically select it
-   */
-  componentDidMount() {
-    const { highlightedMethod } = this.state;
-
-    if (highlightedMethod) {
-      this.handleGoToNext();
-    }
-  }
+  const [highlightedMethod, setHighlightedMethod] = useState(initialHighlightedMethod);
 
   /**
    * Sets the current highlighted method as the selected method, which causes the steps to re-render
    * and proceed to the "next" screen.
    */
-  handleGoToNext() {
-    const { highlightedMethod } = this.state;
-
-    this.props.onSelectMethod(highlightedMethod);
-  }
+  const handleGoToNext = () => {
+    onSelectMethod(highlightedMethod);
+  };
 
   /**
    * Handle clicking on a method
    *
    * @param {object} method
    */
-  handleClick(method) {
-    this.setState({
-      highlightedMethod: method,
-    });
-  }
+  const handleClick = (method) => {
+    setHighlightedMethod(method);
+  };
 
   /**
    * Send the user back to the introduction screen
    */
-  handleBack() {
-    if (this.props.onClickBack) {
-      this.props.onClickBack();
+  const handleBack = () => {
+    if (onClickBack) {
+      onClickBack();
     }
-  }
+  };
 
-  renderActions() {
+  const renderActions = () => {
     const { ss: { i18n } } = window;
-    const { highlightedMethod } = this.state;
 
     return (
       <ul className="mfa-action-list">
@@ -85,7 +68,7 @@ class SelectMethod extends Component {
           <button
             className="btn btn-primary"
             disabled={highlightedMethod === null}
-            onClick={this.handleGoToNext}
+            onClick={handleGoToNext}
           >
             {i18n._t('MFARegister.NEXT', 'Next')}
           </button>
@@ -94,43 +77,47 @@ class SelectMethod extends Component {
         <li className="mfa-action-list__item">
           <button
             className="btn btn-secondary"
-            onClick={this.handleBack}
+            onClick={handleBack}
           >
             {i18n._t('MFARegister.BACK', 'Back')}
           </button>
         </li>
       </ul>
     );
-  }
+  };
 
-  render() {
-    const { methods, showTitle, TitleComponent, MethodTileComponent } = this.props;
-    const { highlightedMethod } = this.state;
+  /**
+   * If only one method is available, automatically select it
+   */
+  useEffect(() => {
+    if (highlightedMethod) {
+      handleGoToNext();
+    }
+  }, []);
 
-    const classes = classnames('mfa-method-tile-group', {
-      'mfa-method-tile-group--three-columns': methods.length % 3 === 0,
-    });
+  const classes = classnames('mfa-method-tile-group', {
+    'mfa-method-tile-group--three-columns': methods.length % 3 === 0,
+  });
 
-    return (
-      <div>
-        {showTitle && <TitleComponent />}
+  return (
+    <div>
+      {showTitle && <TitleComponent />}
 
-        <ul className={classes}>
-          {methods.map(method => (
-            <MethodTileComponent
-              isActive={highlightedMethod === method}
-              key={method.urlSegment}
-              method={method}
-              onClick={() => this.handleClick(method)}
-            />
-          ))}
-        </ul>
+      <ul className={classes}>
+        {methods.map(method => (
+          <MethodTileComponent
+            isActive={highlightedMethod === method}
+            key={method.urlSegment}
+            method={method}
+            onClick={() => handleClick(method)}
+          />
+        ))}
+      </ul>
 
-        {this.renderActions()}
-      </div>
-    );
-  }
-}
+      {renderActions()}
+    </div>
+  );
+};
 
 SelectMethod.propTypes = {
   methods: PropTypes.arrayOf(
@@ -141,12 +128,6 @@ SelectMethod.propTypes = {
   showTitle: PropTypes.bool,
   TitleComponent: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
   MethodTileComponent: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
-};
-
-SelectMethod.defaultProps = {
-  showTitle: true,
-  TitleComponent: Title,
-  MethodTileComponent: MethodTile
 };
 
 const mapDispatchToProps = dispatch => ({

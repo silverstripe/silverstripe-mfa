@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 
@@ -9,80 +9,75 @@ const getDisplayName = (WrappedComponent) => WrappedComponent.displayName || Wra
  * a getter for whether all methods are available for use.
  */
 const withMethodAvailability = (WrappedComponent) => {
-  const WithMethodAvailability = class extends Component {
-    constructor(props) {
-      super(props);
-
-      this.getAvailabilityOverride = this.getAvailabilityOverride.bind(this);
-      this.isAvailable = this.isAvailable.bind(this);
-      this.getUnavailableMessage = this.getUnavailableMessage.bind(this);
-    }
-
+  const WithMethodAvailability = ({
+    availableMethodOverrides,
+    method,
+    ...props
+  }) => {
     /**
      * Checks "available method overrides", which can be provided via Redux state, and will
      * allow other components to specify client-side restrictions for various methods. For
      * example, WebAuthn is only available in certain browsers.
      *
-     * @param {object|null} method If null, will use the method from props
+     * @param {object|null} methodParam If null, will use the method from props
      * @returns {object}
      */
-    getAvailabilityOverride(method = null) {
-      const { availableMethodOverrides } = this.props;
-      const checkMethod = method || this.props.method;
+    const getAvailabilityOverride = (methodParam = null) => {
+      const checkMethod = methodParam || method;
       const { urlSegment } = checkMethod;
 
       if (typeof availableMethodOverrides[urlSegment] !== 'undefined') {
         return availableMethodOverrides[urlSegment];
       }
       return {};
-    }
+    };
 
     /**
      * Returns a message to indicate why the method is unavailable. This comes either
      * from frontend initiated "availability overrides" (that come from Redux reductions)
      * or from the "method" prop's isAvailable key, in that order.
      *
-     * @param {object|null} method If null, will use the method from props
+     * @param {object|null} methodParam If null, will use the method from props
      * @returns {string}
      */
-    getUnavailableMessage(method = null) {
-      const checkMethod = method || this.props.method;
-      const availabilityOverride = this.getAvailabilityOverride(checkMethod);
+    const getUnavailableMessage = (methodParam = null) => {
+      const checkMethod = methodParam || method;
+      const availabilityOverride = getAvailabilityOverride(checkMethod);
 
       return availabilityOverride.unavailableMessage || checkMethod.unavailableMessage;
-    }
+    };
 
     /**
      * Returns whether the current (or provided) method is available to be used. This
      * considers possible frontend overrides from Redux reductions first, then goes
      * to the method prop's data, which is server initiated.
      *
-     * @param {object|null} method If null, will use the method from props
+     * @param {object|null} methodParam If null, will use the method from props
      * @returns {boolean}
      */
-    isAvailable(method = null) {
-      const checkMethod = method || this.props.method;
-      const availabilityOverride = this.getAvailabilityOverride(checkMethod);
+    const isAvailable = (methodParam = null) => {
+      const checkMethod = methodParam || method;
+      const availabilityOverride = getAvailabilityOverride(checkMethod);
 
       // Default to backend
-      let isAvailable = checkMethod.isAvailable;
+      let isAvailableValue = checkMethod.isAvailable;
       if (typeof availabilityOverride.isAvailable !== 'undefined') {
         // Prefer overridden "is available" value over that provided by the backend
-        isAvailable = availabilityOverride.isAvailable;
+        isAvailableValue = availabilityOverride.isAvailable;
       }
 
-      return isAvailable;
-    }
+      return isAvailableValue;
+    };
 
-    render() {
-      return (
-        <WrappedComponent
-          {...this.props}
-          isAvailable={this.isAvailable}
-          getUnavailableMessage={this.getUnavailableMessage}
-        />
-      );
-    }
+    return (
+      <WrappedComponent
+        {...props}
+        availableMethodOverrides={availableMethodOverrides}
+        method={method}
+        isAvailable={isAvailable}
+        getUnavailableMessage={getUnavailableMessage}
+      />
+    );
   };
 
   const displayName = getDisplayName(WrappedComponent);

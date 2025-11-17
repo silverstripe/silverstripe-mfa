@@ -1,18 +1,24 @@
-import React, { PureComponent } from 'react';
+import React, { memo } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import registeredMethodType from 'types/registeredMethod';
 import withMethodAvailability from 'state/methodAvailability/withMethodAvailability';
 
-class SelectMethod extends PureComponent {
+const SelectMethod = ({
+  methods,
+  getUnavailableMessage,
+  isAvailable,
+  onSelectMethod,
+  onClickBack,
+  resources,
+}) => {
   /**
    * Returns controls that are rendered at the bottom of the panel (eg. the back button)
    *
    * @return {HTMLElement}
    */
-  renderControls() {
+  const renderControls = () => {
     const { ss: { i18n } } = window;
-    const { onClickBack } = this.props;
 
     return (
       <div className="mfa-verify-select-method__actions">
@@ -21,14 +27,14 @@ class SelectMethod extends PureComponent {
         </a>
       </div>
     );
-  }
+  };
 
   /**
    * Render the "last resort" message informing users what to do if they cannot use any given option
    *
    * @return {HTMLElement}
    */
-  renderLastResortMessage() {
+  const renderLastResortMessage = () => {
     const { ss: { i18n } } = window;
 
     return (
@@ -40,7 +46,7 @@ class SelectMethod extends PureComponent {
         )}
       </p>
     );
-  }
+  };
 
   /**
    * Render a list item for the given method
@@ -48,8 +54,7 @@ class SelectMethod extends PureComponent {
    * @param {Object} method
    * @return {HTMLElement}
    */
-  renderMethod(method) {
-    const { isAvailable, getUnavailableMessage, onSelectMethod } = this.props;
+  const renderMethod = (method) => {
     const { ss: { i18n } } = window;
 
     const leadInLabel = i18n.inject(i18n._t('MFAVerify.VERIFY_WITH', 'Verify with {method}'), {
@@ -86,51 +91,44 @@ class SelectMethod extends PureComponent {
         </a>
       </li>
     );
-  }
+  };
 
   /**
    * Render the list of methods that can be chosen
    *
    * @return {HTMLElement}
    */
-  renderMethodList() {
-    const { methods } = this.props;
+  const renderMethodList = () => (
+    <ul className="mfa-verify-select-method__method-list">
+      { methods.map(renderMethod) }
+    </ul>
+  );
 
-    return (
-      <ul className="mfa-verify-select-method__method-list">
-        { methods.map(this.renderMethod.bind(this)) }
-      </ul>
-    );
-  }
+  const { ss: { i18n } } = window;
 
-  render() {
-    const { ss: { i18n } } = window;
-    const { resources } = this.props;
-
-    return (
-      <div className="mfa-verify-select-method">
-        <h2 className="mfa-section-title">
-          {i18n._t('MFAVerify.OTHER_METHODS_TITLE', 'Try another way to verify')}
-        </h2>
-        <div className="mfa-verify-select-method__container">
-          <div className="mfa-verify-select-method__content">
-            { this.renderMethodList() }
-            { this.renderLastResortMessage() }
-            { this.renderControls() }
-          </div>
-          {
-            resources && resources.more_options_image_url && <img
-              alt={i18n._t('MultiFactorAuthentication.MORE_OPTIONS_IMAGE_ALT', 'Graphic depicting various MFA options')}
-              aria-hidden="true"
-              className="mfa-verify-select-method__image"
-              src={resources.more_options_image_url}
-            />
-          }
+  return (
+    <div className="mfa-verify-select-method">
+      <h2 className="mfa-section-title">
+        {i18n._t('MFAVerify.OTHER_METHODS_TITLE', 'Try another way to verify')}
+      </h2>
+      <div className="mfa-verify-select-method__container">
+        <div className="mfa-verify-select-method__content">
+          { renderMethodList() }
+          { renderLastResortMessage() }
+          { renderControls() }
         </div>
+        {
+          resources && resources.more_options_image_url && <img
+            alt={i18n._t('MultiFactorAuthentication.MORE_OPTIONS_IMAGE_ALT', 'Graphic depicting various MFA options')}
+            aria-hidden="true"
+            className="mfa-verify-select-method__image"
+            src={resources.more_options_image_url}
+          />
+        }
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 SelectMethod.propTypes = {
   methods: PropTypes.arrayOf(registeredMethodType),
@@ -141,6 +139,9 @@ SelectMethod.propTypes = {
   resources: PropTypes.object,
 };
 
-export { SelectMethod as Component };
+const MemoizedSelectMethod = memo(SelectMethod);
 
-export default withMethodAvailability(SelectMethod);
+// Wrapping export in React.memo() because the old class component extended React.PureComponent
+export { MemoizedSelectMethod as Component };
+
+export default withMethodAvailability(MemoizedSelectMethod);

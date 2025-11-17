@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
@@ -8,33 +8,24 @@ import {
 } from 'components/Register';
 import { chooseMethod, showScreen } from 'state/mfaRegister/actions';
 import registeredMethodShape from 'types/registeredMethod';
-import availableMethodShape from 'types/availableMethod';
 import RegisterModal from 'components/RegisterModal';
 
 import fallbacks from '../../../../../lang/src/en.json';
+import { MFAMethodListContext } from '../MFAMethodListContext';
 
-class Reset extends Component {
-  constructor(props) {
-    super(props);
+const Reset = ({
+  method,
+  onReset,
+  onResetMethod,
+}) => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const { allAvailableMethods, backupMethod, endpoints, resources } = useContext(MFAMethodListContext);
 
-    this.state = {
-      modalOpen: false,
-    };
+  const handleToggleModal = () => {
+    setModalOpen(state => !state);
+  };
 
-    this.handleReset = this.handleReset.bind(this);
-    this.handleToggleModal = this.handleToggleModal.bind(this);
-  }
-
-  handleToggleModal() {
-    this.setState(state => ({
-      modalOpen: !state.modalOpen,
-    }));
-  }
-
-  handleReset() {
-    const { onResetMethod, method } = this.props;
-    const { allAvailableMethods } = this.context;
-
+  const handleReset = () => {
     const availableMethodDetail = allAvailableMethods.find(
       candidate => candidate.urlSegment === method.urlSegment
     );
@@ -44,50 +35,37 @@ class Reset extends Component {
     }
 
     onResetMethod(availableMethodDetail);
-    this.handleToggleModal();
-  }
+    handleToggleModal();
+  };
 
-  render() {
-    const { onReset } = this.props;
-    const { backupMethod, endpoints, resources } = this.context;
+  const callback = onReset ? () => onReset(handleReset) : handleReset;
 
-    const callback = onReset ? () => onReset(this.handleReset) : this.handleReset;
-
-    return (
-      <button
-        className="registered-method-list-item__control"
-        type="button"
-        onClick={callback}
-      >
-        {window.ss.i18n._t(
-          'MultiFactorAuthentication.RESET_METHOD',
-          fallbacks['MultiFactorAuthentication.RESET_METHOD']
-        )}
-        <RegisterModal
-          backupMethod={backupMethod}
-          isOpen={this.state.modalOpen}
-          toggle={this.handleToggleModal}
-          resources={resources}
-          endpoints={endpoints}
-          disallowedScreens={[SCREEN_CHOOSE_METHOD, SCREEN_INTRODUCTION]}
-        />
-      </button>
-    );
-  }
-}
+  return (
+    <button
+      className="registered-method-list-item__control"
+      type="button"
+      onClick={callback}
+    >
+      {window.ss.i18n._t(
+        'MultiFactorAuthentication.RESET_METHOD',
+        fallbacks['MultiFactorAuthentication.RESET_METHOD']
+      )}
+      <RegisterModal
+        backupMethod={backupMethod}
+        isOpen={modalOpen}
+        toggle={handleToggleModal}
+        resources={resources}
+        endpoints={endpoints}
+        disallowedScreens={[SCREEN_CHOOSE_METHOD, SCREEN_INTRODUCTION]}
+      />
+    </button>
+  );
+};
 
 Reset.propTypes = {
   method: registeredMethodShape.isRequired,
   onReset: PropTypes.func,
-};
-
-Reset.contextTypes = {
-  allAvailableMethods: PropTypes.arrayOf(availableMethodShape),
-  backupMethod: registeredMethodShape,
-  endpoints: PropTypes.shape({
-    register: PropTypes.string
-  }),
-  resources: PropTypes.object,
+  onResetMethod: PropTypes.func.isRequired,
 };
 
 export default connect(null, dispatch => ({ onResetMethod: method => {

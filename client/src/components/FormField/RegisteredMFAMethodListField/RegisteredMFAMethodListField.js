@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from 'reactstrap';
 import { connect } from 'react-redux';
 import classnames from 'classnames';
@@ -18,48 +18,47 @@ import {
 import MethodListItem from './MethodListItem';
 import AccountResetUI from './AccountResetUI';
 import RegisterModal from '../../RegisterModal';
+import { MFAMethodListContext } from './MFAMethodListContext';
 
 import fallbacks from '../../../../lang/src/en.json';
 
-class RegisteredMFAMethodListField extends Component {
-  constructor(props) {
-    super(props);
+const RegisteredMFAMethodListField = ({
+  backupMethod,
+  backupCreatedDate,
+  defaultMethod,
+  readOnly,
+  isMFARequired,
+  initialDefaultMethod,
+  initialRegisteredMethods,
+  initialAvailableMethods = [],
+  allAvailableMethods,
+  resetEndpoint,
+  endpoints,
+  resources,
+  availableMethods,
+  registeredMethods,
+  MethodListItemComponent = MethodListItem,
+  RegisterModalComponent = RegisterModal,
+  onResetRegister,
+  onUpdateAvailableMethods,
+  onSetDefaultMethod,
+  onSetRegisteredMethods,
+}) => {
+  const [modalOpen, setModalOpen] = useState(false);
 
-    // Move registered methods into state as we might remove and add them during the lifetime of
-    // this component.
-    this.state = {
-      modalOpen: false,
-    };
-
-    this.handleToggleModal = this.handleToggleModal.bind(this);
-  }
-
-  getChildContext() {
-    const { allAvailableMethods, backupMethod, endpoints, resources } = this.props;
-
-    return { allAvailableMethods, backupMethod, endpoints, resources };
-  }
-
-  componentDidMount() {
-    const {
-      onSetDefaultMethod, initialDefaultMethod,
-      onSetRegisteredMethods, initialRegisteredMethods,
-      onUpdateAvailableMethods, initialAvailableMethods,
-    } = this.props;
-
+  useEffect(() => {
     onSetRegisteredMethods(initialRegisteredMethods);
     onUpdateAvailableMethods(initialAvailableMethods);
     onSetDefaultMethod(initialDefaultMethod);
-  }
+  }, []);
 
   /**
-   * The backup method is rendered separately
-   *
-   * @returns {Array<object>}
-   */
-  getBaseMethods() {
-    const { backupMethod } = this.props;
-    let { registeredMethods: methods } = this.props;
+    * The backup method is rendered separately
+    *
+    * @returns {Array<object>}
+    */
+  const getBaseMethods = () => {
+    let methods = registeredMethods;
 
     if (!methods) {
       return [];
@@ -70,28 +69,25 @@ class RegisteredMFAMethodListField extends Component {
     }
 
     return methods;
-  }
+  };
 
   /**
-   * Handle a request to toggle the modal
-   */
-  handleToggleModal() {
-    this.setState(state => ({
-      modalOpen: !state.modalOpen,
-    }));
-  }
+    * Handle a request to toggle the modal
+    */
+  const handleToggleModal = () => {
+    setModalOpen(state => !state);
+  };
 
   /**
-   * Render a message that should appear when no methods are registered.
-   *
-   * @return {HTMLElement|null}
-   */
-  renderNoMethodsMessage() {
-    if (this.getBaseMethods().length) {
+    * Render a message that should appear when no methods are registered.
+    *
+    * @return {HTMLElement|null}
+    */
+  const renderNoMethodsMessage = () => {
+    if (getBaseMethods().length) {
       return null;
     }
 
-    const { readOnly } = this.props;
     const { ss: { i18n } } = window;
     const messageKey = readOnly
       ? 'MultiFactorAuthentication.NO_METHODS_REGISTERED_READONLY'
@@ -102,16 +98,14 @@ class RegisteredMFAMethodListField extends Component {
         {i18n._t(messageKey, fallbacks[messageKey])}
       </div>
     );
-  }
+  };
 
   /**
-   * Render a MethodListItem for the registered backup method
-   *
-   * @return {MethodListItem|null}
-   */
-  renderBackupMethod() {
-    const { backupMethod, backupCreatedDate, registeredMethods, readOnly, MethodListItemComponent } = this.props;
-
+    * Render a MethodListItem for the registered backup method
+    *
+    * @return {MethodListItem|null}
+    */
+  const renderBackupMethod = () => {
     if (!backupMethod) {
       return null;
     }
@@ -135,22 +129,19 @@ class RegisteredMFAMethodListField extends Component {
         className="registered-method-list-item--backup"
       />
     );
-  }
+  };
 
   /**
-   * Return a list of renderable MethodListItems for the list of registered methods
-   *
-   * @return {Array<MethodListItem>}
-   */
-  renderBaseMethods() {
-    const { isMFARequired } = this.props;
-    const baseMethods = this.getBaseMethods();
+    * Return a list of renderable MethodListItems for the list of registered methods
+    *
+    * @return {Array<MethodListItem>}
+    */
+  const renderBaseMethods = () => {
+    const baseMethods = getBaseMethods();
 
     if (!baseMethods.length) {
       return [];
     }
-
-    const { defaultMethod, readOnly, MethodListItemComponent } = this.props;
 
     return baseMethods
       .map(method => {
@@ -164,42 +155,31 @@ class RegisteredMFAMethodListField extends Component {
 
         return <MethodListItemComponent {...props} />;
       });
-  }
+  };
 
   /**
-   * Render a Reactstrap modal that contains the Register component used to (re-)register MFA
-   * methods
-   *
-   * @return {RegisterModal}
-   */
-  renderModal() {
-    const {
-      backupMethod,
-      endpoints,
-      resources,
-      RegisterModalComponent
-    } = this.props;
-
-    return (
-      <RegisterModalComponent
-        backupMethod={backupMethod}
-        isOpen={this.state.modalOpen}
-        toggle={this.handleToggleModal}
-        resources={resources}
-        endpoints={endpoints}
-        disallowedScreens={[SCREEN_INTRODUCTION]}
-      />
-    );
-  }
+    * Render a Reactstrap modal that contains the Register component used to (re-)register MFA
+    * methods
+    *
+    * @return {RegisterModal}
+    */
+  const renderModal = () => (
+    <RegisterModalComponent
+      backupMethod={backupMethod}
+      isOpen={modalOpen}
+      toggle={handleToggleModal}
+      resources={resources}
+      endpoints={endpoints}
+      disallowedScreens={[SCREEN_INTRODUCTION]}
+    />
+  );
 
   /**
-   * Render a button that will trigger the RegisterModal and allow adding new MFA methods
-   *
-   * @return {Button|null}
-   */
-  renderAddButton() {
-    const { availableMethods, registeredMethods, readOnly, onResetRegister } = this.props;
-
+    * Render a button that will trigger the RegisterModal and allow adding new MFA methods
+    *
+    * @return {Button|null}
+    */
+  const renderAddButton = () => {
     if (readOnly || !availableMethods || availableMethods.length === 0) {
       return null;
     }
@@ -221,37 +201,44 @@ class RegisteredMFAMethodListField extends Component {
         outline
         type="button"
         onClick={() => {
-          this.handleToggleModal();
+          handleToggleModal();
           onResetRegister();
         }}
       >
         { label }
       </Button>
     );
-  }
+  };
 
-  render() {
-    const { readOnly, resetEndpoint } = this.props;
-    const classNames = classnames({
-      'registered-mfa-method-list-field': true,
-      'registered-mfa-method-list-field--read-only': readOnly,
-    });
+  const componentClassNames = classnames({
+    'registered-mfa-method-list-field': true,
+    'registered-mfa-method-list-field--read-only': readOnly,
+  });
 
-    return (
-      <div className={classNames}>
+  // Wrapping in useMemo to avoid unnecessary re-renders of context consumers
+  const contextValue = useMemo(() => ({
+    allAvailableMethods,
+    backupMethod,
+    endpoints,
+    resources,
+  }), [allAvailableMethods, backupMethod, endpoints, resources]);
+
+  return (
+    <MFAMethodListContext.Provider value={contextValue}>
+      <div className={componentClassNames}>
         <ul className="method-list">
-          { this.renderBaseMethods() }
+          { renderBaseMethods() }
         </ul>
-        { this.renderNoMethodsMessage() }
-        { this.renderAddButton() }
-        { this.renderBackupMethod() }
+        { renderNoMethodsMessage() }
+        { renderAddButton() }
+        { renderBackupMethod() }
         { readOnly && <hr /> }
         { readOnly && <AccountResetUI resetEndpoint={resetEndpoint} /> }
-        { this.renderModal() }
+        { renderModal() }
       </div>
-    );
-  }
-}
+    </MFAMethodListContext.Provider>
+  );
+};
 
 RegisteredMFAMethodListField.propTypes = {
   backupMethod: registeredMethodShape,
@@ -275,23 +262,6 @@ RegisteredMFAMethodListField.propTypes = {
   registrationScreen: PropTypes.number,
   MethodListItemComponent: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
   RegisterModalComponent: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
-};
-
-RegisteredMFAMethodListField.defaultProps = {
-  initialAvailableMethods: [],
-  MethodListItemComponent: MethodListItem,
-  RegisterModalComponent: RegisterModal
-};
-
-RegisteredMFAMethodListField.childContextTypes = {
-  allAvailableMethods: PropTypes.arrayOf(availableMethodShape),
-  backupMethod: registeredMethodShape,
-  endpoints: PropTypes.shape({
-    register: PropTypes.string,
-    remove: PropTypes.string,
-    setDefault: PropTypes.string,
-  }),
-  resources: PropTypes.object,
 };
 
 const mapDispatchToProps = dispatch => ({

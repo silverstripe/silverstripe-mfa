@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import registeredMethodShape from 'types/registeredMethod';
 import Config from 'lib/Config'; // eslint-disable-line
@@ -7,23 +7,21 @@ import api from 'lib/api';
 import { setDefaultMethod } from 'state/mfaAdministration/actions';
 
 import fallbacks from '../../../../../lang/src/en.json';
+import { MFAMethodListContext } from '../MFAMethodListContext';
 
 /**
- * An action to set the current method as the default registered method for a user
- */
-class SetDefault extends Component {
-  constructor(props) {
-    super(props);
+  * An action to set the current method as the default registered method for a user
+  */
+const SetDefault = ({
+  method,
+  onSetDefaultMethod,
+}) => {
+  const { endpoints } = useContext(MFAMethodListContext);
+  const { ss: { i18n } } = window;
 
-    this.handleSetDefault = this.handleSetDefault.bind(this);
-  }
-
-  handleSetDefault() {
-    const { method, onSetDefaultMethod } = this.props;
-    const { endpoints: { setDefault } } = this.context;
-
+  const handleSetDefault = () => {
     const token = Config.get('SecurityID');
-    const endpoint = `${setDefault.replace('{urlSegment}', method.urlSegment)}?SecurityID=${token}`;
+    const endpoint = `${endpoints.setDefault.replace('{urlSegment}', method.urlSegment)}?SecurityID=${token}`;
 
     api(endpoint, 'PUT')
       .then(response => response.json().then(json => {
@@ -35,34 +33,25 @@ class SetDefault extends Component {
         const message = (json.errors && ` Errors: \n - ${json.errors.join('\n -')}`) || '';
         throw Error(`Could not set default method. Error code ${response.status}.${message}`);
       }));
-  }
+  };
 
-  render() {
-    const { ss: { i18n } } = window;
-
-    return (
-      <button
-        className="registered-method-list-item__control"
-        type="button"
-        onClick={this.handleSetDefault}
-      >
-        {i18n._t(
-          'MultiFactorAuthentication.SET_AS_DEFAULT',
-          fallbacks['MultiFactorAuthentication.SET_AS_DEFAULT']
-        )}
-      </button>
-    );
-  }
-}
+  return (
+    <button
+      className="registered-method-list-item__control"
+      type="button"
+      onClick={handleSetDefault}
+    >
+      {i18n._t(
+        'MultiFactorAuthentication.SET_AS_DEFAULT',
+        fallbacks['MultiFactorAuthentication.SET_AS_DEFAULT']
+      )}
+    </button>
+  );
+};
 
 SetDefault.propTypes = {
   method: registeredMethodShape.isRequired,
-};
-
-SetDefault.contextTypes = {
-  endpoints: PropTypes.shape({
-    setDefault: PropTypes.string
-  }),
+  onSetDefaultMethod: PropTypes.func.isRequired,
 };
 
 const mapDispatchToProps = dispatch => ({

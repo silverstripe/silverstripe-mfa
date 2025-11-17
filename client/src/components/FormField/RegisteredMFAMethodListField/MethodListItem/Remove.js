@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import confirm from 'reactstrap-confirm';
@@ -9,6 +9,7 @@ import { deregisterMethod, setDefaultMethod } from 'state/mfaAdministration/acti
 import registeredMethodShape from 'types/registeredMethod';
 
 import fallbacks from '../../../../../lang/src/en.json';
+import { MFAMethodListContext } from '../MFAMethodListContext';
 
 const Remove = ({
   method,
@@ -19,7 +20,8 @@ const Remove = ({
   onDeregisterMethod,
   onAddAvailableMethod,
   onSetDefaultMethod,
-}, { backupMethod, endpoints: { remove } }) => {
+}) => {
+  const { backupMethod, endpoints } = useContext(MFAMethodListContext);
   const { ss: { i18n } } = window;
 
   const handleRemove = async () => {
@@ -42,7 +44,7 @@ const Remove = ({
     }
 
     const token = Config.get('SecurityID');
-    const endpoint = `${remove.replace('{urlSegment}', method.urlSegment)}?SecurityID=${token}`;
+    const endpoint = `${endpoints.remove.replace('{urlSegment}', method.urlSegment)}?SecurityID=${token}`;
 
     api(endpoint, 'DELETE')
       .then(response => response.json().then(json => {
@@ -95,14 +97,6 @@ Remove.propTypes = {
   onDeregisterMethod: PropTypes.func.isRequired,
   onAddAvailableMethod: PropTypes.func.isRequired,
   onSetDefaultMethod: PropTypes.func.isRequired,
-};
-
-Remove.contextTypes = {
-  backupMethod: registeredMethodShape,
-  endpoints: PropTypes.shape({
-    register: PropTypes.string,
-    remove: PropTypes.string,
-  }),
 };
 
 export default connect(({ mfaAdministration: { defaultMethod, registeredMethods } }) => ({

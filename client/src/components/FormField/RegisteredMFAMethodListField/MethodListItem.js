@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { memo } from 'react';
 import confirm from 'reactstrap-confirm';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
@@ -16,18 +16,26 @@ import fallbacks from '../../../../lang/src/en.json';
  * @param {object} method
  * @param {string} suffix
  * @returns {HTMLElement}
- * @constructor
  */
-
-class MethodListItem extends PureComponent {
+const MethodListItem = ({
+  method,
+  isDefaultMethod = false,
+  isBackupMethod = false,
+  canRemove = false,
+  canReset = false,
+  createdDate,
+  className,
+  tag: Tag = 'li',
+  RemoveComponent = Remove,
+  SetDefaultComponent = SetDefault,
+}) => {
   /**
    * Get the status message template for the method item, depending on whether
    * it is the default, backup, or a regular method.
    *
    * @returns {string}
    */
-  getStatusMessage() {
-    const { isBackupMethod, isDefaultMethod } = this.props;
+  const getStatusMessage = () => {
     const { ss: { i18n } } = window;
 
     if (isDefaultMethod) {
@@ -48,21 +56,17 @@ class MethodListItem extends PureComponent {
       'MultiFactorAuthentication.REGISTERED',
       fallbacks['MultiFactorAuthentication.REGISTERED']
     );
-  }
+  };
 
-  renderRemove() {
-    const { canRemove, method, RemoveComponent } = this.props;
-
+  const renderRemove = () => {
     if (!canRemove) {
       return null;
     }
 
     return <RemoveComponent method={method} />;
-  }
+  };
 
-  renderReset() {
-    const { canReset, isBackupMethod, method } = this.props;
-
+  const renderReset = () => {
     if (!canReset) {
       return null;
     }
@@ -71,7 +75,6 @@ class MethodListItem extends PureComponent {
       method,
     };
 
-    // Overload onReset to confirm with user for backups only
     if (isBackupMethod) {
       const { ss: { i18n } } = window;
       const confirmMessage = i18n._t(
@@ -96,49 +99,44 @@ class MethodListItem extends PureComponent {
     }
 
     return <Reset {...props} />;
-  }
+  };
 
   /**
    * Renders a button to make the current method the default registered method
    *
    * @returns {SetDefault}
    */
-  renderSetAsDefault() {
-    const { isDefaultMethod, isBackupMethod, method, SetDefaultComponent } = this.props;
-
+  const renderSetAsDefault = () => {
     if (isDefaultMethod || isBackupMethod) {
       return null;
     }
 
     return <SetDefaultComponent method={method} />;
-  }
+  };
 
-  renderControls() {
-    const { canRemove, canReset } = this.props;
-
+  const renderControls = () => {
     if (!canRemove && !canReset) {
       return null;
     }
 
     return (
       <div>
-        { this.renderRemove() }
-        { this.renderReset() }
-        { this.renderSetAsDefault() }
+        { renderRemove() }
+        { renderReset() }
+        { renderSetAsDefault() }
       </div>
     );
-  }
+  };
 
   /**
    * Gets the method name and status, including whether it's default, backup, etc
    *
    * @returns {string}
    */
-  renderNameAndStatus() {
-    const { method, createdDate } = this.props;
+  const renderNameAndStatus = () => {
     const { ss: { i18n } } = window;
 
-    const statusMessage = this.getStatusMessage();
+    const statusMessage = getStatusMessage();
 
     moment.locale(i18n.detectLocale());
 
@@ -146,21 +144,17 @@ class MethodListItem extends PureComponent {
       method: method.name,
       date: moment(createdDate).format('L'),
     });
-  }
+  };
 
-  render() {
-    const { tag: Tag, className } = this.props;
+  const classes = classNames(className, 'registered-method-list-item');
 
-    const classes = classNames(className, 'registered-method-list-item');
-
-    return (
-      <Tag className={classes}>
-        { this.renderNameAndStatus() }
-        { this.renderControls() }
-      </Tag>
-    );
-  }
-}
+  return (
+    <Tag className={classes}>
+      { renderNameAndStatus() }
+      { renderControls() }
+    </Tag>
+  );
+};
 
 MethodListItem.propTypes = {
   method: methodShape.isRequired,
@@ -177,14 +171,5 @@ MethodListItem.propTypes = {
   SetDefaultComponent: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
 };
 
-MethodListItem.defaultProps = {
-  isDefaultMethod: false,
-  isBackupMethod: false,
-  canRemove: false,
-  canReset: false,
-  tag: 'li',
-  RemoveComponent: Remove,
-  SetDefaultComponent: SetDefault
-};
-
-export default MethodListItem;
+// Wrapping export in React.memo() because the old class component extended React.PureComponent
+export default memo(MethodListItem);

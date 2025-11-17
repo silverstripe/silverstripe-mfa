@@ -123,3 +123,112 @@ test('SelectMethod renders a MethodTile component for each available method', ()
   expect(methodTiles[0].getAttribute('data-method')).toBe('aye');
   expect(methodTiles[1].getAttribute('data-method')).toBe('bee');
 });
+
+test('SelectMethod renders the Title component when showTitle is true', () => {
+  const { container } = render(<SelectMethod {...makeProps({ showTitle: true })}/>);
+  expect(container.querySelector('.test-title')).not.toBeNull();
+});
+
+test('SelectMethod does not render the Title component when showTitle is false', () => {
+  const { container } = render(<SelectMethod {...makeProps({ showTitle: false })}/>);
+  expect(container.querySelector('.test-title')).toBeNull();
+});
+
+test('SelectMethod renders with three-column layout when methods count is divisible by 3', () => {
+  const { container } = render(
+    <SelectMethod {...makeProps({
+      methods: [
+        makeProps().methods[0],
+        makeProps().methods[1],
+        { urlSegment: 'cee', name: 'Cee', description: 'Register using cee', component: 'Test' }
+      ]
+    })}
+    />
+  );
+  const methodGroup = container.querySelector('.mfa-method-tile-group');
+  expect(methodGroup.classList.contains('mfa-method-tile-group--three-columns')).toBe(true);
+});
+
+test('SelectMethod does not render three-column layout when methods count is not divisible by 3', () => {
+  const { container } = render(
+    <SelectMethod {...makeProps({
+      methods: [
+        makeProps().methods[0],
+        makeProps().methods[1]
+      ]
+    })}
+    />
+  );
+  const methodGroup = container.querySelector('.mfa-method-tile-group');
+  expect(methodGroup.classList.contains('mfa-method-tile-group--three-columns')).toBe(false);
+});
+
+test('SelectMethod allows switching highlighted method by clicking different tiles', () => {
+  const { container } = render(<SelectMethod {...makeProps()}/>);
+  const nextButton = container.querySelector('.mfa-action-list .btn-primary');
+
+  fireEvent.click(container.querySelector('[data-method="aye"]'));
+  expect(nextButton.disabled).toBe(false);
+
+  fireEvent.click(container.querySelector('[data-method="bee"]'));
+  expect(nextButton.disabled).toBe(false);
+});
+
+test('SelectMethod correctly updates state when a method tile is clicked', () => {
+  const { container } = render(<SelectMethod {...makeProps()} />);
+  const nextButton = container.querySelector('.mfa-action-list .btn-primary');
+  expect(nextButton.disabled).toBe(true);
+  fireEvent.click(container.querySelector('[data-method="bee"]'));
+  expect(nextButton.disabled).toBe(false);
+  fireEvent.click(container.querySelector('[data-method="aye"]'));
+  expect(nextButton.disabled).toBe(false);
+});
+
+test('SelectMethod handles onClickBack when it is not provided', () => {
+  const { container } = render(
+    <SelectMethod {...makeProps({
+      onClickBack: undefined
+    })}
+    />
+  );
+  expect(() => {
+    fireEvent.click(container.querySelector('.mfa-action-list__item .btn-secondary'));
+  }).not.toThrow();
+});
+
+test('SelectMethod renders with empty methods array', () => {
+  const { container } = render(
+    <SelectMethod {...makeProps({
+      methods: []
+    })}
+    />
+  );
+  const methodTiles = container.querySelectorAll('.test-method-tile');
+  expect(methodTiles).toHaveLength(0);
+  expect(container.querySelector('.mfa-method-tile-group')).not.toBeNull();
+});
+
+test('SelectMethod does not automatically select a method when isAvailable is not a function', () => {
+  const onSelectMethod = jest.fn();
+  render(
+    <SelectMethod {...makeProps({
+      methods: [makeProps().methods[0]],
+      isAvailable: undefined,
+      onSelectMethod
+    })}
+    />
+  );
+  expect(onSelectMethod).not.toHaveBeenCalled();
+});
+
+test('SelectMethod calls onClickBack without any arguments', () => {
+  const onClickBack = jest.fn();
+  const { container } = render(
+    <SelectMethod {...makeProps({
+      onClickBack
+    })}
+    />
+  );
+  fireEvent.click(container.querySelector('.mfa-action-list__item .btn-secondary'));
+  expect(onClickBack).toHaveBeenCalledWith();
+});

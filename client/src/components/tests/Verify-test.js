@@ -321,3 +321,115 @@ test('Verify renders an unavailable screen when the selected method is unavailab
   const el = await screen.findByText('There is no spoon');
   expect(el.parentNode.classList).toContain('mfa-method--unavailable');
 });
+
+test('Verify renders the title on the page', async () => {
+  render(
+    <Verify {...makeProps()}/>
+  );
+  resolveApiCall({
+    json: () => Promise.resolve({}),
+  });
+  const title = await screen.findByText('Log in');
+  expect(title.tagName).toBe('H1');
+  expect(title.classList.contains('mfa-app-title')).toBe(true);
+});
+
+test('Verify does not show loading indicator after successful data fetch', async () => {
+  const { container } = render(
+    <Verify {...makeProps()}/>
+  );
+  resolveApiCall({
+    json: () => Promise.resolve({}),
+  });
+  await screen.findByText('Verify with {aye}');
+  expect(container.querySelector('.mfa-loading-indicator')).toBeNull();
+});
+
+test('Verify handles backend errors in API response', async () => {
+  const { container } = render(
+    <Verify {...makeProps()}/>
+  );
+  resolveApiCall({
+    json: () => Promise.resolve({}),
+  });
+  await screen.findByText('Verify with {aye}');
+  const method = container.querySelector('[data-component="TestMethod"]');
+  fireEvent.click(method);
+  resolveApiCall({
+    status: 400,
+    json: () => Promise.resolve({
+      message: 'Invalid code',
+    })
+  });
+  await screen.findByText('Verify with {aye}');
+  const methods = container.querySelectorAll('[data-component="TestMethod"]');
+  expect(methods.length).toBe(1);
+  expect(methods[0].getAttribute('data-props')).toContain('error=Invalid code');
+});
+
+test('Verify handles 202 response by not calling onCompleteVerification', async () => {
+  const onCompleteVerification = jest.fn();
+  const { container } = render(
+    <Verify {...makeProps({
+      onCompleteVerification
+    })}
+    />
+  );
+  resolveApiCall({
+    json: () => Promise.resolve({}),
+  });
+  await screen.findByText('Verify with {aye}');
+  const method = container.querySelector('[data-component="TestMethod"]');
+  fireEvent.click(method);
+  resolveApiCall({
+    status: 202,
+    json: () => Promise.resolve({})
+  });
+  await screen.findByText('Verify with {aye}');
+  expect(onCompleteVerification).not.toHaveBeenCalled();
+});
+
+test('Verify updates endpoint when method is changed', async () => {
+  render(
+    <Verify {...makeProps({
+      defaultMethod: 'aye'
+    })}
+    />
+  );
+  resolveApiCall({
+    json: () => Promise.resolve({}),
+  });
+  await screen.findByText('Verify with {aye}');
+  expect(lastApiCallArgs.endpoint).toBe('/fake/aye');
+});
+
+test('Verify passes selected method to injected component', async () => {
+  const { container } = render(
+    <Verify {...makeProps()}/>
+  );
+  resolveApiCall({
+    json: () => Promise.resolve({}),
+  });
+  await screen.findByText('Verify with {aye}');
+  const method = container.querySelector('[data-component="TestMethod"]');
+  const props = method.getAttribute('data-props');
+  expect(props).toContain('method=');
+});
+
+test('Verify respects backup method when selecting default', async () => {
+  render(
+    <Verify {...makeProps({
+      backupMethod: {
+        urlSegment: 'aye',
+        name: 'aye',
+        component: 'TestMethod',
+      }
+    })}
+    />
+  );
+  resolveApiCall({
+    json: () => Promise.resolve({}),
+  });
+  await screen.findByText('Verify with {bee}');
+  expect(lastApiCallArgs.endpoint).toBe('/fake/bee');
+});

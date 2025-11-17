@@ -39,51 +39,33 @@ Your component for registration will need to accept a couple of key props:
 
 A Register component for Basic Math might look like this:
 
-```js
-import React, { Component } from 'react';
+```jsx
+import React, { useState } from 'react';
 
-class BasicMathRegister extends Component {
-  constructor(props) {
-    super(props);
+export default function BasicMathRegister({ onCompleteRegistration, onBack }) {
+  const [secret, setSecret] = useState('');
+  const { ss: { i18n } } = window;
 
-    this.state = {
-      secret: '',
-    };
+  return (
+    <div className="mfa-register-backup-codes__container">
+      <label htmlFor="secret" className="form-label">Enter a secret number:</label>
+      <input id="secret" type="text" value={secret} onChange={(e) => setSecret(e.target.value)} />
 
-    this.handleChange = this.handleChange.bind(this);
-  }
-
-  handleChange(event) {
-    this.setState({ secret: event.target.value });
-  }
-
-  render() {
-    const { onCompleteRegistration, onBack } = this.props;
-    const { ss: { i18n } } = window;
-
-    return (
-      <div className="mfa-register-backup-codes__container">
-        <label htmlFor="secret" className="form-label">Enter a secret number:</label>
-        <input id="secret" type="text" value={this.state.secret} onChange={this.handleChange} />
-
-        <button
-          className="btn btn-primary"
-          onClick={() => onCompleteRegistration({ number: this.state.secret })}
-        >
-          {i18n._t('MFABackupCodesRegister.FINISH', 'Finish')}
-        </button>
-        <button
-          className="btn btn-secondary"
-          onClick={() => onBack()}
-        >
-          {i18n._t('MFABackupCodesRegister.BACK', 'Back')}
-        </button>
-      </div>
-    );
-  }
+      <button
+        className="btn btn-primary"
+        onClick={() => onCompleteRegistration({ number: secret })}
+      >
+        {i18n._t('MFABackupCodesRegister.FINISH', 'Finish')}
+      </button>
+      <button
+        className="btn btn-secondary"
+        onClick={() => onBack()}
+      >
+        {i18n._t('MFABackupCodesRegister.BACK', 'Back')}
+      </button>
+    </div>
+  );
 }
-
-export default Register;
 ```
 
 ### Verify
@@ -101,64 +83,29 @@ Your verification component will look similar to your registration one - it shou
 
 A Verify component for Basic Math might look like this:
 
-```js
-import React, { Component } from 'react';
+```jsx
+import React, { useState } from 'react';
 
-class BasicMathVerify extends Component {
-  constructor(props) {
-    super(props);
+export default function BasicMathVerify({ onCompleteVerification, moreOptionsControl }) {
+  const [answer, setAnswer] = useState('');
+  const { ss: { i18n } } = window;
 
-    this.state = {
-      answer: '',
-    };
+  return (
+    <div className="mfa-verify-basicmath__container">
+      <label htmlFor="answer" className="form-label">Enter the answer:</label>
+      <input id="answer" type="text" value={answer} onChange={(e) => setAnswer(e.target.value)} />
 
-    this.handleChange = this.handleChange.bind(this);
-  }
+      <button
+        className="btn btn-primary"
+        onClick={() => onCompleteVerification({ answer })}
+      >
+        {i18n._t('BasicMathVerify.VERIFY', 'Verify')}
+      </button>
 
-  handleChange(event) {
-    this.setState({
-      answer: event.target.value,
-    });
-  }
-
-  renderQuestion() {
-    const { numbers } = this.props;
-
-    return `What's the sum of ${numbers.join(', ')} and your secret number?`;
-  }
-
-  render() {
-    const { onCompleteVerification, moreOptionsControl, numbers } = this.props;
-    const { ss: { i18n } } = window;
-
-    if (!numbers) {
-      return (
-        <div>
-          <h3>{i18n._t('BasicMathLogin.LOADING', 'Loading...')}</h3>
-          { moreOptionsControl }
-        </div>
-      );
-    }
-
-    return (
-      <div className="mfa-register-backup-codes__container">
-        <label style={{ display: 'block' }} htmlFor="answer" className="form-label">{this.renderQuestion()}</label>
-        <input id="answer" type="text" value={this.state.answer} onChange={this.handleChange} />
-        <div>
-          <button
-            className="btn btn-primary"
-            onClick={() => onCompleteVerification({ answer: this.state.answer })}
-          >
-            {i18n._t('BasicMathLogin.FINISH', 'Finish')}
-          </button>
-          { moreOptionsControl }
-        </div>
-      </div>
-    );
-  }
+      {moreOptionsControl && React.createElement(moreOptionsControl)}
+    </div>
+  );
 }
-
-export default BasicMathVerify;
 ```
 
 ## Register components with `Injector`

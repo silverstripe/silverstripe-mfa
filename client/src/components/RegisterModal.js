@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Modal, ModalBody, ModalHeader } from 'reactstrap';
 import { inject } from 'lib/Injector'; // eslint-disable-line
@@ -15,16 +15,20 @@ import fallbacks from '../../lang/src/en.json';
  * Renders a modal that contains a register component. Given endpoints it will register MFA methods
  * and update redux state accordingly
  */
-class RegisterModal extends Component {
-  constructor(props) {
-    super(props);
-
-    this.handleRegister = this.handleRegister.bind(this);
-  }
-
-  componentDidUpdate() {
-    const { disallowedScreens, isOpen, registrationScreen, toggle } = this.props;
-
+const RegisterModal = ({
+  backupMethod,
+  disallowedScreens = [],
+  endpoints,
+  isOpen = false,
+  onAddRegisteredMethod,
+  onSetDefaultMethod,
+  registeredMethods,
+  registrationScreen,
+  resources,
+  RegisterComponent,
+  toggle,
+}) => {
+  useEffect(() => {
     if (!isOpen || !disallowedScreens.length) {
       return;
     }
@@ -32,57 +36,42 @@ class RegisterModal extends Component {
     if (disallowedScreens.includes(registrationScreen)) {
       toggle();
     }
-  }
+  }, [isOpen, disallowedScreens, registrationScreen, toggle]);
 
-  handleRegister(method) {
-    const { onAddRegisteredMethod, onSetDefaultMethod, registeredMethods } = this.props;
-
+  const handleRegister = (method) => {
     if (!registeredMethods.length) {
       onSetDefaultMethod(method.urlSegment);
     }
 
     onAddRegisteredMethod(method);
-  }
+  };
 
-  render() {
-    const {
-      backupMethod,
-      endpoints,
-      isOpen,
-      toggle,
-      registeredMethods,
-      registrationScreen,
-      resources,
-      RegisterComponent
-    } = this.props;
-
-    return (
-      <Modal
-        isOpen={isOpen}
-        toggle={toggle}
-        className="registered-mfa-method-list-field-register-modal"
-      >
-        <ModalHeader toggle={toggle}><Title Tag={null} /></ModalHeader>
-        <ModalBody className="registered-mfa-method-list-field-register-modal__content">
-          {registrationScreen !== SCREEN_INTRODUCTION && (<RegisterComponent
-            backupMethod={backupMethod}
-            registeredMethods={registeredMethods}
-            onCompleteRegistration={toggle}
-            onRegister={this.handleRegister}
-            resources={resources}
-            endpoints={endpoints}
-            showTitle={false}
-            showSubTitle={false}
-            completeMessage={window.ss.i18n._t(
-              'MultiFactorAuthentication.ADMIN_SETUP_COMPLETE_CONTINUE',
-              fallbacks['MultiFactorAuthentication.ADMIN_SETUP_COMPLETE_CONTINUE']
-            )}
-          />)}
-        </ModalBody>
-      </Modal>
-    );
-  }
-}
+  return (
+    <Modal
+      isOpen={isOpen}
+      toggle={toggle}
+      className="registered-mfa-method-list-field-register-modal"
+    >
+      <ModalHeader toggle={toggle}><Title Tag={null} /></ModalHeader>
+      <ModalBody className="registered-mfa-method-list-field-register-modal__content">
+        {registrationScreen !== SCREEN_INTRODUCTION && (<RegisterComponent
+          backupMethod={backupMethod}
+          registeredMethods={registeredMethods}
+          onCompleteRegistration={toggle}
+          onRegister={handleRegister}
+          resources={resources}
+          endpoints={endpoints}
+          showTitle={false}
+          showSubTitle={false}
+          completeMessage={window.ss.i18n._t(
+            'MultiFactorAuthentication.ADMIN_SETUP_COMPLETE_CONTINUE',
+            fallbacks['MultiFactorAuthentication.ADMIN_SETUP_COMPLETE_CONTINUE']
+          )}
+        />)}
+      </ModalBody>
+    </Modal>
+  );
+};
 
 RegisterModal.propTypes = {
   // Boolean for if the modal is open
@@ -112,11 +101,6 @@ RegisterModal.propTypes = {
     PropTypes.func,
     PropTypes.elementType,
   ]),
-};
-
-RegisterModal.defaultProps = {
-  isOpen: false,
-  disallowedScreens: [],
 };
 
 const mapStateToProps = state => ({

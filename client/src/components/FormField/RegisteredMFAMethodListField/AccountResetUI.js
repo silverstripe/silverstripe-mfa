@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import Config from 'lib/Config'; // eslint-disable-line
 import api from 'lib/api';
 import confirm from 'reactstrap-confirm';
@@ -18,24 +18,19 @@ import fallbacks from '../../../../lang/src/en.json';
 /**
  * The AccountResetUI component is used to submit an Account Reset request.
  */
-class AccountResetUI extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      complete: false,
-      failed: false,
-      submitting: false,
-    };
-
-    this.handleSendReset = this.handleSendReset.bind(this);
-  }
+const AccountResetUI = ({
+  resetEndpoint,
+  LoadingIndicatorComponent = LoadingIndicator,
+}) => {
+  const [complete, setComplete] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   /**
    * Sends a reset request to the provided endpoint, and updates the component's state based on
    * the contents of the response.
    */
-  async handleSendReset() {
+  const handleSendReset = async () => {
     const { ss: { i18n } } = window;
 
     // Confirm with the user
@@ -55,31 +50,33 @@ class AccountResetUI extends Component {
       return;
     }
 
-    this.setState({ submitting: true });
+    setSubmitting(true);
 
     const body = JSON.stringify({ csrf_token: Config.get('SecurityID') });
 
-    api(this.props.resetEndpoint, 'POST', body)
+    api(resetEndpoint, 'POST', body)
       .then(response => response.json())
       .then(output => {
-        const failed = !!output.error;
+        const isFailed = !!output.error;
 
-        this.setState({ complete: true, failed, submitting: false });
+        setComplete(true);
+        setFailed(isFailed);
+        setSubmitting(false);
       })
       .catch(() => {
-        this.setState({ complete: true, failed: true, submitting: false });
+        setComplete(true);
+        setFailed(true);
+        setSubmitting(false);
       });
-  }
+  };
 
   /**
    * Renders the reset request button if necessary, disabling it if an endpoint is not specified.
    *
    * @returns {null|HTMLElement}
    */
-  renderAction() {
+  const renderAction = () => {
     const { ss: { i18n } } = window;
-    const { resetEndpoint } = this.props;
-    const { complete, submitting } = this.state;
 
     if (complete || submitting) {
       return null;
@@ -90,7 +87,7 @@ class AccountResetUI extends Component {
         <button
           className="btn btn-outline-secondary"
           disabled={!resetEndpoint}
-          onClick={this.handleSendReset}
+          onClick={handleSendReset}
           type="button"
         >
           {
@@ -102,16 +99,15 @@ class AccountResetUI extends Component {
         </button>
       </p>
     );
-  }
+  };
 
   /**
    * Renders the 'request in progress' status message.
    *
    * @returns {HTMLElement}
    */
-  renderSending() {
+  const renderSending = () => {
     const { ss: { i18n } } = window;
-    const { LoadingIndicatorComponent } = this.props;
 
     return (
       <p className="account-reset-action account-reset-action--sending">
@@ -128,14 +124,14 @@ class AccountResetUI extends Component {
         </span>
       </p>
     );
-  }
+  };
 
   /**
    * Renders the 'request failed' status message.
    *
    * @returns {HTMLElement}
    */
-  renderFailure() {
+  const renderFailure = () => {
     const { ss: { i18n } } = window;
 
     return (
@@ -153,14 +149,14 @@ class AccountResetUI extends Component {
         </span>
       </p>
     );
-  }
+  };
 
   /**
    * Renders the 'request succeeded' status message.
    *
    * @returns {HTMLElement}
    */
-  renderSuccess() {
+  const renderSuccess = () => {
     const { ss: { i18n } } = window;
 
     return (
@@ -178,70 +174,57 @@ class AccountResetUI extends Component {
         </span>
       </p>
     );
-  }
+  };
 
   /**
    * Checks whether a reset request has started / completed, and renders the current status if so.
    *
    * @returns {null|HTMLElement}
    */
-  renderStatusMessage() {
-    const { complete, failed, submitting } = this.state;
-
+  const renderStatusMessage = () => {
     if (submitting) {
-      return this.renderSending();
+      return renderSending();
     }
 
     if (!complete) {
       return null;
     }
 
-    return (failed) ? this.renderFailure() : this.renderSuccess();
-  }
+    return (failed) ? renderFailure() : renderSuccess();
+  };
 
-  /**
-   * Renders the full AccountResetUI component.
-   *
-   * @returns {HTMLElement}
-   */
-  render() {
-    const { ss: { i18n } } = window;
+  const { ss: { i18n } } = window;
 
-    return (
-      <div className="account-reset">
-        <h5 className="account-reset__title">
-          {
-            i18n._t(
-              'MultiFactorAuthentication.ACCOUNT_RESET_TITLE',
-              fallbacks['MultiFactorAuthentication.ACCOUNT_RESET_TITLE']
-            )
-          }
-        </h5>
+  return (
+    <div className="account-reset">
+      <h5 className="account-reset__title">
+        {
+          i18n._t(
+            'MultiFactorAuthentication.ACCOUNT_RESET_TITLE',
+            fallbacks['MultiFactorAuthentication.ACCOUNT_RESET_TITLE']
+          )
+        }
+      </h5>
 
-        <p className="account-reset__description">
-          {
-            i18n._t(
-              'MultiFactorAuthentication.ACCOUNT_RESET_DESCRIPTION',
-              fallbacks['MultiFactorAuthentication.ACCOUNT_RESET_DESCRIPTION']
-            )
-          }
-        </p>
+      <p className="account-reset__description">
+        {
+          i18n._t(
+            'MultiFactorAuthentication.ACCOUNT_RESET_DESCRIPTION',
+            fallbacks['MultiFactorAuthentication.ACCOUNT_RESET_DESCRIPTION']
+          )
+        }
+      </p>
 
-        { this.renderAction() }
+      { renderAction() }
 
-        { this.renderStatusMessage() }
-      </div>
-    );
-  }
-}
+      { renderStatusMessage() }
+    </div>
+  );
+};
 
 AccountResetUI.propTypes = {
   resetEndpoint: PropTypes.string,
   LoadingIndicatorComponent: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
-};
-
-AccountResetUI.defaultProps = {
-  LoadingIndicatorComponent: LoadingIndicator,
 };
 
 export default AccountResetUI;

@@ -1,6 +1,6 @@
 /* global window */
 
-import React, { Component } from 'react';
+import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import Printd from 'printd';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -10,25 +10,15 @@ import { formatCode } from 'lib/formatCode';
  * This component provides the user interface for registering backup codes with a user. This process
  * only involves showing the user the backup codes. User input is not required to set up the codes.
  */
-class Register extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      recentlyCopied: false
-    };
-
-    // Prepare a ref (in a React 15 compatible way) to use for the DOM node that will be printed
-    this.printRef = null;
-    this.setPrintRef = element => {
-      this.printRef = element;
-    };
-    // Prepare a class member to store a timeout ref that provides feedback on copy to clipboard
-    this.copyMessageTimeout = null;
-
-    this.handlePrint = this.handlePrint.bind(this);
-    this.handleCopy = this.handleCopy.bind(this);
-  }
+const Register = ({
+  codes,
+  copyFeedbackDuration = 3000,
+  method,
+  onCompleteRegistration,
+}) => {
+  const [recentlyCopied, setRecentlyCopied] = useState(false);
+  const printRef = useRef(null);
+  const copyMessageTimeout = useRef(null);
 
   /**
    * Get codes from component properties and format them with spaces every 3 (or 4) characters.
@@ -37,73 +27,62 @@ class Register extends Component {
    *
    * @return {string[]}
    */
-  getFormattedCodes() {
-    const { codes } = this.props;
-
-    return codes.map(code => formatCode(code));
-  }
+  const getFormattedCodes = () => codes.map(code => formatCode(code));
 
   /**
    * Handle an event triggered requesting the backup codes to be printed
    *
    * @param {Event} event
    */
-  handlePrint(event) {
+  const handlePrint = (event) => {
     event.preventDefault();
 
     (new Printd()).print(
-      this.printRef,
+      printRef.current,
       ['body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif }']
     );
-  }
+  };
 
   /**
    * Handle an event triggered requesting the backup codes to be copied to clipboard
    *
    * @param {Event} event
    */
-  handleCopy(event) {
+  const handleCopy = (event) => {
     event.preventDefault();
-    const { copyFeedbackDuration } = this.props;
 
-    this.setState({
-      recentlyCopied: true,
-    });
+    setRecentlyCopied(true);
 
     // Clear an existing timeout to reset the text on the copy link
-    if (this.copyMessageTimeout) {
-      clearTimeout(this.copyMessageTimeout);
+    if (copyMessageTimeout.current) {
+      clearTimeout(copyMessageTimeout.current);
     }
 
     // And set that timeout too
-    this.copyMessageTimeout = setTimeout(() => {
-      this.setState({
-        recentlyCopied: false,
-      });
+    copyMessageTimeout.current = setTimeout(() => {
+      setRecentlyCopied(false);
     }, copyFeedbackDuration);
-  }
+  };
 
   /**
    * Render a grid of formatted backup codes
    *
    * @return {HTMLElement}
    */
-  renderCodes() {
-    return (
-      <pre ref={this.setPrintRef} className="mfa-register-backup-codes__code-grid">
-        {this.getFormattedCodes().map(code => <div key={code}>{code}</div>)}
-      </pre>
-    );
-  }
+  const renderCodes = () => (
+    <pre ref={printRef} className="mfa-register-backup-codes__code-grid">
+      {getFormattedCodes().map(code => <div key={code}>{code}</div>)}
+    </pre>
+  );
 
   /**
    * Render the description for registering in with this method
    *
    * @return {HTMLElement}
    */
-  renderDescription() {
+  const renderDescription = () => {
     const { ss: { i18n } } = window;
-    const { method: { supportLink, supportText } } = this.props;
+    const { supportLink, supportText } = method;
 
     return (
       <p>
@@ -125,22 +104,22 @@ class Register extends Component {
         }
       </p>
     );
-  }
+  };
 
   /**
    * Render the "print" action. A link allowing the user to trigger a print dialog for the codes
    *
    * @return {HTMLElement}
    */
-  renderPrintAction() {
+  const renderPrintAction = () => {
     const { ss: { i18n } } = window;
 
     return (
-      <button type="button" onClick={this.handlePrint} className="btn btn-link">
+      <button type="button" onClick={handlePrint} className="btn btn-link">
         {i18n._t('MFABackupCodesRegister.PRINT', 'Print codes')}
       </button>
     );
-  }
+  };
 
   /**
    * Render the "download" action. A link allowing the user to trigger a download of a text file
@@ -148,8 +127,7 @@ class Register extends Component {
    *
    * @return {HTMLElement}
    */
-  renderDownloadAction() {
-    const { codes, method } = this.props;
+  const renderDownloadAction = () => {
     const { Blob, URL, ss: { i18n }, navigator } = window;
 
     const filename = `${method.name}.txt`;
@@ -168,16 +146,14 @@ class Register extends Component {
         {i18n._t('MFABackupCodesRegister.DOWNLOAD', 'Download')}
       </a>
     );
-  }
+  };
 
   /**
    * Render the "copy" action. A link allowing the user to easily copy the backup codes to clipboard
    *
    * @return {CopyToClipboard}
    */
-  renderCopyAction() {
-    const { codes } = this.props;
-    const { recentlyCopied } = this.state;
+  const renderCopyAction = () => {
     const { ss: { i18n } } = window;
 
     const label = recentlyCopied
@@ -189,45 +165,44 @@ class Register extends Component {
         <button
           type="button"
           className="mfa-register-backup-codes__copy-to-clipboard btn btn-link"
-          onClick={this.handleCopy}
+          onClick={handleCopy}
         >
           {label}
         </button>
       </CopyToClipboard>
     );
-  }
+  };
 
-  render() {
-    const { onCompleteRegistration } = this.props;
-    const { ss: { i18n } } = window;
+  const { ss: { i18n } } = window;
 
-    return (
-      <div className="mfa-register-backup-codes__container">
-        {this.renderDescription()}
-        {this.renderCodes()}
+  return (
+    <div className="mfa-register-backup-codes__container">
+      {renderDescription()}
+      {renderCodes()}
 
-        <div className="mfa-register-backup-codes__helper-links">
-          {this.renderPrintAction()}
-          {this.renderDownloadAction()}
-          {this.renderCopyAction()}
-        </div>
-
-        <button className="btn btn-primary" onClick={() => onCompleteRegistration()}>
-          {i18n._t('MFABackupCodesRegister.FINISH', 'Finish')}
-        </button>
+      <div className="mfa-register-backup-codes__helper-links">
+        {renderPrintAction()}
+        {renderDownloadAction()}
+        {renderCopyAction()}
       </div>
-    );
-  }
-}
+
+      <button className="btn btn-primary" onClick={() => onCompleteRegistration()}>
+        {i18n._t('MFABackupCodesRegister.FINISH', 'Finish')}
+      </button>
+    </div>
+  );
+};
 
 Register.propTypes = {
   codes: PropTypes.arrayOf(PropTypes.string),
   // Determines the duration of the 'copied' message (in milliseconds)
   copyFeedbackDuration: PropTypes.number,
-};
-
-Register.defaultProps = {
-  copyFeedbackDuration: 3000,
+  method: PropTypes.shape({
+    name: PropTypes.string,
+    supportLink: PropTypes.string,
+    supportText: PropTypes.string,
+  }).isRequired,
+  onCompleteRegistration: PropTypes.func.isRequired,
 };
 
 export default Register;
