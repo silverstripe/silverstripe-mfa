@@ -40,7 +40,6 @@ class ChangePasswordHandlerTest extends FunctionalTest
     {
         foreach (['tempHashAlreadyGenerated', 'tempHashAlreadyProcessed'] as $property) {
             $refl = new ReflectionProperty(SecurityChangePasswordHandler::class, $property);
-            $refl->setAccessible(true);
             $refl->setValue(null, false);
         }
         parent::tearDown();
