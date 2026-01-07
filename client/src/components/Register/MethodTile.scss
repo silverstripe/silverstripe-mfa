@@ -27,11 +27,6 @@
     padding: $tile-padding;
     width: 100%;
 
-    // Remove default focus state (we have our own)
-    &:focus {
-      outline: none;
-    }
-
     // When the method is hovered or tabbed into
     &:hover,
     &:focus {
