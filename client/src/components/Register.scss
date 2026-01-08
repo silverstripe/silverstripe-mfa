@@ -16,3 +16,10 @@
     margin-top: 2.5em;
   }
 }
+
+.registered-mfa-method-list-field-register-modal .modal-header .btn-close {
+  // Admin adds a negative margin to modal close buttons, but that doesn't
+  // look correct here since we're using react-strap directly instead of the
+  // admin modal components.
+  margin-right: 0;
+}

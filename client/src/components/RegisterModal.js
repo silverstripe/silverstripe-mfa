@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Modal, ModalBody, ModalHeader } from 'reactstrap';
+import { Button, Modal, ModalBody, ModalHeader } from 'reactstrap';
 import { inject } from 'lib/Injector'; // eslint-disable-line
 import { compose } from 'redux';
 import { connect } from 'react-redux';
@@ -44,6 +44,17 @@ class RegisterModal extends Component {
     onAddRegisteredMethod(method);
   }
 
+  renderCloseButton() {
+    return <Button
+      className="btn btn-close btn--icon-xl btn--no-text modal__close-button close"
+      onClick={this.props.toggle}
+      aria-label={window.ss.i18n._t('Admin.CLOSE', 'Close')}
+      title={window.ss.i18n._t('Admin.CLOSE', 'Close')}
+    >
+      <span className="btn__icon font-icon-cancel"/>
+    </Button>;
+  }
+
   render() {
     const {
       backupMethod,
@@ -62,7 +73,10 @@ class RegisterModal extends Component {
         toggle={toggle}
         className="registered-mfa-method-list-field-register-modal"
       >
-        <ModalHeader toggle={toggle}><Title Tag={null} /></ModalHeader>
+        <ModalHeader
+          toggle={toggle}
+          close={this.renderCloseButton()}
+        ><Title Tag={null} /></ModalHeader>
         <ModalBody className="registered-mfa-method-list-field-register-modal__content">
           {registrationScreen !== SCREEN_INTRODUCTION && (<RegisterComponent
             backupMethod={backupMethod}
