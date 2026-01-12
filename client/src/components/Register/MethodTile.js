@@ -37,7 +37,7 @@ class MethodTile extends Component {
    * @param {Event} event
    */
   handleKeyUp(event) {
-    if (event.keyCode === 13) {
+    if (event.key === 'Enter') {
       this.handleClick(event);
     }
   }

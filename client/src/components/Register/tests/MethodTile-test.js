@@ -81,7 +81,7 @@ test('MethodTile treats the enter key as a click', () => {
     })}
     />
   );
-  fireEvent.keyUp(container.querySelector('.mfa-method-tile__content'), { keyCode: 13 });
+  fireEvent.keyUp(container.querySelector('.mfa-method-tile__content'), { key: 'Enter' });
   expect(onClick).toHaveBeenCalled();
 });
 
