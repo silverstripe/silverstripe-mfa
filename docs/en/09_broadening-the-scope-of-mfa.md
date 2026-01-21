@@ -25,4 +25,4 @@ However, note that users without access to the CMS will be unable to access thei
 - removing, resetting, and changing default MFA methods; and
 - resetting recovery codes.
 
-A custom implementation would be required to provide this functionality. Otherwise it would be limited to Silverstripe CMS Administrators to [reset MFA settings](https://userhelp.silverstripe.org/en/optional_features/multi-factor_authentication/administrator_manual/resetting_accounts/) for a member on their behalf.
+A custom implementation would be required to provide this functionality. Otherwise it would be limited to Silverstripe CMS Administrators to [reset MFA settings](https://userhelp.silverstripe.org/en/optional_features/mfa/administrator_manual/resetting_accounts/) for a member on their behalf.

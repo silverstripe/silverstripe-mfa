@@ -30,7 +30,7 @@ class RegisterHandler implements RegisterHandlerInterface
      * @var string
      */
     // phpcs:disable
-    private static $user_help_link = 'https://userhelp.silverstripe.org/en/6/optional_features/multi-factor_authentication/user_manual/regaining_access/';
+    private static $user_help_link = 'https://userhelp.silverstripe.org/en/6/optional_features/mfa/user_manual/regaining_access/';
     // phpcs:enable
 
     /**
