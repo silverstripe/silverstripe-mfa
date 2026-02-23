@@ -40,6 +40,7 @@
         "phpstan/extension-installer": "^1.3"
     },
     "conflict": {
+        "silverstripe/admin": "<2.4.0",
         "silverstripe/subsites": "<2.2.2 || 2.3.0",
         "silverstripe/webauthn-authenticator": "<4.5.0"
     },

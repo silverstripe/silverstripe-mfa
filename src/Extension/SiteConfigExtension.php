@@ -29,7 +29,7 @@ class SiteConfigExtension extends DataExtension
      * @var string
      */
     // phpcs:disable
-    private static $mfa_help_link = 'https://userhelp.silverstripe.org/en/4/optional_features/multi-factor_authentication/';
+    private static $mfa_help_link = 'https://userhelp.silverstripe.org/en/5/optional_features/multi-factor_authentication/';
     // phpcs:enable
 
     private static $db = [

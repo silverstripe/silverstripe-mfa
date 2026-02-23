@@ -1,5 +1,6 @@
 ---
 title: Multi-factor authentication (MFA)
+summary: Implement multi-factor authentication such as TOTP
 ---
 
 # Multi-factor authentication (MFA)
@@ -18,6 +19,10 @@ default endpoints added by this module.
 ```bash
 composer require silverstripe/mfa
 ```
+
+## GitHub repository
+
+<https://github.com/silverstripe/silverstripe-mfa>
 
 ## Setup
 
