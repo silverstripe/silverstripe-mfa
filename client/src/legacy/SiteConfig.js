@@ -3,8 +3,8 @@ window.jQuery.entwine('ss', ($) => {
     /**
      * Enable or disable the associated "grace period" date field
      */
-    onchange() {
-      const isRequired = parseInt(this.val(), 10);
+    toggleGracePeriodField() {
+      const isRequired = parseInt($('[name="MFARequired"]:checked').val(), 10);
       if (isRequired) {
         $('.mfa-settings__grace-period').removeAttr('disabled');
       } else {
@@ -12,11 +12,15 @@ window.jQuery.entwine('ss', ($) => {
       }
     },
 
+    onchange() {
+      this.toggleGracePeriodField();
+    },
+
     /**
-     * Ensure the "grace period" hide/show handlers wake up when the page does
+     * Ensure the "grace period" field state is correct when the page loads
      */
     onmatch() {
-      this.onchange();
+      this.toggleGracePeriodField();
     },
   });
 });
