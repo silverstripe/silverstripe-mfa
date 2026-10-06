@@ -94,9 +94,17 @@ class LoginHandler extends BaseLoginHandler
         // If:
         //  - there's no member it's an invalid login, or
         //  - the enforcement manager determines that MFA should not be shown
-        // then we can delegate to the parent as this will just be the normal login flow (without MFA)
-        if (!$member || !$enforcementManager->shouldRedirectToMFA($member)) {
-            return parent::doLogin($data, $form, $request);
+        // then this is the normal login flow (without MFA). It is finished here rather than by delegating to
+        // parent::doLogin(), because that would call checkLogin() a second time and record every attempt twice
+        if (!$member) {
+            $this->extend('beforeLogin');
+            return $this->handleFailedLogin($data, $form, $result);
+        }
+        if (!$enforcementManager->shouldRedirectToMFA($member)) {
+            $this->extend('beforeLogin');
+            $this->performLogin($member, $data, $request);
+            $this->extend('afterLogin', $member);
+            return $this->redirectAfterSuccessfulLogin();
         }
 
         // We need to call getSudoModeService()->activate() here otherwise the check in
@@ -132,6 +140,40 @@ class LoginHandler extends BaseLoginHandler
 
         // Redirect to the MFA step
         return $this->redirect($this->link('mfa'));
+    }
+
+    /**
+     * The failed-login handling of the parent doLogin(), for a login that checkLogin() has already rejected
+     *
+     * @param array $data
+     * @param MemberLoginForm $form
+     * @param ValidationResult|null $result The result from checkLogin()
+     * @return HTTPResponse
+     */
+    protected function handleFailedLogin($data, MemberLoginForm $form, ?ValidationResult $result): HTTPResponse
+    {
+        $this->extend('failedLogin');
+
+        $message = implode('; ', array_map(
+            function ($message) {
+                return $message['message'];
+            },
+            $result ? $result->getMessages() : []
+        ));
+
+        $form->sessionMessage($message, 'bad');
+
+        if (array_key_exists('Email', $data ?? [])) {
+            $rememberMe = (isset($data['Remember']) && Security::config()->get('autologin_enabled') === true);
+            $this
+                ->getRequest()
+                ->getSession()
+                ->set('SessionForms.MemberLoginForm.Email', $data['Email'])
+                ->set('SessionForms.MemberLoginForm.Remember', $rememberMe);
+        }
+
+        // Fail to login redirects back to form
+        return $form->getRequestHandler()->redirectBackToForm();
     }
 
     /**
