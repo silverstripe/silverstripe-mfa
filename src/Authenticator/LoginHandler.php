@@ -81,6 +81,14 @@ class LoginHandler extends BaseLoginHandler
     protected $logger;
 
     /**
+     * The result of the checkLogin() call in doLogin(), held for the parent doLogin() to use rather than checking
+     * the login a second time
+     *
+     * @var array{0: Member|null, 1: ValidationResult|null}|null
+     */
+    private ?array $checkedLogin = null;
+
+    /**
      * Override the parent "doLogin" to insert extra steps into the flow
      *
      * @inheritdoc
@@ -96,7 +104,15 @@ class LoginHandler extends BaseLoginHandler
         //  - the enforcement manager determines that MFA should not be shown
         // then we can delegate to the parent as this will just be the normal login flow (without MFA)
         if (!$member || !$enforcementManager->shouldRedirectToMFA($member)) {
-            return parent::doLogin($data, $form, $request);
+            // The parent calls checkLogin() again, and every check records a login attempt and registers a failed or
+            // successful login. Hand it the result of the check above so each attempt is only recorded once
+            $this->checkedLogin = [$member, $result];
+            try {
+                return parent::doLogin($data, $form, $request);
+            } finally {
+                // Never let the held result outlive this call, e.g. when a beforeLogin hook throws before it is used
+                $this->checkedLogin = null;
+            }
         }
 
         // We need to call getSudoModeService()->activate() here otherwise the check in
@@ -132,6 +148,22 @@ class LoginHandler extends BaseLoginHandler
 
         // Redirect to the MFA step
         return $this->redirect($this->link('mfa'));
+    }
+
+    /**
+     * Uses the result held by doLogin() when there is one, so the parent doLogin() does not check the login again
+     *
+     * @inheritdoc
+     */
+    public function checkLogin($data, HTTPRequest $request, ?ValidationResult &$result = null)
+    {
+        if ($this->checkedLogin !== null) {
+            [$member, $result] = $this->checkedLogin;
+            $this->checkedLogin = null;
+            return $member;
+        }
+
+        return parent::checkLogin($data, $request, $result);
     }
 
     /**

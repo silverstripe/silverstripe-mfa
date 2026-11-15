@@ -26,6 +26,7 @@ use SilverStripe\MFA\Store\SessionStore;
 use SilverStripe\MFA\Tests\Stub\Store\TestStore;
 use SilverStripe\MFA\Tests\Stub\BasicMath\Method;
 use SilverStripe\ORM\FieldType\DBDatetime;
+use SilverStripe\Security\LoginAttempt;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 use SilverStripe\Security\SecurityToken;
@@ -99,6 +100,30 @@ class LoginHandlerTest extends FunctionalTest
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertStringEndsWith('/something', $response->getHeader('location'));
+    }
+
+    public function testInvalidLoginIsRecordedOnce()
+    {
+        /** @var Member&MemberExtension $member */
+        $member = $this->objFromFixture(Member::class, 'guy');
+
+        $this->doLogin($member, 'wrong password');
+
+        $this->assertSame(1, LoginAttempt::get()->filter('Status', LoginAttempt::FAILURE)->count());
+        $this->assertSame(1, (int) Member::get()->byID($member->ID)->FailedLoginCount);
+    }
+
+    public function testLoginWithoutMFAIsRecordedOnce()
+    {
+        Config::modify()->set(MethodRegistry::class, 'methods', []);
+
+        /** @var Member&MemberExtension $member */
+        $member = $this->objFromFixture(Member::class, 'guy');
+
+        $this->doLogin($member, 'Password123');
+
+        $this->assertSame(1, LoginAttempt::get()->filter('Status', LoginAttempt::SUCCESS)->count());
+        $this->assertSame((int) $member->ID, (int) $this->session()->get('loggedInAs'));
     }
 
     public function testMFASchemaEndpointIsNotAccessibleByDefault()
