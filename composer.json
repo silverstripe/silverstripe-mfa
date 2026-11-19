@@ -26,11 +26,11 @@
     ],
     "require": {
         "php": "^8.3",
-        "silverstripe/framework": "^6.1",
-        "silverstripe/admin": "^3",
-        "silverstripe/siteconfig": "^6",
+        "silverstripe/framework": "^7",
+        "silverstripe/admin": "^4",
+        "silverstripe/siteconfig": "^7",
         "defuse/php-encryption": "^2.4",
-        "silverstripe/login-forms": "^6"
+        "silverstripe/login-forms": "^7"
     },
     "require-dev": {
         "phpunit/phpunit": "^11.3",
