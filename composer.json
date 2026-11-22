@@ -26,11 +26,11 @@
     ],
     "require": {
         "php": "^8.3",
-        "silverstripe/framework": "^6.1",
-        "silverstripe/admin": "^3",
-        "silverstripe/siteconfig": "^6",
+        "silverstripe/framework": "^7",
+        "silverstripe/admin": "^4",
+        "silverstripe/siteconfig": "^7",
         "defuse/php-encryption": "^2.4",
-        "silverstripe/login-forms": "^6"
+        "silverstripe/login-forms": "^7"
     },
     "require-dev": {
         "phpunit/phpunit": "^11.3",
@@ -38,10 +38,6 @@
         "silverstripe/documentation-lint": "^2",
         "silverstripe/standards": "^1",
         "phpstan/extension-installer": "^1.3"
-    },
-    "conflict": {
-        "silverstripe/subsites": "<2.2.2 || 2.3.0",
-        "silverstripe/webauthn-authenticator": "<4.5.0"
     },
     "suggest": {
         "silverstripe/totp-authenticator": "Adds a method to authenticate with you phone using a time-based one-time password."
